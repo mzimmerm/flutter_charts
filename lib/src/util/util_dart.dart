@@ -256,6 +256,10 @@ class Interval {
     return Interval(other.min, other.max * (positivePortionOrException.length / length));
   }
 
+  Interval toPositive() {
+    return Interval(math.min(min.abs(), max.abs()), math.max(min.abs(), max.abs()));
+  }
+
   @override
   String toString() {
     return 'Interval($min, $max)';

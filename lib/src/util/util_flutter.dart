@@ -3,6 +3,7 @@
 import 'dart:math' as math;
 import 'dart:ui' show Rect, Size, Offset;
 
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart';
 import 'util_dart.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
@@ -50,14 +51,48 @@ class FromTransposing2DValueRange {
   final Interval outputDataRange;
   final ChartOrientation chartOrientation;
 
-  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
+  FromTransposing2DValueRange toPositive() {
     return FromTransposing2DValueRange(
-      inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
-      outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+      inputDataRange: inputDataRange.toPositive(),
+      outputDataRange: outputDataRange.toPositive(),
       chartOrientation: chartOrientation,
     );
   }
 
+  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
+    switch(chartOrientation) {
+      case ChartOrientation.column:
+        return FromTransposing2DValueRange(
+          inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
+          outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+          chartOrientation: chartOrientation,
+        );
+      case ChartOrientation.row:
+        return FromTransposing2DValueRange(
+          inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
+          outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+          chartOrientation: chartOrientation,
+        );
+    }
+  }
+
+  // todo-00-done : added
+  FromTransposing2DValueRange subsetForSignOfPointOffsetBeforeAffmap({required PointOffset pointOffset,}) {
+    switch(chartOrientation) {
+      case ChartOrientation.column:
+        return FromTransposing2DValueRange(
+          inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
+          outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
+          chartOrientation: chartOrientation,
+        );
+      case ChartOrientation.row:
+        return FromTransposing2DValueRange(
+          inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
+          outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
+          chartOrientation: chartOrientation,
+        );
+    }
+  }
 }
 
 /// Pixel 2D range encapsulates the 'to range' of values that ore affmap-ed

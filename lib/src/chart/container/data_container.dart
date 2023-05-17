@@ -23,7 +23,7 @@ import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnM
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer;
 import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
-import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
+import 'package:flutter_charts/src/util/util_flutter.dart' show  To2DPixelRange;
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
@@ -109,17 +109,20 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                   positiveBarsContainer: makeInnerBarsContainer(
                     barsAreaSign: Sign.positiveOr0,
                     outerDataContainer: this,
+                    constraintsWeight: ConstraintsWeight(weight: chartViewModel.outputLabelsGenerator.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
                   ),
                   // X axis line. Could place in Row with main constraints weight=0.0
                   inputAxisLine: TransposingInputAxisLineContainer(
                     chartViewModel: chartViewModel,
                     inputLabelsGenerator: chartViewModel.inputLabelsGenerator,
                     outputLabelsGenerator: chartViewModel.outputLabelsGenerator,
+                    constraintsWeight: const ConstraintsWeight(weight: 0.0),
                   ),
                   // Row with columns of negative values
                   negativeBarsContainer: makeInnerBarsContainer(
                     barsAreaSign: Sign.negative,
                     outerDataContainer: this,
+                    constraintsWeight: ConstraintsWeight(weight: chartViewModel.outputLabelsGenerator.dataRangeRatioOfPortionWithSign(Sign.negative)),
                   ),
                   outerDataContainer: this,
                 ),
@@ -188,12 +191,14 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   BarsContainer makeInnerBarsContainer ({
       required DataContainer outerDataContainer,
       required Sign barsAreaSign,
-      ContainerKey? key,
+      required ConstraintsWeight constraintsWeight, // todo-00-last-done
+    ContainerKey? key,
   }) {
     return BarsContainer(
       chartViewModel: chartViewModel,
       outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
+      constraintsWeight: constraintsWeight, // todo-00-last-done
       key: key,
     );
   }
@@ -301,6 +306,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
     required super.chartViewModel,
     required this.outerDataContainer,
     required this.barsAreaSign,
+    required super.constraintsWeight, // todo-00-last-done
     super.key,
   }) {
     if (barsAreaSign == Sign.any) {
@@ -621,7 +627,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
   //      - in the cross direction = constraints size in that direction
   PointOffset affmapLayoutToConstraintsAsPointOffset() {
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
-    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
+    // todo-00-done : no longer used ?? : DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
     PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
       inputDataRangeLabelInfosGenerator: inputLabelsGenerator,
@@ -632,9 +638,11 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     pointOffset = PointOffset(
       inputValue: pointOffset.inputValue,
       outputValue: pointOffset.outputValue,
-      mainLayoutAxis:  chartViewModel.chartOrientation.mainLayoutAxis,
-      isLayouterPositioningMeInCrossDirection: true,
+      // todo-00-done : mainLayoutAxis:  chartViewModel.chartOrientation.mainLayoutAxis,
+      // todo-00-done : isLayouterPositioningMeInCrossDirection: true,
     );
+
+    Sign pointOffsetSign = pointOffset.outputValue >= 0 ? Sign.positiveOr0 : Sign.negative;
 
     // todo-00-progress
     //    - After affmap, we position the PointOffset, in the cross direction, in the middle of the constraint
@@ -643,10 +651,15 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     //      - in the cross direction = constraints size in that direction
 
     // Prepare clearly-named variables to pass to the affmap
-    double inputValueForSign = pointOffset.inputValue;
-    double outputValueForSign = pointOffset.outputValue;
+    // double inputValueForSign = pointOffset.inputValue;
+    // double outputValueForSign = pointOffset.outputValue;
     ui.Size toPixelRangeSize = constraints.size;
+    To2DPixelRange to2DPixelRange = To2DPixelRange(
+      width: toPixelRangeSize.width, // todo-00-done-prev : sizerWidth,
+      height: toPixelRangeSize.height, // todo-00-done-prev : sizerHeight,
+    );
 
+    // Affmap the [pointOffset] created from [pointModel]
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
 
@@ -662,25 +675,92 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       //       - fromOutputRange = as above, for outputValue
       //       - pixelRange : height = constraints height, width = constraints width
       fromTransposing2DValueRange:
-      chartViewModel.fromTransposing2DValueRange,
-     /* chartViewModel.fromTransposing2DValueRange.subsetForSignsOf(
-        inputValue: inputValueForSign,
-        outputValue: outputValueForSign,
-      ),*/
-      to2DPixelRange: To2DPixelRange(
-        width: toPixelRangeSize.width, // todo-00-done-prev : sizerWidth,
-        height: toPixelRangeSize.height, // todo-00-done-prev : sizerHeight,
-      ),
+      /*chartViewModel.fromTransposing2DValueRange,*/
+       chartViewModel.fromTransposing2DValueRange.subsetForSignOfPointOffsetBeforeAffmap(
+        pointOffset: pointOffset,
+      ), // todo-00 : did not work : .toPositive(), // todo-00-done-last-last : added toPositive
+      to2DPixelRange: to2DPixelRange,
     );
 
+    // todo-00-progress vvvvvvvvvv : moved here from PointOffset.affmapToPixelsMaybeTransposeInContextOf( etc )
+    //
+    //  as this PointContainer is in bar layouter,
+    //       we need to set barPointRectSize (for barChart) and position to center in the cross direction (for lineChart)
 
-/* todo-00-done : ori works on all new tests
+    // todo-00-done : ui.Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
+
+    // Added to handle PointOffset being inside a bar type layouter.
+    // If the transformed pixelPointOffset is layed out (positioned) in a non-tick, 'bar type' layouter,
+    //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
+    // todo-00-last : if (pixelPointOffset.isLayouterPositioningMeInCrossDirection) {
+      pixelPointOffset = pixelPointOffset.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
+        chartViewModel.chartOrientation,
+        to2DPixelRange.size,
+        Align.center,
+      );
+    // todo-00-last : }
+
+    // NEW: DO NOT CREATE THE BAR SIZE BY APPLYING LINEAR TRANSFORM. JUST USE THE AFFMAPED VALUE IN THE MAIN DIRECTION, MID-CONSTRAIN IN THE CROSS DIRECTION
+    double pixelPointValue;
+    if (pointOffsetSign == Sign.positiveOr0) {
+      switch (chartViewModel.chartOrientation) {
+        case ChartOrientation.column:
+          pixelPointValue = toPixelRangeSize.lengthAlong(chartViewModel.chartOrientation.mainLayoutAxis) -
+              pixelPointOffset.valueFor(chartViewModel.chartOrientation);
+          break;
+        case ChartOrientation.row:
+          pixelPointValue = pixelPointOffset.valueFor(chartViewModel.chartOrientation);
+          break;
+      }
+    } else {
+      switch (chartViewModel.chartOrientation) {
+        case ChartOrientation.column:
+          pixelPointValue = pixelPointOffset.valueFor(chartViewModel.chartOrientation);
+          break;
+        case ChartOrientation.row:
+          pixelPointValue = toPixelRangeSize.lengthAlong(chartViewModel.chartOrientation.mainLayoutAxis) -
+              pixelPointOffset.valueFor(chartViewModel.chartOrientation);
+          break;
+      }
+    }
+
+    ui.Size barPointRectSize;
+    double pixelPointCrossValue = toPixelRangeSize.lengthAlong(axisPerpendicularTo(chartViewModel.chartOrientation.mainLayoutAxis));
+
+    switch(chartViewModel.chartOrientation) {
+      case ChartOrientation.column:
+        barPointRectSize = ui.Size(pixelPointCrossValue, pixelPointValue);
+        break;
+      case ChartOrientation.row:
+        barPointRectSize = ui.Size(pixelPointValue, pixelPointCrossValue);
+        break;
+    }
+
+/*
+    ui.Size barPointRectSize = ui.Size(300-pixelPointOffset.outputValue, 300-pixelPointOffset.outputValue);
+    barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(other: toPixelRangeSize, axis: chartViewModel.chartOrientation.mainLayoutAxis);
 */
+    pixelPointOffset.barPointRectSize = barPointRectSize;
+
+    // On the rect size, we do NOT scale both directions. In the direction where constraint
+    //   is used (which is ALWAYS the orientation's main axis: column->vertical, row->horizontal),
+    //   use scaled size, BUT in the cross direction, use the full size from the divided constraint, placed into
+    // the PixelsRange max
+    /* todo-00-done : Using the calcs above instead. IT MUST BE CLEANED UP.
+    pixelPointOffset.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      other: ui.Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max),
+      axis: chartViewModel.chartOrientation.mainLayoutAxis,);
+    */
+
+    // todo-00-progress ^^^^^^^^^^^ :
+
 
     return pixelPointOffset;
   }
 
-/* todo-00-last-KEEP : ORI version
+
+  /* todo-00-done : ori works on all new tests may 16, 6pm
+
   PointOffset affmapLayoutToConstraintsAsPointOffsetORI() {
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
     DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
@@ -698,24 +778,26 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       isLayouterPositioningMeInCrossDirection: true,
     );
 
+    // Prepare clearly-named variables to pass to the affmap
+    double inputValueForSign = pointOffset.inputValue;
+    double outputValueForSign = pointOffset.outputValue;
+    ui.Size toPixelRangeSize = constraints.size;
+
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      // withinConstraints is used to define
-      withinConstraints: constraints,
-      fromTransposing2DValueRange: FromTransposing2DValueRange(
-        chartOrientation: chartViewModel.chartOrientation,
-        inputDataRange: inputLabelsGenerator.dataRange,
-        outputDataRange: outputLabelsGenerator.dataRange,
-      ),
+
+      fromTransposing2DValueRange:
+      chartViewModel.fromTransposing2DValueRange,
       to2DPixelRange: To2DPixelRange(
-        height: sizerHeight,
-        width: sizerWidth,
+        width: toPixelRangeSize.width,
+        height: toPixelRangeSize.height,
       ),
     );
+
     return pixelPointOffset;
   }
+  */
 
- */
 
   /// Generates code for testing.
   // todo-010 : fix this after changes in API of this class

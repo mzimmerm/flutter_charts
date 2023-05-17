@@ -16,6 +16,7 @@ import 'line_container.dart';
 import 'presenter.dart';
 import '../../chart/options.dart';
 import '../../morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
 import '../../morphic/container/morphic_dart_enums.dart';
 
 import '../../switch_view_model/view_model_cl.dart';
@@ -333,6 +334,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   BarsContainer makeInnerBarsContainer ({
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
+    required ConstraintsWeight constraintsWeight, // todo-00-last-done
     ContainerKey? key,
   }) {
     throw UnimplementedError();

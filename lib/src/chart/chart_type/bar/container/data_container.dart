@@ -20,6 +20,7 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
@@ -36,12 +37,14 @@ class BarChartDataContainer extends DataContainer {
   BarsContainer makeInnerBarsContainer ({
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
+    required ConstraintsWeight constraintsWeight, // todo-00-last-done
     ContainerKey? key,
   })  {
     return BarChartBarsContainer(
       chartViewModel: chartViewModel,
       outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
+      constraintsWeight: constraintsWeight, // todo-00-last-done
       key: key,
     );
   }
@@ -53,6 +56,7 @@ class BarChartBarsContainer extends BarsContainer {
     required super.chartViewModel,
     required super.outerDataContainer,
     required super.barsAreaSign,
+    required super.constraintsWeight, // todo-00-last-done
     super.key,
   });
 

@@ -52,6 +52,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
+    required super.constraintsWeight, // todo-00-done-last
   }) : super(
           // Logic to handle PointOffset depending on orientation. Not possible to do pure affmap
           //   (from default column logic using outputValue:  outputLabelsGenerator.dataRange.max ),

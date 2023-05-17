@@ -6,14 +6,13 @@ import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align;
 
 // util
-import 'package:flutter_charts/src/util/util_dart.dart' show Interval, ToPixelsAffineMap1D, assertDoubleResultsSame;
+import 'package:flutter_charts/src/util/util_dart.dart' show ToPixelsAffineMap1D, assertDoubleResultsSame;
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
 import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart'
     show DoubleToDoubleFunction, Functional, FunctionalMatrix2D;
 
-import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
 
 // Docs only, not used in code.
@@ -46,8 +45,8 @@ class PointOffset extends Offset {
   PointOffset({
     required double inputValue,
     required double outputValue,
-    this.isLayouterPositioningMeInCrossDirection = false,
-    this.mainLayoutAxis,
+    // todo-00-done : this.isLayouterPositioningMeInCrossDirection = false,
+    // todo-00-done : this.mainLayoutAxis,
   }) : super(inputValue, outputValue);
 
   factory PointOffset.fromVector(
@@ -59,8 +58,8 @@ class PointOffset extends Offset {
     return PointOffset(
       inputValue: vector[0],
       outputValue: vector[1],
-      isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
-      mainLayoutAxis: mainLayoutAxis,
+      // todo-00-done : isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
+      // todo-00-done : mainLayoutAxis: mainLayoutAxis,
     );
   }
 
@@ -81,28 +80,48 @@ class PointOffset extends Offset {
   double get outputValue => dy;
 
   // todo-0100 wrap into one object
-  final bool isLayouterPositioningMeInCrossDirection;
-  final LayoutAxis? mainLayoutAxis;
+  // todo-00-done : final bool isLayouterPositioningMeInCrossDirection;
+  // todo-00-done : final LayoutAxis? mainLayoutAxis;
 
   /// For [PointOffset] which is also [RollingLayouterRangedPointOffset],
   /// set the value ([inputValue] or [outputValue]) in the layouter cross direction
   /// to the middle of the layouter constraint where this [RollingLayouterRangedPointOffset] lives.
-  PointOffset fromMyPositionAlongMainDirectionFromSizeInCrossDirection(Size size, Align align) {
+  PointOffset fromMyPositionAlongMainDirectionFromSizeInCrossDirection(ChartOrientation chartOrientation, Size size, Align align) {
     if (align != Align.center) throw StateError('Only Align.center is currently supported.');
 
-    switch (mainLayoutAxis!) {
+    switch (chartOrientation.mainLayoutAxis) {
       // If mainLayoutAxis is horizontal (row orientation),   inputValue is from me,     outputValue is from [size]
       case LayoutAxis.horizontal:
         return PointOffset(
           inputValue: inputValue,
-          outputValue: size.lengthAlong(axisPerpendicularTo(mainLayoutAxis!)) / 2,
+          outputValue: size.lengthAlong(axisPerpendicularTo(chartOrientation.mainLayoutAxis)) / 2,
         );
       // If mainLayoutAxis is vertical, (column orientation),  inputValue is from [size], outputValue is from me
       case LayoutAxis.vertical:
         return PointOffset(
-          inputValue: size.lengthAlong(axisPerpendicularTo(mainLayoutAxis!)) / 2,
+          inputValue: size.lengthAlong(axisPerpendicularTo(chartOrientation.mainLayoutAxis)) / 2,
           outputValue: outputValue,
         );
+    }
+  }
+
+  // todo-00-done : added but clean this up
+  double valueFor(ChartOrientation chartOrientation) {
+    switch (chartOrientation) {
+      case ChartOrientation.column:
+        return outputValue;
+      case ChartOrientation.row:
+        return inputValue;
+    }
+  }
+
+  // todo-00-done : added but clean this up
+  double valueCrossFor(ChartOrientation chartOrientation) {
+    switch (chartOrientation) {
+      case ChartOrientation.column:
+        return inputValue;
+      case ChartOrientation.row:
+        return outputValue;
     }
   }
 
@@ -233,6 +252,13 @@ class PointOffset extends Offset {
   ///         - THIS IS VERTICAL LINE AT X = 0, WHICH GIVES THE CONTAINER WIDTH = 0.
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
+  /// todo-00-next-documentation changes
+  ///  - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s.
+  ///    Typically from owner layouter constraints or Sizer, does NOT depend on orientation, must be set correctly by caller.
+  ///     Examples:
+  ///       1. When affmap-ing to a bar (Row or Column): In the orientation cross-direction, the unscaled-divided-constraints
+  ///          are used.
+  ///       2. todo
   PointOffset affmapToPixelsMaybeTransposeInContextOf({
     required ChartOrientation        chartOrientation,
     required FromTransposing2DValueRange fromTransposing2DValueRange,
@@ -266,12 +292,6 @@ class PointOffset extends Offset {
     // Zero transform.
     DoubleToDoubleFunction zero = Functional.zero().fun;
 
-    // Horizontal and vertical pixels ranges to which we transform come from Constraints or Sizer,
-    //   depending on orientation.
-    // Need them to survive switch, as, in the orientation cross-direction, the unscaled-divided-constraint
-    //   bar length is used, see [barPointRectSize] at the end of this method.
-    Interval horizontalPixelsRange, verticalPixelsRange;
-
     // todo-00-next : we need vars for both affTransfXX, linTransfXX, and for all others.
     //                their creation differs, in the pixels range (horizontal in column, vertical in row),
     //                where it should use ranges (both inputDataRange and outputDataRange) as follows:
@@ -281,20 +301,18 @@ class PointOffset extends Offset {
 
     switch (chartOrientation) {
       case ChartOrientation.column:
-        horizontalPixelsRange = to2DPixelRange.horizontalPixelRange;
-        verticalPixelsRange   = to2DPixelRange.verticalPixelRange;
 
         //   m[0,0] (input->px)
         var transfXX = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.inputDataRange,
-          toPixelsRange: horizontalPixelsRange,
+          toPixelsRange: to2DPixelRange.horizontalPixelRange,
           isFlipToRange: false,
         );
 
         //   m[1,1] (output->py)
         var transfYY = ToPixelsAffineMap1D(
           fromValuesRange:  fromTransposing2DValueRange.outputDataRange,
-          toPixelsRange: verticalPixelsRange,
+          toPixelsRange: to2DPixelRange.verticalPixelRange,
           isFlipToRange: true,
         );
 
@@ -311,20 +329,17 @@ class PointOffset extends Offset {
 
         break;
       case ChartOrientation.row:
-        horizontalPixelsRange =  to2DPixelRange.horizontalPixelRange;
-        verticalPixelsRange = to2DPixelRange.verticalPixelRange;
-        // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.inputDataRange,
-          toPixelsRange: verticalPixelsRange,
+          toPixelsRange: to2DPixelRange.verticalPixelRange,
           isFlipToRange: true,
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.outputDataRange,
-          toPixelsRange: horizontalPixelsRange,
+          toPixelsRange: to2DPixelRange.horizontalPixelRange,
           isFlipToRange: false,
         );
 
@@ -344,18 +359,20 @@ class PointOffset extends Offset {
 
     // ### Transform this point with the affine transformer, and it's presented rectangle Size with the linear transformer.
     Vector<double> thisToVector = toVector();
-    PointOffset pointOffsetPixels = PointOffset.fromVector(
+    PointOffset pixelPointOffset = PointOffset.fromVector(
       affineTransformer.applyOnVector(thisToVector),
-      isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
-      mainLayoutAxis: mainLayoutAxis,
+      // todo-00-done : isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
+      // todo-00-done : mainLayoutAxis: mainLayoutAxis,
     );
+
+    /* todo-00-done : moved outside of this method to places where needed (only needed for lineChart, does not hurt for barChart)
     Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
 
     // Added to handle PointOffset being inside a bar type layouter.
-    // If the transformed pointOffsetPixels is layed out (positioned) in a non-tick, 'bar type' layouter,
+    // If the transformed pixelPointOffset is layed out (positioned) in a non-tick, 'bar type' layouter,
     //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
-    if (pointOffsetPixels.isLayouterPositioningMeInCrossDirection) {
-      pointOffsetPixels = pointOffsetPixels.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
+    if (pixelPointOffset.isLayouterPositioningMeInCrossDirection) {
+      pixelPointOffset = pixelPointOffset.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
         to2DPixelRange.size,
         Align.center,
       );
@@ -365,28 +382,29 @@ class PointOffset extends Offset {
     //   is used (which is ALWAYS the orientation's main axis: column->vertical, row->horizontal),
     //   use scaled size, BUT in the cross direction, use the full size from the divided constraint, placed into
     // the PixelsRange max
-    pointOffsetPixels.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
-      other: Size(horizontalPixelsRange.max, verticalPixelsRange.max),
+    pixelPointOffset.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      other: Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max),
       axis: chartOrientation.mainLayoutAxis,);
+    */
 
     // Before return, validate inputs and outputs
     _validateAffmapToPixelMethodInputsOutputs(
       chartOrientation: chartOrientation,
       to2DPixelRange: to2DPixelRange,
-      pointOffsetPixels: pointOffsetPixels,
-      // Only assert for pointOffsetPixels.barPointRectSize + pointOffsetPixels == withinConstraints
+      pixelPointOffset: pixelPointOffset,
+      // Only assert for pixelPointOffset.barPointRectSize + pixelPointOffset == withinConstraints
       //   if no range is across 0.0
       // todo-010 : why does the assert fail for mixed sign?
       isFromChartPointForAsserts: isFromChartPointForAsserts && !fromTransposing2DValueRange.inputDataRange.isAcrossZero() && !fromTransposing2DValueRange.outputDataRange.isAcrossZero(),
     );
 
-    return pointOffsetPixels;
+    return pixelPointOffset;
   }
 
   void _validateAffmapToPixelMethodInputsOutputs({
     required ChartOrientation chartOrientation,
     required To2DPixelRange to2DPixelRange,
-    required PointOffset pointOffsetPixels,
+    required PointOffset pixelPointOffset,
     required bool isFromChartPointForAsserts,
   }) {
     Size sizerSize = Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max);
@@ -400,16 +418,16 @@ class PointOffset extends Offset {
         'to2DPixelRange.size=${to2DPixelRange.size}, sizerSize=$sizerSize ');
 
     /* todo-010 - put back when only-positive / only-negative range is used
-    if (pointOffsetPixels.inputValue < 0 || pointOffsetPixels.outputValue < 0) {
-      throw StateError('Failed assumption about pointOffsetPixels always positive or 0, $pointOffsetPixels');
+    if (pixelPointOffset.inputValue < 0 || pixelPointOffset.outputValue < 0) {
+      throw StateError('Failed assumption about pixelPointOffset always positive or 0, $pixelPointOffset');
     }
     */
 
     /*  todo-010 - put back when only-positive / only-negative range is used
     if (isFromChartPointForAsserts) {
-      // Assert that, in orientation.mainLayoutAxis: pointOffsetPixels + pointOffsetPixels.barPointRectSize == withinConstraints
+      // Assert that, in orientation.mainLayoutAxis: pixelPointOffset + pixelPointOffset.barPointRectSize == withinConstraints
       //  Impl note: Size + Offset exists, yields Size
-      Size pointOffsetSizePlusBarSize = pointOffsetPixels.barPointRectSize + pointOffsetPixels;
+      Size pointOffsetSizePlusBarSize = pixelPointOffset.barPointRectSize + pixelPointOffset;
       assertDoubleResultsSame(
           withinConstraints.size.lengthAlong(chartOrientation.mainLayoutAxis),
           pointOffsetSizePlusBarSize.lengthAlong(chartOrientation.mainLayoutAxis),
@@ -420,10 +438,10 @@ class PointOffset extends Offset {
     }
     */
 
-    // Assert that, in orientation.crossAxis: pointOffsetPixels.barPointRectSize == withinConstraints
+    // Assert that, in orientation.crossAxis: pixelPointOffset.barPointRectSize == withinConstraints
     /* todo-010 : This was probably never true ... anyway, check into this
     var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
-    Size barPointRectSize = pointOffsetPixels.barPointRectSize;
+    Size barPointRectSize = pixelPointOffset.barPointRectSize;
     assertDoubleResultsSame(
         withinConstraints.size.lengthAlong(crossOrientationAxis),
         barPointRectSize.lengthAlong(crossOrientationAxis),
@@ -540,19 +558,19 @@ enum Diagonal {
         break;
     }
 
-    PointOffset pointOffsetPixels = PointOffset(
+    PointOffset pixelPointOffset = PointOffset(
       inputValue: horizontalPixels,
       outputValue: verticalPixels,
     );
 
     // The size of small rectangle representing the point on bar chart, adjusted for orientation.
-    pointOffsetPixels.barPointRectSize = Size(
+    pixelPointOffset.barPointRectSize = Size(
       barPointRectWidth,
       barPointRectHeight,
     );
 
     // Finally, return the pixel position to which this PointOffset has been transformed.
-    return pointOffsetPixels;
+    return pixelPointOffset;
   }
 
   /// Affmap [fromValue] assumed to be in the [fromValuesRange], to pixels in range [toPixelsRange],
