@@ -5,7 +5,7 @@
 ///
 
 // ui
-import 'dart:ui' as ui show Size;
+// import 'dart:ui' as ui show Size;
 
 // this level base libraries or equivalent
 import 'package:flutter_charts/src/chart/painter.dart';
@@ -622,11 +622,11 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
   ///      - fromOutputRange: as above, Sign of PointModel.outputValue
   ///      - pixelRange:      height = constraints height, width = constraints width.
   ///                         constraints are those given to 'container-parent bar'. They are sized in both directions
-  ///   8. After affmap, the code makes two changes to the transfered pixelPointOffset:
-  ///     - 8.1: position the PointOffset, in the cross direction, in the middle of the constraint
-  ///     - 8.2: set barPointRectSize:
-  ///       - in the main direction = affmap-ed value (PointOffset.outputValue)
-  ///       - in the cross direction = constraints size in that direction
+  ///   8. After affmap, the code makes two changes to the transferred pixelPointOffset:
+  ///     - 8.1: repositions the PointOffset, in the cross direction, in the middle of the constraint,
+  ///            see [affmapBetweenRanges]
+  ///     - 8.2: sets the [PointOffset.barPointRectSize], see [affmapBetweenRanges]
+  ///
   PointOffset layoutUsingPointModelAffmapToPixels() {
 
     PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
@@ -645,8 +645,11 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
         pointOffset: pointOffset,
       ),
       to2DPixelRange: to2DPixelRange,
+      isMoveInCrossDirectionToPixelRangeCenter: true,
+      isSetBarPointRectInCrossDirectionToPixelRange: true,
     );
 
+/* todo-00-done : moved to affmapBetweenRanges using flags
     // AFTER affmap: Store the linear size as the moveInCrossDirectionToSizeCenter looses it
     ui.Size rectSize = pixelPointOffset.barPointRectSize;
 
@@ -665,6 +668,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       rectSize,
       to2DPixelRange,
     );
+*/
 
     return pixelPointOffset;
   }

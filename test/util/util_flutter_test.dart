@@ -1,5 +1,5 @@
 import 'package:test/test.dart'; // Dart test package
-import 'dart:ui' show Rect;
+import 'dart:ui' show Rect, Size;
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 // import 'package:flutter_charts/src/morphic/container/constraints.dart';
@@ -37,16 +37,36 @@ void main() {
       //   - inputValue 0 (min)-> pixel outputValue 400 (max)
       //   - inputValue 0 (min)-> pixel outputValue 400 (max)
 
+      // --- Same as test just below, but use reverted booleans
+      test('row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans', () {
+        pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
+          chartOrientation: rowOrientation,
+          fromTransposing2DValueRange: fromTransposing2DValueRange,
+          to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: true,
+          isSetBarPointRectInCrossDirectionToPixelRange: false,
+        );
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 0, outputValue: 200,));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 0));
+      });
+
+      // --- Test all corners of inputRange x outputRange, all with:
+      //       isMoveInCrossDirectionToPixelRangeCenter: false,
+      //       isSetBarPointRectInCrossDirectionToPixelRange: true,
       test('row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 0, outputValue: 400,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
       });
 
       test('row, manual affmap of nonStacked, map (inputMin, outputMax) from full output range', () {
@@ -55,10 +75,12 @@ void main() {
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300, outputValue: 400,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
       });
 
       test('row, manual affmap of nonStacked, map (inputMin, outputZERO) from full input range', () {
@@ -67,10 +89,12 @@ void main() {
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 400,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
       });
 
       test('row, manual affmap of nonStacked, map (inputMax, outputZERO) from full input range', () {
@@ -79,10 +103,12 @@ void main() {
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 0,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
       });
 
       test('row, manual affmap of nonStacked, map (inputMax, outputMin) from full input range', () {
@@ -91,10 +117,12 @@ void main() {
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 0, outputValue: 0,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
       });
 
       test('row, manual affmap of nonStacked, map (inputMax, outputMax) from full input range', () {
@@ -103,11 +131,14 @@ void main() {
           chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
+          isMoveInCrossDirectionToPixelRangeCenter: false,
+          isSetBarPointRectInCrossDirectionToPixelRange: true,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300, outputValue: 0,));
-        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
       });
+
     });
 
   /*

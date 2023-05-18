@@ -1,11 +1,12 @@
 import 'dart:ui' show Offset, Size;
 
 // morphic
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align;
 
 // util
-import 'package:flutter_charts/src/util/util_dart.dart' show ToPixelsAffineMap1D, assertDoubleResultsSame;
+import 'package:flutter_charts/src/util/util_dart.dart' show ToPixelsAffineMap1D;
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
@@ -100,13 +101,13 @@ class PointOffset extends Offset {
 
   /// Returns a new [PointOffset] with position in the middle of the [size] in [chartOrientation] cross direction,
   /// and same value as this instance in the main direction.
-  PointOffset moveInCrossDirectionToSizeCenter(ChartOrientation chartOrientation, Size size) {
+  PointOffset _moveInCrossDirectionToSizeCenter(ChartOrientation chartOrientation, Size size) {
     return _fromMyValueInMainFromSizeInCross(chartOrientation, size, Align.center);
   }
 
   /// Sets the [barPointRectSize] to full pixel range of [to2DPixelRange] in the cross direction of the [chartOrientation],
   /// and to the value of the passed [rectSize] in the main direction.
-  void setBarPointRectInCrossDirectionToPixelRange(
+  void _setBarPointRectInCrossDirectionToPixelRange(
     ChartOrientation chartOrientation,
     Size rectSize,
     To2DPixelRange to2DPixelRange,
@@ -145,7 +146,7 @@ class PointOffset extends Offset {
   /// While [PointOffset] can be used generically, the documentation here concentrates
   /// on it's use representing [PointModel] in one bar in the bar chart.
   ///
-  /// The passed instances:
+  /// The passed parameters:
   ///
   ///   - [chartOrientation] describes the orientation.
   ///     - [ChartOrientation.column] transforms only once on each axis:
@@ -154,16 +155,24 @@ class PointOffset extends Offset {
   ///       - first transposes value on each axis to value on cross-axis, using their respective value-ranges,
   ///       - second is affmap on each cross axis, from value-range to pixel-range
   ///   - [fromTransposing2DValueRange] is a wrapper around input and output values DataRanges
-  ///   - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s.
-  ///     Typically from owner layouter constraints or Sizer (sizerHeight, sizerWidth),
+  ///   - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s;
   ///     does NOT depend on orientation, must be set correctly by caller.
-  ///     - Examples:
-  ///       1. When affmap-ing to a bar (Row or Column): In the orientation cross-direction,
-  ///          the unscaled-divided-constraints are used.
-  ///       2. todo
-  ///   - [isFromChartPointForAsserts] flag if true, causes to run more asserts that assume the
-  ///     this [PointOffset] is from [PointModel] on a chart, rather than a straight [PointOffset] from [AxisLineContainer].
-  ///     Default to true, so places in code that create [PointOffset] from a line should set to false.
+  ///     - Typically set from either:
+  ///       - The owner layouter constraints, when mapping inside a [Row] or [Column].
+  ///         In this situation, the constraints are likely divided evenly in the cross direction,
+  ///         and [ConstraintsWeight] are used to divide according to the ration of positive and negative axis length
+  ///         in the main direction.
+  ///       - The Sizer (sizerHeight, sizerWidth), when mapping inside a [TransposingStackLayouter].
+  ///   - [isMoveInCrossDirectionToPixelRangeCenter] sets the position the PointOffset, in the cross direction,
+  ///      to the half of the constraint
+  ///   - [isSetBarPointRectInCrossDirectionToPixelRange] sets the barPointRectSize:
+  ///     - in the main direction = affmap-ed value (PointOffset.outputValue)
+  ///     - in the cross direction = constraints size in that direction
+  ///   - Important Note: Setting both [isMoveInCrossDirectionToPixelRangeCenter] and
+  ///     [isSetBarPointRectInCrossDirectionToPixelRange] to false performs a pure affmap between the
+  ///     [fromTransposing2DValueRange] and [to2DPixelRange], without any manipulation after.
+  ///     Setting one or both to true, is a convenience for processing in containers.
+
   ///
   /// Note that the [withinConstraints] or [sizerHeight] and [sizerWidth] is used
   /// to calculate the size of [barPointRectSize] on the copy.
@@ -245,7 +254,8 @@ class PointOffset extends Offset {
     required ChartOrientation            chartOrientation,
     required FromTransposing2DValueRange fromTransposing2DValueRange,
     required To2DPixelRange              to2DPixelRange,
-    bool                                 isFromChartPointForAsserts = true,
+    required bool                        isMoveInCrossDirectionToPixelRangeCenter,
+    required bool                        isSetBarPointRectInCrossDirectionToPixelRange,
   }) {
 
     // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
@@ -343,12 +353,36 @@ class PointOffset extends Offset {
     PointOffset pixelPointOffset = PointOffset.fromVector(
       affineTransformer.applyOnVector(thisPointToVector),
     );
-    Size barPointRectSize = SizeExtension.fromVector(
+    Size rectSize = SizeExtension.fromVector(
         linearTransformer.applyOnVector(thisPointToVector).abs()
     );
-    pixelPointOffset.barPointRectSize = barPointRectSize;
+    // todo-00-last-last : pixelPointOffset.barPointRectSize = barPointRectSize;
 
-    // todo-0100 : Before return, validate inputs and outputs
+    // todo-00-done : moved here using flags
+
+    if (isMoveInCrossDirectionToPixelRangeCenter) {
+      // 8.1: Benefits lineChart only: position the dot representing the [pixelPointOffset] in the middle of the bar.
+      // If the transformed pixelPointOffset is layed out (positioned) in a non-tick, 'bar type' layouter,
+      //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
+      pixelPointOffset = pixelPointOffset._moveInCrossDirectionToSizeCenter(
+        chartOrientation,
+        to2DPixelRange.size,
+      );
+    }
+
+    if (isSetBarPointRectInCrossDirectionToPixelRange) {
+      // 8.2: Benefits barChart only: On the rect size, in the constraint cross-direction (column->horizontal, row->vertical)
+      //      make the rectangle length to be full pixel range (set here to constraints, which is from divided layouter).
+      pixelPointOffset._setBarPointRectInCrossDirectionToPixelRange(
+        chartOrientation,
+        rectSize,
+        to2DPixelRange,
+      );
+    } else {
+      pixelPointOffset.barPointRectSize = rectSize;
+    }
+
+/* todo-00 probably remove
     _validateAffmapToPixelMethodInputsOutputs(
       chartOrientation: chartOrientation,
       to2DPixelRange: to2DPixelRange,
@@ -358,10 +392,12 @@ class PointOffset extends Offset {
       // todo-010 : why does the assert fail for mixed sign?
       isFromChartPointForAsserts: isFromChartPointForAsserts && !fromTransposing2DValueRange.inputDataRange.isAcrossZero() && !fromTransposing2DValueRange.outputDataRange.isAcrossZero(),
     );
+*/
 
     return pixelPointOffset;
   }
 
+/* todo-00 probably remove
   void _validateAffmapToPixelMethodInputsOutputs({
     required ChartOrientation chartOrientation,
     required To2DPixelRange to2DPixelRange,
@@ -378,13 +414,10 @@ class PointOffset extends Offset {
         'result from constraints.size, otherResult from sizerSize. '
         'to2DPixelRange.size=${to2DPixelRange.size}, sizerSize=$sizerSize ');
 
-    /* todo-010 - put back when only-positive / only-negative range is used
     if (pixelPointOffset.inputValue < 0 || pixelPointOffset.outputValue < 0) {
       throw StateError('Failed assumption about pixelPointOffset always positive or 0, $pixelPointOffset');
     }
-    */
 
-    /*  todo-010 - put back when only-positive / only-negative range is used
     if (isFromChartPointForAsserts) {
       // Assert that, in orientation.mainLayoutAxis: pixelPointOffset + pixelPointOffset.barPointRectSize == withinConstraints
       //  Impl note: Size + Offset exists, yields Size
@@ -397,10 +430,8 @@ class PointOffset extends Offset {
           'withinConstraints.size=${withinConstraints.size}, '
           'pointOffsetSizePlusBarSize=$pointOffsetSizePlusBarSize ');
     }
-    */
 
     // Assert that, in orientation.crossAxis: pixelPointOffset.barPointRectSize == withinConstraints
-    /* todo-010 : This was probably never true ... anyway, check into this
     var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
     Size barPointRectSize = pixelPointOffset.barPointRectSize;
     assertDoubleResultsSame(
@@ -410,8 +441,9 @@ class PointOffset extends Offset {
             'result from constraints.size, otherResult from barPointRectSize. '
             'withinConstraints.size=${withinConstraints.size}, '
             'barPointRectSize=$barPointRectSize ');
-    */
+
   }
+*/
 
   /// Present itself as code
   String asCodeConstructor() {
