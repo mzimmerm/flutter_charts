@@ -3,19 +3,20 @@
 /// Each class here extends it's abstract base in ../data_container.dart,
 /// and implements methods named 'makeInner', which allow all internals
 /// of the [DataContainer] to be overridden and extended.
-import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
+import 'dart:ui' as ui show Rect, Paint, Canvas;
 
 // this chart/chart_type/bar level
 
 // up 1 level
 
 // up 2 level chart
-import 'package:flutter_charts/src/chart/container/data_container.dart' show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer;
+import 'package:flutter_charts/src/chart/container/data_container.dart'
+    show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer, ZeroValuePointContainer;
 import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
 
 // util
-import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
+// import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer, ConstraintsWeight, Padder, TransposingRoller;
@@ -183,7 +184,7 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
         pointModel: pointModel,
       );
     }
-    return ZeroValueBarPointContainer(
+    return ZeroValuePointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
       outerDataColumnPointsBar: this,
@@ -240,48 +241,4 @@ class BarPointContainer extends PointContainer {
     canvas.drawRect(rect, paint);
   }
 
-}
-
-/// A zero-height (thus 'invisible') [BarPointContainer] extension.
-///
-/// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
-// todo-00-next : Maybe we can have only ZeroValuePointContainer - placed in base data_container, with this implementation
-class ZeroValueBarPointContainer extends BarPointContainer {
-
-  ZeroValueBarPointContainer({
-    required super.pointModel,
-    required super.chartViewModel,
-    required super.outerDataColumnPointsBar,
-    super.children,
-    super.key,
-  });
-
-  /// Layout this container by calling super, then set the [layoutSize] in the value direction
-  /// (parent container/layouter mainAxisDirection) to be zero.
-  ///
-  /// To be precise, the value direction is defined as input data axis, [ChartOrientation.inputDataAxisOrientation].
-  ///
-  /// This container is a stand-in for Not-Stacked value point, on the positive or negative side against
-  /// where the actual value bar is shown.
-  // todo-014-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
-  //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
-  //                 maybe not even that.
-  @override
-  void layout() {
-    buildAndReplaceChildren();
-
-    // todo-00-next : simplify. This likely does not need to call  layoutUsingPointModelAffmapToPixels, just set layoutSize 0 in the appropriate direction.
-    PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
-
-    // Make the layoutSize zero in the direction of the chart orientation
-    layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
-      axis: chartViewModel.chartOrientation.inputDataAxisOrientation,
-      other: const ui.Size(0.0, 0.0),
-    );
-  }
-
-  @override
-  paint(ui.Canvas canvas) {
-    return;
-  }
 }

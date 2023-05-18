@@ -8,6 +8,9 @@
 // import 'dart:ui' as ui show Size;
 
 // this level base libraries or equivalent
+
+import 'dart:ui' as ui show Canvas, Size;
+
 import 'package:flutter_charts/src/chart/chart_type/bar/container/data_container.dart';
 import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
@@ -35,8 +38,6 @@ import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
-
-
 
 /// Container for data on the chart.
 ///
@@ -657,3 +658,40 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
 }
 
+/// A zero-height (thus 'invisible') [BarPointContainer] extension.
+///
+/// This container is a stand-in for value point in any chart (line, bar), orientation, stacking,
+/// placed on the positive or negative side against the non-zero opposite-sign value bar is shown.
+///
+/// Has zero [layoutSize] in the direction of the input data axis, and constraint size in the cross direction.
+///
+/// See [layout] for details.
+class ZeroValuePointContainer extends BarPointContainer {
+
+  ZeroValuePointContainer({
+    required super.pointModel,
+    required super.chartViewModel,
+    required super.outerDataColumnPointsBar,
+    super.children,
+    super.key,
+  });
+
+  /// Sets the [layoutSize] in the value direction
+  /// (parent container/layouter mainAxisDirection) to be zero.
+  @override
+  void layout() {
+    buildAndReplaceChildren();
+
+    // Make the layoutSize zero in the direction of the chart orientation
+    layoutSize = constraints.size.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      axis: chartViewModel.chartOrientation.inputDataAxisOrientation,
+      other: const ui.Size(0.0, 0.0),
+    );
+  }
+
+  @override
+  paint(ui.Canvas canvas) {
+    return;
+  }
+
+}
