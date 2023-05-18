@@ -1,7 +1,6 @@
 import 'dart:ui' show Offset, Size;
 
 // morphic
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show axisPerpendicularTo;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align;
 
@@ -75,26 +74,48 @@ class PointOffset extends Offset {
   double get inputValue => dx;  // todo-010 make this final? 
   double get outputValue => dy;
 
-  /// For [PointOffset] which is also [RollingLayouterRangedPointOffset],
-  /// set the value ([inputValue] or [outputValue]) in the layouter cross direction
-  /// to the middle of the layouter constraint where this [RollingLayouterRangedPointOffset] lives.
-  PointOffset fromMyValueInMainFromSizeInCross(ChartOrientation chartOrientation, Size size, Align align) {
+  /// Set the value ([inputValue] or [outputValue]) in the cross direction to half of the passed size
+  /// in that direction.
+  ///
+  /// Helps in lineChart, to get a new [PointOffset] with position in the middle of the layouter constraint
+  /// in layouter cross direction.
+  PointOffset _fromMyValueInMainFromSizeInCross(ChartOrientation chartOrientation, Size size, Align align) {
     if (align != Align.center) throw StateError('Only Align.center is currently supported.');
 
-    switch (chartOrientation.mainLayoutAxis) {
-      // If mainLayoutAxis is horizontal (row orientation),   inputValue is from me,     outputValue is from [size]
-      case LayoutAxis.horizontal:
+    switch (chartOrientation) {
+      // For column orientation,  inputValue is from [size.width], outputValue is from me
+      case ChartOrientation.column:
         return PointOffset(
-          inputValue: inputValue,
-          outputValue: size.lengthAlong(axisPerpendicularTo(chartOrientation.mainLayoutAxis)) / 2,
-        );
-      // If mainLayoutAxis is vertical, (column orientation),  inputValue is from [size], outputValue is from me
-      case LayoutAxis.vertical:
-        return PointOffset(
-          inputValue: size.lengthAlong(axisPerpendicularTo(chartOrientation.mainLayoutAxis)) / 2,
+          inputValue: size.width / 2,
           outputValue: outputValue,
         );
+      // For row orientation,   inputValue is from me,     outputValue is from [size.height]
+      case ChartOrientation.row:
+        return PointOffset(
+          inputValue: inputValue,
+          outputValue: size.height / 2,
+        );
     }
+  }
+
+  /// Returns a new [PointOffset] with position in the middle of the [size] in [chartOrientation] cross direction,
+  /// and same value as this instance in the main direction.
+  PointOffset moveInCrossDirectionToSizeCenter(ChartOrientation chartOrientation, Size size) {
+    return _fromMyValueInMainFromSizeInCross(chartOrientation, size, Align.center);
+  }
+
+  /// Sets the [barPointRectSize] to full pixel range of [to2DPixelRange] in the cross direction of the [chartOrientation],
+  /// and to the value of the passed [rectSize] in the main direction.
+  void setBarPointRectInCrossDirectionToPixelRange(
+    ChartOrientation chartOrientation,
+    Size rectSize,
+    To2DPixelRange to2DPixelRange,
+  ) {
+    barPointRectSize = rectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      other: Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max),
+      axis: chartOrientation.mainLayoutAxis,
+    );
+
   }
 
   // no need. PointOffset IS Offset. Offset get asOffset => Offset(inputValue, outputValue);

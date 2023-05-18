@@ -1,5 +1,5 @@
 import 'package:test/test.dart'; // Dart test package
-import 'dart:ui' show Rect, Size;
+import 'dart:ui' show Rect;
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 // import 'package:flutter_charts/src/morphic/container/constraints.dart';
@@ -110,6 +110,7 @@ void main() {
       });
     });
 
+  /*
     group('row, manual affmap of nonStacked, only positive range', () {
       var rowOrientation = ChartOrientation.row;
       var fromTransposing2DValueRange = FromTransposing2DValueRange(
@@ -122,9 +123,8 @@ void main() {
         width: 300,
         height: 400,
       );
-
-     });
-
+    });
+    */
   });
 
 

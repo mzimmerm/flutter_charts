@@ -152,7 +152,7 @@ class BarPointContainer extends PointContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    PointOffset pixelPointOffset = layoutByPointModelAffmapToPixels();
+    PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
@@ -204,7 +204,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    PointOffset pixelPointOffset = layoutByPointModelAffmapToPixels();
+    PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
 
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
