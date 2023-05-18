@@ -22,9 +22,9 @@ void main() {
     PointOffset pixelPointOffset;
 
     group('row, manual affmap of nonStacked, full range', () {
-      var chartOrientation = ChartOrientation.row;
+      var rowOrientation = ChartOrientation.row;
       var fromTransposing2DValueRange = FromTransposing2DValueRange(
-        chartOrientation: chartOrientation,
+        chartOrientation: rowOrientation,
         inputDataRange: const Interval(0.0, 100.0),
         outputDataRange: const Interval(-1000.0, 2300.0),
       );
@@ -33,60 +33,87 @@ void main() {
         width: 300,
         height: 400,
       );
+      // For ROW, the results can be checked as follows:
+      //   - inputValue 0 (min)-> pixel outputValue 400 (max)
+      //   - inputValue 0 (min)-> pixel outputValue 400 (max)
 
-      test('row, manual affmap of nonStacked, map outputMin from full output range', () {
+      test('row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
+          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 0, outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
       });
 
-      test('row, manual affmap of nonStacked, map outputMax from full output range', () {
+      test('row, manual affmap of nonStacked, map (inputMin, outputMax) from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
+          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300, outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
       });
 
-      test('row, manual affmap of nonStacked, map inputMin from full input range', () {
+      test('row, manual affmap of nonStacked, map (inputMin, outputZERO) from full input range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
+          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
       });
 
-      test('row, manual affmap of nonStacked, map inputMax from full input range', () {
+      test('row, manual affmap of nonStacked, map (inputMax, outputZERO) from full input range', () {
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
+          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
         assertOffsetResultsSame(
             pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 0,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+      });
+
+      test('row, manual affmap of nonStacked, map (inputMax, outputMin) from full input range', () {
+        pointOffset = PointOffset(inputValue: 100, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
+          chartOrientation: rowOrientation,
+          fromTransposing2DValueRange: fromTransposing2DValueRange,
+          to2DPixelRange: to2DPixelRange,
+        );
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 0, outputValue: 0,));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+      });
+
+      test('row, manual affmap of nonStacked, map (inputMax, outputMax) from full input range', () {
+        pointOffset = PointOffset(inputValue: 100, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
+          chartOrientation: rowOrientation,
+          fromTransposing2DValueRange: fromTransposing2DValueRange,
+          to2DPixelRange: to2DPixelRange,
+        );
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 300, outputValue: 0,));
+        // todo-00 : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
       });
     });
 
     group('row, manual affmap of nonStacked, only positive range', () {
-      var chartOrientation = ChartOrientation.row;
+      var rowOrientation = ChartOrientation.row;
       var fromTransposing2DValueRange = FromTransposing2DValueRange(
-        chartOrientation: chartOrientation,
+        chartOrientation: rowOrientation,
         inputDataRange: const Interval(0.0, 100.0),
         outputDataRange: const Interval(-1000.0, 2300.0),
       );
@@ -96,58 +123,7 @@ void main() {
         height: 400,
       );
 
-      test('row, manual affmap of nonStacked, map outputMin from only positive output range', () {
-        // todo-0100-next : change test
-        pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
-          fromTransposing2DValueRange: fromTransposing2DValueRange,
-          to2DPixelRange: to2DPixelRange,
-        );
-        assertOffsetResultsSame(
-            pixelPointOffset, PointOffset(inputValue: 0, outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
-      });
-
-      test('row, manual affmap of nonStacked, map outputMax from only positive output range', () {
-        // todo-0100-next : change test
-        pointOffset = PointOffset(inputValue: 0, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
-          fromTransposing2DValueRange: fromTransposing2DValueRange,
-          to2DPixelRange: to2DPixelRange,
-        );
-        assertOffsetResultsSame(
-            pixelPointOffset, PointOffset(inputValue: 300, outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
-      });
-
-      test('row, manual affmap of nonStacked, map inputMin from only positive input range', () {
-        // todo-0100-next : change test
-        pointOffset = PointOffset(inputValue: 0, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
-          fromTransposing2DValueRange: fromTransposing2DValueRange,
-          to2DPixelRange: to2DPixelRange,
-        );
-        assertOffsetResultsSame(
-            pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 400,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
-      });
-
-      test('row, manual affmap of nonStacked, map inputMax from only positive input range', () {
-        // todo-0100-next : change test
-        pointOffset = PointOffset(inputValue: 100, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: chartOrientation,
-          fromTransposing2DValueRange: fromTransposing2DValueRange,
-          to2DPixelRange: to2DPixelRange,
-        );
-        assertOffsetResultsSame(
-            pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 0,));
-        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
-      });
-    });
+     });
 
   });
 

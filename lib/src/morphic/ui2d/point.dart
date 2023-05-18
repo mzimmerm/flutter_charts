@@ -38,7 +38,7 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 ///   - Rename [PointOffset] to [RangedPointOffset]
 ///   - Add [RollingLayouterRangedPointOffset] extends   [RangedPointOffset]; this adds the behavior
 ///     and members [isLayouterPositioningMeInCrossDirection] and [mainLayoutAxis], also the
-///     [fromMyPositionAlongMainDirectionFromSizeInCrossDirection]
+///     [fromMyValueInMainFromSizeInCross]
 ///
 class PointOffset extends Offset {
 
@@ -78,7 +78,7 @@ class PointOffset extends Offset {
   /// For [PointOffset] which is also [RollingLayouterRangedPointOffset],
   /// set the value ([inputValue] or [outputValue]) in the layouter cross direction
   /// to the middle of the layouter constraint where this [RollingLayouterRangedPointOffset] lives.
-  PointOffset fromMyPositionAlongMainDirectionFromSizeInCrossDirection(ChartOrientation chartOrientation, Size size, Align align) {
+  PointOffset fromMyValueInMainFromSizeInCross(ChartOrientation chartOrientation, Size size, Align align) {
     if (align != Align.center) throw StateError('Only Align.center is currently supported.');
 
     switch (chartOrientation.mainLayoutAxis) {

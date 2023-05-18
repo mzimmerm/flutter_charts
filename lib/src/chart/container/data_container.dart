@@ -655,7 +655,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
     // todo-00-last : check this method, simplify, rename. Wrap into a boolean passed to this method
 
-    pixelPointOffset = pixelPointOffset.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
+    pixelPointOffset = pixelPointOffset.fromMyValueInMainFromSizeInCross(
       chartViewModel.chartOrientation,
       to2DPixelRange.size,
       Align.center,
