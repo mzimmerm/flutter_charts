@@ -251,7 +251,6 @@ class PointOffset extends Offset {
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
   PointOffset affmapBetweenRanges({
-    required ChartOrientation            chartOrientation,
     required FromTransposing2DValueRange fromTransposing2DValueRange,
     required To2DPixelRange              to2DPixelRange,
     required bool                        isMoveInCrossDirectionToPixelRangeCenter,
@@ -283,6 +282,8 @@ class PointOffset extends Offset {
     FunctionalMatrix2D linearTransformer;
     // Zero transform.
     DoubleToDoubleFunction zero = Functional.zero().fun;
+
+    var chartOrientation = fromTransposing2DValueRange.chartOrientation;
 
     switch (chartOrientation) {
       case ChartOrientation.column:

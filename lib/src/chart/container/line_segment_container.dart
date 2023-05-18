@@ -102,7 +102,6 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     //   to flip (invert) during the affmap.
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.affmapBetweenRanges(
-      chartOrientation: chartViewModel.chartOrientation,
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
@@ -116,7 +115,6 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       isSetBarPointRectInCrossDirectionToPixelRange: false,
     );
     _toOffsetPixels = toPointOffset!.affmapBetweenRanges(
-      chartOrientation: chartViewModel.chartOrientation,
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,

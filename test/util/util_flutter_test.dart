@@ -40,7 +40,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: true,
@@ -57,7 +56,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,
@@ -71,7 +69,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMin, outputMax) from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,
@@ -85,7 +82,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMin, outputZERO) from full input range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,
@@ -99,7 +95,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMax, outputZERO) from full input range', () {
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,
@@ -113,7 +108,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMax, outputMin) from full input range', () {
         pointOffset = PointOffset(inputValue: 100, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,
@@ -127,7 +121,6 @@ void main() {
       test('row, manual affmap of nonStacked, map (inputMax, outputMax) from full input range', () {
         pointOffset = PointOffset(inputValue: 100, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
         pixelPointOffset = pointOffset.affmapBetweenRanges(
-          chartOrientation: rowOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
           isMoveInCrossDirectionToPixelRangeCenter: false,

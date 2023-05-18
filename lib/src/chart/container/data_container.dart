@@ -640,7 +640,6 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
     // Affmap the [pointOffset] corresponding to [pointModel] between affmap ranges - see item 7.
     PointOffset pixelPointOffset = pointOffset.affmapBetweenRanges(
-      chartOrientation: chartViewModel.chartOrientation,
       fromTransposing2DValueRange: chartViewModel.fromTransposing2DValueRange.subsetForSignOfPointOffsetBeforeAffmap(
         pointOffset: pointOffset,
       ),
