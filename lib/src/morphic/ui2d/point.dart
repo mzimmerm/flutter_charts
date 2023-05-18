@@ -356,9 +356,6 @@ class PointOffset extends Offset {
     Size rectSize = SizeExtension.fromVector(
         linearTransformer.applyOnVector(thisPointToVector).abs()
     );
-    // todo-00-last-last : pixelPointOffset.barPointRectSize = barPointRectSize;
-
-    // todo-00-done : moved here using flags
 
     if (isMoveInCrossDirectionToPixelRangeCenter) {
       // 8.1: Benefits lineChart only: position the dot representing the [pixelPointOffset] in the middle of the bar.
@@ -381,69 +378,8 @@ class PointOffset extends Offset {
     } else {
       pixelPointOffset.barPointRectSize = rectSize;
     }
-
-/* todo-00 probably remove
-    _validateAffmapToPixelMethodInputsOutputs(
-      chartOrientation: chartOrientation,
-      to2DPixelRange: to2DPixelRange,
-      pixelPointOffset: pixelPointOffset,
-      // Only assert for pixelPointOffset.barPointRectSize + pixelPointOffset == withinConstraints
-      //   if no range is across 0.0
-      // todo-010 : why does the assert fail for mixed sign?
-      isFromChartPointForAsserts: isFromChartPointForAsserts && !fromTransposing2DValueRange.inputDataRange.isAcrossZero() && !fromTransposing2DValueRange.outputDataRange.isAcrossZero(),
-    );
-*/
-
     return pixelPointOffset;
   }
-
-/* todo-00 probably remove
-  void _validateAffmapToPixelMethodInputsOutputs({
-    required ChartOrientation chartOrientation,
-    required To2DPixelRange to2DPixelRange,
-    required PointOffset pixelPointOffset,
-    required bool isFromChartPointForAsserts,
-  }) {
-    Size sizerSize = Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max);
-
-    // Assert that: in orientation.mainLayoutAxis: withinConstraints == sizerSize
-    assertDoubleResultsSame(
-        to2DPixelRange.size.lengthAlong(chartOrientation.mainLayoutAxis),
-        sizerSize.lengthAlong(chartOrientation.mainLayoutAxis),
-        '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
-        'result from constraints.size, otherResult from sizerSize. '
-        'to2DPixelRange.size=${to2DPixelRange.size}, sizerSize=$sizerSize ');
-
-    if (pixelPointOffset.inputValue < 0 || pixelPointOffset.outputValue < 0) {
-      throw StateError('Failed assumption about pixelPointOffset always positive or 0, $pixelPointOffset');
-    }
-
-    if (isFromChartPointForAsserts) {
-      // Assert that, in orientation.mainLayoutAxis: pixelPointOffset + pixelPointOffset.barPointRectSize == withinConstraints
-      //  Impl note: Size + Offset exists, yields Size
-      Size pointOffsetSizePlusBarSize = pixelPointOffset.barPointRectSize + pixelPointOffset;
-      assertDoubleResultsSame(
-          withinConstraints.size.lengthAlong(chartOrientation.mainLayoutAxis),
-          pointOffsetSizePlusBarSize.lengthAlong(chartOrientation.mainLayoutAxis),
-          '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
-          'result from constraints.size, otherResult from pointOffsetSizePlusBarSize. '
-          'withinConstraints.size=${withinConstraints.size}, '
-          'pointOffsetSizePlusBarSize=$pointOffsetSizePlusBarSize ');
-    }
-
-    // Assert that, in orientation.crossAxis: pixelPointOffset.barPointRectSize == withinConstraints
-    var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
-    Size barPointRectSize = pixelPointOffset.barPointRectSize;
-    assertDoubleResultsSame(
-        withinConstraints.size.lengthAlong(crossOrientationAxis),
-        barPointRectSize.lengthAlong(crossOrientationAxis),
-        '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
-            'result from constraints.size, otherResult from barPointRectSize. '
-            'withinConstraints.size=${withinConstraints.size}, '
-            'barPointRectSize=$barPointRectSize ');
-
-  }
-*/
 
   /// Present itself as code
   String asCodeConstructor() {

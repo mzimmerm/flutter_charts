@@ -51,22 +51,12 @@ class FromTransposing2DValueRange {
   final Interval outputDataRange;
   final ChartOrientation chartOrientation;
 
-  // todo-00-last : added, but is this needed and how?? Can it be simplified?
   FromTransposing2DValueRange subsetForSignOfPointOffsetBeforeAffmap({required PointOffset pointOffset,}) {
-    switch(chartOrientation) {
-      case ChartOrientation.column:
-        return FromTransposing2DValueRange(
-          inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
-          outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
-          chartOrientation: chartOrientation,
-        );
-      case ChartOrientation.row:
-        return FromTransposing2DValueRange(
-          inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
-          outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
-          chartOrientation: chartOrientation,
-        );
-    }
+    return FromTransposing2DValueRange(
+      inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
+      outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
+      chartOrientation: chartOrientation,
+    );
   }
 }
 

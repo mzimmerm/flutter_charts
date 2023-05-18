@@ -649,33 +649,12 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       isSetBarPointRectInCrossDirectionToPixelRange: true,
     );
 
-/* todo-00-done : moved to affmapBetweenRanges using flags
-    // AFTER affmap: Store the linear size as the moveInCrossDirectionToSizeCenter looses it
-    ui.Size rectSize = pixelPointOffset.barPointRectSize;
-
-    // 8.1: Benefits lineChart only: position the dot representing the [pixelPointOffset] in the middle of the bar.
-    // If the transformed pixelPointOffset is layed out (positioned) in a non-tick, 'bar type' layouter,
-    //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
-    pixelPointOffset = pixelPointOffset.moveInCrossDirectionToSizeCenter(
-      chartViewModel.chartOrientation,
-      to2DPixelRange.size,
-    );
-
-    // 8.2: Benefits barChart only: On the rect size, in the constraint cross-direction (column->horizontal, row->vertical)
-    //      make the rectangle length to be full pixel range (set here to constraints, which is from divided layouter).
-    pixelPointOffset.setBarPointRectInCrossDirectionToPixelRange(
-      chartViewModel.chartOrientation,
-      rectSize,
-      to2DPixelRange,
-    );
-*/
-
     return pixelPointOffset;
   }
 
 
   /// Generates code for testing.
-  // todo-010 : fix this after changes in API of this class
+  // todo-020 : fix this after changes in API of this class
   void generateTestCode(
       PointOffset pointOffset,
       DataRangeLabelInfosGenerator inputLabelsGenerator,
