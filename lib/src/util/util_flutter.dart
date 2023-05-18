@@ -51,32 +51,7 @@ class FromTransposing2DValueRange {
   final Interval outputDataRange;
   final ChartOrientation chartOrientation;
 
-  FromTransposing2DValueRange toPositive() {
-    return FromTransposing2DValueRange(
-      inputDataRange: inputDataRange.toPositive(),
-      outputDataRange: outputDataRange.toPositive(),
-      chartOrientation: chartOrientation,
-    );
-  }
-
-  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
-    switch(chartOrientation) {
-      case ChartOrientation.column:
-        return FromTransposing2DValueRange(
-          inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
-          outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
-          chartOrientation: chartOrientation,
-        );
-      case ChartOrientation.row:
-        return FromTransposing2DValueRange(
-          inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
-          outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
-          chartOrientation: chartOrientation,
-        );
-    }
-  }
-
-  // todo-00-done : added
+  // todo-00-last : added, but is this needed and how?? Can it be simplified?
   FromTransposing2DValueRange subsetForSignOfPointOffsetBeforeAffmap({required PointOffset pointOffset,}) {
     switch(chartOrientation) {
       case ChartOrientation.column:

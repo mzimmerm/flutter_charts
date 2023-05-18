@@ -334,7 +334,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   BarsContainer makeInnerBarsContainer ({
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
-    required ConstraintsWeight constraintsWeight, // todo-00-last-done
+    required ConstraintsWeight constraintsWeight,
     ContainerKey? key,
   }) {
     throw UnimplementedError();

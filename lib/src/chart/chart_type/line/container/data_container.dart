@@ -38,14 +38,14 @@ class LineChartDataContainer extends DataContainer {
   BarsContainer makeInnerBarsContainer ({
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
-    required ConstraintsWeight constraintsWeight, // todo-00-last-done
+    required ConstraintsWeight constraintsWeight,
     ContainerKey? key,
   })  {
     return LineChartBarsContainer(
       chartViewModel: chartViewModel,
       outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
-      constraintsWeight: constraintsWeight, // todo-00-last-done
+      constraintsWeight: constraintsWeight,
       key: key,
     );
   }
@@ -57,7 +57,7 @@ class LineChartBarsContainer extends BarsContainer {
     required super.chartViewModel,
     required super.outerDataContainer,
     required super.barsAreaSign,
-    required super.constraintsWeight, // todo-00-last-done
+    required super.constraintsWeight,
     super.key,
   });
 
@@ -202,7 +202,7 @@ class LineAndPointContainer extends PointContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
+    PointOffset pixelPointOffset = layoutByPointModelAffmapToPixels();
 
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
@@ -268,7 +268,7 @@ class ZeroValueLineAndPointContainer extends LineAndPointContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
+    PointOffset pixelPointOffset = layoutByPointModelAffmapToPixels();
 
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(

@@ -26,7 +26,7 @@ import 'line_segment_container.dart';
 /// The orientation is determined by member [chartViewModel]'s [ChartViewModel.chartOrientation];
 /// if orientation is set to [ChartOrientation.row], the line is transformed to it's row orientation by
 /// transforming the end points [fromPointOffset] and [toPointOffset]
-/// using their [PointOffset.affmapToPixelsMaybeTransposeInContextOf].
+/// using their [PointOffset.affmapBetweenRanges].
 ///
 class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
@@ -52,7 +52,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
-    required super.constraintsWeight, // todo-00-done-last
+    required super.constraintsWeight,
   }) : super(
           // Logic to handle PointOffset depending on orientation. Not possible to do pure affmap
           //   (from default column logic using outputValue:  outputLabelsGenerator.dataRange.max ),

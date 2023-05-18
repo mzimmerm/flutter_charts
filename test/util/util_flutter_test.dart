@@ -36,7 +36,7 @@ void main() {
 
       test('row, manual affmap of nonStacked, map outputMin from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -48,7 +48,7 @@ void main() {
 
       test('row, manual affmap of nonStacked, map outputMax from full output range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -60,7 +60,7 @@ void main() {
 
       test('row, manual affmap of nonStacked, map inputMin from full input range', () {
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -72,7 +72,7 @@ void main() {
 
       test('row, manual affmap of nonStacked, map inputMax from full input range', () {
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -99,7 +99,7 @@ void main() {
       test('row, manual affmap of nonStacked, map outputMin from only positive output range', () {
         // todo-0100-next : change test
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -112,7 +112,7 @@ void main() {
       test('row, manual affmap of nonStacked, map outputMax from only positive output range', () {
         // todo-0100-next : change test
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -125,7 +125,7 @@ void main() {
       test('row, manual affmap of nonStacked, map inputMin from only positive input range', () {
         // todo-0100-next : change test
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
@@ -138,7 +138,7 @@ void main() {
       test('row, manual affmap of nonStacked, map inputMax from only positive input range', () {
         // todo-0100-next : change test
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, /*isLayouterPositioningMeInCrossDirection: false,*/);
-        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+        pixelPointOffset = pointOffset.affmapBetweenRanges(
           chartOrientation: chartOrientation,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,

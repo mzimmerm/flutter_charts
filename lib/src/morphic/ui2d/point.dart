@@ -30,7 +30,7 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 /// it's member [barPointRectSize], the [Size] of the rectangle which presents the data value of this [PointOffset]
 /// in the chart on a bar chart.
 ///
-/// The affmap-ing is done in [affmapToPixelsMaybeTransposeInContextOf],
+/// The affmap-ing is done in [affmapBetweenRanges],
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value ranges and pixel ranges.
 ///
@@ -45,8 +45,6 @@ class PointOffset extends Offset {
   PointOffset({
     required double inputValue,
     required double outputValue,
-    // todo-00-done : this.isLayouterPositioningMeInCrossDirection = false,
-    // todo-00-done : this.mainLayoutAxis,
   }) : super(inputValue, outputValue);
 
   factory PointOffset.fromVector(
@@ -58,14 +56,12 @@ class PointOffset extends Offset {
     return PointOffset(
       inputValue: vector[0],
       outputValue: vector[1],
-      // todo-00-done : isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
-      // todo-00-done : mainLayoutAxis: mainLayoutAxis,
     );
   }
 
   /// Pixel [Size] of the rectangle which presents this [PointOffset] on either horizontal bar or vertical bar,
-  /// constructed late in [affmapToPixelsMaybeTransposeInContextOf], according to the [ChartOrientation] passed to
-  /// [affmapToPixelsMaybeTransposeInContextOf].
+  /// constructed late in [affmapBetweenRanges], according to the [ChartOrientation] passed to
+  /// [affmapBetweenRanges].
   ///
   /// The [Size] width and height is calculated as follows:
   ///   - For [ChartOrientation.column] the width is constraints.width on column, height is outputValuePixels.
@@ -78,10 +74,6 @@ class PointOffset extends Offset {
 
   double get inputValue => dx;  // todo-010 make this final? 
   double get outputValue => dy;
-
-  // todo-0100 wrap into one object
-  // todo-00-done : final bool isLayouterPositioningMeInCrossDirection;
-  // todo-00-done : final LayoutAxis? mainLayoutAxis;
 
   /// For [PointOffset] which is also [RollingLayouterRangedPointOffset],
   /// set the value ([inputValue] or [outputValue]) in the layouter cross direction
@@ -102,26 +94,6 @@ class PointOffset extends Offset {
           inputValue: size.lengthAlong(axisPerpendicularTo(chartOrientation.mainLayoutAxis)) / 2,
           outputValue: outputValue,
         );
-    }
-  }
-
-  // todo-00-done : added but clean this up
-  double valueFor(ChartOrientation chartOrientation) {
-    switch (chartOrientation) {
-      case ChartOrientation.column:
-        return outputValue;
-      case ChartOrientation.row:
-        return inputValue;
-    }
-  }
-
-  // todo-00-done : added but clean this up
-  double valueCrossFor(ChartOrientation chartOrientation) {
-    switch (chartOrientation) {
-      case ChartOrientation.column:
-        return inputValue;
-      case ChartOrientation.row:
-        return outputValue;
     }
   }
 
@@ -160,17 +132,14 @@ class PointOffset extends Offset {
   ///     - [ChartOrientation.row] transforms twice on each axis:
   ///       - first transposes value on each axis to value on cross-axis, using their respective value-ranges,
   ///       - second is affmap on each cross axis, from value-range to pixel-range
-  ///   - [withinConstraints] should be the constraints of the layouter where this [PointOffset] is placed.
-  ///     In this method, [withinConstraints] determines the pixel range in the orientation which is CROSS to the
-  ///       main axis of the [Row] or [Column] where this [PointOffset] is placed.
-  ///     In other words, determines the pixel range in the orientation in which the layouter
-  ///       does NOT divide constraints. In that orientation, it is used to determine the scaling range,
-  ///       the 'horizontalPixelsRange' or the 'verticalPixelsRange'
-  ///     [RollingBoxLayouter] in which the [PointModel] represented by this [PointOffset] is presented.
-  ///   - [inputDataRange] is the data value-range on the input range (1st coordinate, x)
-  ///   - [outputDataRange] is the data value-range on the output range (2nd coordinate, y)
-  ///   - [sizerHeight] is the height used for pixel-range
-  ///   - [sizerWidth] - equivalent to [sizerHeight]
+  ///   - [fromTransposing2DValueRange] is a wrapper around input and output values DataRanges
+  ///   - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s.
+  ///     Typically from owner layouter constraints or Sizer (sizerHeight, sizerWidth),
+  ///     does NOT depend on orientation, must be set correctly by caller.
+  ///     - Examples:
+  ///       1. When affmap-ing to a bar (Row or Column): In the orientation cross-direction,
+  ///          the unscaled-divided-constraints are used.
+  ///       2. todo
   ///   - [isFromChartPointForAsserts] flag if true, causes to run more asserts that assume the
   ///     this [PointOffset] is from [PointModel] on a chart, rather than a straight [PointOffset] from [AxisLineContainer].
   ///     Default to true, so places in code that create [PointOffset] from a line should set to false.
@@ -186,7 +155,7 @@ class PointOffset extends Offset {
   ///   - the transforms are depicting starting on the left.
   ///   - 'row' causes 2 transforms, 'column' 1 transform
   ///
-  /// Description of transforms:
+  /// Description of transforms performed by this method:
   ///
   ///   1. The [chartOrientation] value [ChartOrientation.column] performs 1 affmap transform, a [PointOffset]
   ///      from values-range to pixels-range on both axes.
@@ -217,7 +186,6 @@ class PointOffset extends Offset {
   ///         - fromPointOffset: (100, 3,400) is drawn as PIXEL (300, 0)
   ///         - THIS IS HORIZONTAL LINE AT Y = 0, WHICH GIVES THE CONTAINER HEIGHT=0.
   ///           LAYOUT PLACES THE LINE BETWEEN POSITIVE AND NEGATIVE SECTIONS
-  ///
   ///
   ///   2. The [ChartOrientation.row] performs 2 consecutive transforms
   ///      This first transform is a transpose a [PointOffset] around [Diagonal.leftToRightUp],
@@ -252,18 +220,11 @@ class PointOffset extends Offset {
   ///         - THIS IS VERTICAL LINE AT X = 0, WHICH GIVES THE CONTAINER WIDTH = 0.
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
-  /// todo-00-next-documentation changes
-  ///  - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s.
-  ///    Typically from owner layouter constraints or Sizer, does NOT depend on orientation, must be set correctly by caller.
-  ///     Examples:
-  ///       1. When affmap-ing to a bar (Row or Column): In the orientation cross-direction, the unscaled-divided-constraints
-  ///          are used.
-  ///       2. todo
-  PointOffset affmapToPixelsMaybeTransposeInContextOf({
-    required ChartOrientation        chartOrientation,
+  PointOffset affmapBetweenRanges({
+    required ChartOrientation            chartOrientation,
     required FromTransposing2DValueRange fromTransposing2DValueRange,
-    required To2DPixelRange to2DPixelRange,
-    bool isFromChartPointForAsserts = true,
+    required To2DPixelRange              to2DPixelRange,
+    bool                                 isFromChartPointForAsserts = true,
   }) {
 
     // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
@@ -285,19 +246,12 @@ class PointOffset extends Offset {
     //     for row,    linearTransformer = Matrix.transposeThenLinearTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
     //                   (transf10.applyOnlyLinearScale, transf01.applyOnlyLinearScale, rest Functional identity)
 
-    // Transforms values between ranges using affmap `scale * x + shift`. May switch X and Y before transform
+    // Transforms coordinates between ranges using affmap `scale * x + shift`. May switch X and Y before transform
     FunctionalMatrix2D affineTransformer;
     // Transforms lengths between ranges using linear `scale * x`.  May switch X and Y before transform
     FunctionalMatrix2D linearTransformer;
     // Zero transform.
     DoubleToDoubleFunction zero = Functional.zero().fun;
-
-    // todo-00-next : we need vars for both affTransfXX, linTransfXX, and for all others.
-    //                their creation differs, in the pixels range (horizontal in column, vertical in row),
-    //                where it should use ranges (both inputDataRange and outputDataRange) as follows:
-    //                column:
-    //                   aff (both input and output): the portion of dataRange that is same sign as inputValue or outputValue.
-    //                   lin (both)                 : full dataRAnge
 
     switch (chartOrientation) {
       case ChartOrientation.column:
@@ -305,15 +259,15 @@ class PointOffset extends Offset {
         //   m[0,0] (input->px)
         var transfXX = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.inputDataRange,
-          toPixelsRange: to2DPixelRange.horizontalPixelRange,
-          isFlipToRange: false,
+          toPixelsRange:   to2DPixelRange.horizontalPixelRange,
+          isFlipToRange:   false,
         );
 
         //   m[1,1] (output->py)
         var transfYY = ToPixelsAffineMap1D(
-          fromValuesRange:  fromTransposing2DValueRange.outputDataRange,
-          toPixelsRange: to2DPixelRange.verticalPixelRange,
-          isFlipToRange: true,
+          fromValuesRange: fromTransposing2DValueRange.outputDataRange,
+          toPixelsRange:   to2DPixelRange.verticalPixelRange,
+          isFlipToRange:   true,
         );
 
         // affineTransformer: identity x -> x, y -> y,
@@ -333,14 +287,14 @@ class PointOffset extends Offset {
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.inputDataRange,
-          toPixelsRange: to2DPixelRange.verticalPixelRange,
-          isFlipToRange: true,
+          toPixelsRange:   to2DPixelRange.verticalPixelRange,
+          isFlipToRange:   true,
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
           fromValuesRange: fromTransposing2DValueRange.outputDataRange,
-          toPixelsRange: to2DPixelRange.horizontalPixelRange,
-          isFlipToRange: false,
+          toPixelsRange:   to2DPixelRange.horizontalPixelRange,
+          isFlipToRange:   false,
         );
 
         // affineTransformer: transpose around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
@@ -357,37 +311,23 @@ class PointOffset extends Offset {
         break;
     }
 
-    // ### Transform this point with the affine transformer, and it's presented rectangle Size with the linear transformer.
-    Vector<double> thisToVector = toVector();
+    // ### Transform this point two different ways:
+    //     1) Using affine transformer, getting [pixelPointOffset], which defines the coordinates in the pixel system
+    //        where the point should be shown. Used in LineChart, where series items are layed out in a stack.
+    //     2) Using linear transformer, getting  [pixelPointOffset.barPointRectSize], which defines the size of
+    //        the rectangle representing the point. Used in BarChart, where series items are layed out in Row or Column
+    //     Note: As results are transformed in both directions, caller may change 1) and 2) along the cross-direction
+    Vector<double> thisPointToVector = toVector();
+
     PointOffset pixelPointOffset = PointOffset.fromVector(
-      affineTransformer.applyOnVector(thisToVector),
-      // todo-00-done : isLayouterPositioningMeInCrossDirection: isLayouterPositioningMeInCrossDirection,
-      // todo-00-done : mainLayoutAxis: mainLayoutAxis,
+      affineTransformer.applyOnVector(thisPointToVector),
     );
+    Size barPointRectSize = SizeExtension.fromVector(
+        linearTransformer.applyOnVector(thisPointToVector).abs()
+    );
+    pixelPointOffset.barPointRectSize = barPointRectSize;
 
-    /* todo-00-done : moved outside of this method to places where needed (only needed for lineChart, does not hurt for barChart)
-    Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
-
-    // Added to handle PointOffset being inside a bar type layouter.
-    // If the transformed pixelPointOffset is layed out (positioned) in a non-tick, 'bar type' layouter,
-    //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
-    if (pixelPointOffset.isLayouterPositioningMeInCrossDirection) {
-      pixelPointOffset = pixelPointOffset.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
-        to2DPixelRange.size,
-        Align.center,
-      );
-    }
-
-    // On the rect size, we do NOT scale both directions. In the direction where constraint
-    //   is used (which is ALWAYS the orientation's main axis: column->vertical, row->horizontal),
-    //   use scaled size, BUT in the cross direction, use the full size from the divided constraint, placed into
-    // the PixelsRange max
-    pixelPointOffset.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
-      other: Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max),
-      axis: chartOrientation.mainLayoutAxis,);
-    */
-
-    // Before return, validate inputs and outputs
+    // todo-0100 : Before return, validate inputs and outputs
     _validateAffmapToPixelMethodInputsOutputs(
       chartOrientation: chartOrientation,
       to2DPixelRange: to2DPixelRange,
