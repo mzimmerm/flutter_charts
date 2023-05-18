@@ -20,7 +20,7 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer, ConstraintsWeight;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show TransposingStackLayouter;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
@@ -93,36 +93,35 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     super.key,
   }) ;
 
-  // todo-00-next : move the first part to common code in DataColumnPointsBar
+  /// Creates the layouter for passed [pointContainerList] of children.
+  ///
+  /// Result does not depend on [ChartOrientation], does depend on [ChartStacking]:
+  ///
+  /// For [ChartViewModel.chartStacking] = [ChartStacking.column] a [TransposingStackLayouter.Column] is built;
+  /// for [ChartViewModel.chartStacking] = [ChartStacking.row]    a [TransposingStackLayouter.Row] is built.
+  ///
+  /// Note: Currently, [TransposingStackLayouter.Column] and [TransposingStackLayouter.Row] are the same.
+  ///
+  /// See super [DataContainer.makePointContainersLayouter] for details.
   @override
-  void buildAndReplaceChildren() {
-    // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].
-    // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
-    // stacked and nonStacked, and positive and negative, distinctly.
-    List<PointContainer> pointContainers = dataColumnModel.pointModelList
-        // Map applies function converting the [PointModel] to [PointContainer],
-        // calling the hook [MyBarChartViewModelPointContainer]
-        .map(clsPointToNullableContainerForSign(barsAreaSign))
-        // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
-        .where((containerElm) => containerElm != null)
-        .map((containerElm) => containerElm!)
-        .toList();
-
+  BoxContainer makePointContainersLayouter({
+    required List<BoxContainer> pointContainerList,
+  }) {
     TransposingStackLayouter pointContainersLayouter;
     switch (chartViewModel.chartStacking) {
       case ChartStacking.stacked:
         pointContainersLayouter = TransposingStackLayouter.Column(
-          children: barsAreaSign == Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
+          children: barsAreaSign == Sign.positiveOr0 ? pointContainerList.reversed.toList() : pointContainerList,
         );
         break;
       case ChartStacking.nonStacked:
         pointContainersLayouter = TransposingStackLayouter.Row(
-          children: pointContainers,
+          children: pointContainerList,
         );
         break;
     }
-    // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([pointContainersLayouter])
-    addChildren([pointContainersLayouter]);
+
+    return pointContainersLayouter;
   }
 
   @override
@@ -244,6 +243,7 @@ class LineAndPointContainer extends PointContainer {
 /// A zero-height (thus 'invisible') [LineAndPointContainer] extension.
 ///
 /// Has a zero [layoutSize] in the direction of the input data axis. See [layout] for details.
+// todo-00-next : remove this class. Just use ZeroValuePointContainer.
 class ZeroValueLineAndPointContainer extends LineAndPointContainer {
 
   ZeroValueLineAndPointContainer({
@@ -261,7 +261,7 @@ class ZeroValueLineAndPointContainer extends LineAndPointContainer {
   ///
   /// This container is a stand-in for Not-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
-  // todo-014-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
+  // todo-00-next IF WE CANNOT REMOVE THIS CLASS : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
   //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
   //                 maybe not even that.
   @override

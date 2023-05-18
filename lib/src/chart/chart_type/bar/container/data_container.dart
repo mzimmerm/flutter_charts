@@ -13,17 +13,18 @@ import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 import 'package:flutter_charts/src/chart/container/data_container.dart' show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer;
 import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
-// import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
 // util
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 
 // morphic
-import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
-import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer, ConstraintsWeight, Padder, TransposingRoller;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' show EdgePadding;
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
+import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 
 /// Concrete [DataContainer] for bar chart.
 class BarChartDataContainer extends DataContainer {
@@ -91,6 +92,70 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
     required super.dataColumnModel,
     super.key,
   });
+
+  /// Overrides by calling super, then wrapping each [PointContainer] in the super returned list into a [Padder].
+  @override
+  List<BoxContainer> makePointContainerListForSign() {
+
+    List<BoxContainer> pointContainers = super.makePointContainerListForSign();
+
+    // Pad around each [PointContainer] before placing it in TransposingRoller
+    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
+      chartOrientation: chartViewModel.chartOrientation,
+      start: 1.0,
+      end: 1.0,
+    );
+
+    List<Padder> paddedPointContainers = pointContainers
+        .map((pointContainer) => Padder(
+              edgePadding: pointRectSidePad,
+              child: pointContainer,
+            ))
+        .toList();
+
+    return paddedPointContainers;
+  }
+
+  /// Creates the layouter for passed [pointContainerList] of children.
+  ///
+  /// For [ChartViewModel.chartOrientation] = [ChartOrientation.column] a [Column] is built;
+  /// for [ChartViewModel.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
+  ///
+  /// See super [DataContainer.makePointContainersLayouter] for details.
+  @override
+  BoxContainer makePointContainersLayouter({
+    required List<BoxContainer> pointContainerList,
+  }) {
+    BoxContainer pointContainersLayouter;
+    switch (chartViewModel.chartStacking) {
+      case ChartStacking.stacked:
+        pointContainersLayouter = TransposingRoller.Column(
+          chartOrientation: chartViewModel.chartOrientation,
+          mainAxisAlign: Align.start, // default
+          crossAxisAlign: Align.center, // default
+          // For stacked, do NOT put weights, as in main direction, each bar has no limit.
+          constraintsDivideMethod: ConstraintsDivideMethod.noDivision, // default
+          isMainAxisAlignFlippedOnTranspose: false, // do not flip to Align.end, as children have no weight=no divide
+          children: barsAreaSign == Sign.positiveOr0 ? pointContainerList.reversed.toList() : pointContainerList,
+        );
+        break;
+      case ChartStacking.nonStacked:
+        pointContainersLayouter = TransposingRoller.Row(
+          chartOrientation: chartViewModel.chartOrientation,
+          mainAxisAlign: Align.start, // default
+          // column:  sit positive bars at end,   negative bars at start
+          // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
+          crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
+          // For nonStacked leaf rects are in Transposing Row along main axis,
+          // this row must divide width to all leaf rects evenly
+          constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
+          isMainAxisAlignFlippedOnTranspose: true, // default
+          children: pointContainerList,
+        );
+        break;
+    }
+    return pointContainersLayouter;
+  }
 
   @override
   PointContainer makePointContainer({
@@ -180,6 +245,7 @@ class BarPointContainer extends PointContainer {
 /// A zero-height (thus 'invisible') [BarPointContainer] extension.
 ///
 /// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
+// todo-00-next : Maybe we can have only ZeroValuePointContainer - placed in base data_container, with this implementation
 class ZeroValueBarPointContainer extends BarPointContainer {
 
   ZeroValueBarPointContainer({
@@ -204,6 +270,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   void layout() {
     buildAndReplaceChildren();
 
+    // todo-00-next : simplify. This likely does not need to call  layoutUsingPointModelAffmapToPixels, just set layoutSize 0 in the appropriate direction.
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
 
     // Make the layoutSize zero in the direction of the chart orientation

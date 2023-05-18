@@ -8,6 +8,8 @@
 // import 'dart:ui' as ui show Size;
 
 // this level base libraries or equivalent
+import 'package:flutter_charts/src/chart/chart_type/bar/container/data_container.dart';
+import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
 
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -166,7 +168,10 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     );
   }
 
-  /// [DataContainer] client-overridable method hook for extending [BarsContainer]. Rare use
+  /// Abstract [DataContainer] client-overridable method hook for extending [BarsContainer].
+  ///
+  /// Client-overridable, but rare use by client except direct extensions
+  /// [LineChartDataContainer] and [BarChartDataContainer].
   ///
   /// One of child component maker delegates to outer [DataContainer].
   ///
@@ -193,15 +198,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
       required Sign barsAreaSign,
       required ConstraintsWeight constraintsWeight,
     ContainerKey? key,
-  }) {
-    return BarsContainer(
-      chartViewModel: chartViewModel,
-      outerDataContainer: outerDataContainer,
-      barsAreaSign: barsAreaSign,
-      constraintsWeight: constraintsWeight,
-      key: key,
-    );
-  }
+  });
 
   /// [DataContainer] client-overridable method hook for extending [DataColumnPointsBar]. Rare use.
   ///
@@ -296,11 +293,13 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
   }
 }
 
-/// Build the area showing either positive or negative bars, depending on [barsAreaSign].
+/// Abstract container of either positive or negative bars, depending on [barsAreaSign].
+///
+/// Extensions should override [makeInnerDataColumnPointsBar].
 ///
 /// For [ChartViewModel.chartOrientation] = [ChartOrientation.column] a [Row]    of (column) bars is built;
 /// for [ChartViewModel.chartOrientation] = [ChartOrientation.row]    a [Column] of (row)    bars is built.
-class BarsContainer extends container_common.ChartAreaContainer {
+abstract class BarsContainer extends container_common.ChartAreaContainer {
 
   BarsContainer({
     required super.chartViewModel,
@@ -358,26 +357,12 @@ class BarsContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  /// [BarsContainer] client-overridable method hook for extending [DataColumnPointsBar].
+  /// Abstract client-overridable method hook for extending [DataColumnPointsBar].
   DataColumnPointsBar makeInnerDataColumnPointsBar({
     required DataColumnModel dataColumnModel,
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
-  }) {
-    if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerDataColumnPointsBar(
-        dataColumnModel: dataColumnModel,
-        outerBarsContainer: this,
-        barsAreaSign: barsAreaSign,
-      );
-    }
-    return DataColumnPointsBar(
-      chartViewModel: chartViewModel,
-      outerDataContainer: outerDataContainer,
-      barsAreaSign: barsAreaSign,
-      dataColumnModel: dataColumnModel,
-    );
-  }
+  });
 
 }
 
@@ -391,7 +376,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
 ///
-class DataColumnPointsBar extends container_common.ChartAreaContainer {
+abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
   DataColumnPointsBar({
     required super.chartViewModel,
@@ -407,27 +392,54 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
   /// Builds a container for one bar with [PointContainer]s.
   ///
-  /// For [ChartViewModel.chartOrientation] = [ChartOrientation.column] a [Column] is built;
-  /// for [ChartViewModel.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
+  /// Fully implemented in this base class, by providing client-overridable hooks.
+  ///
+  /// The hooks called in this base implementation (in order):
+  ///
+  ///   - makePointContainerListForSign
+  ///   - todo-0100  document
   @override
   void buildAndReplaceChildren() {
 
-    // Pad around each [PointContainer] before placing it in TransposingRoller
-    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
-      chartOrientation: chartViewModel.chartOrientation,
-      start: 1.0,
-      end: 1.0,
-    );
+    // Call method to create list of PointContainers given [this.barsAreaSign].
+    // Extensions may override [makePointContainerListForSign] by callind this base,
+    // then wrap (e.g. in Padder) each [PointContainer] in the result
+    List<BoxContainer> pointContainerList = makePointContainerListForSign();
 
-    /// todo-00-next : Separate creation of pointContainers in this section up to before padding, from the padding,
-    ///                AND MOST IMPORTANT FROM THE WRAPpING IN TransposingRoller.Column . THIS MAY MEAN TO ADD ANOTHER INNER MAKER METHOD.
-    ///                THE GOAL IS TO SHARE THE (ARGUABLY DIFFICULT BUT NICELY ABSTRACTED) CREATION OF   List<PointContainer> pointContainers
-    ///                with extensions, [BarChartDataColumnPointsBar] and [LineChartDataColumnPointsBar]
+    // Call the overridable method that creates the list of [PointContainer]s,
+    // each representing one [PointModel]l
+    BoxContainer pointContainersLayouter = makePointContainersLayouter(pointContainerList: pointContainerList);
 
-    // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].
-    // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
-    // stacked and nonStacked, and positive and negative, distinctly.
-    List<PointContainer> pointContainers = dataColumnModel.pointModelList
+    // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([])
+    addChildren([pointContainersLayouter]);
+  }
+
+  /// Abstract method; extensions should make and return a layouter for the
+  /// passed [pointContainerList] as children.
+  ///
+  /// Example: The extensions-returned layouter may be [TransposingRoller.Column] for bar chart
+  /// or [TransposingStackLayouter] for line chart.
+  ///
+  BoxContainer makePointContainersLayouter({
+    required List<BoxContainer> pointContainerList,
+  });
+
+  /// Returns a list of [PointContainer]s from all points of the [dataColumnModel]
+  /// of this [DataColumnPointsBar] instance that have the member sign [barsAreaSign].
+  ///
+  /// Invoked in [DataColumnPointsBar.buildAndReplaceChildren] method, where it's result members are
+  /// placed as children of the layouter created by [makePointContainersLayouter]
+  ///
+  /// Can be also overridden by extensions that need to manipulate the result (e.g. wrap each member in [Padder]).
+  ///
+  /// It merely forwards its work to the closure [clsPointToNullableContainerForSign] with the intended sign.
+  ///
+  /// Note: [makePointContainersLayouter] may create [TransposingRoller.Column] for bar chart
+  /// or [TransposingStackLayouter] for line chart.
+  ///
+  List<BoxContainer> makePointContainerListForSign() {
+
+    List<BoxContainer> pointContainers = dataColumnModel.pointModelList
         // Map applies function converting the [PointModel] to [PointContainer],
         // calling the hook [MyBarChartViewModelPointContainer]
         .map(clsPointToNullableContainerForSign(barsAreaSign))
@@ -435,51 +447,14 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
         .where((containerElm) => containerElm != null)
         .map((containerElm) => containerElm!)
         .toList();
-
-    List<Padder> paddedPointContainers = pointContainers
-        .map((pointContainer) => Padder(
-              edgePadding: pointRectSidePad,
-              child: pointContainer,
-            ))
-        .toList();
-
-    // todo-00-next : separate this section into it's own overridable method, and inject children, rather
-    //                than creating children above.
-
-    TransposingRoller pointContainersLayouter;
-    switch (chartViewModel.chartStacking) {
-      case ChartStacking.stacked:
-        pointContainersLayouter = TransposingRoller.Column(
-          chartOrientation: chartViewModel.chartOrientation,
-          mainAxisAlign: Align.start, // default
-          crossAxisAlign: Align.center, // default
-          // For stacked, do NOT put weights, as in main direction, each bar has no limit.
-          constraintsDivideMethod: ConstraintsDivideMethod.noDivision, // default
-          isMainAxisAlignFlippedOnTranspose: false, // do not flip to Align.end, as children have no weight=no divide
-          children: barsAreaSign == Sign.positiveOr0 ? paddedPointContainers.reversed.toList() : paddedPointContainers,
-        );
-        break;
-      case ChartStacking.nonStacked:
-        pointContainersLayouter = TransposingRoller.Row(
-          chartOrientation: chartViewModel.chartOrientation,
-          mainAxisAlign: Align.start, // default
-          // column:  sit positive bars at end,   negative bars at start
-          // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
-          crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
-          // For nonStacked leaf rects are in Transposing Row along main axis,
-          // this row must divide width to all leaf rects evenly
-          constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
-          isMainAxisAlignFlippedOnTranspose: true, // default
-          children: paddedPointContainers,
-        );
-        break;
-    }
-    // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([pointContainersLayouter])
-    addChildren([pointContainersLayouter]);
+    return pointContainers;
   }
 
   /// Function closure, when called with argument [barsAreaSign],
   /// returns function with one free parameter, the [PointModel].
+  ///
+  /// Contains logic that processes all combinations of
+  /// stacked and nonStacked, and positive and negative, distinctly.
   ///
   /// The returned function, when invoked with [PointModel] as a parameter,
   /// returns either a [PointContainer] or null using following logic depending by the currier [barsAreaSign] :
@@ -586,8 +561,11 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
   final DataColumnPointsBar outerDataColumnPointsBar;
 
-  /// Calculates the [offset] and [layoutSize] of this container to represent the position of
-  /// [pointModel] on the chart, for any [ChartOrientation] and [ChartStacking].
+  /// Performs the core work of layout of this [PointContainer] by calculating a [PointOffset], containing data
+  /// about the position where this widget representing the [pointModel] should be placed on the chart.
+  ///
+  /// The returned [PointOffset] contains the core data about [offset] in parent and [layoutSize] of this container
+  /// for any [ChartOrientation] and [ChartStacking].
   ///
   /// Intended to be invoked during [PointContainer.layout] of this [PointContainer] class or subclasses.
   ///
@@ -650,7 +628,6 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
     return pixelPointOffset;
   }
-
 
   /// Generates code for testing.
   // todo-020 : fix this after changes in API of this class
