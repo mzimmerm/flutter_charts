@@ -27,13 +27,13 @@ import '../chart/view_model.dart';
 /// passed to [paint].
 class FlutterChartPainter extends widgets.CustomPainter {
 
-  /// Keep track of re-paints
-  bool _isFirstPaint = true;
-
   /// Constructs this chart painter.
   FlutterChartPainter() {
     logger.Logger().d('Constructing $runtimeType');
   }
+
+  /// Keep track of re-paints
+  bool _isFirstPaint = true;
 
   /// The [FlutterChart] instance (extension of [CustomPaint]) this painter is painting on.
   ///
@@ -85,6 +85,7 @@ class FlutterChartPainter extends widgets.CustomPainter {
     //     will also copy [Options] to the [View], so View has access to Options as well.
     if (_isFirstPaint) {
       _isFirstPaint = false;
+      print(' ### Log.Info: First paint!');
     }
 
     chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
@@ -130,6 +131,30 @@ class FlutterChartPainter extends widgets.CustomPainter {
   @override
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
     // dart_developer.log(' ###### $runtimeType.shouldRepaint being CALLED', name: 'charts.debug.log');
-    return true;
+    return false; // 2023-05-19 : return true;
   }
 }
+
+/* KEEP
+
+  /// Keep track of size passed to [paint] last time it was called.
+  ui.Size _lastSize = const ui.Size(0, 0);
+
+  /// Method used to skip processing in
+  ///   chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+
+  /// If [paint] is invoked with size same as [_lastSize] - so the passed size did not change -
+  /// the processing in [paint] which creates, builds, lays out and paints the chart is skipped.
+  bool _isChartBuildingNeeded(ui.Size size) {
+
+    if (_lastSize == const ui.Size(0, 0) || _lastSize != size) {
+      _lastSize = size;
+      return true;
+    }
+    return false;
+
+    // The optimization above does not work. Once in chart, for example pressing a + 'refresh' button,
+    // size remains the same but the rendered chart from previous run is destroyed. So we have to build always.
+    return true;
+  }
+ */

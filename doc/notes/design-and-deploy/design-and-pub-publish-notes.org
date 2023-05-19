@@ -1909,56 +1909,25 @@ Notes or Later:
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
-** DONE 11.1. Rename to outer
+** IN-PROGRESS ~Speedup~ - around mappers, matrixes, and all methods where they are called
 
-Wherever there is a natural hierarchy of inner classes, where outer creates inner in an abstract way, use this term for the method that creates there inner instance:
-
-- [X] Make all fields named 'owner' to be final; also rename them to 'outer'
-  - [X] ownerDataColumnPointsBar => outerDataColumnPointsBar : also check if it is set as member and used in some way!!!
-  - [X] ownerBarsContainer => outerBarsContainer : also check if it is set as member and used in some way!!!
-  - [X] ownerDataContainer => outerDataContainer
-- [X] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'. FINISH THIS. LOOK FOR OWNER, BUT NOT IN unused.dart
-
-** IN-PROGRESS-NOW 11.2. ~CURRENT WORK: ADD LINE CHART~
-
-Bar Chart:
-
-- [X] Rename LegendColumn to ByRowLegends
-  - [X] Rename LegendColumn to ByRowLegends
-- [X] Refactor DataContainer in BarChart:
-  - [X] Bar chart: DataContainer : create extension BarChartDataContainer in container/bar/data_container.dart:
-    - [X] Use the existing mechanism, override the 3 methods that throw UnimplementedError, this does not need to override all data_container classes, and keep the core layout intact
-      - [X] makeDataColumnPointsBar
-      - [X] makePointContainer
-      - [X] makePointContainerWithZeroValue
-    - [X] Get Bar Chart working again in the new structure
+- try to make const
+- look for 'performance'
+- [ ]
 
 
-Line chart:
-
-- [-] Line Chart
-  - [X] Simplify code, remove extra comments
-  - [ ] Figure out to paint circle in the middle of the bar!!
-  - [ ] Abstract out the affmapToPixelsMaybeTransposeInContextOf to interface, which is both on PointModel and PointOffset, returning PointOffset.
-    - [ ] In PointModel, it first creates PointOffset WITH INDEPENDENT (INPUT) VALUE IN THE MIDDLE OF CONSTRAINT, then calls the PointOffset version
-    - [ ] In PointOffset, as is.
-  - [ ] Get orientation=row working
-  - [ ] Add lines connecting points to both column and row
-- [ ] Go over todo-010 on Bar Chart first and implement generalizations:
-  - [ ] The zero points - simplify for both Bar and Line
-  - [ ] Figure out the generalization split into a new Inner maker
-- [ ] Can we get stacked Line chart working? What would it take?
-  
-
+** IN-PROGRESS-NOW 11.2. ~Line chart~
 
 Two more things:
 
-- [ ] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
-- [ ] The above vs affmapValuesToPixels!!! compare them
+- [X] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
+- [X] The above vs affmapValuesToPixels!!! compare them
+- [ ] Add connecting lines
+- [ ] show nicer points
 
 
 
-** LATER 12. ~CURRENT WORK: BACKUP AND LONG TERM CAPTURED TODOS IN LAYOUT~
+** LATER 12. ~CURRENT WORK: BACKUPs~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
@@ -1966,12 +1935,21 @@ Two more things:
   3. 
 
 
-- review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.
-- review again, all uses of applyParentOffset, esp between positioning and BoxLayouter
-- should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
-- Rename boundingRect to envelopeRect
-- [ ]
+** TODO ~Create a test app for super fast testing~
 
+- [ ] Create a test app that can:
+  1. [ ] delay
+  2. [ ] take screenshot from the app,
+  3. [ ] delay
+  4. [ ] run another chart
+  5. [ ] back to 1.
+- [ ] Add spacing
+
+
+** LATER ~add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~
+
+** LATER ~figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~
+  
 
 
 ** TODO Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.
@@ -1989,14 +1967,10 @@ Not sure if to do this ... Need to think through the separation of View and View
   - [ ] replace all imports, and usages of classes from  data_model.dart with corresponding classes from view_model.dart
 
 ** TODO FUTURE WORK
-
-- [ ] Create a test app that can:
-  1. [ ] delay
-  2. [ ] take screenshot from the app,
-  3. [ ] delay
-  4. [ ] run another chart
-  5. [ ] back to 1.
-- [ ] Add spacing
+- [ ] review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.
+- [ ] review again, all uses of applyParentOffset, esp between positioning and BoxLayouter
+- [ ] should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
+- [ ] Rename boundingRect to envelopeRect
 - 
 
   

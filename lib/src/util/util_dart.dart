@@ -585,7 +585,6 @@ class AffineRangedMap1D {
 ///  we generally stay with the [isFlipToRange] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-014 : try to make all 1D constructors const.
 class ToPixelsAffineMap1D extends AffineRangedMap1D {
 
   ToPixelsAffineMap1D({
@@ -598,8 +597,6 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
     toRangeStart: isFlipToRange ? toPixelsRange.max : toPixelsRange.min,
     toRangeEnd: isFlipToRange ? toPixelsRange.min : toPixelsRange.max,
   ) {
-    assert(fromValuesRange.min < fromValuesRange.max && toPixelsRange.min <= toPixelsRange.max);
-    
     // Allow the TO pixels range to be collapsed, but not the FROM values range, which is in the denominator of [_scaleBy] in super.
     if (!(fromValuesRange.min < fromValuesRange.max)) {
       throw StateError('$runtimeType: fromValues.min=$fromValuesRange.min < fromValues.max=$fromValuesRange.max NOT true on $this.');
@@ -607,10 +604,10 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
     if (!(toPixelsRange.min <= toPixelsRange.max)) {
       throw StateError('$runtimeType: toPixels.min=$toPixelsRange.min <= toPixels.max=$toPixelsRange.max NOT true on $this.');
     }
-    if (toPixelsRange.min == toPixelsRange.max)  {
-      print(' ### Log.Info: $runtimeType: TO range is COLLAPSED: '
-          'toPixels.min=$toPixelsRange.min == toPixels.max=$toPixelsRange.max TRUE on $this.');
-    }
+    // if (toPixelsRange.min == toPixelsRange.max)  {
+    //   print(' ### Log.Info: $runtimeType: TO range is COLLAPSED: '
+    //       'toPixels.min=$toPixelsRange.min == toPixels.max=$toPixelsRange.max TRUE on $this.');
+    // }
 
   }
 

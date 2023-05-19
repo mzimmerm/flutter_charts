@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart' as logger;
 
-import 'container_common.dart' as container_common;
+import 'container_common.dart';
 import 'legend_container.dart';
 import 'axis_container.dart';
 import 'data_container.dart';
@@ -19,7 +19,7 @@ import '../painter.dart';
 ///
 /// Child containers calculate coordinates of chart points used for painting grid, labels, chart points etc.
 ///
-class ChartRootContainer extends container_common.ChartAreaContainer {
+class ChartRootContainer extends ChartAreaContainer {
 
   ChartRootContainer({
     required this.legendContainer,
@@ -94,6 +94,7 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
+  // todo-00-next : does this need to be covariant?
   covariant late TransposingAxisContainer horizontalAxisContainer;
   covariant late TransposingAxisContainer verticalAxisContainer;
   covariant late TransposingAxisContainer verticalAxisContainerFirst;
