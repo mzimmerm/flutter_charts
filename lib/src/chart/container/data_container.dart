@@ -563,7 +563,9 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
   final DataColumnPointsBar outerDataColumnPointsBar;
 
   /// Performs the core work of layout of this [PointContainer] by calculating a [PointOffset], containing data
-  /// about the position where this widget representing the [pointModel] should be placed on the chart.
+  /// about the position where this [PointContainer] representing the [pointModel] should be placed on the chart.
+  ///
+  /// Intended to be called from concrete [PointContainer]'s extension's [layout] method.
   ///
   /// The returned [PointOffset] contains the core data about [offset] in parent and [layoutSize] of this container
   /// for any [ChartOrientation] and [ChartStacking].
@@ -666,6 +668,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 /// Has zero [layoutSize] in the direction of the input data axis, and constraint size in the cross direction.
 ///
 /// See [layout] for details.
+/// // todo-00-next : should extend PointContainer.
 class ZeroValuePointContainer extends BarPointContainer {
 
   ZeroValuePointContainer({

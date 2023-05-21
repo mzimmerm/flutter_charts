@@ -163,15 +163,16 @@ class PointOffset extends Offset {
   ///         and [ConstraintsWeight] are used to divide according to the ration of positive and negative axis length
   ///         in the main direction.
   ///       - The Sizer (sizerHeight, sizerWidth), when mapping inside a [TransposingStackLayouter].
-  ///   - [isMoveInCrossDirectionToPixelRangeCenter] sets the position the PointOffset, in the cross direction,
-  ///      to the half of the constraint
-  ///   - [isSetBarPointRectInCrossDirectionToPixelRange] sets the barPointRectSize:
+  ///   - [isMoveInCrossDirectionToPixelRangeCenter] true changes the returned [PointOffset]'s position
+  ///      in the cross direction, to the half of the constraint, for the benefit of lineChart.
+  ///   - [isSetBarPointRectInCrossDirectionToPixelRange] true changes the the barPointRectSize as follows:
   ///     - in the main direction = affmap-ed value (PointOffset.outputValue)
   ///     - in the cross direction = constraints size in that direction
+  ///     - this is for the benefit of barChart.
   ///   - Important Note: Setting both [isMoveInCrossDirectionToPixelRangeCenter] and
   ///     [isSetBarPointRectInCrossDirectionToPixelRange] to false performs a pure affmap between the
-  ///     [fromTransposing2DValueRange] and [to2DPixelRange], without any manipulation after.
-  ///     Setting one or both to true, is a convenience for processing in containers.
+  ///     [fromTransposing2DValueRange] and [to2DPixelRange], without any further result manipulation.
+  ///     Setting one or both to true, is a convenience for processing in containers of line chart and bar chart.
 
   ///
   /// Note that the [withinConstraints] or [sizerHeight] and [sizerWidth] is used

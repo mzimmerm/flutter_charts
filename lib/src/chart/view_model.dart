@@ -11,18 +11,17 @@ import 'package:logger/logger.dart' as logger;
 
 import '../morphic/container/chart_support/chart_style.dart';
 import '../morphic/container/morphic_dart_enums.dart';
-import '../morphic/container/constraints.dart' as constraints;
+import '../morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
 
 // this level or equivalent
-import 'model/data_model.dart' as model;
-import 'options.dart' as options;
-import 'container/data_container.dart' as data_container;
-import 'container/axis_container.dart' as axis_container;
+import 'model/data_model.dart' as model show ChartModel, DataColumnModel, PointModel, LegendItem;
+import 'options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
+import 'container/data_container.dart' as data_container show DataContainer, PointContainer;
 import 'container/container_common.dart' as container_common;
-import 'container/root_container.dart' as root_container;
-import 'iterative_layout_strategy.dart' as strategy;
-import 'model/label_model.dart' as util_labels;
-import '../util/util_dart.dart' as util_dart;
+import 'container/root_container.dart' as root_container show ChartRootContainer;
+import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
+import 'model/label_model.dart' as util_labels show DataRangeLabelInfosGenerator;
+import '../util/util_dart.dart' as util_dart show Interval;
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].
@@ -34,9 +33,10 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 ///
 /// Roles of this class:
 ///   1. Provides all data needed for the chart view hierarchy.
-///      Data are provided both by pulling from the member [_chartModel],
+///      Data are provided both by pulling from the member [_chartModel] of type [model.ChartModel],
 ///      but can contain, (or pull, or be notified about), additional view-specific information.
-///      One example of such view-specific information is member [chartOrientation].
+///      One example of such view-specific information is member [chartOrientation], which
+///      is not held by [model.ChartModel].
 ///   2. Creates (produces, generates) the chart view hierarchy,
 ///      starting with a concrete [root_container.ChartRootContainer].
 ///
@@ -45,11 +45,12 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// This base view model holds as members:
 ///   - the model in [_chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
 ///   - the chart orientation in [chartOrientation]
-///   - the definition whether the chart is stacked in [chartStacking].
+///   - the information whether the chart is presented as stacked values in [chartStacking].
 ///   - the label layout strategy in [inputLabelLayoutStrategyInst]
-///
-/// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
-/// which is also a late member after it is constructed.
+///   - [chartRootContainer], the view container hierarchy root. It is created and bound late,
+///     in the [chartRootContainerCreateBuildLayoutPaint] invoked during the constructor body of
+///     this [ChartViewModel] class. All the above members must be ready and needed for
+///     the [chartRootContainer] late creation.
 ///
 /// [ChartViewModel] instance provides a 'reference link' between the [ChartModel],
 ///   and the chart root [BoxContainer], the [root_container.ChartRootContainer],
@@ -147,7 +148,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///                 // todo-010 : rename to outputTicksAndLabelsDefiner
   late final util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
 
-  ///                 // todo-010 : rename to inputTicksAndLabelsDefiner
+  ///                 // todo-010 : rename to inputDataRangeDescriptor
   late final util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
 
   /// Wraps the ranges of input values and output values this view model contains.
@@ -194,8 +195,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     // This happens even on re-paint, so can be done multiple times after state changes in the + button.
     chartRootContainer = makeChartRootContainer(chartViewModel: this); // also link from this ViewModel to ChartRootContainer.
 
-    // Only set `_chartModel.chartViewModel = this` ONCE. Reason: member _chartModel is created ONCE, same as this ANCHOR.
-    // To have _chartModel late final, we have to keep track to only initialize _chartModel.chartViewModel = this on first run.
+    // todo-020 : No longer used, was use to init a 'ChartModel.late final chartViewModel' only once. But no longer needed.
     if (_isFirst) {
       _isFirst = false;
     }

@@ -28,7 +28,7 @@ import '../../util/util_dart.dart' as util_dart;
 ///
 /// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
 ///
-// todo-010 : rename to DataRangeTicksAndLabelsDefiner
+// todo-010 : rename to DataRangeTicksAndLabelsDescriptor
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -263,7 +263,7 @@ class DataRangeLabelInfosGenerator {
   /// As this [DataRangeLabelInfosGenerator] holds on everything about relative (data ranged)
   /// position of labels, it can be converted to a provider of these label positions
   /// for layouts that use externally defined positions to layout their children.
-  // todo-010 : rename to asExternalTicksLayoutDefiner
+  // todo-010 : rename to asExternalTicksLayoutDescriptor
   ExternalTicksLayoutProvider asExternalTicksLayoutProvider({
     required ExternalTickAtPosition externalTickAtPosition,
   }) {

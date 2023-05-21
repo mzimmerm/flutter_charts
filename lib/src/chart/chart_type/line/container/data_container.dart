@@ -179,7 +179,7 @@ class LineAndPointContainer extends PointContainer {
     super.key,
   });
 
-  /// Stores offset calculated by during [layout] for use in [paint].
+  /// Stores offset calculated during [layout] for use in [paint].
   late final PointOffset _pixelPointOffset;
 
   /// Full [layout] implementation calculates and sets the pixel point [_pixelPointOffset]
@@ -231,12 +231,20 @@ class LineAndPointContainer extends PointContainer {
     // Note: For non-zero-crossing, in chartOrientation direction: pixelPointOffset +  pixelPointOffset.barPointRectSize == constraints.size == layoutSize,
     //       See [PointOffset._validateAffmapToPixelMethodInputsOutputs]
 
-    ui.Offset circleAtOffset = offset + _pixelPointOffset;
+    ui.Offset thisPointOffset = offset + _pixelPointOffset;
+
     canvas.drawCircle(
-      circleAtOffset,
+      thisPointOffset,
       chartViewModel.chartOptions.lineChartOptions.hotspotOuterRadius,
       paint,
     );
+
+    // todo-00-last
+    // If there is next point in the same row, also paint the line connecting this point with next
+    if (pointModel.hasNextPointModel) {
+      var nextPointModel = pointModel.nextPointModel;
+      // var nextPointOffset =
+    }
   }
 
 }

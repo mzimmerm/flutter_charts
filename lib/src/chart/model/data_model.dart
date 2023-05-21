@@ -50,9 +50,9 @@ class ChartModel {
 
     _dataColumns = transposeRowsToColumns(dataRows);
 
-    // Construct the full [ChartModel] as well, so we can use it, and also gradually
+    // Construct the full [ChartModel] as well, so we can use it, and
     // use it's methods and members in OLD DataContainer.
-    // Here, create one [ChartModelSeries] for each data row, and add to member [dataColumnPointsList]
+    // Here, create one [DataColumnModel] for each data column, and add to member [dataColumnModels]
     int columnIndex = 0;
     for (List<double> valuesColumn in _dataColumns) {
       dataColumnModels.add(
@@ -164,7 +164,7 @@ class ChartModel {
   /// Data reorganized from rows to columns.
   late final List<List<double>> _dataColumns;
 
-  int get _numColumns => _dataColumns.length;
+  int get numColumns => _dataColumns.length;
 
   /// Labels on input axis (also named independent axis, x axis).
   ///
@@ -303,15 +303,16 @@ class DataColumnModel {
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
   /// The [outerChartModel] is the [ChartModel] underlying the [DataColumnModel] instance being created.
-  /// The [_indexInOuterChartModel] is index of the [valuesColumn] in the [outerChartModel].
+  /// The [columnIndex] is index of the [valuesColumn] in the [outerChartModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
   DataColumnModel({
     required List<double> valuesColumn,
     required this.outerChartModel,
-    required int columnIndex,
-  }) : _indexInOuterChartModel = columnIndex {
+    required this.columnIndex,
+
+  }) {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_dataColumnPoints]
@@ -341,7 +342,7 @@ class DataColumnModel {
   /// This is needed to access the legacy arrays such as:
   ///   -  [ChartModel.byRowLegends]
   ///   -  [ChartModel.byRowColors]
-  final int _indexInOuterChartModel;
+  final int columnIndex;
 
   /// Calculates inputValue-position (x-position, independent value position) of
   /// instances of this [DataColumnModel] and it's [PointModel] elements.
@@ -358,13 +359,33 @@ class DataColumnModel {
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / outerChartModel._numColumns);
-    return (columnWidth * _indexInOuterChartModel) + (columnWidth / 2);
+    double columnWidth = (dataRange.length / outerChartModel.numColumns);
+    return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
   /// Points in this column are points in one cross-series column.
+  /// // todo-00-next : should be private, just get by index. Same for ChartViewModel
   final List<PointModel> pointModelList = [];
+  
+  /// Returns the [DataColumnModel] for the next column from this [DataColumnModel] instance.
+  /// 
+  /// Should be surrounded with [hasNextColumnModel].
+  ///
+  /// Throws [StateError] if not such column exists. 
+  ///
+  /// 'Next column' refers to the column with [columnIndex] one more than this [DataColumnModel]s [columnIndex].
+  DataColumnModel get nextColumnModel =>
+      hasNextColumnModel
+          ?
+      outerChartModel.dataColumnModels[columnIndex + 1]
+          :
+      throw StateError('No next column for column $this. Use hasNextColumnModel');
 
+  /// Returns true if there is a next column after this [DataColumnModel] instance.
+  /// 
+  /// Should be used before invoking [nextColumnModel].
+  bool get hasNextColumnModel => columnIndex < outerChartModel.numColumns - 1 ? true : false;
+  
   /// Returns minimum or maximum of [PointModel.outputValue]s in me.
   ///
   /// In more detail:
@@ -440,7 +461,7 @@ class PointModel {
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
   ///   - column at index [columnIndex], which is also the [outerDataColumnModel]'s
-  ///     index [DataColumnModel._indexInOuterChartModel].
+  ///     index [DataColumnModel.columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double outputValue;
 
@@ -460,9 +481,28 @@ class PointModel {
 
   /// Getter of the column index in the [outerDataColumnModel].
   ///
-  /// Delegated to [outerDataColumnModel] index [DataColumnModel._indexInOuterChartModel].
-  int get columnIndex => outerDataColumnModel._indexInOuterChartModel;
+  /// Delegated to [outerDataColumnModel] index [DataColumnModel.columnIndex].
+  int get columnIndex => outerDataColumnModel.columnIndex;
 
+  /// Returns the [PointModel] in the same row, next column from this [PointModel] instance.
+  /// 
+  /// Should be surrounded with [hasNextPointModel].
+  ///
+  /// Throws [StateError] if not such column exists. 
+  ///
+  /// 'Next column' refers to the column with [columnIndex] one more than this [PointModel]s [columnIndex].
+  PointModel get nextPointModel =>
+      hasNextPointModel
+          ?
+      outerDataColumnModel.nextColumnModel.pointModelList[rowIndex]
+          :
+      throw StateError('No next column for column $this. Use hasNextPointModel before invoking nextPointModel.');
+
+  /// Returns true if there is a next column after this [PointModel] instance.
+  /// 
+  /// Should be used before invoking [nextPointModel].
+  bool get hasNextPointModel => outerDataColumnModel.hasNextColumnModel;
+  
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
   /// Delegated to the same name method on [outerDataColumnModel] - the [DataColumnModel.inputValueOnInputRange] -

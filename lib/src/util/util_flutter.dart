@@ -39,6 +39,8 @@ void assertOffsetResultsSame(Offset result, Offset otherResult) {
   }
 }
 
+// todo-0100 : document
+// todo-0100 : why it does not contain ChartStacking information?
 class FromTransposing2DValueRange {
 
   FromTransposing2DValueRange ({
