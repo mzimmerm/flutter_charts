@@ -1,9 +1,10 @@
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:flutter_charts/flutter_charts.dart';
+// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/chart_type/bar/container/root_container.dart';
 import 'package:flutter_charts/src/chart/chart_type/line/container/root_container.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:logger/logger.dart' as logger;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
 
 import 'painter.dart' as painter;
 

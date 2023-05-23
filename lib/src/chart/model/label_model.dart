@@ -11,6 +11,8 @@ import '../options.dart';
 
 import '../../util/util_dart.dart' as util_dart;
 
+import '../view_model.dart';
+
 /// Generates and manages the data range of values shown on chart, as well as label values,
 /// and the tick values shown.
 ///
@@ -58,10 +60,12 @@ class DataRangeLabelInfosGenerator {
   /// Constructor calculates the following members:
   ///   - [dataRange]
   ///   - [_labelInfos]
+  // todo-00-last-last : move to View Model, as work of this depends on stacking, clearly a view benefit
   DataRangeLabelInfosGenerator({
     required this.chartOrientation,
     required ChartStacking chartStacking,
-    required ChartModel chartModel,
+    // todo-00-done : required ChartModel chartModel,
+    required ChartViewModel chartViewModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
@@ -87,7 +91,8 @@ class DataRangeLabelInfosGenerator {
           //   it will be affmap-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          dataEnvelope = chartModel.dataRangeWhenStringLabels;
+          // todo-00-done : dataEnvelope = chartModel.dataRangeWhenStringLabels;
+          dataEnvelope = chartViewModel.dataRangeWhenStringLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
@@ -98,14 +103,16 @@ class DataRangeLabelInfosGenerator {
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
-          dataEnvelope = chartModel.valuesInterval(chartStacking: chartStacking);
+          // todo-00-done : dataEnvelope = chartModel.valuesInterval(chartStacking: chartStacking);
+          dataEnvelope = chartViewModel.valuesInterval(chartStacking: chartStacking);
           double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
           transformedLabelValues =
               List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
           break;
       }
     } else {
-      dataEnvelope = chartModel.extendedValuesInterval(
+      // todo-00-done dataEnvelope = chartModel.extendedValuesInterval(
+      dataEnvelope = chartViewModel.extendedValuesInterval(
         extendAxisToOrigin: extendAxisToOrigin,
         chartStacking: chartStacking,
       );

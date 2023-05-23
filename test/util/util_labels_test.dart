@@ -129,14 +129,14 @@ void main() {
 DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
   var mockChartModel = _constructMockChartModel(options, dataRows, inputUserLabels, extendAxisToOrigin, legendNames);
   return DataRangeLabelInfosGenerator(
-    /*chartViewModel: MockChartViewModel(
-      chartModel: mockChartModel,
-      chartOrientation: chartOrientation,
-      isStacked: true,
-    ),*/
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    chartModel: mockChartModel,
+    // todo-00-last : chartModel: mockChartModel,
+    chartViewModel: MockChartViewModel(
+      chartModel: mockChartModel,
+      chartOrientation: chartOrientation,
+      chartStacking: ChartStacking.stacked,
+    ),
     dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: outputValueToLabel,
@@ -199,14 +199,14 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
-      /*chartViewModel: MockChartViewModel(
-        chartModel: chartModel,
-        chartOrientation: ChartOrientation.column,
-        isStacked: true,
-      ),*/
       chartOrientation: ChartOrientation.column,
       chartStacking: ChartStacking.nonStacked,
-      chartModel: chartModel,
+      //  todo-00-done : chartModel: chartModel,
+      chartViewModel: MockChartViewModel(
+        chartModel: chartModel,
+        chartOrientation: ChartOrientation.column,
+        chartStacking: ChartStacking.stacked,
+      ),
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: outputValueToLabel,

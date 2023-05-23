@@ -10,10 +10,12 @@ import 'dart:ui' as ui show Paint, Canvas, Offset;
 // up 1 level
 
 // up 2 level chart
+// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container/data_container.dart'
-    show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer, ZeroValuePointContainer;
-import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
-import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
+    show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
+// todo-00-done : import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
+import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 // import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
 // util
@@ -92,7 +94,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     required super.barsAreaSign,
     required super.dataColumnModel,
     super.key,
-  }) ;
+  });
 
   /// Creates the layouter for passed [pointContainerList] of children.
   ///
@@ -127,7 +129,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
 
   @override
   PointContainer makePointContainer({
-    required PointModel pointModel,
+    required BasePointModel pointModel,
   }) {
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainer(
@@ -141,20 +143,26 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     );
   }
 
+  // todo-00-next : move to super, this is common between lineChart and barChart
   @override
-  PointContainer makePointContainerWithZeroValue({
-    required PointModel pointModel,
-  }) {
+  BasePointContainer makePointContainerWithZeroValue(
+/*  // todo-00-last-last-last-done
+      {
+    required BasePointModel pointModel,
+  }
+*/
+  ) {
     // return LineAndPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
-        pointModel: pointModel,
+        // todo-00-last-last-last-done pointModel: pointModel,
       );
     }
     return ZeroValuePointContainer(
-      pointModel: pointModel,
+       // todo-00-last-last-last-done  pointModel: pointModel,
+      pointModel: ZeroValuePointModel(),
       chartViewModel: chartViewModel,
-      outerDataColumnPointsBar: this,
+      // todo-00-last-done : outerDataColumnPointsBar: this,
     );
   }
 
@@ -180,7 +188,7 @@ class LineAndPointContainer extends PointContainer {
   });
 
   /// Stores offset calculated during [layout] for use in [paint].
-  late final PointOffset _pixelPointOffset;
+  // todo-00-last-last : moved to PointModel : late final PointOffset _pixelPointOffset;
 
   /// Full [layout] implementation calculates and sets the pixel point [_pixelPointOffset]
   /// that represents the line point data.
@@ -207,7 +215,8 @@ class LineAndPointContainer extends PointContainer {
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // Store pixelPointOffset as member for paint to use as added offset
-    _pixelPointOffset = pixelPointOffset;
+    // todo-00-last-done : _pixelPointOffset = pixelPointOffset;
+    this.pixelPointOffset = pixelPointOffset;
 
     // Must set layoutSize same as passed constraints, for the rudimentary [StackLayouter] to layout and paint
     //   this child correctly - the rudimentary [StackLayouter] relies on all children to paint into its not-offset
@@ -219,32 +228,46 @@ class LineAndPointContainer extends PointContainer {
   @override paint(ui.Canvas canvas) {
 
     /* KEEP print info about what is painted
-    print(' ### Log.Info: $runtimeType.paint: color=${paint.color}, _pixelPointOffset = $_pixelPointOffset, '
+    print(' ### Log.Info: $runtimeType.circlePaint: color=${circlePaint.color}, _pixelPointOffset = $_pixelPointOffset, '
         '_pixelPointOffset.barPointRectSize=${_pixelPointOffset.barPointRectSize}, '
         'layoutSize=$layoutSize, accumulated offset=$offset');
     */
 
-    ui.Paint paint = ui.Paint();
-    paint.color = pointModel.color;
+    ChartOptions options = chartViewModel.chartOptions;
+    ui.Paint circlePaint = ui.Paint();
+    circlePaint.color = pointModel.color;
 
-    // Note: For [BarPointContainer], we paint: ui.Rect rect = offset & layoutSize;
+    // Note: For [BarPointContainer], we circlePaint: ui.Rect rect = offset & layoutSize;
     // Note: For non-zero-crossing, in chartOrientation direction: pixelPointOffset +  pixelPointOffset.barPointRectSize == constraints.size == layoutSize,
     //       See [PointOffset._validateAffmapToPixelMethodInputsOutputs]
 
-    ui.Offset thisPointOffset = offset + _pixelPointOffset;
+    ui.Offset thisPointOffset = offset + pixelPointOffset;
 
     canvas.drawCircle(
       thisPointOffset,
-      chartViewModel.chartOptions.lineChartOptions.hotspotOuterRadius,
-      paint,
+      options.lineChartOptions.hotspotOuterRadius,
+      circlePaint,
     );
 
     // todo-00-last
-    // If there is next point in the same row, also paint the line connecting this point with next
+    // If there is next point in the same row, also circlePaint the line connecting this point with next
+
     if (pointModel.hasNextPointModel) {
       var nextPointModel = pointModel.nextPointModel;
-      // var nextPointOffset =
+      // todo-00-last-done : if (nextPointModel.pointContainer! is! ZeroValuePointContainer) {
+        var nextPointOffsetInItsPointContainer = nextPointModel.pointContainer!.pixelPointOffset;
+        var nextPointOffsetInParent = nextPointModel.pointContainer!.offset;
+        var nextPointOffset = nextPointOffsetInParent + nextPointOffsetInItsPointContainer;
+
+        ui.Paint linePaint = ui.Paint();
+        linePaint
+          ..color = circlePaint.color
+          ..strokeWidth = options.lineChartOptions.lineStrokeWidth;
+        canvas.drawLine(thisPointOffset, nextPointOffset, linePaint);
+        // ui.Offset nextPointOffset =
+      // todo-00-last-done : }
     }
+
   }
 
 }

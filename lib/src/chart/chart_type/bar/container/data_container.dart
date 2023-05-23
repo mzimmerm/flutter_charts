@@ -10,10 +10,11 @@ import 'dart:ui' as ui show Rect, Paint, Canvas;
 // up 1 level
 
 // up 2 level chart
+// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container/data_container.dart'
-    show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer, ZeroValuePointContainer;
-import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
-import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
+    show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
+// todo-00-done : import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
 
 // util
 // import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -160,7 +161,7 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
 
   @override
   PointContainer makePointContainer({
-    required PointModel pointModel,
+    required BasePointModel pointModel,
   }) {
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainer(
@@ -174,20 +175,26 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
     );
   }
 
+  // todo-00-next : move to super, this is common between lineChart and barChart
   @override
-  PointContainer makePointContainerWithZeroValue({
-    required PointModel pointModel,
-  }) {
+  BasePointContainer makePointContainerWithZeroValue(
+/* todo-00-last-last-last-done
+      {
+    required BasePointModel pointModel,
+  }
+*/
+  ) {
     // return BarPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
-        pointModel: pointModel,
+        // todo-00-last-last-last-done pointModel: pointModel,
       );
     }
     return ZeroValuePointContainer(
-      pointModel: pointModel,
+      // todo-00-last-last-last-done pointModel: pointModel,
+      pointModel: ZeroValuePointModel(),
       chartViewModel: chartViewModel,
-      outerDataColumnPointsBar: this,
+      // todo-00-last-done : outerDataColumnPointsBar: this,
     );
   }
 
@@ -210,7 +217,7 @@ class BarPointContainer extends PointContainer {
     required super.outerDataColumnPointsBar,
     super.children,
     super.key,
-  }) ;
+  });
 
   /// Full [layout] implementation calculates and sets [PointOffset.barPointRectSize] for this instance,
   /// which is the pixel width and height of the Rectangle bar that represents the data point.

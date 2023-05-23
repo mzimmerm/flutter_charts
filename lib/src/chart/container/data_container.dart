@@ -11,6 +11,7 @@
 
 import 'dart:ui' as ui show Canvas, Size;
 
+// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/chart_type/bar/container/data_container.dart';
 import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
@@ -24,8 +25,8 @@ import 'package:flutter_charts/src/chart/container/axis_container.dart';
 
 // up level chart
 import 'package:flutter_charts/src/chart/options.dart';
-import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
-import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer;
+// todo-00-done : import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer, DataColumnModel, BasePointModel;
 import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
 import 'package:flutter_charts/src/util/util_flutter.dart' show  To2DPixelRange;
@@ -231,7 +232,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   ///
   /// See discussion in [makeInnerBarsContainer] for 'inner' and 'outer' naming conventions.
   PointContainer makeDeepInnerPointContainer({
-    required PointModel pointModel,
+    required BasePointModel pointModel,
   }) {
     throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
@@ -241,9 +242,13 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
   ///
   /// Likely not needed by any client.
-  PointContainer makeDeepInnerPointContainerWithZeroValue({
-    required PointModel pointModel,
-  }) {
+  PointContainer makeDeepInnerPointContainerWithZeroValue(
+/* // todo-00-last-last-last-done
+      {
+    required BasePointModel pointModel,
+  }
+*/
+  ) {
     throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 }
@@ -377,7 +382,7 @@ abstract class BarsContainer extends container_common.ChartAreaContainer {
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
 ///
-abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
+abstract class DataColumnPointsBar extends container_common.ChartAreaContainer { // todo-00-next: rename to PointContainersBar
 
   DataColumnPointsBar({
     required super.chartViewModel,
@@ -402,8 +407,8 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
   @override
   void buildAndReplaceChildren() {
 
-    // Call method to create list of PointContainers given [this.barsAreaSign].
-    // Extensions may override [makePointContainerListForSign] by callind this base,
+    // Create list of PointContainers given [this.barsAreaSign].
+    // Extensions may override [makePointContainerListForSign] by invoking this base,
     // then wrap (e.g. in Padder) each [PointContainer] in the result
     List<BoxContainer> pointContainerList = makePointContainerListForSign();
 
@@ -467,8 +472,8 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
   /// Encapsulates the logic of creating [PointContainer] from [PointModel] for
   /// all possible values of [ChartViewModel.chartStacking] and [barsAreaSign].
   ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
-    return (PointModel pointModelElm) {
-      PointContainer? pointContainer;
+    return (BasePointModel pointModelElm) {
+      BasePointContainer? pointContainer;
       switch (chartViewModel.chartStacking) {
         case ChartStacking.stacked:
           if (barsAreaSign == pointModelElm.sign) {
@@ -494,9 +499,10 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
             // For points [pointModelElm] with opposite sign to the stack being built,
             //   creates a 'ZeroValue' [pointContainer] which has 0 length (along main direction).
             //   This ensures the returned list of PointContainers is the same size for positive and negative, so
-            //   their places for positive and negative alternate. Caller adds the [pointContainer] to result list.
+            //   their places for positive and negative alternate.
+            // Caller adds the [pointContainer] to result list; layouter presents it with 0 length in cross direction.
             pointContainer = makePointContainerWithZeroValue(
-              pointModel: pointModelElm,
+              // todo-00-last-last-last-last-done : pointModel: pointModelElm,
             );
           }
           break;
@@ -507,7 +513,7 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
   /// [BarsContainer] client-overridable method hook for extending [PointContainer].
   PointContainer makePointContainer({
-    required PointModel pointModel,
+    required BasePointModel pointModel,
   }) {
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainer(
@@ -522,19 +528,55 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
   /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
   ///
   /// Likely not needed by any client.
-  PointContainer makePointContainerWithZeroValue({
-    required PointModel pointModel,
-  }) {
+  BasePointContainer makePointContainerWithZeroValue(
+/*  // todo-00-last-last-last-done
+      {
+    required BasePointModel pointModel,
+  }
+*/
+  ) {
     // return BarPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
-        pointModel: pointModel,
+        // todo-00-last-last-last-done pointModel: pointModel,
       );
     }
     throw UnimplementedError('$runtimeType.makePointContainerWithZeroValue: '
         'The value of outerDataContainer.isOuterMakingInnerContainers '
         'is false, this method must be overridden in a subclass.');
   }
+
+}
+
+
+// todo-00-last-last-last-progress
+
+/// - ChartViewModel needed in constructor to pass to super ChartAreaContainer
+/// - Has pointModel as member, type is BasePointModel
+/// - No outer member [outerDataColumnPointsBar] - not connected to any column
+abstract class BasePointContainer extends container_common.ChartAreaContainer
+    with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
+
+  BasePointContainer({
+    required super.chartViewModel,
+    required this.pointModel,
+    // todo-00-removed :  required this.outerDataColumnPointsBar,
+    // To allow extensions to compose, keep children in signature.
+    super.children,
+    super.key,
+  }) {
+    // Model can find the view which displays the model
+    pointModel.pointContainer = this;
+  }
+
+  /// The concrete [BasePointModel] presented by this container.
+  final BasePointModel pointModel;
+
+  // todo-00-last-last-done : added
+  // todo-document
+  late final PointOffset pixelPointOffset;
+
+  // todo-00-done : not needed : final DataColumnPointsBar outerDataColumnPointsBar;
 
 }
 
@@ -546,19 +588,27 @@ abstract class DataColumnPointsBar extends container_common.ChartAreaContainer {
 ///     for extensions to not have to worry about sizing
 ///   - signature includes `List<BoxContainer>? children`, to allow extensions to compose from other [BoxContainer]s.
 ///
-abstract class PointContainer extends container_common.ChartAreaContainer  with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
+// todo-00-last-last-last-progress
+abstract class PointContainer extends BasePointContainer {
 
   PointContainer({
     required super.chartViewModel,
-    required this.pointModel,
+    required super.pointModel,
     required this.outerDataColumnPointsBar,
     // To allow extensions to compose, keep children in signature.
     super.children,
     super.key,
-  });
+  }) {
+    // Model can find the view which displays the model
+    pointModel.pointContainer = this;
+  }
 
   /// The [PointModel] presented by this container.
-  PointModel pointModel;
+  // todo-00-last-done : moved to super : final BasePointModel pointModel;
+
+  /// todo-00-last-last-done : added
+  /// todo-document
+  // todo-00-last-done : moved to super : late final PointOffset pixelPointOffset;
 
   final DataColumnPointsBar outerDataColumnPointsBar;
 
@@ -660,6 +710,31 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
 }
 
+/// Filler container which does not need any underlying [pointModel].
+///
+/// It's length in one direction (which is always the cross-direction if parent is [MainAndCrossAxisBoxLayouter])
+/// is always 0.
+///
+/// Motivation: - Used in bar chart, if data contain both positive and negative values to display the
+///               'filler' rectangles shown on the opposite side of rectangles that have a value.
+///             - Example on vertical bar chart nonStacking:
+///               - Assume data contains points with values 1 and -1 in that order.
+///                 Then the rectangles shown in the chart are:
+///                 - On the positive side, 2 rectangles are shown:
+///                   - A rectangle with height corresponding to value 1; this rectangle is [paint]ed by
+///                     a [PointContainer] extension, the [BarPointContainer].
+///                   - A zero-height rectangle (to fill in the horizontal space against the negative -1 rectangle);
+///                     this rectangle is [paint]ed by instances of this [ZeroValueFillerPointContainer],
+///                     is invisible due to height 0, but fills in the horizontal width which is the same as
+///                     the -1 rectangle.
+///                 - On the negative side, 2 rectangles are shown, analogs to the positive side.
+///
+/// /------------|
+/// /            |   filler rect
+/// ------------------------------
+///  filler rect    |            |
+///                 |------------|
+// todo-00-next-doc : fix documentation
 /// A zero-height (thus 'invisible') [BarPointContainer] extension.
 ///
 /// This container is a stand-in for value point in any chart (line, bar), orientation, stacking,
@@ -668,13 +743,15 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 /// Has zero [layoutSize] in the direction of the input data axis, and constraint size in the cross direction.
 ///
 /// See [layout] for details.
-/// // todo-00-next : should extend PointContainer.
-class ZeroValuePointContainer extends BarPointContainer {
+// todo-00-done : class ZeroValuePointContainer extends BarPointContainer {
+// todo-00-last-last-last-progress
+
+class ZeroValuePointContainer extends BasePointContainer {
 
   ZeroValuePointContainer({
-    required super.pointModel,
     required super.chartViewModel,
-    required super.outerDataColumnPointsBar,
+    required super.pointModel,
+    // todo-00-last-done : required super.outerDataColumnPointsBar,
     super.children,
     super.key,
   });
