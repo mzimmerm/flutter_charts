@@ -46,24 +46,6 @@ class ChartModel {
 
     _dataColumns = transposeRowsToColumns(dataRows);
 
-    /* todo-00-last-done : moved fully to ChartViewModel
-    // Construct the full [ChartModel] as well, so we can use it, and
-    // use it's methods and members in OLD DataContainer.
-    // Here, create one [DataColumnModel] for each data column, and add to member [dataColumnModels]
-    int columnIndex = 0;
-    for (List<double> valuesColumn in _dataColumns) {
-      dataColumnModels.add(
-        DataColumnModel(
-          valuesColumn: valuesColumn,
-          outerChartModel: this,
-          columnIndex: columnIndex,
-        ),
-      );
-
-    columnIndex++;
-    }
-    */
-
   }
 
   // NEW CODE =============================================================
@@ -75,80 +57,6 @@ class ChartModel {
 
   LegendItem getLegendItemAt(int index) => _byDataRowLegends.getItemAt(index);
 
-  /* todo-00-last-done : moved fully to ChartViewModel
-  /// List of dataColumnPoints in this [ChartModel].
-  ///
-  /// Indexed and can be iterated using
-  ///   ```dart
-  ///   for (int col=0; col < this.numColumns; col++)
-  ///   ```
-  final List<DataColumnModel> dataColumnModels = [];
-
-
-  /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
-  /// specific for the passed [isStacked].
-  ///
-  /// The returned value is calculated from [ChartModel] by finding maximum and minimum of data values
-  /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
-  ///
-  /// The source data of the returned interval differs in stacked and not-Stacked data, determined by argument [isStacked] :
-  ///   - For [chartStacking] == [ChartStacking.stacked],
-  ///       the min and max is from [extremeValueWithSign] for positive and negative sign
-  ///   - For [chartStacking] == [ChartStacking.nonStacked],
-  ///       the min and max is from [_transformedValuesMin] and max.
-  ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [DataColumnModel] first, but could go
-  /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
-  ///
-  Interval valuesInterval({
-    required ChartStacking chartStacking,
-  }) {
-    switch(chartStacking) {
-      case ChartStacking.stacked:
-        // Stacked values always start or end at 0.0.isStacked
-        return Interval(
-          extremeValueWithSign(Sign.negative, chartStacking),
-          extremeValueWithSign(Sign.positiveOr0, chartStacking),
-        );
-      case ChartStacking.nonStacked:
-        // not-Stacked values can just use values from [ChartModel.dataRows] transformed values.
-        return Interval(
-          _transformedValuesMin,
-          _transformedValuesMax,
-        );
-    }
-  }
-
-  /// Returns the interval that envelopes all data values in [ChartModel.dataRows], possibly extended to 0.
-  ///
-  /// The [isStacked] controls whether the interval is created from values in [PointModel.outputValue]
-  /// or their stacked values.
-  ///
-  /// Whether the resulting Interval is extended from the simple min/max of all data values
-  /// is controlled by [extendAxisToOrigin]. If true, the interval is extended to zero
-  /// if all values are positive or all values are negative.
-  ///
-  Interval extendedValuesInterval({
-    required ChartStacking chartStacking,
-    required bool extendAxisToOrigin,
-  }) {
-    return util_labels.extendToOrigin(
-      valuesInterval(chartStacking: chartStacking),
-      extendAxisToOrigin,
-    );
-  }
-
-  /// Data range used when labels are not-numeric.
-  ///
-  /// Motivation:
-  ///   When labels for input values or output values are not-numeric or cannot be
-  ///   converted to numeric, there must still be some way to affmap values to pixels.
-  ///   This member provides a default 'from' range for such affmap-ing.
-  ///
-  final Interval dataRangeWhenStringLabels = const Interval(0.0, 100.0);
-
-
-   */
   // OLD CODE =============================================================
   // Legacy stuff below
 
@@ -193,18 +101,6 @@ class ChartModel {
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
 
-  /* todo-00-done : moved to ChartViewModel
-  // todo-013-performance : cache valuesMax/Min ond also _flatten
-  List<double> get _flatten => dataRows.expand((element) => element).toList();
-  double get _valuesMin => _flatten.reduce(math.min);
-  // double get _valuesMax => _flatten.reduce(math.max);
-
-  double get _transformedValuesMin =>
-      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
-  double get _transformedValuesMax =>
-      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
-  */
-
   void validate(List<String> legendNames, List<ui.Color> legendColors) {
     //                      But that would require ChartOptions available in ChartModel.
     if (!(dataRows.length == legendNames.length)) {
@@ -235,25 +131,6 @@ class ChartModel {
       */
     }
   }
-
-  /* todo-00-last-done : Moved to ChartViewModel
-  /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnModel]s),
-  ///   or 0.0 if there are no positive columns;
-  /// for negative [sign]. returns min of all columns or 0.0 if there are no negative columns
-  ///
-  /// The returned result is equivalent to data values minimum and maximum,
-  /// with minimum extended down to 0.0 if there are no negative values,
-  /// and maximum extended up to 0.0 if there are no positive values.
-  ///
-  /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
-  /// their separately positive or negative values stacked if [isStacked] is true
-  double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
-    return dataColumnModels
-        .map((dataColumnModel) => dataColumnModel.extremeValueWithSign(sign, chartStacking))
-        .extremeValueWithSign(sign);
-  }
-  */
-
 }
 
 /// Data for one legend item, currently it's [name] and [color] used for data it represents.

@@ -10,10 +10,8 @@ import 'dart:ui' as ui show Paint, Canvas, Offset;
 // up 1 level
 
 // up 2 level chart
-// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container/data_container.dart'
     show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
-// todo-00-done : import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 // import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
@@ -143,26 +141,16 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     );
   }
 
-  // todo-00-next : move to super, this is common between lineChart and barChart
   @override
-  BasePointContainer makePointContainerWithZeroValue(
-/*  // todo-00-last-last-last-done
-      {
-    required BasePointModel pointModel,
-  }
-*/
-  ) {
+  BasePointContainer makePointContainerWithZeroValue() {
     // return LineAndPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
-        // todo-00-last-last-last-done pointModel: pointModel,
       );
     }
     return ZeroValuePointContainer(
-       // todo-00-last-last-last-done  pointModel: pointModel,
       pointModel: ZeroValuePointModel(),
       chartViewModel: chartViewModel,
-      // todo-00-last-done : outerDataColumnPointsBar: this,
     );
   }
 
@@ -186,9 +174,6 @@ class LineAndPointContainer extends PointContainer {
     super.children,
     super.key,
   });
-
-  /// Stores offset calculated during [layout] for use in [paint].
-  // todo-00-last-last : moved to PointModel : late final PointOffset _pixelPointOffset;
 
   /// Full [layout] implementation calculates and sets the pixel point [_pixelPointOffset]
   /// that represents the line point data.
@@ -215,7 +200,6 @@ class LineAndPointContainer extends PointContainer {
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // Store pixelPointOffset as member for paint to use as added offset
-    // todo-00-last-done : _pixelPointOffset = pixelPointOffset;
     this.pixelPointOffset = pixelPointOffset;
 
     // Must set layoutSize same as passed constraints, for the rudimentary [StackLayouter] to layout and paint
@@ -225,8 +209,8 @@ class LineAndPointContainer extends PointContainer {
     layoutSize = constraints.size;
   }
 
-  @override paint(ui.Canvas canvas) {
-
+  @override
+  paint(ui.Canvas canvas) {
     /* KEEP print info about what is painted
     print(' ### Log.Info: $runtimeType.circlePaint: color=${circlePaint.color}, _pixelPointOffset = $_pixelPointOffset, '
         '_pixelPointOffset.barPointRectSize=${_pixelPointOffset.barPointRectSize}, '
@@ -249,25 +233,19 @@ class LineAndPointContainer extends PointContainer {
       circlePaint,
     );
 
-    // todo-00-last
-    // If there is next point in the same row, also circlePaint the line connecting this point with next
-
+    // If there is next point in the same row of data, also circlePaint the line connecting this point with next
     if (pointModel.hasNextPointModel) {
       var nextPointModel = pointModel.nextPointModel;
-      // todo-00-last-done : if (nextPointModel.pointContainer! is! ZeroValuePointContainer) {
-        var nextPointOffsetInItsPointContainer = nextPointModel.pointContainer!.pixelPointOffset;
-        var nextPointOffsetInParent = nextPointModel.pointContainer!.offset;
-        var nextPointOffset = nextPointOffsetInParent + nextPointOffsetInItsPointContainer;
+      var nextPointOffsetInItsPointContainer = nextPointModel.pointContainer!.pixelPointOffset;
+      var nextPointOffsetInParent = nextPointModel.pointContainer!.offset;
+      var nextPointOffset = nextPointOffsetInParent + nextPointOffsetInItsPointContainer;
 
-        ui.Paint linePaint = ui.Paint();
-        linePaint
-          ..color = circlePaint.color
-          ..strokeWidth = options.lineChartOptions.lineStrokeWidth;
-        canvas.drawLine(thisPointOffset, nextPointOffset, linePaint);
-        // ui.Offset nextPointOffset =
-      // todo-00-last-done : }
+      ui.Paint linePaint = ui.Paint();
+      linePaint
+        ..color = circlePaint.color
+        ..strokeWidth = options.lineChartOptions.lineStrokeWidth;
+      canvas.drawLine(thisPointOffset, nextPointOffset, linePaint);
+      // ui.Offset nextPointOffset =
     }
-
   }
-
 }

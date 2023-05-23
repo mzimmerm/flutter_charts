@@ -357,13 +357,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  PointContainer makeDeepInnerPointContainerWithZeroValue(
-/*  // todo-00-last-last-last-done
-      {
-    required BasePointModel pointModel,
-  }
-*/
-  ) {
+  PointContainer makeDeepInnerPointContainerWithZeroValue() {
     throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 }

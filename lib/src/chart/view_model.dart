@@ -20,7 +20,6 @@ import '../morphic/container/morphic_dart_enums.dart';
 import '../morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
 
 // this level or equivalent
-// todo-00-done : moving DataColumnModel, PointModel to ChartViewModel: import 'model/data_model.dart' as model show ChartModel, DataColumnModel, PointModel, LegendItem;
 import 'model/data_model.dart' as model show ChartModel, LegendItem;
 import 'options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
 import 'container/data_container.dart' as data_container show DataContainer, BasePointContainer;
@@ -33,7 +32,7 @@ import '../util/extensions_dart.dart';
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].
-/// // todo-00-next : I think the returned does NOT need to be nullable. Confirm, and also reflect in name.
+// todo-00-next : I think the returned does NOT need to be nullable. But we need to cover all cases where it's used by useing switch. Confirm, and also reflect in name.
 typedef ClsPointToNullableContainer = data_container.BasePointContainer? Function (PointModel);
 
 /// Abstract base class for chart view models.
@@ -85,10 +84,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
        _chartModel = chartModel {
     logger.Logger().d('Constructing ChartViewModel');
 
-    // todo-00-last-done vvvv moved here from ChartModelConstructor. All Columns and Points now belong to ChartViewModel
-    // Construct the full [ChartModel] as well, so we can use it, and
-    // use it's methods and members in OLD DataContainer.
-    // Here, create one [DataColumnModel] for each data column, and add to member [dataColumnModels]
+    // Create one [DataColumnModel] for each data column, and add to member [dataColumnModels]
     int columnIndex = 0;
     for (List<double> valuesColumn in chartModel.dataColumns) { // todo-00-next : Should we have dataColumns public in ChartModel?? What SHOULD BE THE API OF DATA_MODEL???
       dataColumnModels.add(
@@ -102,9 +98,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
       columnIndex++;
     }
 
-    // todo-00-last-done ^^^^
-
-
+    // Set label layout strategy on member
     inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: _chartModel.chartOptions);
     inputLabelLayoutStrategyInst = inputLabelLayoutStrategy;
 
@@ -115,7 +109,6 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      // todo-00-done : chartModel: _chartModel,
       chartViewModel: this,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
@@ -128,7 +121,6 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      // todo-00-done : chartModel: _chartModel,
       chartViewModel: this,
       dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
@@ -156,10 +148,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
   /// The methods [dataColumnModels], [numRows], [getLegendItemAt], [dataRangeWhenStringLabels]
   /// are legacy public views of [ChartViewModel] into [model.ChartModel] and may be removed.
-  // todo-00-done : DataColumnModels now owned by this ChartViewModel " List<DataColumnModel> get dataColumnModels => List.from(_chartModel.dataColumnModels);
   final List<DataColumnModel> dataColumnModels = [];
 
-  // todo-00-last-done: vvvvv moved here from ChartModel
   /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnModel]s),
   ///   or 0.0 if there are no positive columns;
   /// for negative [sign]. returns min of all columns or 0.0 if there are no negative columns
@@ -240,21 +230,16 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
   // todo-013-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => _chartModel.dataRows.expand((element) => element).toList();
-  // todo-00-done : not referenced? : double get _valuesMin => _flatten.reduce(math.min);
-  // double get _valuesMax => _flatten.reduce(math.max);
+  double get _valuesMin => _flatten.reduce(math.min);
 
   double get _transformedValuesMin =>
       _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
   double get _transformedValuesMax =>
       _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
-  // ^^^^^^
-
   int get numRows => _chartModel.numRows;
 
   model.LegendItem getLegendItemAt(index) => _chartModel.getLegendItemAt(index);
-
-  // todo-00-done : BUT LOOK AT THIS util_dart.Interval get dataRangeWhenStringLabels => _chartModel.dataRangeWhenStringLabels;
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -389,7 +374,6 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   }
 }
 
-// ===================== todo-00-last-done : moved DataColumnModel and PointModel from data_model.dart to view_model.dart
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values.
 ///
 /// As we consider the [ChartModel] to represent a 2D array 'rows first', in other words,
@@ -436,7 +420,6 @@ class DataColumnModel {
   }
 
   /// The full [ChartModel] from which data columns this [DataColumnModel] is created.
-  // todo-00-done : final model.ChartModel outerChartModel;
   final ChartViewModel outerChartModel; // todo-00-next : rename to outerChartViewModel
 
   /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnModels].
@@ -527,7 +510,7 @@ class DataColumnModel {
 }
 
 
-// todo-00-last-last-last-progress
+// todo-0100-document
 /// Base point model serves as a base class for both the actual [PointModel] as well as [ZeroValuePointModel].
 ///
 /// Does NOT need any:
@@ -538,20 +521,14 @@ class DataColumnModel {
 @immutable
 abstract class BasePointModel {
 
-  // todo-00-last-done : moved here, for the benefit of view
   /// The view which presents this [PointModel].
   ///
-  /// todo-00-next : go over this and document
-  /// Must be initialized in constructors of
-  /// class-hierarchy leaf extensions of [data_container.PointContainer].
-  /// todo-00-next: CANNOT BE FINAL, EVEN LATE FINAL, BECAUSE, THE ChartViewModel, with all it's components (DataColumnModel, PointModel)
-  /// todo-00-next:   lives longer than views/containers (PointContainer, DataColumnPointsBar). So code must be able to set again on repaint.
+  /// todo-00-next: CAN THIS BE FIXED? CANNOT BE FINAL, EVEN LATE FINAL, BECAUSE, THE ChartViewModel, with all it's components (DataColumnModel, PointModel)
+  ///                lives longer than views/containers (PointContainer, DataColumnPointsBar). So code must be able to set again on repaint.
   // late final data_container.BasePointContainer pointContainer;
   data_container.BasePointContainer? pointContainer;
 
-  /// Abstract indicates how to assign inputValue, given an input range;  intended to be defined in some extensions.
-  // todo-00-last-last-last-last
-  /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
+  /// Abstract method; implementations should get or calculate the inputValue-position of this [PointModel] instance.
   ///
   /// Delegated to the same name method on [outerDataColumnModel] - the [DataColumnModel.inputValueOnInputRange] -
   /// given the passed [inputDataRangeLabelInfosGenerator].
@@ -619,7 +596,6 @@ abstract class BasePointModel {
 ///     member `DataColumnModel._chartModel`.
 ///     This access is used for model colors and row and column indexes to [ChartModel.dataRows].
 ///
-// todo-00-last-last-last-progress
 @immutable
 class PointModel extends BasePointModel {
 
@@ -664,8 +640,6 @@ class PointModel extends BasePointModel {
 
   /// References the data column (dataColumnPoints list) this point belongs to
   final DataColumnModel outerDataColumnModel;
-
-  // todo-00-last-last-last-done : moved to super : data_container.PointContainer? pointContainer;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
@@ -729,7 +703,7 @@ class PointModel extends BasePointModel {
 }
 
 
-// todo-00-last-last-last-progress
+// todo-0100-document
 @immutable
 class ZeroValuePointModel extends BasePointModel {
 

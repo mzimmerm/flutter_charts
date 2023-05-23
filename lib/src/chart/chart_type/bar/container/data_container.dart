@@ -10,10 +10,8 @@ import 'dart:ui' as ui show Rect, Paint, Canvas;
 // up 1 level
 
 // up 2 level chart
-// todo-00-last-done : import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container/data_container.dart'
     show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
-// todo-00-done : import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
 
 // util
@@ -175,26 +173,15 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
     );
   }
 
-  // todo-00-next : move to super, this is common between lineChart and barChart
   @override
-  BasePointContainer makePointContainerWithZeroValue(
-/* todo-00-last-last-last-done
-      {
-    required BasePointModel pointModel,
-  }
-*/
-  ) {
+  BasePointContainer makePointContainerWithZeroValue() {
     // return BarPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
-        // todo-00-last-last-last-done pointModel: pointModel,
-      );
+      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue();
     }
     return ZeroValuePointContainer(
-      // todo-00-last-last-last-done pointModel: pointModel,
       pointModel: ZeroValuePointModel(),
       chartViewModel: chartViewModel,
-      // todo-00-last-done : outerDataColumnPointsBar: this,
     );
   }
 

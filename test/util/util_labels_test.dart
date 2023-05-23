@@ -131,7 +131,6 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrie
   return DataRangeLabelInfosGenerator(
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    // todo-00-last : chartModel: mockChartModel,
     chartViewModel: MockChartViewModel(
       chartModel: mockChartModel,
       chartOrientation: chartOrientation,
@@ -201,7 +200,6 @@ void rangeTestCore(
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
       chartOrientation: ChartOrientation.column,
       chartStacking: ChartStacking.nonStacked,
-      //  todo-00-done : chartModel: chartModel,
       chartViewModel: MockChartViewModel(
         chartModel: chartModel,
         chartOrientation: ChartOrientation.column,
