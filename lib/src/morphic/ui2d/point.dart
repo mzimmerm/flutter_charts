@@ -34,6 +34,8 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value ranges and pixel ranges.
 ///
+/// todo-02-design : instead of extending Offset, make Offset member, and forward to it only methods needed.
+///
 /// todo-00-ideas-from-walk
 ///   - Rename [PointOffset] to [RangedPointOffset]
 ///   - Add [RollingLayouterRangedPointOffset] extends   [RangedPointOffset]; this adds the behavior
@@ -72,7 +74,7 @@ class PointOffset extends Offset {
   ///
   late final Size barPointRectSize;
 
-  double get inputValue => dx;  // todo-010 make this final? 
+  double get inputValue => dx;
   double get outputValue => dy;
 
   /// Set the value ([inputValue] or [outputValue]) in the cross direction to half of the passed size
@@ -389,16 +391,6 @@ class PointOffset extends Offset {
         'outputValue: $outputValue,'
         ')';
   }
-}
-
-/// Identifies a diagonal for transpose transfer.
-///
-/// [leftToRightUp] identifies the diagonal around which a coordinate system would
-/// rotate to get from a vertical bar chart to a horizontal bar chart.
-// todo-014 : move to an enum file - representing geometry
-enum Diagonal {
-  leftToRightDown,
-  leftToRightUp,
 }
 
 /* KEEP : Old version of PointOffset affmap

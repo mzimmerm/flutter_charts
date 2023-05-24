@@ -19,7 +19,7 @@ import '../morphic_dart_enums.dart' show LayoutAxis, DataDependency;
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartOrientation {
-  // todo-010: consider rename:
+  // todo-011: consider rename:
   //    column                   -> inputAxisHorizontal
   //    row                      -> inputAxisVertical
   //    inputDataAxisOrientation -> inputAxis  ; also change this to getter: cross to outputAxis
@@ -138,3 +138,13 @@ enum ChartStacking {
     return this == stacked;
   }
 }
+
+/// Identifies a diagonal for transpose transfer.
+///
+/// [leftToRightUp] identifies the diagonal around which a coordinate system would
+/// rotate to get from a vertical bar chart to a horizontal bar chart.
+enum Diagonal {
+  leftToRightDown,
+  leftToRightUp,
+}
+

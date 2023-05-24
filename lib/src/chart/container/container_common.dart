@@ -85,7 +85,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+// todo-05-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
 //          in AdjustableLabelsChartAreaContainer
 //          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.

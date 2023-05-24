@@ -15,7 +15,17 @@ enum ExternalTickAtPosition {
 ///
 enum LayoutAxis {
   horizontal,
-  vertical,
+  vertical;
+
+  LayoutAxis perpendicularAxis() {
+    switch (this) {
+      case LayoutAxis.horizontal:
+        return LayoutAxis.vertical;
+      case LayoutAxis.vertical:
+        return LayoutAxis.horizontal;
+    }
+  }
+
 }
 
 /// Describes the type of data shown on a [LayoutAxis], for a [ChartOrientation].

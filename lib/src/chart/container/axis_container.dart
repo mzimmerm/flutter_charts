@@ -200,7 +200,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
           children: [
             TransposingExternalTicks.Row(
               chartOrientation: chartViewModel.chartOrientation,
-              mainAxisExternalTicksLayoutProvider: _inputRangeDescriptor.asExternalTicksLayoutProvider(
+              mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
               children:  [
@@ -244,7 +244,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
             children: [
               TransposingExternalTicks.Column(
                 chartOrientation: chartViewModel.chartOrientation,
-                mainAxisExternalTicksLayoutProvider: _outputRangeDescriptor.asExternalTicksLayoutProvider(
+                mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [

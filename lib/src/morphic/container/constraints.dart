@@ -185,7 +185,7 @@ abstract class BoundingBoxesBase {
   ///     and client asks to divide the constraint into smaller constraints given the parent's children weight.
   ///     Each weight acts along the axis orientation given by [divideAlongAxis].
   ///
-  // todo-012 : separate into methods:
+  // todo-04 : separate into methods:
   //    - divideEvenlyIntoCount: params : divideIntoCount, divideAlongAxis
   //    - divideByChildrenWeights: params : childrenWeights, divideAlongAxis
   //    - copyIntoCount: params: copyCount, divideAlongAxis

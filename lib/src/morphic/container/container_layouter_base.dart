@@ -1156,7 +1156,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// in the same order as the passed [children]. The rectangle origin placed relative
   /// to the layouter instance, in the order of [children].
   ///
-  /// todo-013 : review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
+  /// todo-014 : review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
   /// It can ignore the passed [children] and position member [_children],
   /// but then, the offset children method [_layout_Post_NotLeaf_OffsetChildren] must be overridden
   /// to do the same (act on member [_children] rather than the passed [children]).
@@ -1514,7 +1514,7 @@ abstract class PositioningBoxContainer extends BoxContainer {
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == children.length);
-    // todo-012 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
+    // todo-014 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
@@ -2078,9 +2078,9 @@ class Column extends TransposingRoller {
 /// Layouter which positions it's children along it's layout axis to a externally passed grid along the
 /// main axis.
 ///
-/// The layout axis along which children are positioned is defined by the [ExternalTicksLayoutProvider]
-/// passed to the constructor; to be precise, by the [ExternalTicksLayoutProvider]'s member
-/// [ExternalTicksLayoutProvider.isOnHorizontalAxis].
+/// The layout axis along which children are positioned is defined by the [ExternalTicksLayoutDescriptor]
+/// passed to the constructor; to be precise, by the [ExternalTicksLayoutDescriptor]'s member
+/// [ExternalTicksLayoutDescriptor.isOnHorizontalAxis].
 ///
 /// The 1D points on the grid are referred to as 'ticks'.
 ///
@@ -2094,7 +2094,7 @@ class Column extends TransposingRoller {
 /// Importantly, it differs from the [RollingBoxLayouter] in the [layout] method, in using
 /// a different constraints distribution to children, and a different order of children [layout]
 /// (in [RollingBoxLayouter] it is not-greedy first, greedy last, on this derived class
-/// layout positions are determined solely by the tick values in [ExternalTicksLayoutProvider])
+/// layout positions are determined solely by the tick values in [ExternalTicksLayoutDescriptor])
 ///
 /// See comments in [layout_Post_NotLeaf_PositionChildren] for comments on core goals
 /// of this class [layout] method and how it differs from it's base and sibling classes.
@@ -2110,8 +2110,8 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     // If anything, weights could be generated from ticks, if asked by an argument.
     //   ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
     /// Defines the main axis along which the layouter works; the positions of children
-    /// are determined by the ticks in [ExternalTicksLayoutProvider.tickPixels].
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    /// are determined by the ticks in [ExternalTicksLayoutDescriptor.tickPixels].
+    required ExternalTicksLayoutDescriptor mainAxisExternalTicksLayoutDescriptor,
     this.isDistributeConstraintsBasedOnTickSpacing = false,
   }) : super(
     children                  : children,
@@ -2126,7 +2126,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: Packing.externalTicksProvided,
-      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+      externalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
     );
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
@@ -2148,7 +2148,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// - set [layoutSize] to full constraint size in main axis direction (NOT
   ///   just outer envelope of children)
   /// - before positioning children in [_MainAndCrossPositionedSegments], the
-  ///   [ExternalTicksLayoutProvider.tickPixelsRange] must be set to the full constraints size in main
+  ///   [ExternalTicksLayoutDescriptor.tickPixelsRange] must be set to the full constraints size in main
   ///   axis direction (the full constraints size will become layoutSize in that direction, per point above).
   ///
   /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for more requirements and definitions.
@@ -2163,8 +2163,8 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     // if (isLeaf) { return []; }
 
-    if (mainAxisLayoutProperties.externalTicksLayoutProvider == null) {
-      throw StateError('externalTicksLayoutProvider is null');
+    if (mainAxisLayoutProperties.externalTicksLayoutDescriptor == null) {
+      throw StateError('externalTicksLayoutDescriptor is null');
     }
     // External ticks layouter is greedy along the main axis - MUST take full constraints along main axis direction.
     // Along main axis direction:
@@ -2172,10 +2172,10 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     //   - the constraints will ALSO become the layout size! See [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
     //     for how the layoutSize is set
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
-    // So, knowing the size to which to affmap, create the range to which the [externalTicksLayoutProvider]
-    //   will be affmap-ed, apply the pixel range on the [externalTicksLayoutProvider], and affmap the ticks to pixels.
+    // So, knowing the size to which to affmap, create the range to which the [externalTicksLayoutDescriptor]
+    //   will be affmap-ed, apply the pixel range on the [externalTicksLayoutDescriptor], and affmap the ticks to pixels.
     var tickPixelsRangeFromOwnerLayouterConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
-    mainAxisLayoutProperties.externalTicksLayoutProvider!
+    mainAxisLayoutProperties.externalTicksLayoutDescriptor!
         ._setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerLayouterConstraints);
 
     // The set ticks pixel range to which to affmap, and the ticks affmap MUST be done before layout (positioning) below,
@@ -2221,7 +2221,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     required super.mainAxisAlign,
     required super.crossAxisAlign,
     required super.crossAxisPacking,
-    required super.mainAxisExternalTicksLayoutProvider,
+    required super.mainAxisExternalTicksLayoutDescriptor,
     super.isDistributeConstraintsBasedOnTickSpacing,
   });
 
@@ -2232,13 +2232,13 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   factory TransposingExternalTicks.Column({
     required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
-    // todo-014 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-02-design : provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
     // ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    required ExternalTicksLayoutDescriptor mainAxisExternalTicksLayoutDescriptor,
   }) {
     switch (chartOrientation) {
       case ChartOrientation.column:
@@ -2247,7 +2247,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           mainAxisAlign: mainAxisAlign,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
-          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+          mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
         );
       case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
@@ -2256,7 +2256,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
-          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+          mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
         );
     }
   }
@@ -2272,7 +2272,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     // ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    required ExternalTicksLayoutDescriptor mainAxisExternalTicksLayoutDescriptor,
   }) {
     switch (chartOrientation) {
       case ChartOrientation.column:
@@ -2281,7 +2281,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           mainAxisAlign: mainAxisAlign,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
-          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+          mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
         );
       case ChartOrientation.row:
         return ExternalTicksColumn(
@@ -2289,7 +2289,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
-          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+          mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
         );
     }
   }
@@ -2303,14 +2303,14 @@ class ExternalTicksRow extends TransposingExternalTicks {
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     // ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    required ExternalTicksLayoutDescriptor mainAxisExternalTicksLayoutDescriptor,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
     // done in super : mainAxisPacking: Packing.externalTicksProvided,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
 
     // constraintsWeight: constraintsWeight,
   ) {
@@ -2326,14 +2326,14 @@ class ExternalTicksColumn extends TransposingExternalTicks {
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
     // ConstraintsWeight constraintsWeight NOT applicable for external ticks
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    required ExternalTicksLayoutDescriptor mainAxisExternalTicksLayoutDescriptor,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
     // done in super : mainAxisPacking: Packing.externalTicksProvided,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
   }
@@ -2659,7 +2659,7 @@ class TableLayoutCellMinSizer {
       enforcedMinLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
       assert(preLayoutCellToGainMinima != null);
-      // todo-013 : parent == this will fail. Maybe allow apply to ignore.
+      // todo-014 : parent == this will fail. Maybe allow apply to ignore.
       // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima as LayoutableBox, preLayoutCellConstraints!);
       preLayoutCellToGainMinima!.layout();
       enforcedMinLayoutSize = preLayoutCellToGainMinima!.layoutSize;
@@ -2717,7 +2717,7 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
-                // todo-013-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
+                // todo-014-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
                 // horizontalAlign: horizontalAlign,
                 // verticalAlign: verticalAlign,
                 // cellConstraints: null,
@@ -2777,7 +2777,7 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
-  /// todo-013-performance : optimize, find it in cellDefinersTable instead !!!!
+  /// todo-014-performance : optimize, find it in cellDefinersTable instead !!!!
   TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cellDefiner) => cellDefiner.row == row && cellDefiner.column == column,
@@ -2789,7 +2789,7 @@ class TableLayoutDefiner {
   ///   - First priority is alignment on the cell level at [TableLayoutCellDefiner.verticalAlign] if not null;
   ///   - Next priority, is alignment in the definer [cellsAlignerDefiner] if not null
   ///   - Last priority is this instance's alignment [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  //   todo-014 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  //   todo-02-design : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   //                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);
@@ -3387,7 +3387,7 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
 ///     the stack layouter parent.
 ///
-/// 1. todo-010 LATER: Create a better StackLayouter, so that:
+/// 1. todo-011 LATER: Create a better StackLayouter, so that:
 ///          - allows to obtain constraints that are in some sense limited (divided in both directions)
 ///          - defines the StackingOrigin (maybe something EXISTS for it??? I THINK SO)
 ///            topLeft, topRight, bottomLeft, bottomRight, center, maybe a kind of offset.
@@ -3604,10 +3604,10 @@ class Aligner extends PositioningBoxLayouter {
 /// Defines the owner's ([ExternalTicksBoxLayouter]'s) main layout axis,
 /// positions where the owner places its children, and other layout directives for the owner.
 ///
-/// Each instance of this [ExternalTicksLayoutProvider] is owned by its client (and owner),
+/// Each instance of this [ExternalTicksLayoutDescriptor] is owned by its client (and owner),
 /// an [ExternalTicksBoxLayouter], on which behalf it works.
 ///
-/// See [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutProvider], which is used to create instance of this class.
+/// See [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutDescriptor], which is used to create instance of this class.
 ///
 /// The main role of this class is provided by the method [_affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]
@@ -3631,10 +3631,9 @@ class Aligner extends PositioningBoxLayouter {
 /// Important note: Although not clear from this class, it should ONLY position along the main axis.
 ///                 This is reflected in one-dimensionality of [tickValues] and [externalTickAtPosition]
 ///
-// todo-010 : rename to ExternalTicksLayoutDescriptor : also look for words 'provider' and where appropriate, change to 'descriptor'
-class ExternalTicksLayoutProvider {
+class ExternalTicksLayoutDescriptor {
 
-  ExternalTicksLayoutProvider({
+  ExternalTicksLayoutDescriptor({
     required this.tickValues,
     required this.tickValuesRange,
     required this.isOnHorizontalAxis,
@@ -3642,7 +3641,7 @@ class ExternalTicksLayoutProvider {
 });
 
   /// Represent future positions of children of the layouter controlled
-  /// by this ticks provider [ExternalTicksLayoutProvider].
+  /// by this ticks provider [ExternalTicksLayoutDescriptor].
   /// 
   /// By 'future positions' we mean the [tickValues] after extrapolation to axis pixels, 
   /// to be precise, [tickValues] extrapolated by [_affmapValuesToPixels] when passed axis pixels range.
@@ -3672,12 +3671,12 @@ class ExternalTicksLayoutProvider {
   ///   - Determines the labels' pixel layout placing.
   ///   - Determines positions of rectangles of labels in [DataRangeTicksAndLabelsDescriptor.labelInfoList].
   ///   - Contains
-  ///     - NUMERICALLY DECREASING values IF this [ExternalTicksLayoutProvider] is on vertical axis
+  ///     - NUMERICALLY DECREASING values IF this [ExternalTicksLayoutDescriptor] is on vertical axis
   ///       ([isOnHorizontalAxis] is false during call to method [_affmapValuesToPixels]).
-  ///       [ExternalTicksLayoutProvider.tickValues].
+  ///       [ExternalTicksLayoutDescriptor.tickValues].
   ///     - INCREASING values otherwise.
   ///
-  /// See [ChartViewModel.outputRangeDescriptor] returned by [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutProvider].
+  /// See [ChartViewModel.outputRangeDescriptor] returned by [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutDescriptor].
   ///
   /// See [DataRangeTicksAndLabelsDescriptor.labelInfoList] which returns the labels positioned by this list
   /// (both lists order first to last).
@@ -3695,7 +3694,7 @@ class ExternalTicksLayoutProvider {
   late final util_dart.Interval tickPixelsRange;
 
 
-  /// Defines which axis this instance of [ExternalTicksLayoutProvider] represents; also implies the axis
+  /// Defines which axis this instance of [ExternalTicksLayoutDescriptor] represents; also implies the axis
   /// along which the owner [ExternalTicksBoxLayouter] positions its children.
   ///
   /// If true, the represented (and
@@ -3708,7 +3707,7 @@ class ExternalTicksLayoutProvider {
   ///     the largest value is on the last position.
   ///   - If true, the [tickPixels] increase in the list from position last to 0,
   ///     the largest value is on the first position.
-  ///     todo-010  : instead of boolean, convert it mainLayoutAxis, set to horizontal or vertical! Call in mainLayoutAxis, or ownerMainLayoutAxis.
+  ///     todo-02-design  : instead of boolean, convert it mainLayoutAxis, set to horizontal or vertical! Call in mainLayoutAxis, or ownerMainLayoutAxis.
   final bool isOnHorizontalAxis;
 
   final ExternalTickAtPosition externalTickAtPosition;
@@ -3717,8 +3716,8 @@ class ExternalTicksLayoutProvider {
   ///
   /// The passed [tickPixelsRangeFromOwnerLayouterConstraints] is pixel-affmap-equivalent of [tickValuesRange],
   /// and should be set to be *Interval <0, constraints.fullLengthAlongMainAxis>* for constraints set on the
-  /// [ExternalTicksBoxLayouter] which owns this [ExternalTicksLayoutProvider] instance through
-  /// [ExternalTicksBoxLayouter.mainAxisLayoutProperties] member [LengthsPositionerProperties.externalTicksLayoutProvider].
+  /// [ExternalTicksBoxLayouter] which owns this [ExternalTicksLayoutDescriptor] instance through
+  /// [ExternalTicksBoxLayouter.mainAxisLayoutProperties] member [LengthsPositionerProperties.externalTicksLayoutDescriptor].
   ///
   /// This code is used to layout labels : the [ExternalTicksBoxLayouter] is currently ONLY used for labels.
   ///
@@ -3775,16 +3774,6 @@ class ExternalTicksLayoutProvider {
         .toList();
   }
 
-}
-
-// todo-010 : move this as method on LayoutAxis
-LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
-  switch (layoutAxis) {
-    case LayoutAxis.horizontal:
-      return LayoutAxis.vertical;
-    case LayoutAxis.vertical:
-      return LayoutAxis.horizontal;
-  }
 }
 
 class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
@@ -3855,7 +3844,7 @@ class _MainAndCrossPositionedSegments {
   })
   {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
-    var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
+    var crossLayoutAxis = mainLayoutAxis.perpendicularAxis();
 
     LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
       lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
@@ -3991,12 +3980,12 @@ class _MainAndCrossPositionedSegments {
     required _FirstRollingLayouterTracker rollingTracker,
     required Packing packing,
     required Align align,
-    required externalTicksLayoutProvider,
+    required externalTicksLayoutDescriptor,
   }) {
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: align,
       packing: packing,
-      externalTicksLayoutProvider: externalTicksLayoutProvider,
+      externalTicksLayoutDescriptor: externalTicksLayoutDescriptor,
     );
   }
 
@@ -4020,7 +4009,7 @@ class _MainAndCrossPositionedSegments {
       _forceMainAxisLayoutProperties(
         align: mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
-        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutDescriptor: mainAxisLayoutProperties.externalTicksLayoutDescriptor,
         // rollingTracker is irrelevant here
         rollingTracker: _FirstRollingLayouterTracker(
           firstRowFromTopFoundBefore: false,
@@ -4037,7 +4026,7 @@ class _MainAndCrossPositionedSegments {
       _forceMainAxisLayoutProperties(
         align: storedLayout.align,
         packing: storedLayout.packing,
-        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutDescriptor: mainAxisLayoutProperties.externalTicksLayoutDescriptor,
         // rollingTracker is irrelevant here
         rollingTracker: _FirstRollingLayouterTracker(
           firstRowFromTopFoundBefore: false,
@@ -4102,7 +4091,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
         rollingTracker: rollingTracker,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
-        externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutDescriptor: currentContainer.mainAxisLayoutProperties.externalTicksLayoutDescriptor,
       );
     }
     if (__is_Column_for_rewrite(currentContainer) && rollingTracker.firstColumnFromTopFoundBefore) {
@@ -4110,7 +4099,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
         rollingTracker: rollingTracker,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.matrjoska,
-        externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutDescriptor: currentContainer.mainAxisLayoutProperties.externalTicksLayoutDescriptor,
       );
     }
 

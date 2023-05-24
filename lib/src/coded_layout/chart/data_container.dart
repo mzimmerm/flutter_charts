@@ -8,7 +8,6 @@ import 'container.dart';
 import '../../chart/container/container_common.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/container/axis_container.dart';
-// todo-00-done : import '../../chart/model/data_model.dart';
 import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
@@ -427,13 +426,11 @@ class LineChartDataContainerCL extends DataContainerCL {
       pointPresenterList = optionalPaintOrderReverse(pointPresenterList);
       for (PointPresenter pointPresenter in pointPresenterList) {
         line_presenters.LineAndHotspotPointPresenter pointPresenterCast = pointPresenter as line_presenters.LineAndHotspotPointPresenter;
-        // todo 0-future-minor Use call to Container.paint
         canvas.drawLine(
           pointPresenterCast.lineContainer.lineFrom,
           pointPresenterCast.lineContainer.lineTo,
           pointPresenterCast.lineContainer.linePaint,
         );
-        // todo 0-future-medium Add hotspot as Container, use Container.paint
         canvas.drawCircle(
           pointPresenterCast.offsetPoint,
           pointPresenterCast.outerRadius,

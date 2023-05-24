@@ -101,7 +101,7 @@ class ChartModel {
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
 
-  // todo-013-performance : cache flattenRows, also _valuesMin, also look at its usages
+  // todo-014-performance : cache flattenRows, also _valuesMin, also look at its usages
   List<double> get flattenRows => dataRows.expand((element) => element).toList();
   double get _valuesMin => flattenRows.reduce(math.min);
 

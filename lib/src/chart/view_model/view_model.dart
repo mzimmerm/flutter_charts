@@ -250,10 +250,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Important note: This should NOT be part of model,
   ///                 as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
-  ///                 // todo-010 : rename to outputTicksAndLabelsDefiner
   late final util_labels.DataRangeTicksAndLabelsDescriptor outputRangeDescriptor;
 
-  ///                 // todo-010 : rename to inputDataRangeDescriptor
   late final util_labels.DataRangeTicksAndLabelsDescriptor inputRangeDescriptor;
 
   /// Wraps the ranges of input values and output values this view model contains.

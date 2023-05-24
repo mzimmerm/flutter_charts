@@ -143,7 +143,7 @@ enum ConstraintsDivideMethod {
 /// either a main axis or cross axis.
 ///
 /// For layouters with [packing] = [Packing.externalTicksProvided], that is, for layouters using external ticks,
-/// the optional [externalTicksLayoutProvider] must be also provided.
+/// the optional [externalTicksLayoutDescriptor] must be also provided.
 ///
 /// Instances are intended to be members on [RollingBoxLayouter]; they describe
 /// the properties of the layouter and it's extensions such as [Row] and [Column].
@@ -160,12 +160,12 @@ class LengthsPositionerProperties {
   const LengthsPositionerProperties({
     required this.align,
     required this.packing,
-    this.externalTicksLayoutProvider,
+    this.externalTicksLayoutDescriptor,
   });
 
   final Align align;
   final Packing packing;
-  final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
+  final ExternalTicksLayoutDescriptor? externalTicksLayoutDescriptor;
 
 }
 
@@ -206,7 +206,7 @@ class LayedoutLengthsPositioner {
   /// - [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
   /// - [lengthsConstraint] is the double 1D positive length into which the [lengths] should fit after positioning
   ///    by [positionLengths].
-  /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
+  /// - [externalTicksLayoutDescriptor] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
     required this.lengths,
@@ -231,8 +231,8 @@ class LayedoutLengthsPositioner {
         _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths;
         break;
       case Packing.externalTicksProvided:
-        assert(lengthsPositionerProperties.externalTicksLayoutProvider != null);
-        assert(lengthsPositionerProperties.externalTicksLayoutProvider!.tickValues.length == lengths.length);
+        assert(lengthsPositionerProperties.externalTicksLayoutDescriptor != null);
+        assert(lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length == lengths.length);
         // For external layout, isOverflown is calculated after positioning.
         // For external layout, _freePadding is unused and unchanged, but late init it to 0.0 if it is used
         _freePadding = 0.0;
@@ -366,21 +366,21 @@ class LayedoutLengthsPositioner {
   }
 
   /// Invoked for [Packing.externalTicksProvided], positions the member [lengths]
-  /// to the right, center, or left of the external ticks, defined by the member [externalTicksLayoutProvider].
+  /// to the right, center, or left of the external ticks, defined by the member [externalTicksLayoutDescriptor].
   ///
-  /// The member [externalTicksLayoutProvider] must be not null for [Packing.externalTicksProvided].
+  /// The member [externalTicksLayoutDescriptor] must be not null for [Packing.externalTicksProvided].
   List<util_dart.LineSegment> _positionToExternalTicksAsSegments() {
-    // depending on externalTicksLayoutProvider.externalTickAtPosition,
-    // iterate externalTicksLayoutProvider.tickValues, and place each lenght in lengths to position given by the tickValue,
+    // depending on externalTicksLayoutDescriptor.externalTickAtPosition,
+    // iterate externalTicksLayoutDescriptor.tickValues, and place each lenght in lengths to position given by the tickValue,
     // moved a bit depending on externalTickAtPosition\
 
-    ExternalTicksLayoutProvider ticksProvider = lengthsPositionerProperties.externalTicksLayoutProvider!;
+    ExternalTicksLayoutDescriptor ticksDescriptor = lengthsPositionerProperties.externalTicksLayoutDescriptor!;
 
     List<util_dart.LineSegment> positionedSegments = [];
 
     for (int i = 0; i < lengths.length; i++) {
       double startOffset, endOffset;
-      switch (ticksProvider.externalTickAtPosition) {
+      switch (ticksDescriptor.externalTickAtPosition) {
         case ExternalTickAtPosition.childStart:
           startOffset = 0.0;
           endOffset = lengths[i];
@@ -395,8 +395,8 @@ class LayedoutLengthsPositioner {
           break;
       }
       positionedSegments.add(util_dart.LineSegment(
-        ticksProvider.tickPixels[i] + startOffset,
-        ticksProvider.tickPixels[i] + endOffset,
+        ticksDescriptor.tickPixels[i] + startOffset,
+        ticksDescriptor.tickPixels[i] + endOffset,
       ));
     }
 
@@ -409,7 +409,7 @@ class LayedoutLengthsPositioner {
     util_dart.Interval envelope = positionedSegments[0].envelope(positionedSegments);
 
     totalPositionedLengthIncludesPadding = envelope.length;
-    isOverflown = !ticksProvider.tickValuesRange.containsFully(envelope);
+    isOverflown = !ticksDescriptor.tickValuesRange.containsFully(envelope);
 
     return positionedSegments;
   }

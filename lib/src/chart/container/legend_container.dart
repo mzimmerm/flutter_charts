@@ -304,7 +304,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    // todo-012 : why is else between two different bools????
+    // todo-014 : why is else between two different bools????
     if (doPadIndAndLabel) {
       container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
         start: 3,
