@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart' as widgets;
 // base libraries
 import '../../chart.dart';
 import '../../painter.dart' show FlutterChartPainter;
-import '../../view_model.dart' show ChartViewModel;
+import '../../view_model/view_model.dart' show ChartViewModel;
 
 /// Provides paint for the line chart.
 ///

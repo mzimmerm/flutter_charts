@@ -200,8 +200,8 @@ class PointOffset extends Offset {
   ///            on position Y pixels corresponding to outputValue 0
   ///            (in the middle of a chart, if both positive and negative present)
   ///       ``` dart
-  ///         fromPointOffset: PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
-  ///         toPointOffset:   PointOffset(inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
+  ///         fromPointOffset: PointOffset(inputValue: inputRangeDescriptor.dataRange.min, outputValue: outputRangeDescriptor.dataRange.max),
+  ///         toPointOffset:   PointOffset(inputValue: inputRangeDescriptor.dataRange.max, outputValue: outputRangeDescriptor.dataRange.max),
   ///       ```
   ///       - Using the transform steps, the `fromPointOffset` and `toPointOffset` draws
   ///         a HORIZONTAL line at x = x pixel min, where we want the Y Axis:
@@ -233,8 +233,8 @@ class PointOffset extends Offset {
   ///     -  Example: AxisLineContainer FOR Y AXIS LINE : we define a HORIZONTAL line, which draws VERTICAL line
   ///            on position X pixels = 0 (in DataContainer coordinates) due to the transpose of coordinates:
   ///       ``` dart
-  ///         fromPointOffset: PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
-  ///         toPointOffset:   PointOffset(inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.min),
+  ///         fromPointOffset: PointOffset(inputValue: inputRangeDescriptor.dataRange.min, outputValue: outputRangeDescriptor.dataRange.min),
+  ///         toPointOffset:   PointOffset(inputValue: inputRangeDescriptor.dataRange.max, outputValue: outputRangeDescriptor.dataRange.min),
   ///       ```
   ///       - Using the transform steps, the `fromPointOffset` and `toPointOffset` draws
   ///         a vertical line at x = x pixel min, where we want the Y Axis:

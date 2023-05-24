@@ -6,7 +6,7 @@ import 'axis_container.dart';
 import 'data_container.dart';
 import '../../morphic/container/container_layouter_base.dart';
 import '../container/axis_corner_container.dart';
-import '../view_model.dart';
+import '../view_model/view_model.dart';
 
 // comments
 import '../painter.dart';
@@ -94,7 +94,7 @@ class ChartRootContainer extends ChartAreaContainer {
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
-  // todo-00-next : does this need to be covariant?
+  // covariant needed on some, probably not all
   covariant late TransposingAxisContainer horizontalAxisContainer;
   covariant late TransposingAxisContainer verticalAxisContainer;
   covariant late TransposingAxisContainer verticalAxisContainerFirst;

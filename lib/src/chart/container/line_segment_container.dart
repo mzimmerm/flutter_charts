@@ -5,7 +5,7 @@ import 'container_common.dart' as container_common;
 import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_style.dart' as chart_orientation;
-import '../view_model.dart' as view_model;
+import '../view_model/view_model.dart' as view_model;
 // import '../root_container.dart' as container;
 import '../model/data_model.dart' as model; // todo-010 : should this be view_model?
 // import '../../util/label_model.dart' as util_labels;
@@ -104,8 +104,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     _fromOffsetPixels = fromPointOffset!.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
-        inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
-        outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
+        inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
+        outputDataRange: chartViewModel.outputRangeDescriptor.dataRange,
       ),
       to2DPixelRange: To2DPixelRange(
         height: sizerHeight,
@@ -117,8 +117,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     _toOffsetPixels = toPointOffset!.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
-        inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
-        outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
+        inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
+        outputDataRange: chartViewModel.outputRangeDescriptor.dataRange,
       ),
       to2DPixelRange: To2DPixelRange(
         height: sizerHeight,
@@ -200,19 +200,19 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   /// the [model.PointModel]'s [fromPointModel].
   ///
   /// Calculates [fromPointOffset] from the [fromPointModel], using
-  ///   - for [PointOffset.inputValue], the data range from the [chartViewModel.inputLabelsGenerator] and
+  ///   - for [PointOffset.inputValue], the data range from the [chartViewModel.inputRangeDescriptor] and
   ///     [fromPointModel]'s column index.
   ///   - for [PointOffset.outputValue], the [fromPointModel]'s input value [model.PointModel.outputValue] directly.
   ///
-  /// Both points are on x axis, so the inputLabelsGenerator is used as input dataRange for both from/to points.
+  /// Both points are on x axis, so the inputRangeDescriptor is used as input dataRange for both from/to points.
   @override
   PointOffset get fromPointOffset => fromPointModel.toPointOffsetOnInputRange(
-        inputDataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator,
+        inputDataRangeTicksAndLabelsDescriptor: chartViewModel.inputRangeDescriptor,
       );
 
   /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
-      toPointModel.toPointOffsetOnInputRange(inputDataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator);
+      toPointModel.toPointOffsetOnInputRange(inputDataRangeTicksAndLabelsDescriptor: chartViewModel.inputRangeDescriptor);
 }
 */

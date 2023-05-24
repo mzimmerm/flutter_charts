@@ -148,7 +148,7 @@ export 'src/chart/chart_type/bar/chart.dart';
 export 'src/chart/chart_type/bar/options.dart';
 
 export 'src/chart/chart_label_container.dart';
-export 'src/chart/view_model.dart';
+export 'src/chart/view_model/view_model.dart';
 export 'src/chart/container/axis_container.dart';
 export 'src/chart/container/axis_corner_container.dart';
 export 'src/chart/container/container_common.dart';
@@ -162,11 +162,11 @@ export 'src/chart/options.dart';
 export 'src/chart/model/random_chart_data.dart';
 export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
-export 'src/chart/model/label_model.dart';
+export 'src/chart/view_model/label_model.dart';
 
 // export 'src/coded_layout/chart/data_model.dart';
 export 'src/coded_layout/chart/container.dart';
-export 'src/coded_layout/chart/line/root_container.dart';
-export 'src/coded_layout/chart/bar/root_container.dart';
+export 'src/coded_layout/chart/chart_type/line/root_container.dart';
+export 'src/coded_layout/chart/chart_type/bar/root_container.dart';
 
 export 'src/switch_view_model/auto_layout/line/view_model.dart';

@@ -4,7 +4,7 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 import '../../morphic/container/container_layouter_base.dart' show LayoutableBox;
 import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import '../../chart/view_model.dart';
+import '../../chart/view_model/view_model.dart';
 
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.

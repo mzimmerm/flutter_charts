@@ -55,20 +55,20 @@ void main() {
     // todo 1 test pure fractions and negatives
   });
 
-  test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
+  test('Range.makeRangeDescriptorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
     ChartOrientation chartOrientation = ChartOrientation.column;
     ChartStacking chartStacking = ChartStacking.stacked;
 
-    DataRangeLabelInfosGenerator labelsGenerator;
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor;
     
     var extendAxisToOrigin = true;
     var inputUserLabels = ['1', '2', '3'];
     var legendNames = ['Legend of row 1'];
 
     var dataRows = [[1.0, 22.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    List<AxisLabelInfo> labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, 0.0);
     expect(labelInfoList[1].outputValue, 100.0);
@@ -77,8 +77,8 @@ void main() {
 
 
     dataRows = [[-1.0, -22.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, -300.0);
     expect(labelInfoList[1].outputValue, -200.0);
@@ -86,8 +86,8 @@ void main() {
     expect(labelInfoList[3].outputValue, 0.0);
 
     dataRows = [[22.0, 10.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -300.0);
     expect(labelInfoList[1].outputValue, -200.0);
@@ -96,8 +96,8 @@ void main() {
     expect(labelInfoList[4].outputValue, 100.0);
 
     dataRows = [[-22.0, -10.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -100.0);
     expect(labelInfoList[1].outputValue, 0.0);
@@ -106,8 +106,8 @@ void main() {
     expect(labelInfoList[4].outputValue, 300.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], legendNames);
-    labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], legendNames);
+    labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, -1000.0);
     expect(labelInfoList[1].outputValue, 0.0);
@@ -115,8 +115,8 @@ void main() {
     expect(labelInfoList[3].outputValue, 2000.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = labelsGenerator.labelInfoList;
+    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].outputValue, -1000.0);
     expect(labelInfoList[1].outputValue, 0.0);
@@ -126,9 +126,9 @@ void main() {
 
 }
 
-DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
+DataRangeTicksAndLabelsDescriptor dataRangeRangeDescriptor(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
   var mockChartModel = _constructMockChartModel(options, dataRows, inputUserLabels, extendAxisToOrigin, legendNames);
-  return DataRangeLabelInfosGenerator(
+  return DataRangeTicksAndLabelsDescriptor(
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     chartViewModel: MockChartViewModel(
@@ -194,10 +194,10 @@ void rangeTestCore(
     // double expectedDataEnvelopMin = valuesRow[4] as double;
     // double expectedDataEnvelopMax = valuesRow[5] as double;
 
-    // Reversing min max in makeLabelsGeneratorWithLabelInfosFromDataYsOnScale why is this needed?
+    // Reversing min max in makeRangeDescriptorWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
-    //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
-    DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
+    //         but why does makeRangeDescriptorWithLabelInfosFromDataYsOnScale not adjust?
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = DataRangeTicksAndLabelsDescriptor(
       chartOrientation: ChartOrientation.column,
       chartStacking: ChartStacking.nonStacked,
       chartViewModel: MockChartViewModel(
@@ -212,10 +212,10 @@ void rangeTestCore(
     );
 
 
-    expect(labelsGenerator.labelInfoList.length, expectedLabels.length);
-    for (int i = 0; i < labelsGenerator.labelInfoList.length; i++) {
+    expect(rangeDescriptor.labelInfoList.length, expectedLabels.length);
+    for (int i = 0; i < rangeDescriptor.labelInfoList.length; i++) {
       expect(
-        labelsGenerator.labelInfoList[i].outputValue,
+        rangeDescriptor.labelInfoList[i].outputValue,
         expectedLabels[i],
       );
     }

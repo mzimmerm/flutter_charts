@@ -9,7 +9,7 @@ import '../../chart/container/container_common.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/container/axis_container.dart';
 import '../../chart/model/data_model.dart';
-import '../../chart/view_model.dart';
+import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
 import 'line_container.dart';
@@ -22,8 +22,8 @@ import '../../morphic/container/morphic_dart_enums.dart';
 import '../../switch_view_model/view_model_cl.dart';
 
 // extension libraries
-import 'line/presenter.dart' as line_presenters;
-import 'bar/presenter.dart' as bar_presenters;
+import 'chart_type/line/presenter.dart' as line_presenters;
+import 'chart_type/bar/presenter.dart' as bar_presenters;
 
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -341,8 +341,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  DataColumnPointsBar makeDeepInnerDataColumnPointsBar({
-    required DataColumnModel dataColumnModel,
+  PointContainersBar makeDeepInnerPointContainersBar({
+    required PointsBarModel pointsBarModel,
     required BarsContainer outerBarsContainer,
     required Sign barsAreaSign,
   }) {
@@ -357,7 +357,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  PointContainer makeDeepInnerPointContainerWithZeroValue() {
+  BasePointContainer makeDeepInnerPointContainerWithFiller() {
     throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 }

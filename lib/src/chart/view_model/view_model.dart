@@ -1,7 +1,7 @@
 import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Canvas, Size, Color;
 import 'package:flutter/cupertino.dart' show immutable;
-import 'package:flutter_charts/src/chart/model/label_model.dart';
+import 'package:flutter_charts/src/chart/view_model/label_model.dart';
 
 // morphic
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
@@ -10,29 +10,28 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 import 'package:flutter_charts/src/chart/chart.dart';
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
 
-import 'painter.dart';
+import '../painter.dart';
 import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
 
-import '../morphic/container/chart_support/chart_style.dart';
-import '../morphic/container/morphic_dart_enums.dart';
-import '../morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
+import '../../morphic/container/chart_support/chart_style.dart';
+import '../../morphic/container/morphic_dart_enums.dart';
+import '../../morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
 
 // this level or equivalent
-import 'model/data_model.dart' as model show ChartModel, LegendItem;
-import 'options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
-import 'container/data_container.dart' as data_container show DataContainer, BasePointContainer;
-import 'container/container_common.dart' as container_common;
-import 'container/root_container.dart' as root_container show ChartRootContainer;
-import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
-import 'model/label_model.dart' as util_labels show DataRangeLabelInfosGenerator, extendToOrigin;
-import '../util/util_dart.dart' as util_dart show Interval, assertDoubleResultsSame;
-import '../util/extensions_dart.dart';
+import '../model/data_model.dart' as model show ChartModel, LegendItem;
+import '../options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
+import '../container/data_container.dart' as data_container show DataContainer, BasePointContainer;
+import '../container/container_common.dart' as container_common;
+import '../container/root_container.dart' as root_container show ChartRootContainer;
+import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
+import 'label_model.dart' as util_labels show DataRangeTicksAndLabelsDescriptor, extendToOrigin;
+import '../../util/util_dart.dart' as util_dart show Interval, assertDoubleResultsSame;
+import '../../util/extensions_dart.dart';
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].
-// todo-00-next : I think the returned does NOT need to be nullable. But we need to cover all cases where it's used by useing switch. Confirm, and also reflect in name.
 typedef ClsPointToNullableContainer = data_container.BasePointContainer? Function (PointModel);
 
 /// Abstract base class for chart view models.
@@ -84,13 +83,13 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
        _chartModel = chartModel {
     logger.Logger().d('Constructing ChartViewModel');
 
-    // Create one [DataColumnModel] for each data column, and add to member [dataColumnModels]
+    // Create one [PointsBarModel] for each data column, and add to member [pointsBarModels]
     int columnIndex = 0;
-    for (List<double> valuesColumn in chartModel.dataColumns) { // todo-00-next : Should we have dataColumns public in ChartModel?? What SHOULD BE THE API OF DATA_MODEL???
-      dataColumnModels.add(
-        DataColumnModel(
+    for (List<double> valuesColumn in chartModel.dataColumns) {
+      pointsBarModels.add(
+        PointsBarModel(
           valuesColumn: valuesColumn,
-          outerChartModel: this,
+          outerChartViewModel: this,
           columnIndex: columnIndex,
         ),
       );
@@ -102,11 +101,11 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: _chartModel.chartOptions);
     inputLabelLayoutStrategyInst = inputLabelLayoutStrategy;
 
-    // Create [outputLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
+    // Create [outputRangeDescriptor] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewModel] constructor or later
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewModel] is the first time we can
-    // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+    // create the [inputRangeDescriptor] and [inputRangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor], so do that.
+    outputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
       chartViewModel: this,
@@ -118,7 +117,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     );
 
     // See comment in VerticalAxisContainer constructor
-    inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+    inputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
       chartViewModel: this,
@@ -126,13 +125,13 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.inputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
-      userLabels: _chartModel.inputUserLabels, // todo-00-next : should labels still be in model? view model?
+      userLabels: _chartModel.inputUserLabels,
     );
 
     // Convenience wrapper for ranges of input and output values of all chart data
     fromTransposing2DValueRange = FromTransposing2DValueRange(
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
+      inputDataRange: inputRangeDescriptor.dataRange,
+      outputDataRange: outputRangeDescriptor.dataRange,
       chartOrientation: chartOrientation,
     );
   }
@@ -146,11 +145,11 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   @Deprecated('Only use in legacy coded_layout')
   model.ChartModel get chartModelInLegacy => _chartModel;
 
-  /// The methods [dataColumnModels], [numRows], [getLegendItemAt], [dataRangeWhenStringLabels]
+  /// The methods [pointsBarModels], [numRows], [getLegendItemAt], [dataRangeWhenStringLabels]
   /// are legacy public views of [ChartViewModel] into [model.ChartModel] and may be removed.
-  final List<DataColumnModel> dataColumnModels = [];
+  final List<PointsBarModel> pointsBarModels = [];
 
-  /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnModel]s),
+  /// For positive [sign], returns max of all columns (more precisely, of all [PointsBarModel]s),
   ///   or 0.0 if there are no positive columns;
   /// for negative [sign]. returns min of all columns or 0.0 if there are no negative columns
   ///
@@ -161,8 +160,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
   /// their separately positive or negative values stacked if [isStacked] is true
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
-    return dataColumnModels
-        .map((dataColumnModel) => dataColumnModel.extremeValueWithSign(sign, chartStacking))
+    return pointsBarModels
+        .map((pointsBarModel) => pointsBarModel.extremeValueWithSign(sign, chartStacking))
         .extremeValueWithSign(sign);
   }
 
@@ -178,7 +177,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///   - For [chartStacking] == [ChartStacking.nonStacked],
   ///       the min and max is from [_transformedValuesMin] and max.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [DataColumnModel] first, but could go
+  /// Implementation detail: maximum and minimum is calculated column-wise [PointsBarModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
   util_dart.Interval valuesInterval({
@@ -228,9 +227,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///
   final util_dart.Interval dataRangeWhenStringLabels = const util_dart.Interval(0.0, 100.0);
 
-  // todo-013-performance : cache valuesMax/Min ond also _flatten
-  List<double> get _flatten => _chartModel.dataRows.expand((element) => element).toList();
-  double get _valuesMin => _flatten.reduce(math.min);
+  List<double> get _flatten => _chartModel.flattenRows;
 
   double get _transformedValuesMin =>
       _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
@@ -247,17 +244,17 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Initialized late in this [ChartViewModel] constructor, and held as member
   /// for scaling to pixels in [data_container.DataContainer] and [axis_container.TransposingAxisContainer].
   ///
-  /// The [labelsGenerator]'s interval [DataRangeLabelInfosGenerator.dataRange]
+  /// The [rangeDescriptor]'s interval [DataRangeTicksAndLabelsDescriptor.dataRange]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
   ///
   /// Important note: This should NOT be part of model,
   ///                 as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
   ///                 // todo-010 : rename to outputTicksAndLabelsDefiner
-  late final util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
+  late final util_labels.DataRangeTicksAndLabelsDescriptor outputRangeDescriptor;
 
   ///                 // todo-010 : rename to inputDataRangeDescriptor
-  late final util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
+  late final util_labels.DataRangeTicksAndLabelsDescriptor inputRangeDescriptor;
 
   /// Wraps the ranges of input values and output values this view model contains.
   late final FromTransposing2DValueRange fromTransposing2DValueRange;
@@ -295,7 +292,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     // Create the concrete [ChartRootContainer] for this concrete [ChartViewModel].
     // After this invocation, the created root container is populated with children
     // HorizontalAxisContainer, VerticalAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeLabelInfosGenerator.
+    // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeTicksAndLabelsDescriptor.
 
     String isFirstStr = _debugPrintBegin();
 
@@ -385,22 +382,22 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 ///     this object to be created by diagonal transpose of the [ChartModel.dataRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
-/// Note: [DataColumnModel] replaces the [PointsColumn] in legacy layouter.
+/// Note: [PointsBarModel] replaces the [PointsColumn] in legacy layouter.
 ///
 @immutable
-class DataColumnModel {
+class PointsBarModel {
 
   /// Constructs a model for one bar of points.
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
-  /// The [outerChartModel] is the [ChartModel] underlying the [DataColumnModel] instance being created.
-  /// The [columnIndex] is index of the [valuesColumn] in the [outerChartModel].
+  /// The [outerChartViewModel] is the [ChartModel] underlying the [PointsBarModel] instance being created.
+  /// The [columnIndex] is index of the [valuesColumn] in the [outerChartViewModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
-  ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
+  ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeTicksAndLabelsDescriptor]
   ///   instance.
-  DataColumnModel({
+  PointsBarModel({
     required List<double> valuesColumn,
-    required this.outerChartModel,
+    required this.outerChartViewModel,
     required this.columnIndex,
 
   }) {
@@ -411,7 +408,7 @@ class DataColumnModel {
     for (double outputValue in valuesColumn) {
       var point = PointModel(
         outputValue: outputValue,
-        outerDataColumnModel: this,
+        outerPointsBarModel: this,
         rowIndex: rowIndex,
       );
       pointModelList.add(point);
@@ -419,10 +416,10 @@ class DataColumnModel {
     }
   }
 
-  /// The full [ChartModel] from which data columns this [DataColumnModel] is created.
-  final ChartViewModel outerChartModel; // todo-00-next : rename to outerChartViewModel
+  /// The full [ChartModel] from which data columns this [PointsBarModel] is created.
+  final ChartViewModel outerChartViewModel;
 
-  /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnModels].
+  /// Index of this column (dataColumnPoints list) in the [ChartModel.pointsBarModels].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.dataRows)`.
@@ -436,57 +433,56 @@ class DataColumnModel {
   final int columnIndex;
 
   /// Calculates inputValue-position (x-position, independent value position) of
-  /// instances of this [DataColumnModel] and it's [PointModel] elements.
+  /// instances of this [PointsBarModel] and it's [PointModel] elements.
   ///
   /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numChartModelColumns] columns that
   /// divide the [dataRange].
   ///
   /// Note: So this is offset from start and end of the Interval.
   ///
-  /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view model,
-  /// we can use the [_numChartModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
+  /// Late, once [util_labels.DataRangeTicksAndLabelsDescriptor] is established in view model,
+  /// we can use the [_numChartModelColumns] and the [util_labels.DataRangeTicksAndLabelsDescriptor.dataRange]
   /// to calculate this value
   double inputValueOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor dataRangeLabelInfosGenerator,
   }) {
     util_dart.Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / outerChartModel._chartModel.numColumns);
+    double columnWidth = (dataRange.length / outerChartViewModel._chartModel.numColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
   /// Points in this column are points in one cross-series column.
-  /// // todo-00-next : should be private, just get by index. Same for ChartViewModel
   final List<PointModel> pointModelList = [];
 
-  /// Returns the [DataColumnModel] for the next column from this [DataColumnModel] instance.
+  /// Returns the [PointsBarModel] for the next column from this [PointsBarModel] instance.
   ///
   /// Should be surrounded with [hasNextColumnModel].
   ///
   /// Throws [StateError] if not such column exists.
   ///
-  /// 'Next column' refers to the column with [columnIndex] one more than this [DataColumnModel]s [columnIndex].
-  DataColumnModel get nextColumnModel =>
+  /// 'Next column' refers to the column with [columnIndex] one more than this [PointsBarModel]s [columnIndex].
+  PointsBarModel get nextColumnModel =>
       hasNextColumnModel
           ?
-      outerChartModel.dataColumnModels[columnIndex + 1]
+      outerChartViewModel.pointsBarModels[columnIndex + 1]
           :
       throw StateError('No next column for column $this. Use hasNextColumnModel');
 
-  /// Returns true if there is a next column after this [DataColumnModel] instance.
+  /// Returns true if there is a next column after this [PointsBarModel] instance.
   ///
   /// Should be used before invoking [nextColumnModel].
-  bool get hasNextColumnModel => columnIndex < outerChartModel._chartModel.numColumns - 1 ? true : false;
+  bool get hasNextColumnModel => columnIndex < outerChartViewModel._chartModel.numColumns - 1 ? true : false;
 
   /// Returns minimum or maximum of [PointModel.outputValue]s in me.
   ///
   /// In more detail:
   ///   - For [chartStacking] == [ChartStacking.stacked],  returns added (accumulated) [PointModel.outputValue]s
-  ///     for all [PointModel]s in this [DataColumnModel] instance, that have the passed [sign].
+  ///     for all [PointModel]s in this [PointsBarModel] instance, that have the passed [sign].
   ///   - For [chartStacking] == [ChartStacking.nonStacked]
   ///     - For [sign] positive, returns max of positive [PointModel.outputValue]s
-  ///       for all positive [PointModel]s in this [DataColumnModel] instance.
+  ///       for all positive [PointModel]s in this [PointsBarModel] instance.
   ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
-  ///       for all negative [PointModel]s in this [DataColumnModel] instance.
+  ///       for all negative [PointModel]s in this [PointsBarModel] instance.
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
     switch(chartStacking) {
       case ChartStacking.stacked:
@@ -511,11 +507,11 @@ class DataColumnModel {
 
 
 // todo-0100-document
-/// Base point model serves as a base class for both the actual [PointModel] as well as [ZeroValuePointModel].
+/// Base point model serves as a base class for both the actual [PointModel] as well as [FillerPointModel].
 ///
 /// Does NOT need any:
 ///   - outputValue
-///   - outerDataColumnModel
+///   - outerPointsBarModel
 ///   - rowIndex
 ///   - columnIndex
 @immutable
@@ -523,20 +519,20 @@ abstract class BasePointModel {
 
   /// The view which presents this [PointModel].
   ///
-  /// todo-00-next: CAN THIS BE FIXED? CANNOT BE FINAL, EVEN LATE FINAL, BECAUSE, THE ChartViewModel, with all it's components (DataColumnModel, PointModel)
-  ///                lives longer than views/containers (PointContainer, DataColumnPointsBar). So code must be able to set again on repaint.
+  /// todo-00-next: CAN THIS BE FIXED? CANNOT BE FINAL, EVEN LATE FINAL, BECAUSE, THE ChartViewModel, with all it's components (PointsBarModel, PointModel)
+  ///                lives longer than views/containers (PointContainer, PointContainersBar). So code must be able to set again on repaint.
   // late final data_container.BasePointContainer pointContainer;
   data_container.BasePointContainer? pointContainer;
 
   /// Abstract method; implementations should get or calculate the inputValue-position of this [PointModel] instance.
   ///
-  /// Delegated to the same name method on [outerDataColumnModel] - the [DataColumnModel.inputValueOnInputRange] -
-  /// given the passed [inputDataRangeLabelInfosGenerator].
+  /// Delegated to the same name method on [outerPointsBarModel] - the [PointsBarModel.inputValueOnInputRange] -
+  /// given the passed [inputDataRangeTicksAndLabelsDescriptor].
   ///
   /// The delegated method divides the input data range into the number of columns,
   /// and places this instance input value in the middle of the column at which this [PointModel] lives.
   ///
-  /// See documentation of the delegated  [DataColumnModel.inputValueOnInputRange].
+  /// See documentation of the delegated  [PointsBarModel.inputValueOnInputRange].
   ///
   /// Motivation:
   ///
@@ -548,20 +544,20 @@ abstract class BasePointModel {
   ///   it's pixel display position.  Assigning an inputValue by itself would not help;
   ///   To affmap the inputValue to some pixel value, we need to affix the inputValue
   ///   to a range. This method, [inputValueOnInputRange] does just that:
-  ///   Given the passed [inputDataRangeLabelInfosGenerator], using its data range
-  ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue
+  ///   Given the passed [inputDataRangeTicksAndLabelsDescriptor], using its data range
+  ///   [util_labels.DataRangeTicksAndLabelsDescriptor.dataRange], we can assign an inputValue
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
   double inputValueOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   });
 
   /// Converts this [PointModel] to [PointOffset] with the same output value (the [PointModel.outputValue]
   /// is copied to [PointOffset.outputValue]), and the [PointOffset]'s [PointOffset.inputValue]
-  /// created by evenly dividing the passed input range of the passed [inputDataRangeLabelInfosGenerator].
+  /// created by evenly dividing the passed input range of the passed [inputDataRangeTicksAndLabelsDescriptor].
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   });
 
   /// Abstract indicates sign of value; intended to be defined in some extensions.
@@ -591,32 +587,32 @@ abstract class BasePointModel {
 ///
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
-///   - Has private access to the outer [ChartModel] to which it belongs through it's member [outerDataColumnModel],
-///     which in turn has access to [ChartModel] through it's private [DataColumnModel]
-///     member `DataColumnModel._chartModel`.
+///   - Has private access to the outer [ChartModel] to which it belongs through it's member [outerPointsBarModel],
+///     which in turn has access to [ChartModel] through it's private [PointsBarModel]
+///     member `PointsBarModel._chartModel`.
 ///     This access is used for model colors and row and column indexes to [ChartModel.dataRows].
 ///
 @immutable
 class PointModel extends BasePointModel {
 
   // ===================== CONSTRUCTOR ============================================
-  /// Constructs instance and from [DataColumnModel] instance [outerDataColumnModel],
+  /// Constructs instance and from [PointsBarModel] instance [outerPointsBarModel],
   /// and [rowIndex], the index in where the point value [outputValue] is located.
   ///
-  /// Important note: The [outerDataColumnModel] value on [rowIndex], IS NOT [outputValue],
-  ///                 as the [outerDataColumnModel] is split from [ChartModel.dataColumns] so
-  ///                 [rowIndex] can only be used to reach `outerDataColumnModel.chartModel.valuesRows`.
+  /// Important note: The [outerPointsBarModel] value on [rowIndex], IS NOT [outputValue],
+  ///                 as the [outerPointsBarModel] is split from [ChartModel.dataColumns] so
+  ///                 [rowIndex] can only be used to reach `outerPointsBarModel.chartModel.valuesRows`.
   PointModel({
     required double outputValue,
-    required this.outerDataColumnModel,
+    required this.outerPointsBarModel,
     required this.rowIndex,
   })
-      : outputValue = outerDataColumnModel.outerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
+      : outputValue = outerPointsBarModel.outerChartViewModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
         sign = outputValue >= 0.0 ? Sign.positiveOr0 : Sign.negative
   {
     util_dart.assertDoubleResultsSame(
-      outerDataColumnModel.outerChartModel.chartOptions.dataContainerOptions
-          .yTransform(outerDataColumnModel.outerChartModel._chartModel.dataRows[rowIndex][columnIndex])
+      outerPointsBarModel.outerChartViewModel.chartOptions.dataContainerOptions
+          .yTransform(outerPointsBarModel.outerChartViewModel._chartModel.dataRows[rowIndex][columnIndex])
           .toDouble(),
       this.outputValue,
     );
@@ -629,8 +625,8 @@ class PointModel extends BasePointModel {
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
-  ///   - column at index [columnIndex], which is also the [outerDataColumnModel]'s
-  ///     index [DataColumnModel.columnIndex].
+  ///   - column at index [columnIndex], which is also the [outerPointsBarModel]'s
+  ///     index [PointsBarModel.columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double outputValue;
 
@@ -639,25 +635,25 @@ class PointModel extends BasePointModel {
   final Sign sign;
 
   /// References the data column (dataColumnPoints list) this point belongs to
-  final DataColumnModel outerDataColumnModel;
+  final PointsBarModel outerPointsBarModel;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [DataColumnModel.pointModelList] at index [rowIndex].
+  /// Also, this point object is kept in [PointsBarModel.pointModelList] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
-  /// Getter of the column index in the [outerDataColumnModel].
+  /// Getter of the column index in the [outerPointsBarModel].
   ///
-  /// Delegated to [outerDataColumnModel] index [DataColumnModel.columnIndex].
-  int get columnIndex => outerDataColumnModel.columnIndex;
+  /// Delegated to [outerPointsBarModel] index [PointsBarModel.columnIndex].
+  int get columnIndex => outerPointsBarModel.columnIndex;
 
   /// Returns true if there is a next column after this [PointModel] instance.
   ///
   /// Should be used before invoking [nextPointModel].
   @override
-  bool get hasNextPointModel => outerDataColumnModel.hasNextColumnModel;
+  bool get hasNextPointModel => outerPointsBarModel.hasNextColumnModel;
 
   /// Returns the [PointModel] in the same row, next column from this [PointModel] instance.
   ///
@@ -670,33 +666,33 @@ class PointModel extends BasePointModel {
   BasePointModel get nextPointModel =>
       hasNextPointModel
           ?
-      outerDataColumnModel.nextColumnModel.pointModelList[rowIndex]
+      outerPointsBarModel.nextColumnModel.pointModelList[rowIndex]
           :
       throw StateError('No next column for column $this. Use hasNextPointModel before invoking nextPointModel.');
 
   /// Once the x labels are established, either as [inputUserLabels] or generated, clients can
   ///  ask for the label.
-  Object get inputUserLabel => outerDataColumnModel.outerChartModel._chartModel.inputUserLabels[columnIndex];
+  Object get inputUserLabel => outerPointsBarModel.outerChartViewModel._chartModel.inputUserLabels[columnIndex];
 
   @override
-  ui.Color get color => outerDataColumnModel.outerChartModel.getLegendItemAt(rowIndex).color;
+  ui.Color get color => outerPointsBarModel.outerChartViewModel.getLegendItemAt(rowIndex).color;
 
   @override
   double inputValueOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   }) {
-    return outerDataColumnModel.inputValueOnInputRange(
-      dataRangeLabelInfosGenerator: inputDataRangeLabelInfosGenerator,
+    return outerPointsBarModel.inputValueOnInputRange(
+      dataRangeLabelInfosGenerator: inputDataRangeTicksAndLabelsDescriptor,
     );
   }
 
   @override
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   }) =>
       PointOffset(
         inputValue: inputValueOnInputRange(
-          inputDataRangeLabelInfosGenerator: inputDataRangeLabelInfosGenerator,
+          inputDataRangeTicksAndLabelsDescriptor: inputDataRangeTicksAndLabelsDescriptor,
         ),
         outputValue: outputValue,
       );
@@ -705,7 +701,7 @@ class PointModel extends BasePointModel {
 
 // todo-0100-document
 @immutable
-class ZeroValuePointModel extends BasePointModel {
+class FillerPointModel extends BasePointModel {
 
   @override
   bool get hasNextPointModel => false;
@@ -724,13 +720,13 @@ class ZeroValuePointModel extends BasePointModel {
 
   @override
   double inputValueOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   }) => throw UnsupportedError(
       '$runtimeType: "inputValueOnInputRange" should never be invoked.');
 
   @override
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
+    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
   }) =>throw UnsupportedError(
       '$runtimeType: "toPointOffsetOnInputRange" should never be invoked.');
 }

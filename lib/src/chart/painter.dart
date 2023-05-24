@@ -7,7 +7,7 @@ import 'package:logger/logger.dart' as logger;
 import 'chart.dart';
 
 // For comments
-import '../chart/view_model.dart';
+import 'view_model/view_model.dart';
 
 
 /// A not-extended implementation of the chart painter; it's core role is

@@ -11,12 +11,12 @@ import '../../chart/container/container_common.dart';
 import '../../chart/container/legend_container.dart';
 import '../../chart/container/axis_container.dart';
 import '../../morphic/container/label_container.dart';
-import '../../chart/view_model.dart';
+import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show LayoutableBox;
 import '../../chart/options.dart';
 import '../../util/util_dart.dart';
-import '../../chart/model/label_model.dart';
+import '../../chart/view_model/label_model.dart';
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
 
 /// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [VerticalAxisContainerCL].
@@ -94,7 +94,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in chartViewModel.outputLabelsGenerator.labelInfoList) {
+    for (AxisLabelInfo labelInfo in chartViewModel.outputRangeDescriptor.labelInfoList) {
       var outputLabelContainer = AxisLabelContainerCL(
         chartViewModel: chartViewModel,
         label: labelInfo.formattedLabel,
@@ -258,7 +258,7 @@ class HorizontalAxisContainerCL
     inputLabelContainerCLs = List.empty(growable: true);
 
     ChartOptions options = chartViewModel.chartOptions;
-    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputRangeDescriptor.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -271,7 +271,7 @@ class HorizontalAxisContainerCL
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in HorizontalAxisContainer
         labelStyle: labelStyle,
         // In [InputLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: chartViewModel.inputLabelsGenerator.labelInfoList[xIndex],
+        labelInfo: chartViewModel.inputRangeDescriptor.labelInfoList[xIndex],
         outerChartAreaContainer: this,
       );
       inputLabelContainerCLs.add(inputLabelContainer);
@@ -296,7 +296,7 @@ class HorizontalAxisContainerCL
     // Purely artificial on HorizontalAxisContainer for now, we are taking labels from data, or user, NOT generating range.
     axisPixelsRange = chartViewModel.dataRangeWhenStringLabels;
 
-    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputRangeDescriptor.labelInfoList;
     double       yTicksWidth =
         options.dataContainerOptions.dataLeftTickWidth + options.dataContainerOptions.dataRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;

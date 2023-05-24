@@ -11,10 +11,10 @@ import 'dart:ui' as ui show Paint, Canvas, Offset;
 
 // up 2 level chart
 import 'package:flutter_charts/src/chart/container/data_container.dart'
-    show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
-import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
+    show DataContainer, BarsContainer, PointContainersBar, BasePointContainer, PointContainer, FillerPointContainer;
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel, FillerPointModel;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
-// import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
+// import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeTicksAndLabelsDescriptor;
 
 // util
 // import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -63,34 +63,34 @@ class LineChartBarsContainer extends BarsContainer {
   });
 
   @override
-  DataColumnPointsBar makeInnerDataColumnPointsBar({
-    required DataColumnModel dataColumnModel,
+  PointContainersBar makeInnerPointContainersBar({
+    required PointsBarModel pointsBarModel,
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
     if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerDataColumnPointsBar(
-        dataColumnModel: dataColumnModel,
+      return outerDataContainer.makeDeepInnerPointContainersBar(
+        pointsBarModel: pointsBarModel,
         outerBarsContainer: this,
         barsAreaSign: barsAreaSign,
       );
     }
-    return LineChartDataColumnPointsBar(
+    return LineChartPointContainersBar(
       chartViewModel: chartViewModel,
       outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
-      dataColumnModel: dataColumnModel,
+      pointsBarModel: pointsBarModel,
     );
   }
 }
 
-class LineChartDataColumnPointsBar extends DataColumnPointsBar {
+class LineChartPointContainersBar extends PointContainersBar {
 
-  LineChartDataColumnPointsBar({
+  LineChartPointContainersBar({
     required super.chartViewModel,
     required super.outerDataContainer,
     required super.barsAreaSign,
-    required super.dataColumnModel,
+    required super.pointsBarModel,
     super.key,
   });
 
@@ -137,19 +137,19 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     return LineAndPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
-      outerDataColumnPointsBar: this,
+      outerPointContainersBar: this,
     );
   }
 
   @override
-  BasePointContainer makePointContainerWithZeroValue() {
+  BasePointContainer makePointContainerWithFiller() {
     // return LineAndPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
+      return outerDataContainer.makeDeepInnerPointContainerWithFiller(
       );
     }
-    return ZeroValuePointContainer(
-      pointModel: ZeroValuePointModel(),
+    return FillerPointContainer(
+      pointModel: FillerPointModel(),
       chartViewModel: chartViewModel,
     );
   }
@@ -170,7 +170,7 @@ class LineAndPointContainer extends PointContainer {
   LineAndPointContainer({
     required super.pointModel,
     required super.chartViewModel,
-    required super.outerDataColumnPointsBar,
+    required super.outerPointContainersBar,
     super.children,
     super.key,
   });
@@ -181,14 +181,14 @@ class LineAndPointContainer extends PointContainer {
   /// This implementation is somewhat tied to the rudimentary implementation of [TransposingStackLayouter]
   /// the intended layouter of [LineAndPointContainer]s, in the following:
   ///   1. It is assumed that the [TransposingStackLayouter] obtains full constraints of it's parent layouter,
-  ///     the [DataColumnPointsBar].
+  ///     the [PointContainersBar].
   ///   2. It is assumed that all sibling children ([LineAndPointContainer]s) of the [TransposingStackLayouter]
   ///     also obtain the same full constraints. In other words, it is assumed that
-  ///       - [DataColumnPointsBar]
+  ///       - [PointContainersBar]
   ///       - it's child [TransposingStackLayouter]
   ///       - all it's children, the [LineAndPointContainer]s
   ///     all get same constraints.
-  ///   3. As a result of 2. all [LineAndPointContainer]s above one label (in the [DataColumnPointsBar])
+  ///   3. As a result of 2. all [LineAndPointContainer]s above one label (in the [PointContainersBar])
   ///      can [layout] and [paint] it's points and connecting lines
   ///      into the same [constraints] area (which is like the canvas into which one vertical stack of data is painted).
   @override
@@ -197,7 +197,7 @@ class LineAndPointContainer extends PointContainer {
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
 
-    // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
+    // KEEP generateTestCode(pointOffset, inputRangeDescriptor, outputRangeDescriptor, pixelPointOffset);
 
     // Store pixelPointOffset as member for paint to use as added offset
     this.pixelPointOffset = pixelPointOffset;

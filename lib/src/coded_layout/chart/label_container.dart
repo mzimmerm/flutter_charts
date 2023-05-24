@@ -5,8 +5,8 @@ import 'container.dart' show PixelRangeProvider;
 import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
 import '../../morphic/container/label_container.dart';
 import '../../chart/chart_label_container.dart';
-import '../../chart/view_model.dart' as view_model;
-import '../../chart/model/label_model.dart' show AxisLabelInfo;
+import '../../chart/view_model/view_model.dart' as view_model;
+import '../../chart/view_model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:
@@ -89,7 +89,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// [parentOffsetTick]  has multiple other roles:
   ///   - The X or Y offset of the X or Y label middle point
   ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
-  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelInfosGenerator]).
+  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeTicksAndLabelsDescriptor]).
   ///     ```dart
   ///        double yTickY = outputLabelContainer.parentOffsetTick;
   ///        double labelTopY = yTickY - outputLabelContainer.layoutSize.height / 2;
@@ -104,7 +104,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// Overridden from [AxisLabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
-  /// Uses the [VerticalAxisContainerCL.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
+  /// Uses the [VerticalAxisContainerCL.rangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor] to
   /// affmap the [labelInfo] value [AxisLabelInfo.outputValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
@@ -121,9 +121,9 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE HorizontalAxisContainer / VerticalAxisContainer
     // and place it on [parentOffsetTick]
-    var labelsGenerator = outerChartAreaContainer.chartViewModel.outputLabelsGenerator;
+    var rangeDescriptor = outerChartAreaContainer.chartViewModel.outputRangeDescriptor;
 
-    parentOffsetTick = labelsGenerator.affmapValueToPixels(
+    parentOffsetTick = rangeDescriptor.affmapValueToPixels(
       value: labelInfo.outputValue.toDouble(),
       axisPixelsMin: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
       axisPixelsMax: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,

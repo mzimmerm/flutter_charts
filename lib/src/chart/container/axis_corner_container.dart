@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' as material show Colors;
 // base libraries
 import '../../morphic/container/container_layouter_base.dart';
 
-import '../view_model.dart' as view_model;
+import '../view_model/view_model.dart' as view_model;
 
 // this level libraries
 import '../container/container_common.dart' as container_common;

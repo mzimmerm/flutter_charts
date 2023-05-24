@@ -2,7 +2,7 @@
 
 // this level or equivalent
 import 'container.dart';
-import '../../chart/view_model.dart';
+import '../../chart/view_model/view_model.dart';
 // import '../../chart/options.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 

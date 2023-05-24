@@ -1,4 +1,4 @@
-import 'dart:math' as math show Random, pow;
+import 'dart:math' as math show Random, pow, min;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/cupertino.dart' show immutable;
 
@@ -16,10 +16,10 @@ import '../../util/util_dart.dart';
 /// Important lifecycle notes:
 ///   - When [ChartModel] is constructed, the [ChartRootContainerCL] is not available.
 ///     So in constructor, [ChartModel] cannot be given access to the root container, and it's needed members
-///     such as [ChartRootContainerCL.labelsGenerator].
+///     such as [ChartRootContainerCL.rangeDescriptor].
 ///
 /// Legacy Note: Replacement for legacy [ChartData], [PointsColumns],
-///              and various holders of dependent data values, including parts of [DataRangeLabelInfosGenerator]
+///              and various holders of dependent data values, including parts of [DataRangeTicksAndLabelsDescriptor]
 @immutable
 class ChartModel {
 
@@ -74,7 +74,7 @@ class ChartModel {
   /// Data reorganized from rows to columns.
   late final List<List<double>> _dataColumns;
 
-  /// For the benefit of [ChartViewModel] to construct [DataColumnModel]s. todo-0100: This is now too messy. What are responsibilities of ChartModel vs ChartViewModel???
+  /// For the benefit of [ChartViewModel] to construct [PointsBarModel]s. todo-0100: This is now too messy. What are responsibilities of ChartModel vs ChartViewModel???
   List<List<double>> get dataColumns => _dataColumns;
 
   int get numColumns => _dataColumns.length;
@@ -101,6 +101,10 @@ class ChartModel {
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
 
+  // todo-013-performance : cache flattenRows, also _valuesMin, also look at its usages
+  List<double> get flattenRows => dataRows.expand((element) => element).toList();
+  double get _valuesMin => flattenRows.reduce(math.min);
+
   void validate(List<String> legendNames, List<ui.Color> legendColors) {
     //                      But that would require ChartOptions available in ChartModel.
     if (!(dataRows.length == legendNames.length)) {
@@ -124,11 +128,9 @@ class ChartModel {
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
-      /* todo-00-next : put this back
       if (!(_valuesMin > 0.0)) {
         throw StateError('Using logarithmic Y scale requires only positive Y data');
       }
-      */
     }
   }
 }
@@ -136,7 +138,7 @@ class ChartModel {
 /// Data for one legend item, currently it's [name] and [color] used for data it represents.
 ///
 /// Motivation: In this project model [ChartModel], we represent chart data as columns,
-///             in [DataColumnModel]. This representation is motivated by a 'stacked column' view of data.
+///             in [PointsBarModel]. This representation is motivated by a 'stacked column' view of data.
 ///             At the same time, list of data that represents one 'series' can be viewed as a row of data.
 ///             So
 ///               - In the 'row first view',    each row contains data in one series,     for ALL independent (input) labels.

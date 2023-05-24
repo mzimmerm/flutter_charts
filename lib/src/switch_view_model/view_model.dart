@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../chart/view_model.dart'; // NEW VIEW MODEL BASE
+import '../chart/view_model/view_model.dart'; // NEW VIEW MODEL BASE
 
 import '../morphic/container/chart_support/chart_style.dart';
 import 'auto_layout/line/view_model.dart'; // NEW VIEW MODEL LINE

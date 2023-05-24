@@ -1,10 +1,10 @@
 import 'dart:ui' as ui show Offset, Paint;
 
 // base libraries
-import '../container.dart';
-import '../../../chart/view_model.dart';
-import '../line_container.dart';
-import '../presenter.dart'; // OLD
+import '../../container.dart';
+import '../../../../chart/view_model/view_model.dart';
+import '../../line_container.dart';
+import '../../presenter.dart'; // OLD
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,

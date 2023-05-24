@@ -9,12 +9,12 @@ import '../../chart/container/root_container.dart';
 import '../../chart/container/legend_container.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/model/data_model.dart';
-import '../../chart/view_model.dart';
+import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
 import 'presenter.dart';
 import '../../util/util_dart.dart';
-import '../../chart/model/label_model.dart';
+import '../../chart/view_model/label_model.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
 
@@ -264,8 +264,8 @@ mixin PixelRangeProvider on ChartAreaContainer {
   ///  2. The difference between [axisPixelsRange] min and max is the height constraint
   ///     on [DataContainer]!
   ///
-  ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
-  ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
+  ///   3. If is the interval to which the axis data values, stored in [rangeDescriptor]'s
+  ///      member [DataRangeTicksAndLabelsDescriptor.dataRange] should be extrapolated.
   ///
   /// Important note: Cannot be final, because, if on HorizontalAxisContainer, the [layout] code where
   ///                 this is set may be called multiple times.
@@ -403,9 +403,9 @@ class StackableValuePoint {
   ///
   StackableValuePoint affmapToPixels({
     required double scaledX,
-    required DataRangeLabelInfosGenerator outputLabelsGenerator,
+    required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
   }) {
-    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating ranges in outputLabelsGenerator
+    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating ranges in outputRangeDescriptor
     // were calculated using the NEW [ChartModel]
 
     VerticalAxisContainerCL verticalAxisContainerCL = chartViewModel.chartRootContainer.verticalAxisContainer as VerticalAxisContainerCL;
@@ -414,7 +414,7 @@ class StackableValuePoint {
 
     scaledFrom = ui.Offset(
       scaledX,
-      outputLabelsGenerator.affmapValueToPixels(
+      outputRangeDescriptor.affmapValueToPixels(
         value: fromY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -422,7 +422,7 @@ class StackableValuePoint {
     );
     scaledTo = ui.Offset(
       scaledX,
-      outputLabelsGenerator.affmapValueToPixels(
+      outputRangeDescriptor.affmapValueToPixels(
         value: toY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -572,7 +572,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [ChartModel.dataRows] values in
-  /// the passed [chartViewModel.outerChartModel].
+  /// the passed [chartViewModel.outerChartViewModel].
   PointsColumns({
     required this.chartViewModel,
     required PointPresenterCreator pointPresenterCreator,
@@ -661,7 +661,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         double scaledX = chartRootContainer.xTickXs[col];
         point.affmapToPixels(
           scaledX: scaledX,
-          outputLabelsGenerator: chartViewModel.outputLabelsGenerator,
+          outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
         );
       });
       col++;

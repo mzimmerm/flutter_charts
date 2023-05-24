@@ -4,7 +4,7 @@ import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/axis_container.dart';
 
 // base libraries
-import '../../../chart/view_model.dart';
+import '../../../chart/view_model/view_model.dart';
 import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../../chart/chart_type/bar/container/root_container.dart';
 import '../../../chart/model/data_model.dart';

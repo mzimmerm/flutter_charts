@@ -3607,7 +3607,7 @@ class Aligner extends PositioningBoxLayouter {
 /// Each instance of this [ExternalTicksLayoutProvider] is owned by its client (and owner),
 /// an [ExternalTicksBoxLayouter], on which behalf it works.
 ///
-/// See [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], which is used to create instance of this class.
+/// See [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutProvider], which is used to create instance of this class.
 ///
 /// The main role of this class is provided by the method [_affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]
@@ -3670,16 +3670,16 @@ class ExternalTicksLayoutProvider {
   ///     [ExternalTicksBoxLayouter.layout_Post_NotLeaf_PositionChildren], further in
   ///     [ExternalTicksBoxLayouter._setTickPixelsRangeAndAffmapTickValuesToPixels].
   ///   - Determines the labels' pixel layout placing.
-  ///   - Determines positions of rectangles of labels in [DataRangeLabelInfosGenerator.labelInfoList].
+  ///   - Determines positions of rectangles of labels in [DataRangeTicksAndLabelsDescriptor.labelInfoList].
   ///   - Contains
   ///     - NUMERICALLY DECREASING values IF this [ExternalTicksLayoutProvider] is on vertical axis
   ///       ([isOnHorizontalAxis] is false during call to method [_affmapValuesToPixels]).
   ///       [ExternalTicksLayoutProvider.tickValues].
   ///     - INCREASING values otherwise.
   ///
-  /// See [ChartViewModel.outputLabelsGenerator] returned by [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider].
+  /// See [ChartViewModel.outputRangeDescriptor] returned by [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutProvider].
   ///
-  /// See [DataRangeLabelInfosGenerator.labelInfoList] which returns the labels positioned by this list
+  /// See [DataRangeTicksAndLabelsDescriptor.labelInfoList] which returns the labels positioned by this list
   /// (both lists order first to last).
   late final List<double> tickPixels;
 
@@ -3725,7 +3725,7 @@ class ExternalTicksLayoutProvider {
   /// Example: affmap-ing labels for VERTICAL axis (column or row)
   ///
   ///    We may have labels, children of this container, with [tickValues] = [0, 1000, 2000].
-  ///    Note: Labels in `_AxisLabelInfos._labelInfoList`, returned from [DataRangeLabelInfosGenerator.labelInfoList]
+  ///    Note: Labels in `_AxisLabelInfos._labelInfoList`, returned from [DataRangeTicksAndLabelsDescriptor.labelInfoList]
   ///    are (by construction) always in the same, numerically increasing order as [tickValues].
   ///    Calling this method results in corresponding [tickPixels] to be decreasing, for example,
   ///    [tickPixels] = [200, 100, 0].
@@ -3753,7 +3753,7 @@ class ExternalTicksLayoutProvider {
   ///
   List<double> _affmapValuesToPixels() {
     /* todo-02 Maybe something like this is needed for the special case of collapsed-to-origin Interval
-    // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
+    // Special case, if _rangeDescriptor.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Affmap the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;

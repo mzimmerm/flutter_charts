@@ -1,6 +1,6 @@
 // this level base libraries or equivalent
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_model.dart' as view_model;
+import '../view_model/view_model.dart' as view_model;
 import '../../morphic/container/container_key.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 

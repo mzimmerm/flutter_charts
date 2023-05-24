@@ -11,8 +11,8 @@ import 'dart:ui' as ui show Rect, Paint, Canvas;
 
 // up 2 level chart
 import 'package:flutter_charts/src/chart/container/data_container.dart'
-    show DataContainer, BarsContainer, DataColumnPointsBar, BasePointContainer, PointContainer, ZeroValuePointContainer;
-import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, DataColumnModel, BasePointModel, ZeroValuePointModel;
+    show DataContainer, BarsContainer, PointContainersBar, BasePointContainer, PointContainer, FillerPointContainer;
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel, FillerPointModel;
 
 // util
 // import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -62,34 +62,34 @@ class BarChartBarsContainer extends BarsContainer {
   });
 
   @override
-  DataColumnPointsBar makeInnerDataColumnPointsBar({
-    required DataColumnModel dataColumnModel,
+  PointContainersBar makeInnerPointContainersBar({
+    required PointsBarModel pointsBarModel,
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
     if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerDataColumnPointsBar(
-        dataColumnModel: dataColumnModel,
+      return outerDataContainer.makeDeepInnerPointContainersBar(
+        pointsBarModel: pointsBarModel,
         outerBarsContainer: this,
         barsAreaSign: barsAreaSign,
       );
     }
-    return BarChartDataColumnPointsBar(
+    return BarChartPointContainersBar(
       chartViewModel: chartViewModel,
       outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
-      dataColumnModel: dataColumnModel,
+      pointsBarModel: pointsBarModel,
     );
   }
 }
 
-class BarChartDataColumnPointsBar extends DataColumnPointsBar {
+class BarChartPointContainersBar extends PointContainersBar {
 
-  BarChartDataColumnPointsBar({
+  BarChartPointContainersBar({
     required super.chartViewModel,
     required super.outerDataContainer,
     required super.barsAreaSign,
-    required super.dataColumnModel,
+    required super.pointsBarModel,
     super.key,
   });
 
@@ -169,18 +169,18 @@ class BarChartDataColumnPointsBar extends DataColumnPointsBar {
     return BarPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
-      outerDataColumnPointsBar: this,
+      outerPointContainersBar: this,
     );
   }
 
   @override
-  BasePointContainer makePointContainerWithZeroValue() {
+  BasePointContainer makePointContainerWithFiller() {
     // return BarPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
-      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue();
+      return outerDataContainer.makeDeepInnerPointContainerWithFiller();
     }
-    return ZeroValuePointContainer(
-      pointModel: ZeroValuePointModel(),
+    return FillerPointContainer(
+      pointModel: FillerPointModel(),
       chartViewModel: chartViewModel,
     );
   }
@@ -201,7 +201,7 @@ class BarPointContainer extends PointContainer {
   BarPointContainer({
     required super.pointModel,
     required super.chartViewModel,
-    required super.outerDataColumnPointsBar,
+    required super.outerPointContainersBar,
     super.children,
     super.key,
   });
@@ -213,7 +213,7 @@ class BarPointContainer extends PointContainer {
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
-    // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
+    // KEEP generateTestCode(pointOffset, inputRangeDescriptor, outputRangeDescriptor, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
     // which is the [layoutSize] of the rectangle presenting the point.

@@ -8,7 +8,7 @@ import '../chart_label_container.dart' as chart_label_container;
 import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
 import '../../morphic/container/container_alignment.dart' as container_alignment;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_model.dart' as view_model;
+import '../view_model/view_model.dart' as view_model;
 import '../options.dart' as chart_options;
 import '../../morphic/container/layouter_one_dimensional.dart';
 

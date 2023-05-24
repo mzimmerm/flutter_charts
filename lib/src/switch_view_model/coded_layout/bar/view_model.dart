@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart' as logger;
 
 // base libraries
-import '../../../chart/view_model.dart';
+import '../../../chart/view_model/view_model.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../coded_layout/chart/axis_container.dart';
 import '../../../coded_layout/chart/data_container.dart';
@@ -10,7 +10,7 @@ import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-import '../../../coded_layout/chart/bar/root_container.dart';
+import '../../../coded_layout/chart/chart_type/bar/root_container.dart';
 
 import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../view_model_cl.dart'; // OLD

@@ -8,9 +8,9 @@ import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_style.dart';
 import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';
-import '../model/label_model.dart';
+import '../view_model/label_model.dart';
 import '../chart_label_container.dart';
-import '../view_model.dart';
+import '../view_model/view_model.dart';
 import '../options.dart';
 
 // this level libraries
@@ -49,27 +49,27 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
   ///   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
   /// See documentation in [PointOffset.affmapInContextOf] column section for details.
   TransposingInputAxisLineContainer({
-    required DataRangeLabelInfosGenerator inputLabelsGenerator,
-    required DataRangeLabelInfosGenerator outputLabelsGenerator,
+    required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
+    required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
     required ChartViewModel chartViewModel,
     required super.constraintsWeight,
   }) : super(
           // Logic to handle PointOffset depending on orientation. Not possible to do pure affmap
-          //   (from default column logic using outputValue:  outputLabelsGenerator.dataRange.max ),
+          //   (from default column logic using outputValue:  outputRangeDescriptor.dataRange.max ),
           //   because [inputAxisLine] lives in [ContainerForBothBarsAreasAndInputAxisLine] inside Column,
           //   which adds offset and messes up positioning endpoints of axis line using pure affmap.
           //   todo-010 : Deal with it better, but at the moment, I do not know how.
           fromPointOffset: PointOffset(
-            inputValue: inputLabelsGenerator.dataRange.min,
+            inputValue: inputRangeDescriptor.dataRange.min,
             outputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? outputLabelsGenerator.dataRange.max
-                : outputLabelsGenerator.dataRange.min,
+                ? outputRangeDescriptor.dataRange.max
+                : outputRangeDescriptor.dataRange.min,
           ),
           toPointOffset: PointOffset(
-            inputValue: inputLabelsGenerator.dataRange.max,
+            inputValue: inputRangeDescriptor.dataRange.max,
             outputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? outputLabelsGenerator.dataRange.max
-                : outputLabelsGenerator.dataRange.min,
+                ? outputRangeDescriptor.dataRange.max
+                : outputRangeDescriptor.dataRange.min,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
@@ -83,17 +83,17 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
   ///   PointOffset transforms becomes VERTICAL due to the transpose of coordinates.
   /// See documentation in [PointOffset.affmapInContextOf] row section for details.
   TransposingOutputAxisLineContainer({
-    required DataRangeLabelInfosGenerator inputLabelsGenerator,
-    required DataRangeLabelInfosGenerator outputLabelsGenerator,
+    required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
+    required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
     required ChartViewModel chartViewModel,
   }) : super(
           fromPointOffset: PointOffset(
-            inputValue: inputLabelsGenerator.dataRange.min,
-            outputValue: outputLabelsGenerator.dataRange.min,
+            inputValue: inputRangeDescriptor.dataRange.min,
+            outputValue: outputRangeDescriptor.dataRange.min,
           ),
           toPointOffset: PointOffset(
-            inputValue: inputLabelsGenerator.dataRange.min,
-            outputValue: outputLabelsGenerator.dataRange.max,
+            inputValue: inputRangeDescriptor.dataRange.min,
+            outputValue: outputRangeDescriptor.dataRange.max,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
@@ -104,8 +104,8 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   TransposingAxisContainer({
     required super.chartViewModel,
   }) {
-    _outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
-    _inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
+    _outputRangeDescriptor = chartViewModel.outputRangeDescriptor;
+    _inputRangeDescriptor = chartViewModel.inputRangeDescriptor;
     _padGroup = ChartPaddingGroup(fromChartOptions: chartViewModel.chartOptions);
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -120,8 +120,8 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   // Capture some named instances in members for reuse by extensions,
   // making clear what is needed from params
   late final ChartPaddingGroup _padGroup;
-  late final DataRangeLabelInfosGenerator _outputLabelsGenerator;
-  late final DataRangeLabelInfosGenerator _inputLabelsGenerator;
+  late final DataRangeTicksAndLabelsDescriptor _outputRangeDescriptor;
+  late final DataRangeTicksAndLabelsDescriptor _inputRangeDescriptor;
   late final LabelStyle _labelStyle;
 
   factory TransposingAxisContainer.Vertical({
@@ -200,14 +200,14 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
           children: [
             TransposingExternalTicks.Row(
               chartOrientation: chartViewModel.chartOrientation,
-              mainAxisExternalTicksLayoutProvider: _inputLabelsGenerator.asExternalTicksLayoutProvider(
+              mainAxisExternalTicksLayoutProvider: _inputRangeDescriptor.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
               children:  [
                 // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-                //   in the [DataRangeLabelInfosGenerator] constructor called in the  [ChartViewModel]  constructor,
-                //   where both input and output [DataRangeLabelInfosGenerator]s are created.
-                for (var labelInfo in _inputLabelsGenerator.labelInfoList)
+                //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
+                //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
+                for (var labelInfo in _inputRangeDescriptor.labelInfoList)
                   // todo-013 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   AxisLabelContainer(
                     chartViewModel: chartViewModel,
@@ -245,12 +245,12 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
             children: [
               TransposingExternalTicks.Column(
                 chartOrientation: chartViewModel.chartOrientation,
-                mainAxisExternalTicksLayoutProvider: _outputLabelsGenerator.asExternalTicksLayoutProvider(
+                mainAxisExternalTicksLayoutProvider: _outputRangeDescriptor.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [
                   // Add all labels from generator as children. See comment in TransposingInputAxisContainer
-                  for (var labelInfo in _outputLabelsGenerator.labelInfoList)
+                  for (var labelInfo in _outputRangeDescriptor.labelInfoList)
                     AxisLabelContainer(
                       chartViewModel: chartViewModel,
                       label: labelInfo.formattedLabel,
@@ -262,8 +262,8 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
               ),
               // Y axis line to the right of labels
               TransposingOutputAxisLineContainer(
-                inputLabelsGenerator: _inputLabelsGenerator,
-                outputLabelsGenerator: _outputLabelsGenerator,
+                inputRangeDescriptor: _inputRangeDescriptor,
+                outputRangeDescriptor: _outputRangeDescriptor,
                 chartViewModel: chartViewModel,
               ),
             ]),

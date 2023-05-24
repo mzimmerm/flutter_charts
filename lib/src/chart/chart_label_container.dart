@@ -5,7 +5,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 // this level or equivalent
 import '../morphic/container/label_container.dart';
 import 'container/container_common.dart' as container_common show ChartAreaContainer;
-import 'view_model.dart' as view_model;
+import 'view_model/view_model.dart' as view_model;
 import 'options.dart' show ChartOptions;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
