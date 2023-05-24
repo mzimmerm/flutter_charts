@@ -45,7 +45,7 @@ import 'container/root_container.dart' as doc_root_container;
 ///
 ///   LineChart lineChart = LineChart(
 ///     chartViewModel: lineChartViewModel, // also makes instance of [LineChartRootContainer]
-///     chartPainter: FlutterChartPainter(),
+///     flutterChartPainter: FlutterChartPainter(),
 ///   );
 ///   ```
 ///
@@ -78,7 +78,7 @@ abstract class FlutterChart extends widgets.CustomPaint {
   FlutterChart({
     widgets.Key? key,
     // Framework requirement that CustomPaint / FlutterChart holds on it's CustomPainter / FlutterChartPainter
-    required painter.FlutterChartPainter chartPainter,
+    required painter.FlutterChartPainter flutterChartPainter,
     // Flutter_charts application requirement that [FlutterChart] holds on it's [ChartViewModel],
     //   which must be a concrete extension such as [BarChartViewModel]
     //   (that creates concrete view root [BarChartRootContainer]).
@@ -88,12 +88,18 @@ abstract class FlutterChart extends widgets.CustomPaint {
     widgets.Widget? child,
   }) : super(
           key: key,
-          painter: chartPainter,
+          painter: flutterChartPainter,
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
         ) {
     logger.Logger().d('Constructing $runtimeType');
+    // Late initialize [FlutterChartPainter.chart], which is used during [FlutterChartPainter.paint]
+    // by the [chart] member [FlutterChart.chartViewModel] to create, layout and paint the chart using
+    //    ```dart
+    //          chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+    //    ```
+    flutterChartPainter.chart = this;
   }
 
   /// The model and maker of the root of the chart view (container) hierarchy, the concrete [ChartRootContainer]

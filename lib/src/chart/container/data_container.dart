@@ -394,8 +394,13 @@ abstract class PointContainersBar extends container_common.ChartAreaContainer {
   ///
   /// The hooks called in this base implementation (in order):
   ///
-  ///   - makePointContainerListForSign
-  ///   - todo-0100  document
+  ///   - [makePointContainerListForSign] creates the list of [PointContainer]s from all [PointModel] instances
+  ///     in [pointsBarModel]s [PointsBarModel.pointModelList].
+  ///   - [makePointContainersLayouter] wraps the above created point containers as children of a layouter;
+  ///     the returned layouter instance is determined by the extension:
+  ///       - The bar chart,  the [BarChartPointContainersBar]  returns the [TransposingRoller.Column]
+  ///       - The line chart, the [LineChartPointContainersBar] returns the [TransposingStackLayouter.Column].
+  ///   - [addChildren] adds the above created layouter as a single child of this [PointContainersBar].
   @override
   void buildAndReplaceChildren() {
 
@@ -530,10 +535,15 @@ abstract class PointContainersBar extends container_common.ChartAreaContainer {
 
 }
 
-/// todo-0100-document
-/// - ChartViewModel needed in constructor to pass to super ChartAreaContainer
-/// - Has pointModel as member, type is BasePointModel
-/// - No outer member [outerPointContainersBar] - not connected to any column
+/// The base class of containers which present a single point in chart's [PointModel].
+///
+/// Extensions may present a point as a rectangle in a bar chart, or a dot and line in a line chart.
+///
+/// - [chartViewModel] is needed in constructor to pass to super ChartAreaContainer
+/// - [pointModel] kept as a member is the point presented by this container.
+/// - Note: This base class is NOT connected to any column - it does NOT hold an outer member representing a column (bar).
+///         Such connection is in concrete extension [PointContainer] , see [PointContainer.outerPointContainersBar],
+///         but NOT in the filler extension [FillerPointContainer].
 abstract class BasePointContainer extends container_common.ChartAreaContainer
     with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
 
@@ -551,7 +561,7 @@ abstract class BasePointContainer extends container_common.ChartAreaContainer
   /// The concrete [BasePointModel] presented by this container.
   final BasePointModel pointModel;
 
-  // todo-0100-document
+  ///
   late final PointOffset pixelPointOffset;
 }
 

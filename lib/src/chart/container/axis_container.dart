@@ -58,7 +58,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
           //   (from default column logic using outputValue:  outputRangeDescriptor.dataRange.max ),
           //   because [inputAxisLine] lives in [ContainerForBothBarsAreasAndInputAxisLine] inside Column,
           //   which adds offset and messes up positioning endpoints of axis line using pure affmap.
-          //   todo-010 : Deal with it better, but at the moment, I do not know how.
+          //   todo-02-design : Deal with it better, but at the moment, I do not know how.
           fromPointOffset: PointOffset(
             inputValue: inputRangeDescriptor.dataRange.min,
             outputValue: chartViewModel.chartOrientation == ChartOrientation.column
@@ -208,7 +208,6 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
                 //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
                 //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
                 for (var labelInfo in _inputRangeDescriptor.labelInfoList)
-                  // todo-013 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   AxisLabelContainer(
                     chartViewModel: chartViewModel,
                     label: labelInfo.formattedLabel,

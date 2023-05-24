@@ -39,8 +39,10 @@ void assertOffsetResultsSame(Offset result, Offset otherResult) {
   }
 }
 
-// todo-0100 : document
-// todo-0100 : why it does not contain ChartStacking information?
+/// Holder class defining the ranges and orientation in one place for the benefit
+/// of [PointOffset.affmapBetweenRanges].
+///
+/// todo-02-design : Should it contain ChartStacking information?
 class FromTransposing2DValueRange {
 
   FromTransposing2DValueRange ({

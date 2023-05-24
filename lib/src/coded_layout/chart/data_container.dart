@@ -8,7 +8,7 @@ import 'container.dart';
 import '../../chart/container/container_common.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/container/axis_container.dart';
-import '../../chart/model/data_model.dart';
+// todo-00-done : import '../../chart/model/data_model.dart';
 import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
@@ -215,19 +215,16 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
     // This section is doing the following:
     // 1. Creates the 'data container', represented here by [PointsColumns]
-    // 2. Layouts the 'data container' by extrapolating.
-    //    Extrapolating is using the [_SourceVerticalAxisContainerAndVerticalAxisContainerToSinkDataContainer]
-    //    which holds the previously layed out [HorizontalAxisContainer] and [VerticalAxisContainer].
-    // 3. Applies the parent offset on the 'data container' [PointsColumns].
+    // 2. Layouts the 'data container' by [_affmapPointsColumns].
+    // 3. Applies this parent offset on the 'data container' [PointsColumns].
     //    This offsets the 'data container' [PointsColumns] to the right of the Y axis,
     //    and to the top of the X axis.
     // 4. Creates the 'view model', represented here by [PointPresentersColumns],
     //    and set it on [pointPresentersColumns].
     // 5. LATER, in [paint], paints the  'view model', represented here by [PointPresentersColumns]
 
-    // 1. From the [ChartData] model, create the 'data container' (the [PointsColumns])
-    //    which represent the list of columns on chart.
-    //    Set the  [PointsColumns] instance on [chartViewModel.chartModel.pointsColumns].
+    // 1. From the [ChartViewModel] create the 'data container'
+    //    (the [PointsColumns], which represent the list of columns on chart), and late bind to instance [pointsColumns]
     //    The coordinates in [PointsColumns] are relative - 0 based
     pointsColumns = PointsColumns(
       chartViewModel: chartViewModel,

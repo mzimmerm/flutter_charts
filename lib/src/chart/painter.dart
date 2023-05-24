@@ -32,9 +32,6 @@ class FlutterChartPainter extends widgets.CustomPainter {
     logger.Logger().d('Constructing $runtimeType');
   }
 
-  /// Keep track of re-paints
-  bool _isFirstPaint = true;
-
   /// The [FlutterChart] instance (extension of [CustomPaint]) this painter is painting on.
   ///
   /// It will be late initialized in the concrete [FlutterChart] constructor when
@@ -49,17 +46,24 @@ class FlutterChartPainter extends widgets.CustomPainter {
   ///   ```
   late final FlutterChart chart;
 
+  /// Keep track of re-paints
+  bool _isFirstPaint = true;
+
   /// Paints the chart on the passed [canvas], limited to the [size] area.
   ///
-  /// This [paint] method is the core that paints the chart,
-  /// in the sense it is guaranteed to be called by the Flutter framework
-  /// (see class comment), hence it provides a "hook" into the chart
-  /// being able to paint and draw itself.
+  /// This method implements the superclass [widgets.CustomPainter.paint];
   ///
-  /// A core role of this [paint] method is to call [ChartViewModel.chartRootContainerCreateBuildLayoutPaint],
+  /// The implementation code is the entry method for the chart, it calls chart methods which create,
+  /// lay out, and paint the chart.
+  ///
+  /// This method [paint] is guaranteed to be called by the Flutter framework any time Flutter needs to repaint
+  /// the chart area (see class comment), hence it provides a "hook" into the Flutter framework
+  /// where the chart can build itself.
+  ///
+  /// A core of this [paint] method is invocation of [ChartViewModel.chartRootContainerCreateBuildLayoutPaint],
   /// which creates, builds, lays out and paints the concrete [containers.ChartRootContainer].
   ///
-  /// The [chartViewModel] created in the [ChartViewModel.chartRootContainerCreateBuildLayoutPaint]
+  /// The [FlutterChart.chartViewModel] created in the [ChartViewModel.chartRootContainerCreateBuildLayoutPaint]
   /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {

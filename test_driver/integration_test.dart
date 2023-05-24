@@ -9,7 +9,6 @@ Future<void> main() => integrationDriver();
 
 /// Allows to control apps from tests, while test code runs on a native device, physical or emulated. 
 import 'dart:io';
-import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {

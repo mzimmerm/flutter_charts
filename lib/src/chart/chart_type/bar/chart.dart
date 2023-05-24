@@ -15,26 +15,17 @@ class BarChart extends FlutterChart {
   /// Default constructor accepts size
   BarChart({
     widgets.Key? key,
-    required FlutterChartPainter chartPainter,
+    required FlutterChartPainter flutterChartPainter,
     required ChartViewModel chartViewModel,
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
           key: key,
-          chartPainter: chartPainter,
+          flutterChartPainter: flutterChartPainter,
           chartViewModel: chartViewModel,
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
-        )
-  {
-    // Late initialize [FlutterChartPainter.chart], which is used during [FlutterChartPainter.paint]
-    // by the [chart] member [FlutterChart.chartViewModel] to create, layout and paint the chart using
-    //    ```dart
-    //          chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
-    //    ```
-    chartPainter.chart = this;
-  }
-
+        );
 }

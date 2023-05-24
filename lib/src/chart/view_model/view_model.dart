@@ -506,22 +506,49 @@ class PointsBarModel {
 }
 
 
-// todo-0100-document
 /// Base point model serves as a base class for both the actual [PointModel] as well as [FillerPointModel].
 ///
-/// Does NOT need any:
+/// Only needs methods and members invoked in code commonly used by [PointModel] mixed in [FillerPointModel],
+/// notably [PointContainer.paint].
+///
+/// Does NOT need fields (added in [PointModel]):
 ///   - outputValue
 ///   - outerPointsBarModel
 ///   - rowIndex
 ///   - columnIndex
-@immutable
+///
+/// Note: @immutable prevented by [pointContainer], see comments there.
 abstract class BasePointModel {
 
   /// The view which presents this [PointModel].
   ///
-  /// todo-00-next: CAN THIS BE FIXED? CANNOT BE FINAL, EVEN LATE FINAL, BECAUSE, THE ChartViewModel, with all it's components (PointsBarModel, PointModel)
-  ///                lives longer than views/containers (PointContainer, PointContainersBar). So code must be able to set again on repaint.
-  // late final data_container.BasePointContainer pointContainer;
+  /// Important note (design):
+  ///   - Container -> ViewModel: We already keep a reference from views (containers) to ViewModels; for example,
+  ///     [PointContainer] holds on [PointModel] in [PointContainer.pointModel].
+  ///     This reference is created on every [FlutterChartPainter.paint]
+  ///     in [ChartViewModel.chartRootContainerCreateBuildLayoutPaint] by the act of rebuilding the
+  ///     whole containers hierarchy (view) from the [ChartViewModel] instance.
+  ///   - ViewModel -> Container: By holding on the container [pointContainer] in this instance of view model [BasePointModel],
+  ///     we also hold on the reversed reference.
+  ///     Because the ViewModel lives longer than the container, this reference need to be re-set every time
+  ///     the containers hierarchy (view) is rebuild, while the ViewModel [BasePointModel] remains the same.
+  ///     As a result, this reference cannot be final.
+  ///
+  ///
+  /// todo-02-design: Ideally, [pointContainer] is final or late final. But that is NOT possible currently,
+  ///   because the [ChartViewModel], living as [FlutterChart.chartViewModel]
+  ///   (with all it's components ([PointsBarModel], [PointModel] etc)
+  ///   lives longer than views/containers ([PointContainer], [PointContainersBar]) which are placed
+  ///   on this [pointContainer] reference. So code must be able to set a new [pointContainer]
+  ///   during [FlutterChartPainter.paint].
+  ///   One way to achieve for [pointContainer] to be final would be to make almost all members
+  ///   of [ChartViewModel] non-final, and provide a method ChartViewModel.updateFromModel(ChartModel),
+  ///   and call it in [FlutterChartPainter.paint] just before
+  ///   ```dart
+  ///   chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+  ///   ```
+  ///   This may be needed anyway, to allow chart rebuild when [model.ChartModel] changes asynchronyously.
+  ///
   data_container.BasePointContainer? pointContainer;
 
   /// Abstract method; implementations should get or calculate the inputValue-position of this [PointModel] instance.
@@ -566,19 +593,17 @@ abstract class BasePointModel {
   /// Abstract indicates color representing this point; intended to be defined in some extensions.
   ui.Color get color;
 
-  /// Returns true if there is a next column after this [PointModel] instance.
+  /// Abstract, implementations should return true if there is a next column after this [PointModel] instance.
   ///
   /// Should be used before invoking [nextPointModel].
   bool get hasNextPointModel;
 
-  /// Abstract method, implementations should return the [PointModel] in the same row,
-  /// next column from this [PointModel] instance.
+  /// Abstract, implementations should return the [PointModel]
+  /// in the next column of the same row as this [PointModel] instance.
   ///
-  /// Should be surrounded with [hasNextPointModel].
+  /// Call should be surrounded with [hasNextPointModel].
   ///
   /// Throws [StateError] if not such column exists.
-  ///
-  /// 'Next column' refers to the column with [columnIndex] one more than this [PointModel]s [columnIndex].
   BasePointModel get nextPointModel;
 
 }
@@ -592,7 +617,7 @@ abstract class BasePointModel {
 ///     member `PointsBarModel._chartModel`.
 ///     This access is used for model colors and row and column indexes to [ChartModel.dataRows].
 ///
-@immutable
+/// Note: @immutable prevented by [BasePointModel.pointContainer], see comments there.
 class PointModel extends BasePointModel {
 
   // ===================== CONSTRUCTOR ============================================
@@ -649,17 +674,13 @@ class PointModel extends BasePointModel {
   /// Delegated to [outerPointsBarModel] index [PointsBarModel.columnIndex].
   int get columnIndex => outerPointsBarModel.columnIndex;
 
-  /// Returns true if there is a next column after this [PointModel] instance.
+  /// See [BasePointModel.nextPointModel] documentation.
   ///
-  /// Should be used before invoking [nextPointModel].
+  /// Forwarded to it's member [outerPointsBarModel] method[PointsBarModel.hasNextColumnModel].
   @override
   bool get hasNextPointModel => outerPointsBarModel.hasNextColumnModel;
 
-  /// Returns the [PointModel] in the same row, next column from this [PointModel] instance.
-  ///
-  /// Should be surrounded with [hasNextPointModel].
-  ///
-  /// Throws [StateError] if not such column exists.
+  /// See [BasePointModel.nextPointModel] documentation.
   ///
   /// 'Next column' refers to the column with [columnIndex] one more than this [PointModel]s [columnIndex].
   @override
@@ -699,8 +720,12 @@ class PointModel extends BasePointModel {
 }
 
 
-// todo-0100-document
-@immutable
+/// A view model used for the [FillerPointContainer].
+///
+/// See the [FillerPointContainer] documentation.
+///
+/// Note: @immutable or const (desired here) is prevented by [pointContainer], see comments there.
+
 class FillerPointModel extends BasePointModel {
 
   @override

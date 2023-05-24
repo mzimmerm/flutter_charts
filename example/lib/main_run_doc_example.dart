@@ -57,7 +57,7 @@ Widget chartToRun() {
 
   var lineChart = LineChart(
     chartViewModel: lineChartViewModel,
-    chartPainter: FlutterChartPainter(),
+    flutterChartPainter: FlutterChartPainter(),
   );
   return lineChart;
 }

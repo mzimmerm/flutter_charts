@@ -74,7 +74,7 @@ class ChartModel {
   /// Data reorganized from rows to columns.
   late final List<List<double>> _dataColumns;
 
-  /// For the benefit of [ChartViewModel] to construct [PointsBarModel]s. todo-0100: This is now too messy. What are responsibilities of ChartModel vs ChartViewModel???
+  /// For the benefit of [ChartViewModel] to construct [PointsBarModel]s.
   List<List<double>> get dataColumns => _dataColumns;
 
   int get numColumns => _dataColumns.length;

@@ -51,7 +51,7 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
   ///
   /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
   /// to reach data model, as well as the view.
-  // todo-013 : can we move this on a CL class if only needed by legacy?
+  // todo-02-design-legacy : can we move this on a CL class if only needed by legacy?
   final view_model.ChartViewModel chartViewModel;
 
   // todo-later : Go over all usages, and move child building to this method

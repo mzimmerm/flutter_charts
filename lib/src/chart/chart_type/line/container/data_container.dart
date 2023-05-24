@@ -14,10 +14,8 @@ import 'package:flutter_charts/src/chart/container/data_container.dart'
     show DataContainer, BarsContainer, PointContainersBar, BasePointContainer, PointContainer, FillerPointContainer;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel, FillerPointModel;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
-// import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeTicksAndLabelsDescriptor;
 
 // util
-// import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;

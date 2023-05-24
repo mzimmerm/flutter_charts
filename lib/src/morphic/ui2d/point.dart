@@ -173,7 +173,6 @@ class PointOffset extends Offset {
   ///     [isSetBarPointRectInCrossDirectionToPixelRange] to false performs a pure affmap between the
   ///     [fromTransposing2DValueRange] and [to2DPixelRange], without any further result manipulation.
   ///     Setting one or both to true, is a convenience for processing in containers of line chart and bar chart.
-
   ///
   /// Note that the [withinConstraints] or [sizerHeight] and [sizerWidth] is used
   /// to calculate the size of [barPointRectSize] on the copy.

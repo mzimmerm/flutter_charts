@@ -1005,7 +1005,7 @@ class _ExampleWidgetCreator {
         LineChart lineChart = LineChart(
           // [lineChartViewModel] makes instance of [LineChartRootContainer]
           chartViewModel: lineChartViewModel,
-          chartPainter: FlutterChartPainter(),
+          flutterChartPainter: FlutterChartPainter(),
         );
         chartToRun = lineChart;
         break;
@@ -1020,7 +1020,7 @@ class _ExampleWidgetCreator {
         BarChart barChart = BarChart(
           // [barChartViewModel] makes instance of [BarChartRootContainer]
           chartViewModel: barChartViewModel,
-          chartPainter: FlutterChartPainter(),
+          flutterChartPainter: FlutterChartPainter(),
         );
 
         chartToRun = barChart;
