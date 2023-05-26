@@ -1909,7 +1909,7 @@ Notes or Later:
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
-** DONE 11.2. ~Line chart~ 2 days. Started May 20 (started day late) finished May 23
+** DONE 11. ~Line chart~ 2 days. Started May 20 (started day late) finished May 23
 
 - [X] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
 - [X] The above vs affmapValuesToPixels!!! compare them
@@ -1918,7 +1918,7 @@ Notes or Later:
 - [X] review use of covariant in code
 
 
-** DONE ~Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.~ 1/2 day - started May 24
+** DONE ~12. Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.~ 1/2 day - started May 24, finished May 24
 
 Not sure if to do this ... Need to think through the separation of View and ViewModel.
 
@@ -1927,7 +1927,7 @@ Not sure if to do this ... Need to think through the separation of View and View
 - [X] Search all data_container*dart for 'import.*model' regex - BUT USAGE OF 'view_model' is fine
 
 
-** IN-PROGRESS-NOW ~Create a test app for super fast testing~ 2 days, but be willing to give up. Should start May 23, started May 24
+** IN-PROGRESS-NOW ~13. Create a test app for super fast testing~ 2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
 
 - [ ] Create a test app that can:
   1. [ ] run first chart in list
@@ -1941,12 +1941,15 @@ Not sure if to do this ... Need to think through the separation of View and View
 
 Implementation
 
-- [ ] Where to put the delay? 
-- [ ] Where to put the screenshot?
-- [ ] Start with only screenshot, as that is necessary condition to be able to do even do this.
-- [ ] 
-- [ ] Is the test app: copy or extension of main.dart? PROBABLY START WITH A COPY 
-- 
+- [ ] Modify/copy the existing main.dart, to main_loop_charts.dart, in main_loop_charts.dart add a button 'next' instead of + button
+  - [ ] Clicking 'next' will run another test, from a list of tests (ex10-ex900, different combinations of chart, orientation, stacking
+    - [ ] start with 2 tests in the list
+  - [ ] Make 'next' disabled after last test is run
+- [ ] Modify/copy the existing driver test
+  - [ ] Add a loop around the 'pump' until after screenshot is taken
+  - [ ] After screenshot is taken, add code mocking clicking the 'next', after that, go to top of loop, before 'pump and settle'
+  - [ ] Loop end condition is that 'next' is disabled
+ 
 
 ** LATER ~add WrappingLayouter.Column/Row, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 

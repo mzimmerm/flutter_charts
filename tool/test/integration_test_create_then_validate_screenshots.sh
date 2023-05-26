@@ -148,6 +148,6 @@ echo -------------------------------------
 echo Step 3: Running SCREENSHOTS-VALIDATING widget tests \"flutter test\" on \"$examples_descriptor_generated_program\".
 echo         It validates, one by one, that the screenshots generated in Step 2 tests are unchanged.
 echo
-# todo-00-put-back: bash -x "$examples_descriptor_generated_program" \
-# todo-00-put-back:         "flutter test $noPub" \
-# todo-00-put-back:         " test/screenshot_check_test.dart"
+bash -x "$examples_descriptor_generated_program" \
+        "flutter test $noPub" \
+        " test/screenshot_check_test.dart"
