@@ -21,10 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main_new.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_screenshot_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_driver/integration_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test_driver/integration_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -1342,11 +1341,6 @@
           <option name="timeStamp" value="3671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
-          <line>460</line>
-          <option name="timeStamp" value="3672" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
           <line>176</line>
           <option name="timeStamp" value="3676" />
@@ -1387,11 +1381,6 @@
           <option name="timeStamp" value="3724" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
-          <line>131</line>
-          <option name="timeStamp" value="3731" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart</url>
           <line>321</line>
           <option name="timeStamp" value="3737" />
@@ -1427,11 +1416,6 @@
           <option name="timeStamp" value="3762" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
-          <line>171</line>
-          <option name="timeStamp" value="3763" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
           <line>169</line>
           <option name="timeStamp" value="3764" />
@@ -1440,6 +1424,66 @@
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
           <line>129</line>
           <option name="timeStamp" value="3765" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>182</line>
+          <option name="timeStamp" value="3766" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>187</line>
+          <option name="timeStamp" value="3767" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>146</line>
+          <option name="timeStamp" value="3769" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>mock:///errors_patch.dart</url>
+          <line>49</line>
+          <option name="timeStamp" value="3772" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>46</line>
+          <option name="timeStamp" value="3775" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>52</line>
+          <option name="timeStamp" value="3776" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>58</line>
+          <option name="timeStamp" value="3777" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>110</line>
+          <option name="timeStamp" value="3778" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>111</line>
+          <option name="timeStamp" value="3779" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>113</line>
+          <option name="timeStamp" value="3780" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test_driver_extended.dart</url>
+          <line>119</line>
+          <option name="timeStamp" value="3781" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>156</line>
+          <option name="timeStamp" value="3782" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -26,8 +26,17 @@ Future<void> main() async {
     return false;
   }
 
-  await integrationDriver(
-    onScreenshot: onScreenshot,
-  );
+  // todo-00-progress : added loop
+  try {
+    // int count = 0;
+    // while (count < 1) {
+      await integrationDriver(
+        onScreenshot: onScreenshot,
+      );
+    //   count++;
+    // }
+  } catch(e) {
+    print(' ### Log.Error: Screenshot test driver "integration_test.dart" threw exception $e');
+  }
 }
 

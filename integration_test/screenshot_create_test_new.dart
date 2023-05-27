@@ -136,41 +136,57 @@ void main() {
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();
 
-    // Trigger a frame.
-    await tester.pumpAndSettle();
+    // todo-00-progress : added loop as test. This should be replaced with asking for next app vvv
 
-    // When [binding.takeScreenshot] is called, the [binding] INVOKES the method callback
-    // defined for [onScreenshot:] in [test_driver/integration_test.dart] and passes the callback
-    // the stream of bytes from the screenshot. The callback is executed, and saves the screenshot
-    // bytes to a file specified there - the test_driver framework somehow causes the image saved on
-    // the computer where this test runs (not on the device)
-    await binding.takeScreenshot(screenshotPath);
+    var numExamplesToRun = 3;
+    var examplesRunCounter = 0;
 
-    // We cannot compare the actual/expected screenshots here,
-    //   because this test is integration test (aka 'flutter drive' test)
-    //   and runs on the device, and any File access is on the device (except the magic in integration_test.dart).
-    // So, to finish the test and compare actual/expected screenshots, a Flutter regular test (widget test)
-    //   named
-    //   ```dart
-    //     screenshot_check_test.dart
-    //   ```
-    //   must be run after this test. This test runs on the computer, and compares files on the computer,
-    //   not on the device.
+    while (examplesRunCounter < numExamplesToRun) {
 
-    // todo-00-progress vvv
-    // ### Preliminary proof of concept that this section can run in a loop:
-    //   1. Find and tap (click) the + button, showing new data
-    //   2. Wait 3s
-    //   3. Back to top of the loop
+      // Set the screenshot name corresponding to runCounter
+      screenshotPath = '$screenshotPath-$examplesRunCounter';
 
-    // 1. Find the floating action button to tap on.
-    final Finder fab = find.byTooltip('New Random Data');
+      // Trigger a frame.
+      await tester.pumpAndSettle();
 
-    // Emulate a tap on the floating action button.
-    await tester.tap(fab);
+      // When [binding.takeScreenshot] is called, the [binding] INVOKES the method callback
+      // defined for [onScreenshot:] in [test_driver/integration_test.dart] and passes the callback
+      // the stream of bytes from the screenshot. The callback is executed, and saves the screenshot
+      // bytes to a file specified there - the test_driver framework somehow causes the image saved on
+      // the computer where this test runs (not on the device)
+      await binding.takeScreenshot(screenshotPath);
 
-    sleep(const Duration(seconds: 1));
-    // todo-00-progress ^^^
+      // We cannot compare the actual/expected screenshots here,
+      //   because this test is integration test (aka 'flutter drive' test)
+      //   and runs on the device, and any File access is on the device (except the magic in integration_test.dart).
+      // So, to finish the test and compare actual/expected screenshots, a Flutter regular test (widget test)
+      //   named
+      //   ```dart
+      //     screenshot_check_test.dart
+      //   ```
+      //   must be run after this test. This test runs on the computer, and compares files on the computer,
+      //   not on the device.
 
+      // todo-00-progress vvv
+      // ### Preliminary proof of concept that this section can run in a loop:
+      //   1. Find and tap (click) the + button, showing new data
+      //   2. Wait 3s
+      //   3. Back to top of the loop
+
+      // 1. Find the floating action button to tap on.
+      final Finder fab = find.byTooltip('New Random Data');
+
+      // Emulate a tap on the floating action button.
+      await tester.tap(fab);
+
+      // Sleep for some time before running next example
+      // await Future.delayed(const Duration(seconds: 3));
+
+      // also works: sleep(const Duration(seconds: 3));
+
+      // Increase the examples counter
+      examplesRunCounter++;
+      // todo-00-progress ^^^
+    }
   });
 }
