@@ -1,6 +1,7 @@
 # Default ignored files
 /shelf/
-/workspace.xml
+# workspace.xml contains Edit->Run Configurations, so keep it
+# /workspace.xml
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml

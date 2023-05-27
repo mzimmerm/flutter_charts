@@ -37,6 +37,8 @@ INTERNAL-GITIGNORE/
 # *.iml
 # *.ipr
 # *.iws
+#   .idea/workspace.xml contains Edit->Run Configurations settings, so keeping the whole .idea directory.
+#   Also, there is a .idea/.gitignore, so check that file if workspace.xml is not excluded.
 # .idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in

@@ -1941,15 +1941,21 @@ Not sure if to do this ... Need to think through the separation of View and View
 
 Implementation
 
-- [ ] Modify/copy the existing main.dart, to main_loop_charts.dart, in main_loop_charts.dart add a button 'next' instead of + button
+- [ ] Modify/copy the existing main.dart, to ~main_new.dart~, in main_loop_charts.dart add a button 'next' instead of + button
   - [ ] Clicking 'next' will run another test, from a list of tests (ex10-ex900, different combinations of chart, orientation, stacking
     - [ ] start with 2 tests in the list
   - [ ] Make 'next' disabled after last test is run
-- [ ] Modify/copy the existing driver test
+- [ ] Modify/copy the existing driver test ~screenshot_create_test_new.dart~
+  - [ ] Run as
   - [ ] Add a loop around the 'pump' until after screenshot is taken
   - [ ] After screenshot is taken, add code mocking clicking the 'next', after that, go to top of loop, before 'pump and settle'
   - [ ] Loop end condition is that 'next' is disabled
- 
+
+
+Later:
+
+- [ ] Rename screenshot_check_test and similar to validate_screenshot_test or maybe test_validate_screenshot??
+- 
 
 ** LATER ~add WrappingLayouter.Column/Row, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 

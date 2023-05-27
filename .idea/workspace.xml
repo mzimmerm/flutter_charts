@@ -1,0 +1,1463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SPLITTER_PROPORTION" value="0.26335877" />
+  </component>
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main_new.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_screenshot_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="REBUILD_ON_DEPENDENCY_CHANGE" value="false" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DartProblemsView" auto-scroll-to-source="true" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>todo -12</find>
+      <find>yLinePresenters</find>
+      <find>TODO -4</find>
+      <find>TODO -11</find>
+      <find>options</find>
+      <find>labellayoutstrategy</find>
+      <find>todo -11</find>
+      <find>todo 00</find>
+      <find>_xContainerLabelLayoutStrategy</find>
+      <find>todo -1</find>
+      <find>todo -3</find>
+      <find>LabelLayoutStrategy</find>
+      <find>todo -5</find>
+      <find>todo -4</find>
+      <find>distress</find>
+      <find>textpainter</find>
+      <find>ellipses</find>
+      <find>'...'</find>
+      <find>todo -10</find>
+      <find>todo -</find>
+      <find>tilt</find>
+      <find>.PI</find>
+      <find>, maxLabels: 0</find>
+      <find>PI</find>
+      <find>_generateXLabelsMonths</find>
+      <find>linech</find>
+      <find>linechart</find>
+      <find>### Size: ui.window.physicalSize</find>
+      <find>print(</find>
+      <find>vector_math</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>labelContainer</replace>
+      <replace>line_container</replace>
+      <replace>lineContainer</replace>
+      <replace>LineContainer</replace>
+      <replace>Container</replace>
+      <replace>todo 0-layout</replace>
+      <replace>legendItemContainer</replace>
+      <replace>indicatorToLabelPad</replace>
+      <replace>AxisLabelContainer</replace>
+      <replace>y</replace>
+      <replace>rect</replace>
+      <replace>o</replace>
+      <replace>_topRight</replace>
+      <replace>rotateCanvasMatrix</replace>
+      <replace>canvasTiltMatrix</replace>
+      <replace>labelsTiltMatrix</replace>
+      <replace>labelTilt</replace>
+      <replace>labelsOverlap</replace>
+      <replace>showEveryNthLabel</replace>
+      <replace>container</replace>
+      <replace>maxLabelReLayouts</replace>
+      <replace>todo -10 mz ori</replace>
+      <replace>.0,</replace>
+      <replace>List&lt;double&gt;</replace>
+      <replace>double l =</replace>
+      <replace>todo -10</replace>
+      <replace>todo -2</replace>
+      <replace>todo-</replace>
+      <replace>.pi</replace>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+      <dir>$PROJECT_DIR$/lib/src/chart</dir>
+    </dirStrings>
+  </component>
+  <component name="FlutterView" splitter-proportion="0.53846157" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/bin/cache/pkg/sky_engine/lib/core/string.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter/lib/foundation.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter/lib/src/rendering/object.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter/lib/src/widgets/banner.dart" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter/lib/src/widgets/basic.dart" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_test/lib/flutter_test.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_test/lib/src/_goldens_io.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test.dart" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <hideBySeverity>
+      <option value="15" />
+      <option value="100" />
+      <option value="300" />
+    </hideBySeverity>
+    <option name="proportion" value="0.585" />
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectId" id="1P2FU2uGAK09RxE8m7JoCVXEeL6" />
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Android</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="1" />
+  </component>
+  <component name="ProjectUserFactors">
+    <factor id="completionFinishedType">
+      <dailyData date="17-6-2018">
+        <observation name="cancelled" value="131.0" />
+      </dailyData>
+    </factor>
+    <factor id="completionUsage">
+      <dailyData date="17-6-2018">
+        <observation name="count" value="131.0" />
+      </dailyData>
+    </factor>
+    <factor id="timeBetweenTyping">
+      <dailyData date="17-6-2018">
+        <observation name="average" value="131.8" />
+        <observation name="count" value="5.0" />
+      </dailyData>
+    </factor>
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+    <option name="showVisibilityIcons" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test/run_one_create_screenshot_test.sh",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1477105",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "settings.editor.splitter.proportion": "0.26795283",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/example/lib" />
+      <recent name="$PROJECT_DIR$/integration_test" />
+      <recent name="$PROJECT_DIR$/test/util" />
+      <recent name="$PROJECT_DIR$/lib/src/util/vector" />
+      <recent name="$PROJECT_DIR$/tool/test" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/src/chart/view_model" />
+      <recent name="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type" />
+      <recent name="$PROJECT_DIR$/lib/src/chart/type/line/container" />
+      <recent name="$PROJECT_DIR$/lib/src/chart/type/bar/container" />
+      <recent name="$PROJECT_DIR$/lib/src/chart/type" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Flutter.Flutter-Driver-Screenshot-Create-Test-From-App-With-Loop">
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AAA" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="arguments" value="drive --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart --dart-define=EXAMPLE_TO_RUN=ex34OptionsDefiningUserTextStyleOnLabels --dart-define=CHART_TYPE=lineChart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="examples_descriptor" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="arguments" value="ex31SomeNegativeValues barChart column stacked true" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Flutter-Driver-Screenshot-Create-Test-From-App-With-Loop" type="FlutterRunConfigurationType" factoryName="Flutter" editBeforeRun="true">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=IS_USE_OLD_LAYOUTER=true  --target=integration_test/screenshot_create_test_new.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/test_driver/integration_test.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="examples-descriptor as Flutter" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="attachArgs" value="ex10RandomData" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart default Example" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex10" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=IS_USE_OLD_LAYOUTER=true" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex31SomeNegativeValues --dart-define=CHART_TYPE=barChart --dart-define=IS_USE_OLD_LAYOUTER=false --dart-define=CHART_ORIENTATION=row --dart-define=CHART_STACKING=nonStacked" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex32 - explicit x, y, all Y positive, axis starts above zero" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex32AllPositiveYsYAxisStartsAbove0 --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex33 - explicit x, y, Y negative, axis ends below zero" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex33AllNegativeYsYAxisEndsBelow0 --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex34 Custom Font" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex34OptionsDefiningUserTextStyleOnLabels --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex35 - no labels" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex35AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex40LanguagesWithYOrdinalUserLabelsAndUserColors --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex50" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex50StocksWithNegativesWithUserColors --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex51 logarithmic manual" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex51AnimalsBySeasonManualLogarithmicScale --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex52 logarithmic" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex52AnimalsBySeasonLogarithmicScale --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex60 Labels iter 1" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration1 --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex60 Labels iter 2 (tilted)" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration2 --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex60 Labels iter 3 (shows 3 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration3 --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex60 Labels iter 4 (shows 2 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration4 --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex70" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex71" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex72" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex73" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex74" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex75 new" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded --dart-define=CHART_TYPE=lineChart --dart-define=IS_USE_OLD_LAYOUTER=false --dart-define=CHART_ORIENTATION=column --dart-define=CHART_STACKING=nonStacked" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex76" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned --dart-define=CHART_TYPE=barChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex900 error all 0 data" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex900ErrorFixUserDataAllZero --dart-define=CHART_TYPE=lineChart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
+      <option name="testFile" value="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=IS_USE_OLD_LAYOUTER=true   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test_new.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
+      <option name="testFile" value="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex34OptionsDefiningUserTextStyleOnLabels --dart-define=CHART_TYPE=lineChart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
+      <option name="testFile" value="$PROJECT_DIR$/test/util/util_flutter_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tests in function_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/util/function_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tests in util_flutter_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/util/util_flutter_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tests in util_labels_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/util/util_labels_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_core_dart_and_flutter_widget_tests.sh" type="ShConfigurationType" singleton="false">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_core_new_integration_tests.sh" type="ShConfigurationType" singleton="false">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/tool/test/run_core_new_integration_tests.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_one_create_then_validate_screenshot_test.sh" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" />
+      <option name="SCRIPT_OPTIONS" value="ex10RandomData" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Dart Command Line App.AAA" />
+      <item itemvalue="Dart Command Line App.examples_descriptor" />
+      <item itemvalue="Flutter.examples-descriptor as Flutter" />
+      <item itemvalue="Flutter.main.dart" />
+      <item itemvalue="Flutter.Flutter-Driver-Screenshot-Create-Test-From-App-With-Loop" />
+      <item itemvalue="Flutter.main.dart default Example" />
+      <item itemvalue="Flutter.main.dart ex10" />
+      <item itemvalue="Flutter.main.dart ex70" />
+      <item itemvalue="Flutter.main.dart ex71" />
+      <item itemvalue="Flutter.main.dart ex72" />
+      <item itemvalue="Flutter.main.dart ex73" />
+      <item itemvalue="Flutter.main.dart ex74" />
+      <item itemvalue="Flutter.main.dart ex75 new" />
+      <item itemvalue="Flutter.main.dart ex76" />
+      <item itemvalue="Flutter.main.dart ex30 - explicit y numbers, all small positives" />
+      <item itemvalue="Flutter.main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" />
+      <item itemvalue="Flutter.main.dart ex32 - explicit x, y, all Y positive, axis starts above zero" />
+      <item itemvalue="Flutter.main.dart ex33 - explicit x, y, Y negative, axis ends below zero" />
+      <item itemvalue="Flutter.main.dart ex34 Custom Font" />
+      <item itemvalue="Flutter.main.dart ex35 - no labels" />
+      <item itemvalue="Flutter.main.dart ex40 - manual labels - languages" />
+      <item itemvalue="Flutter.main.dart ex50" />
+      <item itemvalue="Flutter.main.dart ex51 logarithmic manual" />
+      <item itemvalue="Flutter.main.dart ex52 logarithmic" />
+      <item itemvalue="Flutter.main.dart ex60 Labels iter 1" />
+      <item itemvalue="Flutter.main.dart ex60 Labels iter 2 (tilted)" />
+      <item itemvalue="Flutter.main.dart ex60 Labels iter 3 (shows 3 labels)" />
+      <item itemvalue="Flutter.main.dart ex60 Labels iter 4 (shows 2 labels)" />
+      <item itemvalue="Flutter.main.dart ex900 error all 0 data" />
+      <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.tests in function_test.dart" />
+      <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
+      <item itemvalue="Flutter Test.row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
+      <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
+      <item itemvalue="Shell Script.run_one_create_then_validate_screenshot_test.sh" />
+      <item itemvalue="Shell Script.run_core_dart_and_flutter_widget_tests.sh" />
+      <item itemvalue="Shell Script.run_core_new_integration_tests.sh" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Flutter Test.tests in function_test.dart" />
+        <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
+        <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
+        <item itemvalue="Flutter Test.row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewFactory">
+    <option name="AUTOSCROLL_FROM_SOURCE" value="true" />
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="" />
+      <created>1505582080041</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1505582080041</updated>
+      <workItem from="1505582093060" duration="2349000" />
+      <workItem from="1505593771479" duration="21107000" />
+      <workItem from="1505706757005" duration="5250000" />
+      <workItem from="1505880119158" duration="1774000" />
+      <workItem from="1505922446148" duration="1118000" />
+      <workItem from="1505923658862" duration="874000" />
+      <workItem from="1505925008186" duration="5619000" />
+      <workItem from="1505936486614" duration="7502000" />
+      <workItem from="1506055141346" duration="6207000" />
+      <workItem from="1506217739962" duration="3540000" />
+      <workItem from="1506275575192" duration="9422000" />
+      <workItem from="1506389872756" duration="2255000" />
+      <workItem from="1506420779262" duration="7823000" />
+      <workItem from="1506431165641" duration="1504000" />
+      <workItem from="1506899830980" duration="1875000" />
+      <workItem from="1506977290162" duration="5568000" />
+      <workItem from="1506983929035" duration="427000" />
+      <workItem from="1506984446224" duration="8704000" />
+      <workItem from="1507041035322" duration="11867000" />
+      <workItem from="1507124726838" duration="3911000" />
+      <workItem from="1507394864959" duration="17111000" />
+      <workItem from="1507479608168" duration="29360000" />
+      <workItem from="1507561307554" duration="3967000" />
+      <workItem from="1507610710629" duration="2066000" />
+      <workItem from="1507682662938" duration="2656000" />
+      <workItem from="1507728882064" duration="746000" />
+      <workItem from="1507853693770" duration="7831000" />
+      <workItem from="1507921077838" duration="3422000" />
+      <workItem from="1507993009994" duration="22659000" />
+      <workItem from="1508048943272" duration="636000" />
+      <workItem from="1508049686736" duration="82000" />
+      <workItem from="1508085816044" duration="14908000" />
+      <workItem from="1509215524186" duration="10912000" />
+      <workItem from="1509243700508" duration="751000" />
+      <workItem from="1509249973488" duration="5202000" />
+      <workItem from="1509289961992" duration="10366000" />
+      <workItem from="1509373615728" duration="1699000" />
+      <workItem from="1509635085936" duration="17510000" />
+      <workItem from="1509684353134" duration="6855000" />
+      <workItem from="1509723735128" duration="1988000" />
+      <workItem from="1510512272219" duration="10875000" />
+      <workItem from="1510963699455" duration="3191000" />
+      <workItem from="1511062512838" duration="604000" />
+      <workItem from="1511153126469" duration="124000" />
+      <workItem from="1511813649168" duration="1687000" />
+      <workItem from="1511832531554" duration="8629000" />
+      <workItem from="1511928741692" duration="82000" />
+      <workItem from="1511980434863" duration="2313000" />
+      <workItem from="1512014092978" duration="3843000" />
+      <workItem from="1512085425545" duration="967000" />
+      <workItem from="1512240519186" duration="18429000" />
+      <workItem from="1512319312040" duration="7496000" />
+      <workItem from="1513468577771" duration="1637000" />
+      <workItem from="1513491536235" duration="1100000" />
+      <workItem from="1513642826175" duration="16129000" />
+      <workItem from="1513714302682" duration="3261000" />
+      <workItem from="1513824073830" duration="10677000" />
+      <workItem from="1513904953346" duration="3373000" />
+      <workItem from="1513983592323" duration="10102000" />
+      <workItem from="1514244842418" duration="7605000" />
+      <workItem from="1514334979980" duration="7701000" />
+      <workItem from="1514393939038" duration="24942000" />
+      <workItem from="1514483077326" duration="22324000" />
+      <workItem from="1514562242345" duration="32559000" />
+      <workItem from="1514665914646" duration="25675000" />
+      <workItem from="1514747416968" duration="17263000" />
+      <workItem from="1514827835869" duration="23692000" />
+      <workItem from="1514905757310" duration="22752000" />
+      <workItem from="1515026163722" duration="5090000" />
+      <workItem from="1515132150368" duration="162000" />
+      <workItem from="1515195990820" duration="9547000" />
+      <workItem from="1515805782709" duration="1009000" />
+      <workItem from="1516668142923" duration="114000" />
+      <workItem from="1516668290774" duration="88000" />
+      <workItem from="1516668410138" duration="1134000" />
+      <workItem from="1517079214060" duration="21687000" />
+      <workItem from="1517456120583" duration="8519000" />
+      <workItem from="1517508795725" duration="3220000" />
+      <workItem from="1517720556001" duration="1567000" />
+      <workItem from="1517771720425" duration="16060000" />
+      <workItem from="1517808924038" duration="298000" />
+      <workItem from="1518289479056" duration="19185000" />
+      <workItem from="1518377927959" duration="5865000" />
+      <workItem from="1518422899335" duration="240000" />
+      <workItem from="1518457447986" duration="2067000" />
+      <workItem from="1518463279556" duration="2909000" />
+      <workItem from="1518831796292" duration="910000" />
+      <workItem from="1518832884454" duration="412000" />
+      <workItem from="1518833675707" duration="617000" />
+      <workItem from="1518835304905" duration="4346000" />
+      <workItem from="1518889593669" duration="1152000" />
+      <workItem from="1518923799316" duration="12579000" />
+      <workItem from="1521219472989" duration="18523000" />
+      <workItem from="1521304701845" duration="22478000" />
+      <workItem from="1521390506064" duration="8631000" />
+      <workItem from="1521431815592" duration="11623000" />
+      <workItem from="1521472464900" duration="10268000" />
+      <workItem from="1521497166761" duration="16355000" />
+      <workItem from="1521605111274" duration="3885000" />
+      <workItem from="1521651072580" duration="740000" />
+      <workItem from="1521771750459" duration="9660000" />
+      <workItem from="1521945814966" duration="10213000" />
+      <workItem from="1524387261948" duration="166000" />
+      <workItem from="1524412042228" duration="3166000" />
+      <workItem from="1525105440574" duration="1253000" />
+      <workItem from="1525106754325" duration="1321000" />
+      <workItem from="1525109141312" duration="888000" />
+      <workItem from="1525110103977" duration="268000" />
+      <workItem from="1525110449981" duration="1508000" />
+      <workItem from="1525112382459" duration="410000" />
+      <workItem from="1525113111569" duration="68000" />
+      <workItem from="1525113244231" duration="50000" />
+      <workItem from="1525113346026" duration="9908000" />
+      <workItem from="1525129596708" duration="1444000" />
+      <workItem from="1525147390164" duration="36000" />
+      <workItem from="1525148820131" duration="718000" />
+      <workItem from="1525153584172" duration="244000" />
+      <workItem from="1525277309046" duration="1889000" />
+      <workItem from="1525636796902" duration="656000" />
+      <workItem from="1525639354915" duration="7194000" />
+      <workItem from="1525667099392" duration="1573000" />
+      <workItem from="1526082899386" duration="141000" />
+      <workItem from="1526083642726" duration="2063000" />
+      <workItem from="1527199477083" duration="553000" />
+      <workItem from="1527200082891" duration="2016000" />
+      <workItem from="1527203085049" duration="897000" />
+      <workItem from="1527205259263" duration="154000" />
+      <workItem from="1527205479412" duration="494000" />
+      <workItem from="1527206143030" duration="580000" />
+      <workItem from="1528576170587" duration="10106000" />
+      <workItem from="1529078998907" duration="10417000" />
+      <workItem from="1529101972563" duration="24000" />
+      <workItem from="1529262285689" duration="665000" />
+      <workItem from="1529263828039" duration="1539000" />
+      <workItem from="1529266453421" duration="291000" />
+      <workItem from="1529267447491" duration="1727000" />
+      <workItem from="1529269478316" duration="575000" />
+      <workItem from="1529270737500" duration="108000" />
+      <workItem from="1529270909484" duration="366000" />
+      <workItem from="1529271346556" duration="62000" />
+      <workItem from="1529271469157" duration="52000" />
+      <workItem from="1529271581069" duration="3576000" />
+      <workItem from="1529424524166" duration="1222000" />
+      <workItem from="1533935053484" duration="6107000" />
+      <workItem from="1534875178285" duration="1359000" />
+      <workItem from="1534965055360" duration="598000" />
+      <workItem from="1535392737244" duration="610000" />
+      <workItem from="1535418246017" duration="4285000" />
+      <workItem from="1537637245526" duration="1078000" />
+      <workItem from="1537638460017" duration="655000" />
+      <workItem from="1538100218553" duration="629000" />
+      <workItem from="1538111391917" duration="165000" />
+      <workItem from="1538111651771" duration="260000" />
+      <workItem from="1538112523124" duration="475000" />
+      <workItem from="1538333297592" duration="22000" />
+      <workItem from="1538333387178" duration="1599000" />
+      <workItem from="1548713810053" duration="2004000" />
+      <workItem from="1548718802184" duration="2289000" />
+      <workItem from="1548722668542" duration="839000" />
+      <workItem from="1565064309424" duration="132000" />
+      <workItem from="1565064565130" duration="1383000" />
+      <workItem from="1613622726228" duration="1102000" />
+      <workItem from="1613714379429" duration="1124000" />
+      <workItem from="1614209604412" duration="2040000" />
+      <workItem from="1614669236419" duration="3535000" />
+      <workItem from="1614731452570" duration="18504000" />
+      <workItem from="1614836725292" duration="20000" />
+      <workItem from="1614836771850" duration="6041000" />
+      <workItem from="1614905075692" duration="20954000" />
+      <workItem from="1614926258293" duration="3878000" />
+      <workItem from="1614964258772" duration="22492000" />
+      <workItem from="1615062482611" duration="6788000" />
+      <workItem from="1615104510344" duration="3234000" />
+      <workItem from="1615143854848" duration="24162000" />
+      <workItem from="1615224138324" duration="3053000" />
+      <workItem from="1615236815765" duration="19109000" />
+      <workItem from="1615311327283" duration="8895000" />
+      <workItem from="1615345520434" duration="1548000" />
+      <workItem from="1615419796850" duration="22422000" />
+      <workItem from="1615520686154" duration="5359000" />
+      <workItem from="1615572587156" duration="5695000" />
+      <workItem from="1615602359225" duration="6729000" />
+      <workItem from="1615663184293" duration="6627000" />
+      <workItem from="1615681845602" duration="1794000" />
+      <workItem from="1615685291915" duration="577000" />
+      <workItem from="1615747194158" duration="418000" />
+      <workItem from="1616100212931" duration="504000" />
+      <workItem from="1616100729538" duration="6026000" />
+      <workItem from="1616184889806" duration="9653000" />
+      <workItem from="1616299467191" duration="5274000" />
+      <workItem from="1616306301021" duration="351000" />
+      <workItem from="1616306704969" duration="477000" />
+      <workItem from="1616307452434" duration="642000" />
+      <workItem from="1616969898706" duration="173000" />
+      <workItem from="1616971455243" duration="207000" />
+      <workItem from="1616971997745" duration="13133000" />
+      <workItem from="1623791379971" duration="664000" />
+      <workItem from="1623792067412" duration="277000" />
+      <workItem from="1638154659943" duration="3691000" />
+      <workItem from="1638160192891" duration="6713000" />
+      <workItem from="1638246912276" duration="4493000" />
+      <workItem from="1638251962374" duration="3496000" />
+      <workItem from="1638255471274" duration="92000" />
+      <workItem from="1638255864052" duration="89000" />
+      <workItem from="1638255964717" duration="1076000" />
+      <workItem from="1638257160935" duration="403000" />
+      <workItem from="1638340628412" duration="2418000" />
+      <workItem from="1638556394756" duration="15434000" />
+      <workItem from="1638640404022" duration="3718000" />
+      <workItem from="1638668920870" duration="14578000" />
+      <workItem from="1638724681722" duration="175000" />
+      <workItem from="1638724869983" duration="599000" />
+      <workItem from="1638751143524" duration="7767000" />
+      <workItem from="1638768080110" duration="4385000" />
+      <workItem from="1638772757016" duration="1860000" />
+      <workItem from="1638774741980" duration="856000" />
+      <workItem from="1638821086880" duration="10619000" />
+      <workItem from="1638900594611" duration="10245000" />
+      <workItem from="1639012543838" duration="7783000" />
+      <workItem from="1639020648804" duration="1283000" />
+      <workItem from="1639022052200" duration="37000" />
+      <workItem from="1639022826086" duration="1436000" />
+      <workItem from="1639032139079" duration="216000" />
+      <workItem from="1639078384021" duration="1751000" />
+      <workItem from="1639167649949" duration="942000" />
+      <workItem from="1639171381507" duration="909000" />
+      <workItem from="1639172442499" duration="2078000" />
+      <workItem from="1639175590230" duration="110000" />
+      <workItem from="1639179893169" duration="1976000" />
+      <workItem from="1639182013432" duration="493000" />
+      <workItem from="1639182522071" duration="813000" />
+      <workItem from="1639184273458" duration="1211000" />
+      <workItem from="1639200333430" duration="11953000" />
+      <workItem from="1639248701728" duration="6121000" />
+      <workItem from="1639264788388" duration="11279000" />
+      <workItem from="1639298293299" duration="6078000" />
+      <workItem from="1639304518532" duration="2866000" />
+      <workItem from="1639364509206" duration="13751000" />
+      <workItem from="1639419531895" duration="3579000" />
+      <workItem from="1639424506960" duration="1155000" />
+      <workItem from="1639426157443" duration="983000" />
+      <workItem from="1639438731746" duration="10404000" />
+      <workItem from="1639449159231" duration="4463000" />
+      <workItem from="1639453927710" duration="44000" />
+      <workItem from="1639453992777" duration="226000" />
+      <workItem from="1639462079679" duration="399000" />
+      <workItem from="1639462488977" duration="313000" />
+      <workItem from="1639462812986" duration="20000" />
+      <workItem from="1639462844056" duration="153000" />
+      <workItem from="1639463013587" duration="77000" />
+      <workItem from="1639463101263" duration="3277000" />
+      <workItem from="1639509916776" duration="6664000" />
+      <workItem from="1639545955732" duration="1087000" />
+      <workItem from="1639586517438" duration="12724000" />
+      <workItem from="1639601346518" duration="1978000" />
+      <workItem from="1639604000562" duration="20183000" />
+      <workItem from="1639637919846" duration="534000" />
+      <workItem from="1639687376858" duration="1856000" />
+      <workItem from="1639689506639" duration="3508000" />
+      <workItem from="1639719064587" duration="7947000" />
+      <workItem from="1639760439266" duration="10149000" />
+      <workItem from="1639771566693" duration="1145000" />
+      <workItem from="1639772803360" duration="196000" />
+      <workItem from="1639773517413" duration="5582000" />
+      <workItem from="1639808476789" duration="6803000" />
+      <workItem from="1639816901173" duration="815000" />
+      <workItem from="1639862004741" duration="12911000" />
+      <workItem from="1639890584706" duration="1542000" />
+      <workItem from="1639893707737" duration="1365000" />
+      <workItem from="1639895981384" duration="430000" />
+      <workItem from="1639952686658" duration="855000" />
+      <workItem from="1639976967332" duration="278000" />
+      <workItem from="1640050096919" duration="992000" />
+      <workItem from="1640064647842" duration="4485000" />
+      <workItem from="1640135460930" duration="89000" />
+      <workItem from="1640136275264" duration="14185000" />
+      <workItem from="1640155677499" duration="3612000" />
+      <workItem from="1640208909623" duration="5312000" />
+      <workItem from="1640214988749" duration="6180000" />
+      <workItem from="1640237852917" duration="2827000" />
+      <workItem from="1640294223757" duration="6229000" />
+      <workItem from="1640462303567" duration="3569000" />
+      <workItem from="1640553535814" duration="8365000" />
+      <workItem from="1640582932878" duration="5151000" />
+      <workItem from="1640627752055" duration="20955000" />
+      <workItem from="1640753622852" duration="1781000" />
+      <workItem from="1640755423586" duration="9041000" />
+      <workItem from="1640764637119" duration="100000" />
+      <workItem from="1640821144510" duration="11618000" />
+      <workItem from="1640839619029" duration="140000" />
+      <workItem from="1640839807404" duration="3449000" />
+      <workItem from="1640843316855" duration="1141000" />
+      <workItem from="1640844490757" duration="30000" />
+      <workItem from="1640879048590" duration="384000" />
+      <workItem from="1640885466932" duration="1566000" />
+      <workItem from="1640887073608" duration="5148000" />
+      <workItem from="1640908172529" duration="166000" />
+      <workItem from="1640913776539" duration="52000" />
+      <workItem from="1640915837674" duration="1212000" />
+      <workItem from="1640917190605" duration="25000" />
+      <workItem from="1640917943226" duration="10976000" />
+      <workItem from="1640933911093" duration="3606000" />
+      <workItem from="1641085225731" duration="304000" />
+      <workItem from="1641085600912" duration="17115000" />
+      <workItem from="1641182134341" duration="3548000" />
+      <workItem from="1641187180521" duration="2691000" />
+      <workItem from="1641232946848" duration="9758000" />
+      <workItem from="1641258076646" duration="10670000" />
+      <workItem from="1641273717031" duration="162000" />
+      <workItem from="1641276127606" duration="3581000" />
+      <workItem from="1641339997950" duration="6554000" />
+      <workItem from="1641362091899" duration="3447000" />
+      <workItem from="1641367170471" duration="194000" />
+      <workItem from="1641406888088" duration="14713000" />
+      <workItem from="1641422228700" duration="1780000" />
+      <workItem from="1641433563145" duration="9453000" />
+      <workItem from="1641449472353" duration="163000" />
+      <workItem from="1641496721666" duration="817000" />
+      <workItem from="1641497568938" duration="3932000" />
+      <workItem from="1641529847844" duration="7587000" />
+      <workItem from="1641576933853" duration="21146000" />
+      <workItem from="1641687434746" duration="8420000" />
+      <workItem from="1641713043964" duration="3557000" />
+      <workItem from="1641773150887" duration="2813000" />
+      <workItem from="1641799430327" duration="840000" />
+      <workItem from="1641850381513" duration="4406000" />
+      <workItem from="1641856527346" duration="552000" />
+      <workItem from="1641857093689" duration="57000" />
+      <workItem from="1641857443867" duration="2381000" />
+      <workItem from="1641876360719" duration="932000" />
+      <workItem from="1641931048891" duration="22000" />
+      <workItem from="1641933245073" duration="55000" />
+      <workItem from="1641933395223" duration="56000" />
+      <workItem from="1641933463821" duration="265000" />
+      <workItem from="1641963208626" duration="318000" />
+      <workItem from="1641963538659" duration="57000" />
+      <workItem from="1641963606533" duration="9519000" />
+      <workItem from="1642055461145" duration="1124000" />
+      <workItem from="1642100555842" duration="16469000" />
+      <workItem from="1642140445358" duration="7150000" />
+      <workItem from="1642180212008" duration="15584000" />
+      <workItem from="1642297144021" duration="8958000" />
+      <workItem from="1642308280670" duration="1056000" />
+      <workItem from="1642310046572" duration="571000" />
+      <workItem from="1642312737864" duration="2219000" />
+      <workItem from="1642391836113" duration="260000" />
+      <workItem from="1642395146763" duration="6227000" />
+      <workItem from="1642402201005" duration="630000" />
+      <workItem from="1642403547669" duration="1624000" />
+      <workItem from="1642441325586" duration="15259000" />
+      <workItem from="1642462147627" duration="20000" />
+      <workItem from="1642464546504" duration="9996000" />
+      <workItem from="1643306127529" duration="4167000" />
+      <workItem from="1643345973808" duration="6382000" />
+      <workItem from="1643391792766" duration="4269000" />
+      <workItem from="1643412332766" duration="6302000" />
+      <workItem from="1643431781907" duration="3520000" />
+      <workItem from="1643435318264" duration="11201000" />
+      <workItem from="1643503965390" duration="6294000" />
+      <workItem from="1643512156715" duration="811000" />
+      <workItem from="1643515005527" duration="2878000" />
+      <workItem from="1643517902850" duration="656000" />
+      <workItem from="1643520860448" duration="184000" />
+      <workItem from="1643521128063" duration="1227000" />
+      <workItem from="1643570369769" duration="599000" />
+      <workItem from="1643825272233" duration="5874000" />
+      <workItem from="1643868924085" duration="3328000" />
+      <workItem from="1643909359758" duration="9580000" />
+      <workItem from="1643951566098" duration="7286000" />
+      <workItem from="1643995695847" duration="6396000" />
+      <workItem from="1644019327776" duration="5516000" />
+      <workItem from="1644038441037" duration="6481000" />
+      <workItem from="1644085534687" duration="600000" />
+      <workItem from="1644086203091" duration="1839000" />
+      <workItem from="1644127333986" duration="2630000" />
+      <workItem from="1644203192370" duration="2938000" />
+      <workItem from="1644285023755" duration="4326000" />
+      <workItem from="1644289745955" duration="1122000" />
+      <workItem from="1644346254910" duration="2631000" />
+      <workItem from="1644371480666" duration="2772000" />
+      <workItem from="1644427889178" duration="6011000" />
+      <workItem from="1644456748854" duration="4814000" />
+      <workItem from="1644516370587" duration="3651000" />
+      <workItem from="1644521986161" duration="1193000" />
+      <workItem from="1644603730680" duration="3581000" />
+      <workItem from="1644623012685" duration="11000" />
+      <workItem from="1644624641863" duration="2217000" />
+      <workItem from="1644712442000" duration="7096000" />
+      <workItem from="1644793003832" duration="525000" />
+      <workItem from="1644795527641" duration="4425000" />
+      <workItem from="1644801079764" duration="304000" />
+      <workItem from="1644801583252" duration="434000" />
+      <workItem from="1644802989428" duration="157000" />
+      <workItem from="1644803335553" duration="222000" />
+      <workItem from="1644803620431" duration="81000" />
+      <workItem from="1644806473657" duration="599000" />
+      <workItem from="1644810960408" duration="232000" />
+      <workItem from="1644817103837" duration="6151000" />
+      <workItem from="1644860631138" duration="5121000" />
+      <workItem from="1644892186064" duration="5977000" />
+      <workItem from="1644968985170" duration="6592000" />
+      <workItem from="1644978829189" duration="17000" />
+      <workItem from="1644978864418" duration="5295000" />
+      <workItem from="1644985590319" duration="3137000" />
+      <workItem from="1645048000765" duration="15428000" />
+      <workItem from="1645121932598" duration="4455000" />
+      <workItem from="1645128965105" duration="1926000" />
+      <workItem from="1645130947522" duration="2025000" />
+      <workItem from="1645162578480" duration="2657000" />
+      <workItem from="1645206600782" duration="425000" />
+      <workItem from="1645207178555" duration="3024000" />
+      <workItem from="1645210814499" duration="133000" />
+      <workItem from="1645406982356" duration="3135000" />
+      <workItem from="1645465888395" duration="3385000" />
+      <workItem from="1645496514912" duration="2502000" />
+      <workItem from="1645499213866" duration="573000" />
+      <workItem from="1645500368173" duration="276000" />
+      <workItem from="1645552107185" duration="6004000" />
+      <workItem from="1645813198057" duration="2222000" />
+      <workItem from="1645932547025" duration="22000" />
+      <workItem from="1648704038980" duration="181000" />
+      <workItem from="1648704253015" duration="46000" />
+      <workItem from="1648704453755" duration="1244000" />
+      <workItem from="1652381236435" duration="526000" />
+      <workItem from="1652381895197" duration="1000" />
+      <workItem from="1652382040160" duration="1662000" />
+      <workItem from="1652918907214" duration="1515000" />
+      <workItem from="1652930124090" duration="1265000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.org" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>795</line>
+          <option name="timeStamp" value="2061" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/util_dart.dart</url>
+          <line>672</line>
+          <option name="timeStamp" value="2367" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3149</line>
+          <option name="timeStamp" value="2672" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>2207</line>
+          <option name="timeStamp" value="2757" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>532</line>
+          <option name="timeStamp" value="2898" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>714</line>
+          <option name="timeStamp" value="2913" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>601</line>
+          <option name="timeStamp" value="2914" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>566</line>
+          <option name="timeStamp" value="2936" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/constraints.dart</url>
+          <line>344</line>
+          <option name="timeStamp" value="2948" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart</url>
+          <line>90</line>
+          <option name="timeStamp" value="2977" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>278</line>
+          <option name="timeStamp" value="3278" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>516</line>
+          <option name="timeStamp" value="3306" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1284</line>
+          <option name="timeStamp" value="3315" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3547</line>
+          <option name="timeStamp" value="3339" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>525</line>
+          <option name="timeStamp" value="3343" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/root_container.dart</url>
+          <line>31</line>
+          <option name="timeStamp" value="3348" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/root_container.dart</url>
+          <line>66</line>
+          <option name="timeStamp" value="3351" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>532</line>
+          <option name="timeStamp" value="3354" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>2183</line>
+          <option name="timeStamp" value="3364" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3898</line>
+          <option name="timeStamp" value="3378" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1871</line>
+          <option name="timeStamp" value="3387" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3846</line>
+          <option name="timeStamp" value="3392" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3945</line>
+          <option name="timeStamp" value="3393" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>125</line>
+          <option name="timeStamp" value="3439" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>216</line>
+          <option name="timeStamp" value="3442" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>461</line>
+          <option name="timeStamp" value="3443" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart</url>
+          <line>106</line>
+          <option name="timeStamp" value="3445" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/test_util.dart</url>
+          <line>32</line>
+          <option name="timeStamp" value="3447" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart</url>
+          <line>28</line>
+          <option name="timeStamp" value="3448" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart</url>
+          <line>47</line>
+          <option name="timeStamp" value="3457" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart</url>
+          <line>245</line>
+          <option name="timeStamp" value="3462" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>483</line>
+          <option name="timeStamp" value="3467" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>3942</line>
+          <option name="timeStamp" value="3468" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart</url>
+          <line>32</line>
+          <option name="timeStamp" value="3474" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/container_common.dart</url>
+          <line>92</line>
+          <option name="timeStamp" value="3509" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>974</line>
+          <option name="timeStamp" value="3511" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>282</line>
+          <option name="timeStamp" value="3513" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/vector/matrix_2d.dart</url>
+          <line>33</line>
+          <option name="timeStamp" value="3539" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/vector/vector_2d.dart</url>
+          <line>49</line>
+          <option name="timeStamp" value="3546" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>71</line>
+          <option name="timeStamp" value="3549" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>76</line>
+          <option name="timeStamp" value="3551" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>78</line>
+          <option name="timeStamp" value="3552" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>40</line>
+          <option name="timeStamp" value="3555" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>23</line>
+          <option name="timeStamp" value="3556" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/vector/vector_test.dart</url>
+          <line>31</line>
+          <option name="timeStamp" value="3557" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/vector/function_matrix_2d.dart</url>
+          <line>122</line>
+          <option name="timeStamp" value="3560" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/vector/matrix_2d.dart</url>
+          <line>59</line>
+          <option name="timeStamp" value="3565" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/util_flutter.dart</url>
+          <line>37</line>
+          <option name="timeStamp" value="3568" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
+          <line>512</line>
+          <option name="timeStamp" value="3601" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
+          <line>517</line>
+          <option name="timeStamp" value="3602" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/chart_type/bar/container_delete.dart</url>
+          <line>8</line>
+          <option name="timeStamp" value="3608" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>2177</line>
+          <option name="timeStamp" value="3621" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1515</line>
+          <option name="timeStamp" value="3648" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1408</line>
+          <option name="timeStamp" value="3650" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1135</line>
+          <option name="timeStamp" value="3651" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1099</line>
+          <option name="timeStamp" value="3652" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1101</line>
+          <option name="timeStamp" value="3653" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1042</line>
+          <option name="timeStamp" value="3655" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1045</line>
+          <option name="timeStamp" value="3656" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1049</line>
+          <option name="timeStamp" value="3657" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1237</line>
+          <option name="timeStamp" value="3658" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>146</line>
+          <option name="timeStamp" value="3664" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>141</line>
+          <option name="timeStamp" value="3665" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1132</line>
+          <option name="timeStamp" value="3668" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart</url>
+          <line>121</line>
+          <option name="timeStamp" value="3670" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
+          <line>457</line>
+          <option name="timeStamp" value="3671" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
+          <line>460</line>
+          <option name="timeStamp" value="3672" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>176</line>
+          <option name="timeStamp" value="3676" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1574</line>
+          <option name="timeStamp" value="3677" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/bin/cache/pkg/sky_engine/lib/ui/geometry.dart</url>
+          <line>347</line>
+          <option name="timeStamp" value="3700" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>121</line>
+          <option name="timeStamp" value="3702" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>298</line>
+          <option name="timeStamp" value="3713" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main_run_doc_example.dart</url>
+          <line>50</line>
+          <option name="timeStamp" value="3714" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/util/util_flutter_test.dart</url>
+          <line>78</line>
+          <option name="timeStamp" value="3723" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/util_flutter.dart</url>
+          <line>28</line>
+          <option name="timeStamp" value="3724" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>131</line>
+          <option name="timeStamp" value="3731" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart</url>
+          <line>321</line>
+          <option name="timeStamp" value="3737" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/painter.dart</url>
+          <line>94</line>
+          <option name="timeStamp" value="3740" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>687</line>
+          <option name="timeStamp" value="3758" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/chart_type/bar/container/data_container.dart</url>
+          <line>181</line>
+          <option name="timeStamp" value="3759" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
+          <line>500</line>
+          <option name="timeStamp" value="3760" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test_driver/integration_test.dart</url>
+          <line>18</line>
+          <option name="timeStamp" value="3761" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_test/lib/src/widget_tester.dart</url>
+          <line>575</line>
+          <option name="timeStamp" value="3762" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>171</line>
+          <option name="timeStamp" value="3763" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>169</line>
+          <option name="timeStamp" value="3764" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
+          <line>129</line>
+          <option name="timeStamp" value="3765" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="../../../dev/my-projects-source/public-on-github/flutter_charts_v2/coverage/lcov.info" NAME="tests in util_dart_test.dart Coverage Results" MODIFIED="1675842811166" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="FlutterCoverageRunner" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>int get signum =&gt; _dec.signum</expression-string>
+        <language-id>Dart</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+</project>

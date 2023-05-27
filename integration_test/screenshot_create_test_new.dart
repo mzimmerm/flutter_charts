@@ -49,6 +49,10 @@ import '../test/test_util.dart';
 import '../example/lib/src/util/examples_descriptor.dart';
 import '../example/lib/main_new.dart' as app;
 
+// todo-00-progress
+import 'dart:io' show Duration, sleep;
+import 'dart:async' show Future;
+
 /// Integration testing by taking a screenshot from the example app,
 ///   and comparing the produced screenshot with a known correct screenshot.
 ///
@@ -152,5 +156,21 @@ void main() {
     //   ```
     //   must be run after this test. This test runs on the computer, and compares files on the computer,
     //   not on the device.
+
+    // todo-00-progress vvv
+    // ### Preliminary proof of concept that this section can run in a loop:
+    //   1. Find and tap (click) the + button, showing new data
+    //   2. Wait 3s
+    //   3. Back to top of the loop
+
+    // 1. Find the floating action button to tap on.
+    final Finder fab = find.byTooltip('New Random Data');
+
+    // Emulate a tap on the floating action button.
+    await tester.tap(fab);
+
+    sleep(const Duration(seconds: 1));
+    // todo-00-progress ^^^
+
   });
 }

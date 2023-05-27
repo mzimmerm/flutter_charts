@@ -44,6 +44,7 @@ void main() {
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.warning;
 
+
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
   // Why we do not have to import binding.dart?
