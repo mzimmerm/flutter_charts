@@ -77,7 +77,7 @@ echo "# flutter drive \
   --dart-define=CHART_TYPE=barChart \
   --dart-define=CHART_ORIENTATION=row \
   --dart-define=CHART_STACKING=stacked \
-  --dart-define=IS_USE_OLD_LAYOUTER=false \
+  --dart-define=CHART_LAYOUTER=newAutoLayouter \
   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $examples_descriptor_generated_program
 
 dart run example/lib/src/util/examples_descriptor.dart \

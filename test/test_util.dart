@@ -10,7 +10,8 @@ import '../example/lib/src/util/examples_descriptor.dart';
 /// Path to screenshot file the test uses for each test.
 String relativePath(
   String screenshotDirName,
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
 ) {
   return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
 }
@@ -22,11 +23,14 @@ String relativePath(
 ///   - 'ex10RandomData_lineChart.png'     (for old layout)
 ///   - 'ex10RandomData_lineChart_NEW.png' (for new layout)
 String screenshotFileName(
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
 ) {
-  bool isUseOldLayouter = exampleComboToRun.item5;
+  // todo-00-done : bool isUseOldLayouter = exampleComboToRun.item5;
+  ChartLayouter chartLayouter = exampleComboToRun.item5;
   String newLayout = '';
-  if (!isUseOldLayouter) {
+  // todo-00-done : if (!isUseOldLayouter) {
+  if (!(chartLayouter == ChartLayouter.oldManualLayouter)) {
     newLayout = '_NEW_orientation_${exampleComboToRun.item3.name}_stacking_${exampleComboToRun.item4.name}';
   }
 
@@ -48,7 +52,8 @@ String expectedScreenshotDirName() {
 ///
 /// Paths include filename, and are relative to project root.
 Tuple2<String, String> screenshotPathsFor(
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
 ) {
   String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
   String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);

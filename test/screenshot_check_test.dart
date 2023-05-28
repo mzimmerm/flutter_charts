@@ -18,9 +18,10 @@ void main() {
   test('after screenshot integration, test for sameness', () {
     // Find the command-line provided enums which define chart data, options and type to run.
     // The app.requestedExampleToRun creates the enums from --dart-define arguments for
-    //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and IS_USE_OLD_LAYOUTER.
+    //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and CHART_LAYOUTER.
     //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun =
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun =
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun =
         app.requestedExampleToRun();
     var screenshotPaths = screenshotPathsFor(exampleComboToRun);
     String expectedScreenshotPath = screenshotPaths.item1;

@@ -139,6 +139,12 @@ enum ChartStacking {
   }
 }
 
+/// Describes the layouter a chart should use.
+enum ChartLayouter {
+  oldManualLayouter,
+  newAutoLayouter,
+}
+
 /// Identifies a diagonal for transpose transfer.
 ///
 /// [leftToRightUp] identifies the diagonal around which a coordinate system would

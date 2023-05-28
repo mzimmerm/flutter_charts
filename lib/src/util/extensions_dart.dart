@@ -14,9 +14,6 @@ extension StringExtension on String {
   /// - If this string does not represent an enum in the passed enumValues,
   ///   a StateError is thrown, indicating the values that failed.
   T asEnum<T extends Enum>(List<T> enumValues) {
-
-
-
     try {
       return enumValues.singleWhere((v) => this == enumName(v));
     } on Error {

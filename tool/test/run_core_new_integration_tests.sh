@@ -17,31 +17,31 @@ echo Running screenshot actual/expected test for NEW LAYOUT
 
 # ------------------------------------------
 # ex75 - only positives : barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
 
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
 
 # ex75 - only positives : lineChart, only nonStacked
-# IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 
-# IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 
 # ------------------------------------------
 # ex31 - positives and negatives - barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
 
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
 
 # ex31 - positives and negatives - lineChart, only nonStacked
-# IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 
-# IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 

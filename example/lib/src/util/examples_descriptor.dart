@@ -19,7 +19,7 @@
 import '../../../../lib/src/util/util_dart.dart' show enumName;
 import '../../../../lib/src/util/extensions_dart.dart' show StringExtension, multiplyListElementsBy;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart'
-    show ChartOrientation, ChartType, ChartStacking;
+    show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 
 import 'package:tuple/tuple.dart' show Tuple2, Tuple5;
 
@@ -41,7 +41,8 @@ void main(List<String> args) {
       chartTypeRequested: args[1].isNotEmpty ? args[1].asEnum(ChartType.values) : null,
       chartOrientation: args[2].isNotEmpty ? args[2].asEnum(ChartOrientation.values) : null,
       chartStacking: args[3].isNotEmpty ? args[3].asEnum(ChartStacking.values) : null,
-      isUseOldLayouter: args[4].isNotEmpty ? (args[4] == 'true' ? true : false) : null,
+      // todo-00-done : isUseOldLayouter: args[4].isNotEmpty ? (args[4] == 'true' ? true : false) : null,
+      chartLayouter: args[4].isNotEmpty ? (args[4] == 'oldManualLayouter' ? ChartLayouter.oldManualLayouter : ChartLayouter.newAutoLayouter) : null,
 
     );
   }
@@ -102,14 +103,16 @@ class ExamplesDescriptor {
   ChartType? chartTypeRequested;
   ChartOrientation? chartOrientation;
   ChartStacking? chartStacking;
-  bool? isUseOldLayouter;
+  // todo-00-done : bool? isUseOldLayouter;
+  ChartLayouter? chartLayouter;
 
   ExamplesDescriptor({
     required this.exampleRequested,
     required this.chartTypeRequested,
     required this.chartOrientation,
     required this.chartStacking,
-    required this.isUseOldLayouter,
+    // todo-00-done : required this.isUseOldLayouter,
+    required this.chartLayouter,
   });
 
   ExamplesDescriptor.allExamples();
@@ -183,7 +186,8 @@ class ExamplesDescriptor {
   ///   or [ExamplesChartTypeEnum.barChart] except a few where only
   ///   one chart type makes sense to be presented.
   bool exampleComboIsAllowed(
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
   ) {
     return _allowed.any((tuple) => tuple.item1 == exampleComboToRun.item1 && tuple.item2 == exampleComboToRun.item2);
   }
@@ -202,11 +206,14 @@ class ExamplesDescriptor {
       throw StateError('No examples requested to run are defined in examples_descriptor.');
     }
 
-    isUseOldLayouter ??= true;
+    // todo-00-done : isUseOldLayouter ??= true;
+    chartLayouter ??= ChartLayouter.oldManualLayouter;
 
+    /* todo-00-done
     List orientationsToRun;
     if (chartOrientation == null) {
-      if (isUseOldLayouter!) {
+      // todo-00-done : if (isUseOldLayouter!) {
+      if (chartLayouter == ChartLayouter.oldManualLayouter) {
         orientationsToRun = [ChartOrientation.column];
       } else {
         orientationsToRun = [ChartOrientation.column, ChartOrientation.row];
@@ -217,7 +224,8 @@ class ExamplesDescriptor {
 
     List stackingToRun;
     if (chartStacking == null) {
-      if (isUseOldLayouter!) {
+      // todo-00-done : if (isUseOldLayouter!) {
+      if (chartLayouter == ChartLayouter.oldManualLayouter) {
         stackingToRun = [ChartStacking.stacked];
       } else {
         stackingToRun = [ChartStacking.stacked, ChartStacking.nonStacked];
@@ -225,17 +233,42 @@ class ExamplesDescriptor {
     } else {
       stackingToRun = [chartStacking];
     }
+    */
+
+    List orientationsToRun;
+    if (chartLayouter == ChartLayouter.oldManualLayouter) {
+      orientationsToRun = [ChartOrientation.column];
+    } else {
+      if (chartOrientation == null) {
+        orientationsToRun = [ChartOrientation.column, ChartOrientation.row];
+      } else {
+        orientationsToRun = [chartOrientation];
+      }
+    }
+
+    List stackingToRun;
+    if (chartLayouter == ChartLayouter.oldManualLayouter) {
+      stackingToRun = [ChartStacking.stacked];
+    } else {
+      if (chartStacking == null) {
+          stackingToRun = [ChartStacking.stacked, ChartStacking.nonStacked];
+      } else {
+        stackingToRun = [chartStacking];
+      }
+    }
 
     List<List> orientationsAndStackingToRun = multiplyListElementsBy(orientationsToRun, stackingToRun);
 
-    List<Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool>>
+    // todo-00-done : List<Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool>>
+    List<Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter>>
     combos5ToRun = multiplyListElementsBy(combosToRun, orientationsAndStackingToRun).map((tuple2AndOrientationWithStacking) =>
         Tuple5(
           tuple2AndOrientationWithStacking[0].item1 as ExamplesEnum,
           tuple2AndOrientationWithStacking[0].item2 as ChartType,
           tuple2AndOrientationWithStacking[1][0] as ChartOrientation,
           tuple2AndOrientationWithStacking[1][1] as ChartStacking,
-          isUseOldLayouter!,
+          // todo-00-done : isUseOldLayouter!,
+          chartLayouter!,
         )).toList();
 
     for (Tuple5 tuple in combos5ToRun) {
@@ -251,7 +284,8 @@ class ExamplesDescriptor {
           '--dart-define=CHART_TYPE=${enumName(tuple.item2)} '
           '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
           '--dart-define=CHART_STACKING=${enumName(tuple.item4)} '
-          '--dart-define=IS_USE_OLD_LAYOUTER=$isUseOldLayouter '
+          // todo-00-done : '--dart-define=IS_USE_OLD_LAYOUTER=$isUseOldLayouter '
+          '--dart-define=CHART_LAYOUTER=${enumName(chartLayouter!)} '
           '\$2' // ' example/lib/main.dart'
           );
     }
@@ -259,8 +293,9 @@ class ExamplesDescriptor {
 }
 
 bool isExampleWithRandomData(
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
-) {
+    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
+    ) {
   if (enumName(exampleComboToRun.item1).contains('RandomData')) {
     return true;
   }

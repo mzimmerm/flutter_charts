@@ -47,11 +47,12 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 import '../test/test_util.dart';
 
 import '../example/lib/src/util/examples_descriptor.dart';
-import '../example/lib/main_new.dart' as app;
+// todo-00-next : use main_new : import '../example/lib/main_new.dart' as app;
+import '../example/lib/main.dart' as app;
 
 // todo-00-progress
-import 'dart:io' show Duration, sleep;
-import 'dart:async' show Future;
+// import 'dart:io' show sleep;
+// import 'dart:async' show Future;
 
 /// Integration testing by taking a screenshot from the example app,
 ///   and comparing the produced screenshot with a known correct screenshot.
@@ -137,6 +138,8 @@ void main() {
     await binding.convertFlutterSurfaceToImage();
 
     // todo-00-progress : added loop as test. This should be replaced with asking for next app vvv
+    // This runs successfully from command line, creating 3 screenshots using:
+    //  flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=CHART_LAYOUTER=oldManualLayouter   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test_new.dart
 
     var numExamplesToRun = 3;
     var examplesRunCounter = 0;

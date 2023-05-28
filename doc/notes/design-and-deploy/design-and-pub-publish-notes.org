@@ -1878,7 +1878,7 @@ Notes or Later:
     1. [X] Renames:
        1. [X] CHART_TYPE -> CHART_TYPE (everywhere, even in IntelliJ files)
        2. [X] chartType -> chartType
-       3. [X] IS_USE_OLD_LAYOUTER -> IS_USE_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
+       3. [X] CHART_LAYOUTER -> CHART_LAYOUTER  (everywhere, even in IntelliJ files)
        4. [X] YContainer -> OutputAxisContainer
        5. [X] XContainer -> InputAxisContainer
        6. [X] inputAxisContainer -> horizontalAxisContainer

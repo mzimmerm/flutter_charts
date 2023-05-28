@@ -18,7 +18,7 @@
 #             $1 \
 #             --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded \
 #             --dart-define=CHART_TYPE=barChart \
-#             --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER \
+#             --dart-define=CHART_LAYOUTER=$CHART_LAYOUTER \
 #             $2
 #            ```
 #          - contains one example from 'ExamplesEnum' or the command line to execute.
@@ -32,7 +32,7 @@
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
 #                --dart-define=CHART_TYPE=barChart  \
-#                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
+#                --dart-define=CHART_LAYOUTER=$CHART_LAYOUTER \
 #                $2
 #            ```
 #          - is executed in step 2.
@@ -76,12 +76,12 @@ fi
 if [[ -n "$2" ]]; then
 
   # If the second argument is provided, 5 values which fully specify the chart to run must be provided:
-  #   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, CHART_STACKING, and IS_USE_OLD_LAYOUTER
+  #   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, CHART_STACKING, and CHART_LAYOUTER
   exampleEnum=$2
   chartTypeEnum=$3
   chartOrientation=$CHART_ORIENTATION
   chartStacking=$CHART_STACKING
-  isUseOldLayouter=$IS_USE_OLD_LAYOUTER
+  chartLayouter=$CHART_LAYOUTER
 
   echo
   echo -------------------------------------
@@ -128,7 +128,7 @@ examples_descriptor_generated_program=$examples_descriptor_generated_program
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
 #                --dart-define=CHART_TYPE=barChart  \
-#                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
+#                --dart-define=CHART_LAYOUTER=$CHART_LAYOUTER \
 #                $2
 #            ```
 echo

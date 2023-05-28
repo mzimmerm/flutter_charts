@@ -20,4 +20,4 @@ echo This runs an integration [drive] screenshot create test first, followed by 
 tool/test/integration_test_create_then_validate_screenshots.sh "firstRun" "$exampleEnum"
 
 # Example of new/old, running only screenshot-create test:
-#   IS_USE_OLD_LAYOUTER=true tool/test/run_one_create_then_validate_screenshot_test.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+#   CHART_LAYOUTER=oldManualLayouter tool/test/run_one_create_then_validate_screenshot_test.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

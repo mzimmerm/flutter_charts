@@ -30,7 +30,7 @@ import 'src/util/examples_descriptor.dart';
 /// There are multiple sample [FlutterChart]s this app can show; the concrete [FlutterChart]
 /// that is shows is the widget returned from [MyHomePageState.build].
 /// The widget that is returned is determined from command line argument named 'EXAMPLE_TO_RUN' picked up in
-/// a global function [requestedExampleToRun], used in [_ExampleWidgetCreator.createRequestedChart].
+/// a global function [requestedExampleToRun], used in [ExampleWidgetCreator.createRequestedChart].
 ///
 /// Note that there is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
 /// which is intended to run only one sample, pasted from README.md.
@@ -114,9 +114,10 @@ void main() {
 ///
 /// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
 ///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
-///   and 'IS_USE_OLD_LAYOUTER' into enums which describe the example to run, and the chart type to show.
+///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
 ///
-Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> requestedExampleToRun() {
+// todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> requestedExampleToRun() {
+Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> requestedExampleToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
@@ -133,9 +134,21 @@ Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> requested
   const String stackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
   ChartStacking stacking = stackingStr.asEnum(ChartStacking.values);
 
-  bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
+  // todo-00-done : bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
+  /* todo-00-done :
+  ChartLayouter chartLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true) == true
+      ?
+  ChartLayouter.oldManualLayouter
+      :
+  ChartLayouter.newAutoLayouter;
+  */
 
-  return Tuple5(exampleComboToRun, chartType, orientation, stacking, isUseOldLayouter);
+  String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
+  ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
+
+
+  // todo-00-done : return Tuple5(exampleComboToRun, chartType, orientation, stacking, isUseOldLayouter);
+  return Tuple5(exampleComboToRun, chartType, orientation, stacking, chartLayouter);
 }
 
 class MyApp extends StatelessWidget {
@@ -214,7 +227,8 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun =
+  // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun =
+  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun =
       requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
@@ -275,9 +289,9 @@ class MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    _ExampleWidgetCreator definer = _ExampleWidgetCreator(descriptorOfExampleToRun);
+    ExampleWidgetCreator definer = ExampleWidgetCreator(descriptorOfExampleToRun);
     Widget chartToRun = definer.createRequestedChart();
-    _ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
+    ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
@@ -432,7 +446,7 @@ class MyLabelCommonOptions extends LabelCommonOptions {
   */
 }
 
-/// The enabler of widget changes in the main test app by the code in [_ExampleWidgetCreator].
+/// The enabler of widget changes in the main test app by the code in [ExampleWidgetCreator].
 /// 
 /// This enables support for each example ability to manipulate it's environment
 /// (by environment we mean the widgets in main.dart outside the chart).
@@ -441,9 +455,9 @@ class MyLabelCommonOptions extends LabelCommonOptions {
 /// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
 /// to test label changes with available space.
 /// 
-/// This class allows to carry such changes from the [_ExampleWidgetCreator] to the widgets in the main app.
+/// This class allows to carry such changes from the [ExampleWidgetCreator] to the widgets in the main app.
 /// 
-class _ExampleSideEffects {
+class ExampleSideEffects {
   String leftSqueezeText = '>>>';
   String rightSqueezeText = '<<';
 }
@@ -456,13 +470,14 @@ class _ExampleSideEffects {
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the barChart and the lineChart constructed from the 'variables'.
-class _ExampleWidgetCreator {
+class ExampleWidgetCreator {
 
   /// Construct the definer object for the example.
-  _ExampleWidgetCreator(this.descriptorOfExampleToRun);
+  ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun;
+  // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun;
+  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun;
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -481,7 +496,7 @@ class _ExampleWidgetCreator {
   ///
   /// [exampleSideEffects] contain simple text strings such as '>>' and '<<', which are when running examples,
   /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.
-  _ExampleSideEffects exampleSideEffects = _ExampleSideEffects();
+  ExampleSideEffects exampleSideEffects = ExampleSideEffects();
 
   /// Creates the example chart with name given in [exampleComboToRun] 
   /// through command line parameter --dart-define.
@@ -501,8 +516,8 @@ class _ExampleWidgetCreator {
     ChartType chartType = descriptorOfExampleToRun.item2;
     ChartOrientation chartOrientation = descriptorOfExampleToRun.item3;
     ChartStacking chartStacking = descriptorOfExampleToRun.item4;
-    bool isUseOldLayouter = descriptorOfExampleToRun.item5;
-    // bool isUseOldLayouter = descriptorOfExampleToRun.item5;
+    // todo-00-done : bool isUseOldLayouter = descriptorOfExampleToRun.item5;
+    ChartLayouter chartLayouter = descriptorOfExampleToRun.item5;
 
     // Declare chartModel; the data object will be different in every examples.
     ChartModel chartModel;
@@ -792,7 +807,7 @@ class _ExampleWidgetCreator {
         break;
 
       case ExamplesEnum.ex60LabelsIteration1:
-        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
         chartModel = ChartModel(
           dataRows: const [
@@ -806,11 +821,11 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
+        exampleSideEffects = ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
         break;
 
       case ExamplesEnum.ex60LabelsIteration2:
-        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
         chartModel = ChartModel(
@@ -825,11 +840,11 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
+        exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
         break;
 
       case ExamplesEnum.ex60LabelsIteration3:
-        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
         chartModel = ChartModel(
@@ -844,11 +859,11 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
+        exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
         break;
 
       case ExamplesEnum.ex60LabelsIteration4:
-      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
       // This example shows the result with sufficient space to show all labels, not even tilted;
       // The iterative layout strategy causes more labels to be skipped.
         chartModel = ChartModel(
@@ -863,7 +878,7 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
+        exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
         break;
 
       case ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
@@ -998,7 +1013,8 @@ class _ExampleWidgetCreator {
           // transpose column/row is set in env var CHART_ORIENTATION
           chartOrientation: chartOrientation,
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
-          chartStacking: isUseOldLayouter ? ChartStacking.nonStacked : chartStacking,
+          // todo-00-done : chartStacking: isUseOldLayouter ? ChartStacking.nonStacked : chartStacking,
+          chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
