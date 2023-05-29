@@ -265,8 +265,9 @@ class ExampleDescriptor {
   /// 
   /// Examples of valid descriptor:
   /// 
-  ///   `ex76_barChart_column_stacked_oldManualLayouter`
-  ///   `ex76_*_*_*_*`
+  ///   - `ex76_barChart_column_stacked_oldManualLayouter`: matches ex76, creates 1 [ExampleDescriptor] with described properties
+  ///   - `ex76_*_*_*_*` : matches ex76, creates 2x2x2x2 [ExampleDescriptor]s with all * matching properties
+  ///   - `ex_barChart_column_stacked_oldManualLayouter` : matches ex10, ex20, etc creates as many [ExampleDescriptor]s as there are examples, each has matching properties
   ///   
   /// Fields assumed order and values:
   ///    - Field 0: [ExampleEnum]
@@ -284,15 +285,15 @@ class ExampleDescriptor {
     
     // Field 0: [ExampleEnum]
     String exampleNameStartStr = parsedFields[0];
-    var exampleEnums = _allowed
+    List<ExampleEnum> exampleEnums = _allowed
         .where((tuple) => tuple.item1.name.startsWith(exampleNameStartStr))
         .map((tuple) => tuple.item1).toList();
     if (exampleEnums.isEmpty) {
       throw StateError('Invalid (zero based) ExampleEnum field 0 in $descriptor');
     }
-    ExampleEnum exampleEnum = exampleEnums.first;
-    // ExampleEnum exampleEnum = exampleToRunStr.asEnum(ExampleEnum.values);
-    
+    // ExampleEnum exampleEnum = exampleEnums.first;
+    exampleEnums = exampleEnums.toSet().toList();
+
     // Field 1: [ChartType]
     List<ChartType> chartTypes = parsedFields[1] == '*'
         ? ChartType.values.toList()
@@ -334,19 +335,21 @@ class ExampleDescriptor {
           ];
 
     List<ExampleDescriptor> exampleDescriptors = [];
-    for (var chartType in chartTypes) {
-      for (var chartOrientation in chartOrientations) {
-        for (var chartStacking in chartStackings) {
-          for (var chartLayouter in chartLayouters) {
-            exampleDescriptors.add(
-              ExampleDescriptor(
-                exampleEnum: exampleEnum,
-                chartType: chartType,
-                chartOrientation: chartOrientation,
-                chartStacking: chartStacking,
-                chartLayouter: chartLayouter,
-              ),
-            );
+    for (var exampleEnum in exampleEnums) {
+      for (var chartType in chartTypes) {
+        for (var chartOrientation in chartOrientations) {
+          for (var chartStacking in chartStackings) {
+            for (var chartLayouter in chartLayouters) {
+              exampleDescriptors.add(
+                ExampleDescriptor(
+                  exampleEnum: exampleEnum,
+                  chartType: chartType,
+                  chartOrientation: chartOrientation,
+                  chartStacking: chartStacking,
+                  chartLayouter: chartLayouter,
+                ),
+              );
+            }
           }
         }
       }
@@ -439,6 +442,13 @@ class ExampleDescriptor {
         chartStacking,
         chartLayouter,
       );
+
+  @override
+  String toString() => 'exampleEnum=$exampleEnum, '
+      'chartType=$chartType, '
+      'chartOrientation=$chartOrientation, '
+      'chartStacking=$chartStacking, '
+      'chartLayouter=$chartLayouter, ';
 }
 
 

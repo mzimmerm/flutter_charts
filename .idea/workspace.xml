@@ -22,23 +22,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README-source-for-md.org" beforeDir="false" afterPath="$PROJECT_DIR$/README-source-for-md.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/flutter_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_charts.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/screenshot_check_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_check_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_util.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_examples_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_examples_descriptor.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +209,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.1477105",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
     "settings.editor.splitter.proportion": "0.26795283",
     "show.migrate.to.gradle.popup": "false"
   }
@@ -245,7 +230,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/type/bar/container" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.run_core_dart_and_flutter_widget_tests.sh">
+  <component name="RunManager" selected="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -405,10 +390,34 @@
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
+    <configuration name="Invalid descriptor: throws StateError with appropriate message" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Invalid descriptor: throws StateError with appropriate message" />
+      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
       <option name="testFile" value="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" />
       <option name="useRegexp" value="false" />
       <option name="additionalArgs" value="flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=CHART_LAYOUTER=oldManualLayouter   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test_new.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
+      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Valid descriptor: Fuzzy descriptive single-ex-matching String" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Valid descriptor: Fuzzy descriptive single-ex-matching String" />
+      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Valid descriptor: Partially descriptive multi-ex-matching String" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="Valid descriptor: Partially descriptive multi-ex-matching String" />
+      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
     <configuration name="integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
@@ -417,34 +426,9 @@
       <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex34OptionsDefiningUserTextStyleOnLabels --dart-define=CHART_TYPE=lineChart" />
       <method v="2" />
     </configuration>
-    <configuration name="row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
-      <option name="testFile" value="$PROJECT_DIR$/test/util/util_flutter_test.dart" />
-      <option name="useRegexp" value="false" />
-      <option name="additionalArgs" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="tests in example_descriptor_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
       <option name="useRegexp" value="false" />
-      <option name="additionalArgs" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="tests in function_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testFile" value="$PROJECT_DIR$/test/util/function_test.dart" />
-      <option name="useRegexp" value="false" />
-      <option name="additionalArgs" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="tests in util_flutter_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testFile" value="$PROJECT_DIR$/test/util/util_flutter_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration name="tests in util_labels_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testFile" value="$PROJECT_DIR$/test/util/util_labels_test.dart" />
-      <option name="useRegexp" value="false" />
-      <option name="additionalArgs" value="" />
       <method v="2" />
     </configuration>
     <configuration name="run_core_dart_and_flutter_widget_tests.sh" type="ShConfigurationType" singleton="false">
@@ -536,22 +520,22 @@
       <item itemvalue="Flutter.main.dart ex900 error all 0 data" />
       <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />
       <item itemvalue="Flutter Test.TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
+      <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
+      <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
+      <item itemvalue="Flutter Test.Valid descriptor: Partially descriptive multi-ex-matching String" />
       <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
-      <item itemvalue="Flutter Test.tests in function_test.dart" />
-      <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
-      <item itemvalue="Flutter Test.row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
-      <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
       <item itemvalue="Shell Script.run_one_create_then_validate_screenshot_test.sh" />
       <item itemvalue="Shell Script.run_core_dart_and_flutter_widget_tests.sh" />
       <item itemvalue="Shell Script.run_core_new_integration_tests.sh" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
         <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
-        <item itemvalue="Flutter Test.tests in function_test.dart" />
-        <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
-        <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
-        <item itemvalue="Flutter Test.row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
+        <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
+        <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
+        <item itemvalue="Flutter Test.Valid descriptor: Partially descriptive multi-ex-matching String" />
       </list>
     </recent_temporary>
   </component>
@@ -1483,6 +1467,21 @@
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart</url>
           <line>166</line>
           <option name="timeStamp" value="3797" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.15/lib/src/expect/expect.dart</url>
+          <line>82</line>
+          <option name="timeStamp" value="3798" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.15/lib/src/expect/expect.dart</url>
+          <line>76</line>
+          <option name="timeStamp" value="3799" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.15/lib/src/expect/expect.dart</url>
+          <line>55</line>
+          <option name="timeStamp" value="3800" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
