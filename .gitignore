@@ -19,6 +19,9 @@ INTERNAL-GITIGNORE/
 #  Most of android and ios dirs are needed to run the example/lib/main.dart sample app (on android, not sure about Ios)
 # android
 # ios
+
+# ignore screenshots_tested/ directory, as screenshots are volatile and change often
+integration_test/screenshots_tested/
 # mz ^^^
 
 
@@ -75,3 +78,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+

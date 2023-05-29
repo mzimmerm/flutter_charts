@@ -5,15 +5,11 @@ import 'package:tuple/tuple.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
-import '../example/lib/src/util/examples_descriptor.dart';
+import 'package:flutter_charts/src/chart/util/examples_descriptor.dart' show ExampleDescriptor;
 
 /// Path to screenshot file the test uses for each test.
-String relativePath(
-  String screenshotDirName,
-    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
-) {
-  return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
+String relativePath(String screenshotDirName, ExampleDescriptor exampleDescriptor) {
+  return '$screenshotDirName/${screenshotFileName(exampleDescriptor)}';
 }
 
 /// Path to screenshot file which this test generates.
@@ -23,18 +19,16 @@ String relativePath(
 ///   - 'ex10RandomData_lineChart.png'     (for old layout)
 ///   - 'ex10RandomData_lineChart_NEW.png' (for new layout)
 String screenshotFileName(
-    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
+  ExampleDescriptor exampleDescriptor,
 ) {
-  // todo-00-done : bool isUseOldLayouter = exampleComboToRun.item5;
-  ChartLayouter chartLayouter = exampleComboToRun.item5;
-  String newLayout = '';
-  // todo-00-done : if (!isUseOldLayouter) {
+  ChartLayouter chartLayouter = exampleDescriptor.chartLayouter;
+  String newLayoutSuffix = '';
   if (!(chartLayouter == ChartLayouter.oldManualLayouter)) {
-    newLayout = '_NEW_orientation_${exampleComboToRun.item3.name}_stacking_${exampleComboToRun.item4.name}';
+    newLayoutSuffix =
+        '_NEW_orientation_${exampleDescriptor.chartOrientation.name}_stacking_${exampleDescriptor.chartStacking.name}';
   }
 
-  return '${enumName(exampleComboToRun.item1)}_${enumName(exampleComboToRun.item2)}$newLayout.png';
+  return '${enumName(exampleDescriptor.exampleEnum)}_${enumName(exampleDescriptor.chartType)}$newLayoutSuffix.png';
 }
 
 /// The name of the directory where screenshots are placed.
@@ -52,10 +46,10 @@ String expectedScreenshotDirName() {
 ///
 /// Paths include filename, and are relative to project root.
 Tuple2<String, String> screenshotPathsFor(
-    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun,
+  ExampleDescriptor exampleDescriptor,
 ) {
-  String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
-  String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
+  String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleDescriptor);
+  String actualScreenshotPath = relativePath(screenshotDirName(), exampleDescriptor);
+
   return Tuple2(expectedScreenshotPath, actualScreenshotPath);
 }

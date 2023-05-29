@@ -5,14 +5,12 @@
 /// in turn is given by the `--dart-define` passed environment to the `flutter test` command.
 ///
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tuple/tuple.dart';
 import 'dart:io';
 
 import 'test_util.dart';
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import '../example/lib/src/util/examples_descriptor.dart';
-import '../example/lib/main.dart' as app;
+import 'package:flutter_charts/src/chart/util/examples_descriptor.dart'
+    show ExampleDescriptor;
 
 void main() {
   test('after screenshot integration, test for sameness', () {
@@ -20,9 +18,8 @@ void main() {
     // The app.requestedExampleToRun creates the enums from --dart-define arguments for
     //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and CHART_LAYOUTER.
     //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
-    // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun =
-    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> exampleComboToRun =
-        app.requestedExampleToRun();
+    ExampleDescriptor exampleComboToRun = ExampleDescriptor.requestedExampleToRun();
+
     var screenshotPaths = screenshotPathsFor(exampleComboToRun);
     String expectedScreenshotPath = screenshotPaths.item1;
     String screenshotPath = screenshotPaths.item2;
@@ -31,7 +28,7 @@ void main() {
     // Set to false to generate initial validated screenshots.
     bool runExpect = true;
 
-    if (runExpect && !isExampleWithRandomData(exampleComboToRun)) {
+    if (runExpect && !ExampleDescriptor.isExampleWithRandomData(exampleComboToRun)) {
       File expectedFile = File(expectedScreenshotPath);
       File actualFile = File(screenshotPath);
 

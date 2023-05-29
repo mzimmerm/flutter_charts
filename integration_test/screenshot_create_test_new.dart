@@ -46,7 +46,7 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 
 import '../test/test_util.dart';
 
-import '../example/lib/src/util/examples_descriptor.dart';
+import 'package:flutter_charts/src/chart/util/examples_descriptor.dart';
 // todo-00-next : use main_new : import '../example/lib/main_new.dart' as app;
 import '../example/lib/main.dart' as app;
 
@@ -128,7 +128,7 @@ void main() {
   testWidgets('screenshot', (WidgetTester tester) async {
     // Find the command-line provided enums which define chart data, options and type to use in the example app.
     // The app find the enums transiently, here we need it to generate consistent screenshot filename.
-    var screenshotPaths = screenshotPathsFor(app.requestedExampleToRun());
+    var screenshotPaths = screenshotPathsFor(ExampleDescriptor.requestedExampleToRun());
     String screenshotPath = screenshotPaths.item2;
 
     // Build the app and run it on device.

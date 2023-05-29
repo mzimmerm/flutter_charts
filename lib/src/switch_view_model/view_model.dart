@@ -49,11 +49,9 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewModel');
-    // todo-00-done : bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
     String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 
-    // todo-00-done : if (isUseOldLayouter) {
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchBarChartViewModelCL(
         chartModel: chartModel,
@@ -80,12 +78,11 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewModel');
-    // todo-00-done : bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
-    String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
+    String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter')
+        .replaceFirst('ChartLayouter.', '');
     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 
-    // todo-00-done : if (isUseOldLayouter) {
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchLineChartViewModelCL(
         chartModel: chartModel,

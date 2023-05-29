@@ -39,7 +39,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///          import '../../chart/root_container.dart'; // relative path
 ///          import '../../../src/chart/root_container.dart'; // relative path
 ///          // Note: THE ABOVE IS PROBABLY THE PREFERRED FORM AS IT MAKES HIERARCHY CLEAR
-///          import 'src/util/examples_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
+///          import 'src/chart/util/examples_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
 ///       ```
 ///     3. Or using an ABSOLUTE PATH SCHEME, WHICH STARTS WITH THE PACKAGE NAME, AND PROVIDES FULL PATH
 ///        TO EXPORTED OR NOT-EXPORTED LIBRARY, for example

@@ -9,7 +9,7 @@
 # In more detail, this script does the following:
 #   - If Android AVD emulator is not running, starts one.
 #   - Next, uses the program 
-#     'dart run example/lib/src/util/examples_descriptor.dart'
+#     'dart run lib/src/chart/util/examples_descriptor.dart'
 #   to generate a temp script, which name is placed in the variable named
 #     'examples_descriptor_generated_program'
 #   The program $examples_descriptor_generated_program 
@@ -68,7 +68,7 @@ fi
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
-echo Running \"dart run example/lib/src/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
+echo Running \"dart run lib/src/chart/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
 echo   which creates $examples_descriptor_generated_program
 
 echo "# Sample of how this runs:"  > $examples_descriptor_generated_program
@@ -80,7 +80,7 @@ echo "# flutter drive \
   --dart-define=CHART_LAYOUTER=newAutoLayouter \
   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $examples_descriptor_generated_program
 
-dart run example/lib/src/util/examples_descriptor.dart \
+dart run lib/src/chart/util/examples_descriptor.dart \
   "$exampleEnum" \
   "$chartTypeEnum" \
   "$chartOrientation" \

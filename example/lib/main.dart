@@ -7,7 +7,6 @@
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tuple/tuple.dart' show Tuple5;
 import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
@@ -16,11 +15,12 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/switch_view_model/view_model.dart';
-import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+// import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
-import 'src/util/examples_descriptor.dart';
+import 'package:flutter_charts/src/chart/util/examples_descriptor.dart'
+    show ExampleDescriptor, ExamplesEnum;
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
@@ -92,8 +92,8 @@ void main() {
   //          ..scheduleWarmUpFrame();
   //      }
   //    ```
-  var exampleComboToRun = requestedExampleToRun();
-  if (!ExamplesDescriptor.allExamples().exampleComboIsAllowed(exampleComboToRun)) {
+  var exampleComboToRun = ExampleDescriptor.requestedExampleToRun();
+  if (!ExampleDescriptor.exampleComboIsAllowed(exampleComboToRun)) {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
     io.exit(0);
@@ -105,50 +105,6 @@ void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const MyApp());
-}
-
-//// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
-///
-/// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
-///   passed to the main program by `--dart-define` options.
-///
-/// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
-///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
-///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
-///
-// todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> requestedExampleToRun() {
-Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> requestedExampleToRun() {
-  // Pickup what example to run, and which chart to show (line, vertical bar).
-  const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
-  ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
-
-  const String chartTypeStr = String.fromEnvironment('CHART_TYPE', defaultValue: 'lineChart');
-  ChartType chartType = chartTypeStr.asEnum(ChartType.values);
-
-  const String orientationStr = String.fromEnvironment('CHART_ORIENTATION', defaultValue: 'column');
-  ChartOrientation orientation = ChartOrientation.fromStringDefaultOnEmpty(
-      orientationStr,
-      ChartOrientation.column,
-  );
-
-  const String stackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
-  ChartStacking stacking = stackingStr.asEnum(ChartStacking.values);
-
-  // todo-00-done : bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
-  /* todo-00-done :
-  ChartLayouter chartLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true) == true
-      ?
-  ChartLayouter.oldManualLayouter
-      :
-  ChartLayouter.newAutoLayouter;
-  */
-
-  String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
-  ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
-
-
-  // todo-00-done : return Tuple5(exampleComboToRun, chartType, orientation, stacking, isUseOldLayouter);
-  return Tuple5(exampleComboToRun, chartType, orientation, stacking, chartLayouter);
 }
 
 class MyApp extends StatelessWidget {
@@ -194,18 +150,18 @@ class MyHomePage extends StatefulWidget {
 /// [MyHomePage.createState].
 ///
 /// In the rest of the lifecycle, this state object holds on one object,
-/// - [descriptorOfExampleToRun]
+/// - [exampleDescriptorToRun]
 ///
 /// The rest of the objects (options, data, etc) are created during the build.
 ///
 /// While this home page state object is created only once (hence, the above
-/// state's member [descriptorOfExampleToRun], is created only once, the charts shown
+/// state's member [exampleDescriptorToRun], is created only once, the charts shown
 /// in this demo, the [LineChart] and the [BarChart], are recreated
 /// in this object's [build] method - so, **the chart objects are created over
 /// and over**.
 ///
 /// Note: The (each [build]) recreated chart objects reuse the state's members
-/// [descriptorOfExampleToRun], so this could be considered
+/// [exampleDescriptorToRun], so this could be considered
 /// "expensive to create".
 ///
 /// Note: At the same time, because the this state's [build] calls
@@ -227,9 +183,7 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun =
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun =
-      requestedExampleToRun();
+  ExampleDescriptor exampleDescriptorToRun = ExampleDescriptor.requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
   MyHomePageState();
@@ -289,7 +243,7 @@ class MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    ExampleWidgetCreator definer = ExampleWidgetCreator(descriptorOfExampleToRun);
+    ExampleWidgetCreator definer = ExampleWidgetCreator(exampleDescriptorToRun);
     Widget chartToRun = definer.createRequestedChart();
     ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
@@ -473,11 +427,11 @@ class ExampleSideEffects {
 class ExampleWidgetCreator {
 
   /// Construct the definer object for the example.
-  ExampleWidgetCreator(this.descriptorOfExampleToRun);
+  ExampleWidgetCreator(this.exampleDescriptorToRun);
 
   /// Tuple which describes the example
-  // todo-00-done : Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> descriptorOfExampleToRun;
-  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun;
+  ExampleDescriptor exampleDescriptorToRun;
+
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -512,12 +466,12 @@ class ExampleWidgetCreator {
   /// such as `Tuple(ex10RandomData, lineChart)`
   Widget createRequestedChart() {
     // Example requested to run
-    ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
-    ChartType chartType = descriptorOfExampleToRun.item2;
-    ChartOrientation chartOrientation = descriptorOfExampleToRun.item3;
-    ChartStacking chartStacking = descriptorOfExampleToRun.item4;
-    // todo-00-done : bool isUseOldLayouter = descriptorOfExampleToRun.item5;
-    ChartLayouter chartLayouter = descriptorOfExampleToRun.item5;
+    ExamplesEnum exampleEnumToRun = exampleDescriptorToRun.exampleEnum;
+    ChartType chartType = exampleDescriptorToRun.chartType;
+    ChartOrientation chartOrientation = exampleDescriptorToRun.chartOrientation;
+    ChartStacking chartStacking = exampleDescriptorToRun.chartStacking;
+    ChartLayouter chartLayouter = exampleDescriptorToRun.chartLayouter;
+
 
     // Declare chartModel; the data object will be different in every examples.
     ChartModel chartModel;
@@ -537,7 +491,7 @@ class ExampleWidgetCreator {
     /// The example which [ExamplesEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
     /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
-    switch (exampleComboToRun) {
+    switch (exampleEnumToRun) {
       case ExamplesEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
         chartOptions = const ChartOptions(
@@ -1013,7 +967,6 @@ class ExampleWidgetCreator {
           // transpose column/row is set in env var CHART_ORIENTATION
           chartOrientation: chartOrientation,
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
-          // todo-00-done : chartStacking: isUseOldLayouter ? ChartStacking.nonStacked : chartStacking,
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );

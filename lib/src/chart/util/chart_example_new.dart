@@ -1,6 +1,6 @@
-import 'examples_descriptor.dart' show ExamplesDescriptor, ExamplesEnum;
+import 'examples_descriptor.dart' show ExampleDescriptor, ExamplesEnum;
 // todo-00-next : use main_new : import '../../main_new.dart' show requestedExampleToRun;
-import '../../main.dart' show requestedExampleToRun;
+// import 'examples_descriptor.dart' as examples_descriptor show requestedExampleToRun;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart'
     show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 
@@ -9,12 +9,12 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 ///
 /// Intended only as part of outer [ChartExamples].
 ///
-/// Difference from [ExamplesDescriptor] :
-///    - [ExamplesDescriptor] exists for the benefit of shell scripts, is used to generate scripts commands
-///      using [ExamplesDescriptor.asCommandLine]. List of [ExamplesDescriptor.asCommandLine] results is captured in
+/// Difference from [ExampleDescriptor] :
+///    - [ExampleDescriptor] exists for the benefit of shell scripts, is used to generate scripts commands
+///      using [ExampleDescriptor.asCommandLine]. List of [ExampleDescriptor.asCommandLine] results is captured in
 ///      `test/tmp/examples_descriptor_generated_program_RANDOM.sh`,
 ///      that can be executed by other scripts as 'flutter drive`, or `flutter run`.
-///      All the properties of the [ExamplesDescriptor] are passed to 'flutter drive`, or `flutter run`
+///      All the properties of the [ExampleDescriptor] are passed to 'flutter drive`, or `flutter run`
 ///      as `--dart-define` arguments, then re-created in the running app as state
 ///        ```dart
 ///          Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun
@@ -33,7 +33,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 ///    - [ChartExamples] translates String arguments passed to a Flutter `main.dart`
 ///      into a list of examples to run in the Flutter app (as apposed in a shell script).
 ///      All the properties of [ChartExample] are created inside the Flutter app,
-///      and converted to [ExamplesDescriptor] todo-00-last Or Tuple5???
+///      and converted to [ExampleDescriptor].
 class ChartExample {
 
   ChartExample({
