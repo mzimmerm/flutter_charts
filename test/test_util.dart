@@ -5,7 +5,7 @@ import 'package:tuple/tuple.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
-import 'package:flutter_charts/src/chart/util/examples_descriptor.dart' show ExampleDescriptor;
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleDescriptor;
 
 /// Path to screenshot file the test uses for each test.
 String relativePath(String screenshotDirName, ExampleDescriptor exampleDescriptor) {

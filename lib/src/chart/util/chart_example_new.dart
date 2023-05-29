@@ -1,6 +1,6 @@
-import 'examples_descriptor.dart' show ExampleDescriptor, ExamplesEnum;
+import 'example_descriptor.dart' show ExampleDescriptor, ExampleEnum;
 // todo-00-next : use main_new : import '../../main_new.dart' show requestedExampleToRun;
-// import 'examples_descriptor.dart' as examples_descriptor show requestedExampleToRun;
+// import 'example_descriptor.dart' as examples_descriptor show requestedExampleToRun;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart'
     show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 
@@ -17,13 +17,13 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 ///      All the properties of the [ExampleDescriptor] are passed to 'flutter drive`, or `flutter run`
 ///      as `--dart-define` arguments, then re-created in the running app as state
 ///        ```dart
-///          Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun
+///          Tuple5<ExampleEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun
 ///        ```
 ///      This happens in `main.dart` during widget creation in [requestedExampleToRun],
 ///      and is used in [ExampleWidgetCreator] around
 ///        ```dart
 ///          // On state:
-///          Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun =
+///          Tuple5<ExampleEnum, ChartType, ChartOrientation, ChartStacking, ChartLayouter> descriptorOfExampleToRun =
 ///               requestedExampleToRun();
 ///          // In build()
 ///          ExampleWidgetCreator definer = ExampleWidgetCreator(descriptorOfExampleToRun);
@@ -37,14 +37,14 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 class ChartExample {
 
   ChartExample({
-    required this.examplesEnum,
+    required this.exampleEnum,
     required this.chartTypeGroup,
     required this.chartOrientationGroup,
     required this.chartStackingGroup,
     required this.chartLayouterGroup,
   });
 
-  final ExamplesEnum examplesEnum;
+  final ExampleEnum exampleEnum;
   final ChartType chartTypeGroup;
   final Set<ChartOrientation> chartOrientationGroup;
   final Set<ChartStacking> chartStackingGroup;

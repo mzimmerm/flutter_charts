@@ -4,9 +4,9 @@
 
 # ONLY a wrapper for tool/test/integration_test_create_then_validate_screenshots.sh
 
-# Input $1: ExamplesEnum value, for example ex10RandomData. 
+# Input $1: ExampleEnum value, for example ex10RandomData.
 if [[ $# -ne 1 ]]; then
-  echo Expected one argument, an ExamplesEnum value, for example ex10RandomData. Exiting.
+  echo Expected one argument, an ExampleEnum value, for example ex10RandomData. Exiting.
   exit 1
 fi
 

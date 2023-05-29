@@ -6,8 +6,8 @@
 #
 # In more details:
 #   - Running a single or all examples is controlled by $1.
-#     - If $1 is set, it is assumed to be an example id from 'ExamplesEnum', and the single example is executed
-#     - Else, all examples from  'ExamplesEnum' are executed
+#     - If $1 is set, it is assumed to be an example id from 'ExampleEnum', and the single example is executed
+#     - Else, all examples from  'ExampleEnum' are executed
 #   - This script runs in 2 steps
 #     1. Sources a program-generating script 'start_emulator_and_generate_examples_descriptor.sh'
 #        which creates one or more scripts stored in 'tests/tmp/examples_descriptor_generated_program_RANDOM.sh'
@@ -21,7 +21,7 @@
 #             --dart-define=CHART_LAYOUTER=$CHART_LAYOUTER \
 #             $2
 #            ```
-#          - contains one example from 'ExamplesEnum' or the command line to execute.
+#          - contains one example from 'ExampleEnum' or the command line to execute.
 #          - provides an argument to an executable $1 which can be 'flutter drive --driver --target',
 #            so it (the tmp-script-program) can execute its $1 argument by running itself as:
 #              'tmp-script-program flutter drive --target integration_test/screenshot_create_test.dart'
@@ -85,7 +85,7 @@ if [[ -n "$2" ]]; then
 
   echo
   echo -------------------------------------
-  echo Assuming you asking to run only one test, given by ExamplesEnum: "$exampleEnum"
+  echo Assuming you asking to run only one test, given by ExampleEnum: "$exampleEnum"
   echo Not cleaning screenshots results, to be able to run multiple single examples and keep results.
   echo
 else

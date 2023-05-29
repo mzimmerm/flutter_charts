@@ -133,7 +133,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
             codeStr="${codeStr}${NEWLINE}    ChartOptions chartOptions = const ChartOptions();"
 
             # Read the whole main.dart and generate only the section between the line containing
-            # "case ExamplesEnum.ex10RandomData", and the line containing "break;".
+            # "case ExampleEnum.ex10RandomData", and the line containing "break;".
             # This is the section of code that is verified by tests to produce images in "integration_test/expected_screenshots"
             # which were copied to "doc/readme_images" prior to this Babel script runs in release preparation.
             while read codeLine; do
@@ -146,7 +146,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
                     codeStr="${codeStr}${NEWLINE}    ${codeLine}"
                     # fi
                 fi
-                if [[ $codeLine =~ "case ExamplesEnum.${exampleEnum}:" ]]; then
+                if [[ $codeLine =~ "case ExampleEnum.${exampleEnum}:" ]]; then
                     printOn=1
                 fi
             done < example/lib/main.dart
@@ -183,7 +183,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
             codeStr="${codeStr}${NEWLINE}[[file:doc/readme_images/${exampleName}.png]]"
 
 
-            # One example code between "case ExamplesEnum.ex10RandomData", and the line containing "break;" processed,
+            # One example code between "case ExampleEnum.ex10RandomData", and the line containing "break;" processed,
             # so write out the header with code and initialize it
             echo "${codeStr}"
             # fi

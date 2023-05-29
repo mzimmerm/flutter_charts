@@ -1955,8 +1955,18 @@ Implementation
 Later:
 
 - [ ] Rename screenshot_check_test and similar to validate_screenshot_test or maybe test_validate_screenshot??
-- 
+-
 
+
+** LATER ~Follow linter rules: 1) in late final and 2) use package imports (no relative imports)~
+
+~Cleanup places using public late final fields~
+
+See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-without-initializers and change all public late final members to private, adding a public getter.
+
+~use package imports (no relative imports)~
+
+See https://dart.dev/tools/linter-rules#always_use_package_imports 
 ** LATER ~add WrappingLayouter.Column/Row, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 
 Column: lays out left to right, when reaches constraints width,  wraps to next line, starting to the left of 'max height'

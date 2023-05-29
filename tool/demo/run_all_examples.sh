@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Runs the passed example or all examples in 'example/lib/main.dart'.
-# If an example name is passed, it must be an existing allowed ExamplesEnum name
+# If an example name is passed, it must be an existing allowed ExampleEnum name
 
 set -o errexit
 
 echo
 echo -------------------------------------
-echo Executes 'flutter run' for the passed exampleEnum or for all examples in ExamplesEnum
+echo Executes 'flutter run' for the passed exampleEnum or for all examples in ExampleEnum
 echo Code borrowed from tool/test/integration_test_create_then_validate_screenshots.sh
 
 
@@ -19,7 +19,7 @@ fi
 if [[ -n "$1" ]]; then
   exampleEnum=$1
   echo
-  echo Assuming you asking to run only one app, given by ExamplesEnum: "$exampleEnum"
+  echo Assuming you asking to run only one app, given by ExampleEnum: "$exampleEnum"
   echo
 fi  
   

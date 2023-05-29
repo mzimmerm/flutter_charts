@@ -2,14 +2,14 @@
 ///
 /// Library with has a main.dart which generates a shell script that allow
 /// to run commands such as `flutter run` or `flutter drive`
-/// on all examples defined in [ExamplesEnum].
+/// on all examples defined in [ExampleEnum].
 ///
 ///
 ///
 // Removing import for whole flutter_charts.
 //    import 'package:flutter_charts/flutter_charts.dart' show enumName;
 // Reason: As part of a shell script, this needs to run as
-//    dart run lib/src/chart/util/examples_descriptor.dart
+//    dart run lib/src/chart/util/example_descriptor.dart
 // But, because importing flutter_charts.dart does
 //    import 'dart:ui'
 // then during 'dart run' we get messages such as :
@@ -37,8 +37,8 @@ void main(List<String> args) {
       throw StateError('5 arguments required, but only the following provided: $args');
     }
 
-    // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
-    ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
+    // Assumes argument name is one of ExampleEnum, e.g. ex10RandomData
+    ExampleEnum exampleToRun = args[0].asEnum(ExampleEnum.values);
     exampleDescriptor = ExampleDescriptor(
       exampleEnum: exampleToRun,
       chartType: args[1].isNotEmpty ? args[1].asEnum(ChartType.values) : ChartType.barChart,
@@ -60,7 +60,7 @@ void main(List<String> args) {
 }
 
 /// Describes the full set of charts shown in examples or integration tests.
-enum ExamplesEnum {
+enum ExampleEnum {
   ex10RandomData,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
   ex31SomeNegativeValues,
@@ -89,17 +89,17 @@ enum ExamplesEnum {
 
 /// Defines the list of the examples available to be tested or run interactively in scripts.
 ///
-/// Each example properties are the enums from [ExamplesEnum] (e.g. [ExamplesEnum.ex10RandomData])
+/// Each example properties are the enums from [ExampleEnum] (e.g. [ExampleEnum.ex10RandomData])
 /// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.barChart])
 ///
 /// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests,
 /// and interactively running in [run_all_examples.sh].
 ///
-/// The [allowed] member is the list of allowed combinations of [ExamplesEnum] and [ExamplesChartTypeEnum].
-/// Each enumerate in the [allowed] list represents one set of chart data, options and type
+/// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ExamplesChartTypeEnum].
+/// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example/lib/main.dart].
 ///
-/// Method [asCommandLine] generates a shell snippet for all [allowed] and requested example. The snippet may look like
+/// Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example. The snippet may look like
 ///    ```shell
 ///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart $2
 ///    ```
@@ -108,13 +108,6 @@ enum ExamplesEnum {
 /// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartType'.
 /// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
 class ExampleDescriptor {
-  /// If set, only the requested example will run.
-  ExamplesEnum exampleEnum;
-  ChartType chartType;
-  ChartOrientation chartOrientation;
-  ChartStacking chartStacking;
-  ChartLayouter chartLayouter;
-
 
   ExampleDescriptor({
     required this.exampleEnum,
@@ -124,12 +117,18 @@ class ExampleDescriptor {
     required this.chartLayouter,
   });
 
+  ExampleEnum exampleEnum;
+  ChartType chartType;
+  ChartOrientation chartOrientation;
+  ChartStacking chartStacking;
+  ChartLayouter chartLayouter;
+
   /// Factory creates a helper instance needed when insufficient data exist to create an instance.
   ///
   /// This is for old examples processing only, when we want to express that all allowed examples should run.
   factory ExampleDescriptor.pluginForOldLayouterProcessing() {
     return ExampleDescriptor(
-      exampleEnum: ExamplesEnum.ex10RandomData, // unused
+      exampleEnum: ExampleEnum.ex10RandomData, // unused
       chartType: ChartType.barChart, // unused
       chartOrientation: ChartOrientation.column, // unused
       chartStacking: ChartStacking.stacked, // unused
@@ -137,67 +136,67 @@ class ExampleDescriptor {
     );
   }
 
-  static final List<Tuple2<ExamplesEnum, ChartType>> allowed = [
+  static final List<Tuple2<ExampleEnum, ChartType>> _allowed = [
     //
-    const Tuple2(ExamplesEnum.ex10RandomData, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex10RandomData, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex10RandomData, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex10RandomData, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex31SomeNegativeValues, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex31SomeNegativeValues, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex32AllPositiveYsYAxisStartsAbove0, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex32AllPositiveYsYAxisStartsAbove0, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex33AllNegativeYsYAxisEndsBelow0, ChartType.lineChart),
     //
-    const Tuple2(ExamplesEnum.ex34OptionsDefiningUserTextStyleOnLabels, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex34OptionsDefiningUserTextStyleOnLabels, ChartType.lineChart),
     //
-    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ChartType.lineChart),
     //
-    const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex50StocksWithNegativesWithUserColors, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.lineChart),
-    const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration1, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex60LabelsIteration1, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration2, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex60LabelsIteration2, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration3, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex60LabelsIteration3, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration4, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex60LabelsIteration4, ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
+    const Tuple2(ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
         ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
+    const Tuple2(ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
         ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
+    const Tuple2(ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
         ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
+    const Tuple2(ExampleEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
         ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
+    const Tuple2(ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
         ChartType.barChart),
     //
-    const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+    const Tuple2(ExampleEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
         ChartType.barChart),
-    const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+    const Tuple2(ExampleEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
         ChartType.lineChart),
     //
-    const Tuple2(ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
+    const Tuple2(ExampleEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
         ChartType.barChart),
 
     //
-    const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex900ErrorFixUserDataAllZero, ChartType.lineChart),
   ];
 
   /// Check if the example described with the passed enums should run in a test.
@@ -208,10 +207,10 @@ class ExampleDescriptor {
   static bool exampleComboIsAllowed(
       ExampleDescriptor exampleDescriptor,
   ) {
-    return allowed.any((tuple) => tuple.item1 == exampleDescriptor.exampleEnum && tuple.item2 == exampleDescriptor.chartType);
+    return _allowed.any((tuple) => tuple.item1 == exampleDescriptor.exampleEnum && tuple.item2 == exampleDescriptor.chartType);
   }
 
-//// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
+  /// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
   ///
   /// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
   ///   passed to the main program by `--dart-define` options.
@@ -221,9 +220,10 @@ class ExampleDescriptor {
   ///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
   ///
   static ExampleDescriptor requestedExampleToRun() {
+    // todo-00-last: Replace all enum conversion methods
     // Pickup what example to run, and which chart to show (line, vertical bar).
     const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
-    ExamplesEnum examplesEnumToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
+    ExampleEnum exampleEnumToRun = exampleToRunStr.asEnum(ExampleEnum.values);
 
     const String chartTypeStr = String.fromEnvironment('CHART_TYPE', defaultValue: 'lineChart');
     ChartType chartType = chartTypeStr.asEnum(ChartType.values);
@@ -242,7 +242,7 @@ class ExampleDescriptor {
     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 
     return ExampleDescriptor(
-      exampleEnum: examplesEnumToRun,
+      exampleEnum: exampleEnumToRun,
       chartType: chartType,
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
@@ -259,11 +259,114 @@ class ExampleDescriptor {
     return false;
   }
 
+  /// Assuming that [descriptor] String is in format with 5 fields
+  /// (each field may be a String representing members in [ExampleDescriptor] or '*'),
+  /// returns a list of ExampleDescriptors matching the passed [descriptor].
+  /// 
+  /// Examples of valid descriptor:
+  /// 
+  ///   `ex76_barChart_column_stacked_oldManualLayouter`
+  ///   `ex76_*_*_*_*`
+  ///   
+  /// Fields assumed order and values:
+  ///    - Field 0: [ExampleEnum]
+  ///    - Field 1: [ChartType]
+  ///    - Field 2: [ChartOrientation]
+  ///    - Field 3: [ChartStacking]
+  ///    - Field 4: [ChartLayouter]
+  ///    
+  ///   
+  static List<ExampleDescriptor> _parseDescriptorStringFrom(String descriptor) {
+    // todo-00-progress
+    // return ExampleDescriptor;
+    var parsedFields = descriptor.split('_');
+    if (parsedFields.length != 5) throw StateError('Descriptor requires 5 _ separated fields: descriptor=$descriptor');
+    
+    // Field 0: [ExampleEnum]
+    String exampleNameStartStr = parsedFields[0];
+    var exampleEnums = _allowed
+        .where((tuple) => tuple.item1.name.startsWith(exampleNameStartStr))
+        .map((tuple) => tuple.item1).toList();
+    if (exampleEnums.isEmpty) {
+      throw StateError('Invalid (zero based) ExampleEnum field 0 in $descriptor');
+    }
+    ExampleEnum exampleEnum = exampleEnums.first;
+    // ExampleEnum exampleEnum = exampleToRunStr.asEnum(ExampleEnum.values);
+    
+    // Field 1: [ChartType]
+    List<ChartType> chartTypes = parsedFields[1] == '*'
+        ? ChartType.values.toList()
+        : [
+            ChartType.asEnum(
+              parsedFields[1],
+              'Invalid (zero based) ChartType field 1 in $descriptor',
+            )
+          ];
+
+    // Field 2: [ChartOrientation]
+    List<ChartOrientation> chartOrientations = parsedFields[2] == '*'
+        ? ChartOrientation.values.toList()
+        : [
+            ChartOrientation.asEnum(
+              parsedFields[2],
+              'Invalid (zero based) ChartOrientation field 2 in $descriptor',
+            )
+          ];
+
+    // Field 3: [ChartStacking]
+    List<ChartStacking> chartStackings = parsedFields[3] == '*'
+        ? ChartStacking.values.toList()
+        : [
+            ChartStacking.asEnum(
+              parsedFields[3],
+              'Invalid (zero based) ChartStacking field 3 in $descriptor',
+            )
+          ];
+
+    //  Field 4: [ChartLayouter]
+    List<ChartLayouter> chartLayouters = parsedFields[4] == '*'
+        ? ChartLayouter.values.toList()
+        : [
+            ChartLayouter.asEnum(
+              parsedFields[4],
+              'Invalid (zero based) ChartLayouter field 4 in $descriptor',
+            )
+          ];
+
+    List<ExampleDescriptor> exampleDescriptors = [];
+    for (var chartType in chartTypes) {
+      for (var chartOrientation in chartOrientations) {
+        for (var chartStacking in chartStackings) {
+          for (var chartLayouter in chartLayouters) {
+            exampleDescriptors.add(
+              ExampleDescriptor(
+                exampleEnum: exampleEnum,
+                chartType: chartType,
+                chartOrientation: chartOrientation,
+                chartStacking: chartStacking,
+                chartLayouter: chartLayouter,
+              ),
+            );
+          }
+        }
+      }
+    }
+
+    return exampleDescriptors;
+  }
+
+  static List<ExampleDescriptor> parseExampleDescriptorsFrom(List<String> descriptors) {
+    return descriptors
+        .map((descriptor) => _parseDescriptorStringFrom(descriptor))
+        .expand((element) => element)
+        .toList();
+  }
+
   /// Present this descriptor is a format suitable to run as a test from command line.
   void asCommandLine(bool isAllExamplesRequested, bool isRunBothChartTypes) {
-    List<Tuple2<ExamplesEnum, ChartType>> combosToRun = isAllExamplesRequested
-        ? allowed
-        : allowed.where((tuple) => tuple.item1 == exampleEnum).toList();
+    List<Tuple2<ExampleEnum, ChartType>> combosToRun = isAllExamplesRequested
+        ? _allowed
+        : _allowed.where((tuple) => tuple.item1 == exampleEnum).toList();
 
     // [combosToRun] has 1 or 2 chartTypes, depending what is specified in allowed.
     // if [isRunBothChartTypes] is true, we OVERRIDE that, and run both charts.
@@ -292,7 +395,7 @@ class ExampleDescriptor {
     List<ExampleDescriptor> examplesToRun =
       multiplyListElementsBy(combosToRun, orientationsAndStackingToRun).map((tuple2AndOrientationWithStacking) =>
         ExampleDescriptor(
-          exampleEnum:      tuple2AndOrientationWithStacking[0].item1 as ExamplesEnum,
+          exampleEnum:      tuple2AndOrientationWithStacking[0].item1 as ExampleEnum,
           chartType:        tuple2AndOrientationWithStacking[0].item2 as ChartType,
           chartOrientation: tuple2AndOrientationWithStacking[1][0] as ChartOrientation,
           chartStacking:    tuple2AndOrientationWithStacking[1][1] as ChartStacking,
@@ -317,6 +420,25 @@ class ExampleDescriptor {
       );
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExampleDescriptor &&
+          other.runtimeType == runtimeType &&
+          other.exampleEnum == exampleEnum &&
+          other.chartType == chartType &&
+          other.chartOrientation == chartOrientation &&
+          other.chartStacking == chartStacking &&
+          other.chartLayouter == chartLayouter;
+
+  @override
+  int get hashCode => Object.hash(
+        exampleEnum,
+        chartType,
+        chartOrientation,
+        chartStacking,
+        chartLayouter,
+      );
 }
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generates a program that can be used to run or test all examples 
-#   defined in enum 'ExamplesEnum'.
+#   defined in enum 'ExampleEnum'.
 #
 # Should be 'sourced', as it results in setting an environment variable which contains a program name,
 #   which the calling script can run.
@@ -9,14 +9,14 @@
 # In more detail, this script does the following:
 #   - If Android AVD emulator is not running, starts one.
 #   - Next, uses the program 
-#     'dart run lib/src/chart/util/examples_descriptor.dart'
+#     'dart run lib/src/chart/util/example_descriptor.dart'
 #   to generate a temp script, which name is placed in the variable named
 #     'examples_descriptor_generated_program'
 #   The program $examples_descriptor_generated_program 
 #     can be executed from the script sourcing this script, 
-#     to run the or tests all examples declared in ExamplesEnum.
+#     to run the or tests all examples declared in ExampleEnum.
 
-# Input $1: ExamplesEnum value, for example ex10RandomData. 
+# Input $1: ExampleEnum value, for example ex10RandomData.
 #           If empty or not set, all examples are included in the generated run.
 # Output: variable name 'examples_descriptor_generated_program', which contains the name of the 
 #          generated program 
@@ -67,7 +67,7 @@ fi
 # Define the name of the program which the scripts sourcing this file can execute.
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
-# Dart run examples_descriptor.dart which generates a script with dart_defines.
+# Dart run example_descriptor.dart which generates a script with dart_defines.
 echo Running \"dart run lib/src/chart/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
 echo   which creates $examples_descriptor_generated_program
 

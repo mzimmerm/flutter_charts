@@ -46,7 +46,7 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 
 import '../test/test_util.dart';
 
-import 'package:flutter_charts/src/chart/util/examples_descriptor.dart';
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
 // todo-00-next : use main_new : import '../example/lib/main_new.dart' as app;
 import '../example/lib/main.dart' as app;
 
@@ -58,7 +58,7 @@ import '../example/lib/main.dart' as app;
 ///   and comparing the produced screenshot with a known correct screenshot.
 ///
 /// Flutter integration test of one instance of the example app, with example data, options, and chart type
-///   dictated by the [ExamplesEnum] and [ExamplesChartTypeEnum], set by caller in `--dart-define`.
+///   dictated by the [ExampleEnum] and [ExamplesChartTypeEnum], set by caller in `--dart-define`.
 ///
 /// The data and options given by the enums are set in [example/lib/main.dart] method 
 /// [_ExampleDefiner.createRequestedChart].

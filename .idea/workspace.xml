@@ -22,16 +22,22 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README-source-for-md.org" beforeDir="false" afterPath="$PROJECT_DIR$/README-source-for-md.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/src/util/chart_example_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/src/util/examples_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_tested/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/flutter_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_charts.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/screenshot_check_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_check_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/test_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_util.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_examples_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_examples_descriptor.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -211,6 +217,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
+    "dart.analysis.tool.window.visible": "false",
     "io.flutter.reload.alreadyRun": "true",
     "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test/run_one_create_screenshot_test.sh",
     "project.structure.last.edited": "Project",
@@ -238,7 +245,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/type/bar/container" />
     </key>
   </component>
-  <component name="RunManager" selected="Dart Command Line App.examples_descriptor">
+  <component name="RunManager" selected="Shell Script.run_core_dart_and_flutter_widget_tests.sh">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -259,13 +266,13 @@
     </configuration>
     <configuration name="examples_descriptor" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="arguments" value="ex31SomeNegativeValues barChart column stacked oldManualLayouter" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
     <configuration name="examples_descriptor_less_args" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="arguments" value="ex31SomeNegativeValues barChart &quot;&quot; &quot;&quot; &quot;&quot;" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -276,7 +283,7 @@
     </configuration>
     <configuration name="examples-descriptor as Flutter" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="attachArgs" value="ex10RandomData" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart default Example" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -417,6 +424,12 @@
       <option name="additionalArgs" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="tests in example_descriptor_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="tests in function_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testFile" value="$PROJECT_DIR$/test/util/function_test.dart" />
       <option name="useRegexp" value="false" />
@@ -523,6 +536,7 @@
       <item itemvalue="Flutter.main.dart ex900 error all 0 data" />
       <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />
       <item itemvalue="Flutter Test.TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
       <item itemvalue="Flutter Test.tests in function_test.dart" />
       <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
       <item itemvalue="Flutter Test.row, manual affmap of nonStacked, map (inputMin, outputMin) from full output range, REVERTED booleans" />
@@ -533,6 +547,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
         <item itemvalue="Flutter Test.tests in function_test.dart" />
         <item itemvalue="Flutter Test.tests in util_labels_test.dart" />
         <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
@@ -1155,19 +1170,9 @@
           <option name="timeStamp" value="3443" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
-          <line>97</line>
-          <option name="timeStamp" value="3445" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
           <line>28</line>
           <option name="timeStamp" value="3448" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
-          <line>268</line>
-          <option name="timeStamp" value="3462" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
@@ -1475,19 +1480,9 @@
           <option name="timeStamp" value="3790" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
-          <line>188</line>
-          <option name="timeStamp" value="3791" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
-          <line>33</line>
-          <option name="timeStamp" value="3795" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/util/examples_descriptor.dart</url>
-          <line>37</line>
-          <option name="timeStamp" value="3796" />
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart</url>
+          <line>166</line>
+          <option name="timeStamp" value="3797" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

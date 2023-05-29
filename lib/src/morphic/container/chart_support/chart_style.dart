@@ -1,5 +1,7 @@
 import '../morphic_dart_enums.dart' show LayoutAxis, DataDependency;
 
+import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+
 /// Describes display orientation of axes and data on a chart.
 ///
 /// Motivation:
@@ -120,12 +122,32 @@ enum ChartOrientation {
     }
   }
 
+  /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if 
+  /// the [enumStr] does not match any enum value.
+  static ChartOrientation asEnum(String enumStr, String errorMessage) {
+    if (ChartOrientation.values.map((value) => value.name).where((enumName) => enumName == enumStr).toList().isEmpty) {
+      throw StateError(errorMessage);
+    }
+    ChartOrientation chartOrientation = enumStr.asEnum(ChartOrientation.values);
+    return chartOrientation;
+  }
 }
 
 /// Describes chart types shown in examples or integration tests.
 enum ChartType {
   lineChart,
-  barChart,
+  barChart;
+
+  /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if
+  /// the [enumStr] does not match any enum value.
+  static ChartType asEnum(String enumStr, String errorMessage) {
+    if (ChartType.values.map((value) => value.name).where((enumName) => enumName == enumStr).toList().isEmpty) {
+      throw StateError(errorMessage);
+    }
+    ChartType chartType = enumStr.asEnum(ChartType.values);
+    return chartType;
+  }
+
 }
 
 /// Describes how cross-series data are shown: Either stacked, or nonStacked (side by side on horizontal bar chart,
@@ -137,12 +159,34 @@ enum ChartStacking {
   bool get isStacked {
     return this == stacked;
   }
+
+  /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if
+  /// the [enumStr] does not match any enum value.
+  static ChartStacking asEnum(String enumStr, String errorMessage) {
+    if (ChartStacking.values.map((value) => value.name).where((enumName) => enumName == enumStr).toList().isEmpty) {
+      throw StateError(errorMessage);
+    }
+    ChartStacking chartStacking = enumStr.asEnum(ChartStacking.values);
+    return chartStacking;
+  }
+
 }
 
 /// Describes the layouter a chart should use.
 enum ChartLayouter {
   oldManualLayouter,
-  newAutoLayouter,
+  newAutoLayouter;
+
+  /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if 
+  /// the [enumStr] does not match any enum value.
+  static ChartLayouter asEnum(String enumStr, String errorMessage) {
+    if (ChartLayouter.values.map((value) => value.name).where((enumName) => enumName == enumStr).toList().isEmpty) {
+      throw StateError(errorMessage);
+    }
+    ChartLayouter chartLayouter = enumStr.asEnum(ChartLayouter.values);
+    return chartLayouter;
+  }
+  
 }
 
 /// Identifies a diagonal for transpose transfer.

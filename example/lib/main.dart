@@ -19,8 +19,8 @@ import 'package:flutter_charts/src/switch_view_model/view_model.dart';
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
-import 'package:flutter_charts/src/chart/util/examples_descriptor.dart'
-    show ExampleDescriptor, ExamplesEnum;
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
+    show ExampleDescriptor, ExampleEnum;
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
@@ -462,11 +462,11 @@ class ExampleWidgetCreator {
   ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
   ///       --dart-define=CHART_TYPE=lineChart
   ///   ```
-  /// will set [exampleComboToRun] to a concrete Tuple of [ExamplesEnum] and [ExamplesChartTypeEnum], 
+  /// will set [exampleComboToRun] to a concrete Tuple of [ExampleEnum] and [ExamplesChartTypeEnum], 
   /// such as `Tuple(ex10RandomData, lineChart)`
   Widget createRequestedChart() {
     // Example requested to run
-    ExamplesEnum exampleEnumToRun = exampleDescriptorToRun.exampleEnum;
+    ExampleEnum exampleEnumToRun = exampleDescriptorToRun.exampleEnum;
     ChartType chartType = exampleDescriptorToRun.chartType;
     ChartOrientation chartOrientation = exampleDescriptorToRun.chartOrientation;
     ChartStacking chartStacking = exampleDescriptorToRun.chartStacking;
@@ -488,11 +488,11 @@ class ExampleWidgetCreator {
     LabelLayoutStrategy? inputLabelLayoutStrategy;
     
     /// Main switch that includes code to all examples.
-    /// The example which [ExamplesEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
+    /// The example which [ExampleEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
     /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleEnumToRun) {
-      case ExamplesEnum.ex10RandomData:
+      case ExampleEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
@@ -504,7 +504,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
+      case ExampleEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
         // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
         // The inputLabelLayoutStrategy, if set to null or not set at all, 
         //   defaults to DefaultIterativeLabelLayoutStrategy
@@ -531,7 +531,7 @@ class ExampleWidgetCreator {
         // chartModel._byRowDefaultLegendColors(); // if not set, called in constructor
         break;
 
-      case ExamplesEnum.ex31SomeNegativeValues:
+      case ExampleEnum.ex31SomeNegativeValues:
         // Example shows a mix of positive and negative data values.
         chartModel = ChartModel(
           dataRows: const [
@@ -551,7 +551,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0:
+      case ExampleEnum.ex32AllPositiveYsYAxisStartsAbove0:
         // Example shows how to create ChartOptions instance 
         //   which will request to start Y axis at data minimum.
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
@@ -575,7 +575,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0:
+      case ExampleEnum.ex33AllNegativeYsYAxisEndsBelow0:
         // Example shows how to create ChartOptions instance
         //   which will request to end Y axis at maximum data (as all data negative).
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
@@ -598,7 +598,7 @@ class ExampleWidgetCreator {
           chartOptions: chartOptions,
         );
         break;
-      case ExamplesEnum.ex34OptionsDefiningUserTextStyleOnLabels:
+      case ExampleEnum.ex34OptionsDefiningUserTextStyleOnLabels:
         // Example shows how to use user-defined font in the chart labels.
         // In fact, same approach can be used more generally, to set any property 
         //   in user-defined TextStyle (font, font color, etc - any property available on TextStyle) on labels. 
@@ -648,7 +648,7 @@ class ExampleWidgetCreator {
           chartOptions: chartOptions,
         );
         break;
-      case ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown:
+      case ExampleEnum.ex35AnimalsBySeasonNoLabelsShown:
         // Set chart options to show no labels
         chartOptions = const ChartOptions.noLabels();
 
@@ -670,7 +670,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
+      case ExampleEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
         //   When setting output labels by user, the [ChartModel.dataRows] value extrapolate
@@ -707,7 +707,7 @@ class ExampleWidgetCreator {
 
         break;
 
-      case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
+      case ExampleEnum.ex50StocksWithNegativesWithUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, Data-Based Y Labels, User-Provided Colors,
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
@@ -739,7 +739,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale:
+      case ExampleEnum.ex52AnimalsBySeasonLogarithmicScale:
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             yTransform: log10,
@@ -760,7 +760,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex60LabelsIteration1:
+      case ExampleEnum.ex60LabelsIteration1:
         // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
         chartModel = ChartModel(
@@ -778,7 +778,7 @@ class ExampleWidgetCreator {
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
         break;
 
-      case ExamplesEnum.ex60LabelsIteration2:
+      case ExampleEnum.ex60LabelsIteration2:
         // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
@@ -797,7 +797,7 @@ class ExampleWidgetCreator {
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
         break;
 
-      case ExamplesEnum.ex60LabelsIteration3:
+      case ExampleEnum.ex60LabelsIteration3:
         // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
@@ -816,7 +816,7 @@ class ExampleWidgetCreator {
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
         break;
 
-      case ExamplesEnum.ex60LabelsIteration4:
+      case ExampleEnum.ex60LabelsIteration4:
       // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
       // This example shows the result with sufficient space to show all labels, not even tilted;
       // The iterative layout strategy causes more labels to be skipped.
@@ -835,7 +835,7 @@ class ExampleWidgetCreator {
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
         break;
 
-      case ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
+      case ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
@@ -849,7 +849,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
+      case ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
@@ -863,7 +863,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
+      case ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
@@ -877,7 +877,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
+      case ExampleEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight),
@@ -891,7 +891,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
+      case ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
@@ -905,7 +905,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+      case ExampleEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
@@ -920,7 +920,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+      case ExampleEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
@@ -935,7 +935,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex900ErrorFixUserDataAllZero:
+      case ExampleEnum.ex900ErrorFixUserDataAllZero:
 
         /// Bug Fix: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
         chartModel = ChartModel(

@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-import 'package:flutter_charts/src/chart/util/examples_descriptor.dart'
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor;
 
 void main() {
