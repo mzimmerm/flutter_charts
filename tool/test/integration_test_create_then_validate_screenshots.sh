@@ -40,7 +40,7 @@
 #     2. Each tmp-script-program is executed twice:
 #       2.1. First, runs integration test ('flutter drive') on the tmp-script-program arguments
 #       2.2. Next,  runs screenshot comparison test (this is a flutter widget test 'flutter test')
-#          'flutter test  test/screenshot_check_test.dart'
+#          'flutter test  test/screenshot_validate_test.dart'
 #           which compares
 #           - screenshot captured in step 2 with
 #           - screenshot expected, captured before any changes
@@ -150,4 +150,4 @@ echo         It validates, one by one, that the screenshots generated in Step 2 
 echo
 bash -x "$example_descriptor_generated_program" \
         "flutter test $noPub" \
-        " test/screenshot_check_test.dart"
+        " test/screenshot_validate_test.dart"

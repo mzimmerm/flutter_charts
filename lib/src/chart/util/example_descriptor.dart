@@ -220,7 +220,6 @@ class ExampleDescriptor {
   ///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
   ///
   static ExampleDescriptor requestedExampleToRun() {
-    // todo-00-last: Replace all enum conversion methods
     // Pickup what example to run, and which chart to show (line, vertical bar).
     const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
     ExampleEnum exampleEnumToRun = exampleToRunStr.asEnum(ExampleEnum.values);

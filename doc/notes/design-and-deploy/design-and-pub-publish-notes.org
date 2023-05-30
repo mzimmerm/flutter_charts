@@ -1954,7 +1954,7 @@ Implementation
 
 Later:
 
-- [ ] Rename screenshot_check_test and similar to validate_screenshot_test or maybe test_validate_screenshot??
+- [X] Rename screenshot_check_test and similar to validate_screenshot_test or maybe test_validate_screenshot??
 -
 
 

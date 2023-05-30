@@ -232,10 +232,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
     required this.exampleRunState,
   });
 
-  /// Get the example to run from environment variables (old method) or command line parameters (new method).
-  // todo-00-done : removed this, pass as argument to state constructor
-  // todo-00-done KEEP ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
-
+  /// Describes the example or examples being run.
   final ExampleRunState exampleRunState;
   String floatingButtonTooltip = 'New Random Data';
 
@@ -247,8 +244,6 @@ class ExampleHomePageState extends State<ExampleHomePage> {
       // updated values. If we changed state without calling
       // setState(), then the build method would not be called again,
       // and so nothing would appear to happen.
-
-      // todo-00-last :
 
       // for multi example:
       //   - move the exampleRunState to next example
@@ -307,7 +302,6 @@ class ExampleHomePageState extends State<ExampleHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    // todo-00-done : ExampleWidgetCreator definer = ExampleWidgetCreator(exampleToRun);
     ExampleWidgetCreator definer = ExampleWidgetCreator(exampleRunState.runningExample);
     Widget chartToRun = definer.createRequestedChart();
     ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
@@ -433,8 +427,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // todo-00-done:
-        // If onPressed is null, button is disabled. But we never disable, so screenshots look the same in any position.
+        // If onPressed is null, the button would be disabled. But we never disable it, for screenshots look the same.
         // onPressed: exampleRunState.isFloatingButtonDisabled ? null : _chartStateChanger,
         onPressed: _chartStateChanger,
         tooltip: floatingButtonTooltip,
@@ -1036,7 +1029,7 @@ class ExampleWidgetCreator {
           chartOrientation: chartOrientation,
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
-          chartLayouter: chartLayouter, // todo-00-done : added
+          chartLayouter: chartLayouter,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -1052,7 +1045,7 @@ class ExampleWidgetCreator {
           chartModel: chartModel,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
-          chartLayouter: chartLayouter, // todo-00-done : added
+          chartLayouter: chartLayouter,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -1072,7 +1065,6 @@ class ExampleWidgetCreator {
 
 }
 
-// todo-00-progress
 /// Wrapper for the application's state.
 ///
 /// The state consists of two items:

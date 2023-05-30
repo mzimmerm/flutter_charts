@@ -39,7 +39,7 @@
 ///     ```
 ///
 /// Running these tests should be followed by tests which compare expected/actual screenshots.
-/// Those screenshot-comparing tests are in [screenshot comparing test file](test/screenshot_check_test.dart).
+/// Those screenshot-comparing tests are in [screenshot comparing test file](test/screenshot_validate_test.dart).
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart' show IntegrationTestWidgetsFlutterBinding;
@@ -165,7 +165,7 @@ void main() {
       // So, to finish the test and compare actual/expected screenshots, a Flutter regular test (widget test)
       //   named
       //   ```dart
-      //     screenshot_check_test.dart
+      //     screenshot_validate_test.dart
       //   ```
       //   must be run after this test. This test runs on the computer, and compares files on the computer,
       //   not on the device.

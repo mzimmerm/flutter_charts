@@ -5,6 +5,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
     show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 
 
+// todo-00-next : remove this file completely. But transfer comments below to ExampleDescriptor
 /// Describes all attributes of one chart example that can run or be tested.
 ///
 /// Intended only as part of outer [ChartExamples].

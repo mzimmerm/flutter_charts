@@ -10,7 +10,6 @@ import 'coded_layout/bar/view_model.dart'; // OLD VIEW MODEL BAR
 
 import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy;
-// todo-00-done : import '../util/extensions_dart.dart';
 
 /// Classes (the only classes) that know about both new auto layout and old coded_layout
 /// classes.
@@ -50,9 +49,6 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewModel');
-    // todo-00-last-last : pass here the chartLayouter - probably as parameter
-    // todo-00-done : String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
-    // todo-00-done : ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchBarChartViewModelCL(
@@ -81,11 +77,6 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewModel');
-
-    // todo-00-last-last : pass here the chartLayouter - probably as parameter
-    // todo-00-done : String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter')
-    // todo-00-done :     .replaceFirst('ChartLayouter.', '');
-    // todo-00-done : ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchLineChartViewModelCL(
