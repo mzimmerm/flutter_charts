@@ -24,13 +24,27 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
-/// The application is very simple, includes several buttons and text fields surrounding
-/// a sample chart created by this library.
+/// The application is very simple, it has:
 ///
-/// There are multiple sample [FlutterChart]s this app can show; the concrete [FlutterChart]
-/// that is shows is the widget returned from [MyHomePageState.build].
-/// The widget that is returned is determined from command line argument named 'EXAMPLE_TO_RUN' picked up in
-/// a global function [requestedExampleToRun], used in [ExampleWidgetCreator.createRequestedChart].
+///   - several labels and text fields surrounding a sample chart created by this library.
+///   - a floating button with a +
+///
+/// The application can be configured through either arguments to [main] or `--dart-define`
+/// to run either a single example, or multiple examples.
+///
+///   - When configured to run a single example, clicking the floating button causes [setState] to run a no-op branch,
+///     which causes Flutter to re-run the [ExampleHomePageState.build] using the same example.
+///   - When configured to run multiple examples, clicking the floating button causes [setState] to run a branch which
+///     changes the example to tne next example from the list, which causes Flutter
+///     to run the [ExampleHomePageState.build] on the next example from the list.
+///
+/// The state is encapsulated in class [ExampleRunState].
+///
+/// The example chart that runs is determined in two ways :
+///
+///   - The old method using `--dart-define` command line argument named 'EXAMPLE_TO_RUN' picked up in
+///     a global function [ExampleDescriptor.requestedExampleToRun], used in [ExampleWidgetCreator.createRequestedChart].
+///   - The new method using arguments [examplesDescriptors] passed to [main].
 ///
 /// Note that there is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
 /// which is intended to run only one sample, pasted from README.md.
@@ -40,9 +54,23 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 /// ```dart
 ///    import 'package:flutter_charts/flutter_charts.dart';
 /// ```
-void main() {
+void main(List<String> examplesDescriptors) {
+
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.warning;
+
+  // examplesDescriptors can be pushed in either programatically from arguments (used in tests),
+  //   or via --dart-define=EXAMPLE_DESCRIPTORS
+  // If both yield empty list, the old configuration method using requestedExampleToRun is used
+
+  if (examplesDescriptors.isEmpty) {
+    String descriptorsStr = const String.fromEnvironment('EXAMPLES_DESCRIPTORS', defaultValue: '');
+    if (descriptorsStr != '') {
+      examplesDescriptors = descriptorsStr.split(' ');
+    }
+  }
+
+  print(' ### Log.Info: Command line args = $examplesDescriptors');
 
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
@@ -53,7 +81,7 @@ void main() {
   // Longer reason
   //
   //      - Because Any Flutter app must have:
-  //        1) main() { runApp(MyApp()) } // entry point
+  //        1) main() { runApp(ExampleApp()) } // entry point
   //        2) import 'package:flutter/material.dart';
   //          Note: *NOT* 'package:flutter/material/material.dart'.
   //          Note: material.dart is on path: PROJ/packages/flutter/lib/material.dart
@@ -72,7 +100,7 @@ void main() {
   //            which contains the function runApp().
   //
   //  So, eventually, the loading of binding.dart, and it's runApp() function
-  //  in MyApp is achieved this way:
+  //  in ExampleApp is achieved this way:
   //    1) This file (example/lib/main.dart) has
   //        - import 'package:flutter/material.dart' (references PROJ/packages/flutter/lib/material.dart)
   //    2) material.dart has
@@ -92,23 +120,41 @@ void main() {
   //          ..scheduleWarmUpFrame();
   //      }
   //    ```
-  var exampleComboToRun = ExampleDescriptor.requestedExampleToRun();
-  if (!ExampleDescriptor.exampleComboIsAllowed(exampleComboToRun)) {
-    // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
-    io.exit(0);
+
+  // Configure the examples to run.
+  List<ExampleDescriptor> examplesToRun = [];
+  if (examplesDescriptors.isEmpty) {
+    // With no arguments, use the old method - using --dart-define - to extract the (always single) example to run.
+    ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
+    if (!ExampleDescriptor.exampleIsAllowed(exampleToRun)) {
+      // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
+      io.exit(0);
+    }
+    examplesToRun.add(exampleToRun);
+  } else {
+    // Use the new method to extract examples to run in sequence
+    examplesToRun = ExampleDescriptor.parseEnhancedDescriptors(examplesDescriptors);
   }
+  ExampleRunState exampleRunState = ExampleRunState(examplesToRun: examplesToRun);
 
   // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with
   // installing the fonts in pubspec.yaml.
   // But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
   GoogleFonts.config.allowRuntimeFetching = false;
 
-  runApp(const MyApp());
+  runApp(ExampleApp(
+    exampleRunState: exampleRunState,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({
+    required this.exampleRunState,
+    Key? key,
+  }) : super(key: key);
+
+  final ExampleRunState exampleRunState;
 
   /// Builds the widget which becomes the root of the application.
   @override
@@ -119,13 +165,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Charts Demo'),
+      home: ExampleHomePage(
+        title: 'Flutter Charts Demo',
+        exampleRunState: exampleRunState,
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ExampleHomePage extends StatefulWidget {
+  const ExampleHomePage({
+    Key? key,
+    required this.title,
+    required this.exampleRunState,
+  }) : super(key: key);
 
   // This widget is the home page of your application. It is stateful,
   // meaning that it has a State object (defined below) that contains
@@ -137,31 +190,32 @@ class MyHomePage extends StatefulWidget {
   // Fields in a Widget subclass are always marked "final".
 
   final String title;
+  final ExampleRunState exampleRunState;
 
   /// Stateful widgets must implement the [createState] method.
   ///
   /// The [createState] method will typically return the
   /// new state of the widget.
   @override
-  MyHomePageState createState() => MyHomePageState();
+  ExampleHomePageState createState() => ExampleHomePageState(exampleRunState: exampleRunState);
 }
 
-/// This state object is created in the stateful widget's [MyHomePage] call to
-/// [MyHomePage.createState].
+/// This state object is created in the stateful widget's [ExampleHomePage] call to
+/// [ExampleHomePage.createState].
 ///
 /// In the rest of the lifecycle, this state object holds on one object,
-/// - [exampleDescriptorToRun]
+/// - [exampleToRun]
 ///
 /// The rest of the objects (options, data, etc) are created during the build.
 ///
 /// While this home page state object is created only once (hence, the above
-/// state's member [exampleDescriptorToRun], is created only once, the charts shown
+/// state's member [exampleToRun], is created only once, the charts shown
 /// in this demo, the [LineChart] and the [BarChart], are recreated
 /// in this object's [build] method - so, **the chart objects are created over
 /// and over**.
 ///
 /// Note: The (each [build]) recreated chart objects reuse the state's members
-/// [exampleDescriptorToRun], so this could be considered
+/// [exampleToRun], so this could be considered
 /// "expensive to create".
 ///
 /// Note: At the same time, because the this state's [build] calls
@@ -171,34 +225,44 @@ class MyHomePage extends StatefulWidget {
 /// and inputLabelLayoutStrategy, the core of this state object (all members)
 /// is effectively recreated on each state's [build] call.
 ///
-class MyHomePageState extends State<MyHomePage> {
-  // Note (on null safety):
-  //     To be able to have not-nullable types on members
-  //     such as _lineChartOptions (and all others here), 2 things need be done:
-  //   1. The member must be initialized with some not-null value,
-  //      either in the definition or in constructor initializer list
-  //   2. If a member is passed to a constructor (see  _MyHomePageState.fromOptionsAndData)
-  //      the constructor value must still be marked "required".
-  //      This serves as a lasso that enforces callers to set the not-null.
-  //      But why Dart would not use the initialized value?
-
-  /// Get the example to run from environment variables.
-  ExampleDescriptor exampleDescriptorToRun = ExampleDescriptor.requestedExampleToRun();
+class ExampleHomePageState extends State<ExampleHomePage> {
 
   /// Default constructor uses member defaults for all options and data.
-  MyHomePageState();
+  ExampleHomePageState({
+    required this.exampleRunState,
+  });
+
+  /// Get the example to run from environment variables (old method) or command line parameters (new method).
+  // todo-00-done : removed this, pass as argument to state constructor
+  // todo-00-done KEEP ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
+
+  final ExampleRunState exampleRunState;
+  String floatingButtonTooltip = 'New Random Data';
 
   void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
       // something has changed in this State, which causes it to rerun
-      // the build method below so that the display can reflect the
+      // the build method with the changed State, and display reflects the
       // updated values. If we changed state without calling
       // setState(), then the build method would not be called again,
       // and so nothing would appear to happen.
 
-      /// here we create new random data to illustrate state change
-      // _ExampleDefiner.createRequestedChart();
+      // todo-00-last :
+
+      // for multi example:
+      //   - move the exampleRunState to next example
+      //   - change floating button tooltip according to position in examples list
+      if (exampleRunState.isConfiguredForMultiExample) {
+        exampleRunState.moveToNextExample();
+        if (exampleRunState.isRunningExampleLast) {
+          floatingButtonTooltip = 'On Last Example';
+        } else {
+          floatingButtonTooltip = 'Move to Next Example';
+        }
+      } else {
+        floatingButtonTooltip = 'New Random Data';
+      }
     });
   }
 
@@ -243,11 +307,12 @@ class MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    ExampleWidgetCreator definer = ExampleWidgetCreator(exampleDescriptorToRun);
+    // todo-00-done : ExampleWidgetCreator definer = ExampleWidgetCreator(exampleToRun);
+    ExampleWidgetCreator definer = ExampleWidgetCreator(exampleRunState.runningExample);
     Widget chartToRun = definer.createRequestedChart();
     ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
-    // [MyHomePage] extends [StatefulWidget].
+    // [ExampleHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
     // The Flutter framework has been optimized to make rerunning
@@ -256,7 +321,7 @@ class MyHomePageState extends State<MyHomePage> {
     // instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that
+        // Here we take the value from the ExampleHomePage object that
         // was created by the App.build method, and use it to set
         // our appbar title.
         title: Text(widget.title),
@@ -368,8 +433,11 @@ class MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        // todo-00-done:
+        // If onPressed is null, button is disabled. But we never disable, so screenshots look the same in any position.
+        // onPressed: exampleRunState.isFloatingButtonDisabled ? null : _chartStateChanger,
         onPressed: _chartStateChanger,
-        tooltip: 'New Random Data',
+        tooltip: floatingButtonTooltip,
         child: const Icon(Icons.add),
       ),
     );
@@ -427,10 +495,10 @@ class ExampleSideEffects {
 class ExampleWidgetCreator {
 
   /// Construct the definer object for the example.
-  ExampleWidgetCreator(this.exampleDescriptorToRun);
+  ExampleWidgetCreator(this.exampleToRun);
 
   /// Tuple which describes the example
-  ExampleDescriptor exampleDescriptorToRun;
+  ExampleDescriptor exampleToRun;
 
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
@@ -452,7 +520,7 @@ class ExampleWidgetCreator {
   /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.
   ExampleSideEffects exampleSideEffects = ExampleSideEffects();
 
-  /// Creates the example chart with name given in [exampleComboToRun] 
+  /// Creates the example chart with name given in [exampleToRun] 
   /// through command line parameter --dart-define.
   ///
   /// Example assumes Android emulator is running or an Android/iOS device is connected:
@@ -462,15 +530,15 @@ class ExampleWidgetCreator {
   ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
   ///       --dart-define=CHART_TYPE=lineChart
   ///   ```
-  /// will set [exampleComboToRun] to a concrete Tuple of [ExampleEnum] and [ExamplesChartTypeEnum], 
+  /// will set [exampleToRun] to a concrete Tuple of [ExampleEnum] and [ExamplesChartTypeEnum], 
   /// such as `Tuple(ex10RandomData, lineChart)`
   Widget createRequestedChart() {
     // Example requested to run
-    ExampleEnum exampleEnumToRun = exampleDescriptorToRun.exampleEnum;
-    ChartType chartType = exampleDescriptorToRun.chartType;
-    ChartOrientation chartOrientation = exampleDescriptorToRun.chartOrientation;
-    ChartStacking chartStacking = exampleDescriptorToRun.chartStacking;
-    ChartLayouter chartLayouter = exampleDescriptorToRun.chartLayouter;
+    ExampleEnum exampleEnumToRun = exampleToRun.exampleEnum;
+    ChartType chartType = exampleToRun.chartType;
+    ChartOrientation chartOrientation = exampleToRun.chartOrientation;
+    ChartStacking chartStacking = exampleToRun.chartStacking;
+    ChartLayouter chartLayouter = exampleToRun.chartLayouter;
 
 
     // Declare chartModel; the data object will be different in every examples.
@@ -968,6 +1036,7 @@ class ExampleWidgetCreator {
           chartOrientation: chartOrientation,
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
+          chartLayouter: chartLayouter, // todo-00-done : added
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -983,6 +1052,7 @@ class ExampleWidgetCreator {
           chartModel: chartModel,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
+          chartLayouter: chartLayouter, // todo-00-done : added
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -995,9 +1065,55 @@ class ExampleWidgetCreator {
         chartToRun = barChart;
         break;
     }
-    // Returns the configured LineChart or BarChart that will be added to the [_MyHomePageState],
+    // Returns the configured LineChart or BarChart that will be added to the [_ExampleHomePageState],
     //   depending on the chart type requested by [requestedExampleToRun]
     return chartToRun;
+  }
+
+}
+
+// todo-00-progress
+/// Wrapper for the application's state.
+///
+/// The state consists of two items:
+///   - currently running example
+///   - all examples list
+///   - index of currently running example in all examples list
+///
+class ExampleRunState {
+
+  ExampleRunState({
+    required this.examplesToRun,
+  }) {
+    if (examplesToRun.isEmpty) {
+      throw StateError('At least one example must be specified.');
+    }
+    runningExample = examplesToRun.first;
+    indexOfRunningExampleInExamplesToRun = 0;
+  }
+
+  List<ExampleDescriptor> examplesToRun;
+  late ExampleDescriptor runningExample;
+  late int indexOfRunningExampleInExamplesToRun;
+
+  bool get isConfiguredForSingleExample => examplesToRun.length == 1;
+  bool get isConfiguredForMultiExample => !isConfiguredForSingleExample;
+  bool get isRunningExampleLast => indexOfRunningExampleInExamplesToRun == examplesToRun.length - 1;
+  bool get isFloatingButtonDisabled => isConfiguredForMultiExample && isRunningExampleLast;
+
+  ExampleDescriptor moveToNextExample() {
+
+    if (isRunningExampleLast) {
+      // On last example, stay on it.
+      // throw StateError('Should never be called when on last example.');
+      return runningExample;
+    }
+
+    // On not-last example, move to next
+    indexOfRunningExampleInExamplesToRun++;
+    runningExample = examplesToRun[indexOfRunningExampleInExamplesToRun];
+
+    return runningExample;
   }
 
 }

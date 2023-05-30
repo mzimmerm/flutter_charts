@@ -1,6 +1,6 @@
 import 'example_descriptor.dart' show ExampleDescriptor, ExampleEnum;
 // todo-00-next : use main_new : import '../../main_new.dart' show requestedExampleToRun;
-// import 'example_descriptor.dart' as examples_descriptor show requestedExampleToRun;
+// import 'example_descriptor.dart' as example_descriptor show requestedExampleToRun;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart'
     show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 
@@ -12,7 +12,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 /// Difference from [ExampleDescriptor] :
 ///    - [ExampleDescriptor] exists for the benefit of shell scripts, is used to generate scripts commands
 ///      using [ExampleDescriptor.asCommandLine]. List of [ExampleDescriptor.asCommandLine] results is captured in
-///      `test/tmp/examples_descriptor_generated_program_RANDOM.sh`,
+///      `test/tmp/example_descriptor_generated_program_RANDOM.sh`,
 ///      that can be executed by other scripts as 'flutter drive`, or `flutter run`.
 ///      All the properties of the [ExampleDescriptor] are passed to 'flutter drive`, or `flutter run`
 ///      as `--dart-define` arguments, then re-created in the running app as state

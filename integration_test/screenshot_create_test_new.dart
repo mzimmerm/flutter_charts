@@ -132,7 +132,7 @@ void main() {
     String screenshotPath = screenshotPaths.item2;
 
     // Build the app and run it on device.
-    app.main();
+    app.main([]);
 
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();

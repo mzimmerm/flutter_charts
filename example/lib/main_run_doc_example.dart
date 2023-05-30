@@ -14,10 +14,10 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 /// but it's [chartToRun] allows to run multiple examples.
 ///
 void main() {
-  runApp(const MyApp());
+  runApp(const ExampleApp());
 }
 
-/// Returns a [FlutterChart] widget that is plugged in the [MyHomePageState]
+/// Returns a [FlutterChart] widget that is plugged in the [ExampleHomePageState]
 /// of this sample app.
 ///
 /// This code can be replaced with any sample code snippets in README.md.
@@ -62,8 +62,8 @@ Widget chartToRun() {
   return lineChart;
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({Key? key}) : super(key: key);
 
   /// Builds the widget which becomes the root of the application.
   @override
@@ -74,23 +74,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(
+      home: const ExampleHomePage(
         title: 'Flutter Charts Demo',
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ExampleHomePage extends StatefulWidget {
+  const ExampleHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  ExampleHomePageState createState() => ExampleHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
-  MyHomePageState();
+class ExampleHomePageState extends State<ExampleHomePage> {
+  ExampleHomePageState();
 
   void _chartStateChanger() {
     setState(() {});

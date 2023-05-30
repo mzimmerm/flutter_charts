@@ -14,7 +14,7 @@ void main() {
   group('Widget tests on page 1', () {
     testWidgets('find expected text on widgets', (WidgetTester tester) async {
       // Build the app.
-      app.main();
+      app.main([]);
 
       await tester.pumpAndSettle();
 

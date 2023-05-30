@@ -103,7 +103,7 @@ enum ExampleEnum {
 ///    ```shell
 ///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart $2
 ///    ```
-/// and is used in the generated tmp file such as `examples_descriptor_generated_program_354.sh`.
+/// and is used in the generated tmp file such as `example_descriptor_generated_program_354.sh`.
 ///
 /// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartType'.
 /// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
@@ -204,7 +204,7 @@ class ExampleDescriptor {
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
   ///   or [ExamplesChartTypeEnum.barChart] except a few where only
   ///   one chart type makes sense to be presented.
-  static bool exampleComboIsAllowed(
+  static bool exampleIsAllowed(
       ExampleDescriptor exampleDescriptor,
   ) {
     return _allowed.any((tuple) => tuple.item1 == exampleDescriptor.exampleEnum && tuple.item2 == exampleDescriptor.chartType);
@@ -259,27 +259,30 @@ class ExampleDescriptor {
     return false;
   }
 
-  /// Assuming that [descriptor] String is in format with 5 fields
-  /// (each field may be a String representing members in [ExampleDescriptor] or '*'),
-  /// returns a list of ExampleDescriptors matching the passed [descriptor].
-  /// 
+  /// Returns a list of [ExampleDescriptor]s matching the passed [descriptor].
+  ///
+  /// Assumes that [descriptor] String is in format with 5 fields, each fields represents
+  /// one enum member in [ExampleDescriptor]. The enum member can be represented either by being string value of the enum,
+  /// or '*', which translates to all enum values
+  ///
   /// Examples of valid descriptor:
   /// 
-  ///   - `ex76_barChart_column_stacked_oldManualLayouter`: matches ex76, creates 1 [ExampleDescriptor] with described properties
-  ///   - `ex76_*_*_*_*` : matches ex76, creates 2x2x2x2 [ExampleDescriptor]s with all * matching properties
-  ///   - `ex_barChart_column_stacked_oldManualLayouter` : matches ex10, ex20, etc creates as many [ExampleDescriptor]s as there are examples, each has matching properties
+  ///   - `ex76_barChart_column_stacked_oldManualLayouter`:
+  ///        matches ex76, creates 1 [ExampleDescriptor] with described properties
+  ///   - `ex76_*_*_*_*` :
+  ///        matches ex76, creates 2x2x2x2 [ExampleDescriptor]s with all * matching properties
+  ///   - `ex_barChart_column_stacked_newAutoLayouter` :
+  ///        matches ex10, ex20, etc, creates as many [ExampleDescriptor]s as there are examples, each has named properties
   ///   
   /// Fields assumed order and values:
-  ///    - Field 0: [ExampleEnum]
-  ///    - Field 1: [ChartType]
-  ///    - Field 2: [ChartOrientation]
-  ///    - Field 3: [ChartStacking]
-  ///    - Field 4: [ChartLayouter]
+  ///    - Field 0: [ExampleEnum]       - for example, 'ex76'
+  ///    - Field 1: [ChartType]         - for example, 'lineChart'
+  ///    - Field 2: [ChartOrientation]  - for example, 'column'
+  ///    - Field 3: [ChartStacking]     - for example, 'nonStacked'
+  ///    - Field 4: [ChartLayouter]     - for example, 'newAutoLayouter'
   ///    
   ///   
-  static List<ExampleDescriptor> _parseDescriptorStringFrom(String descriptor) {
-    // todo-00-progress
-    // return ExampleDescriptor;
+  static List<ExampleDescriptor> _parseDescriptor(String descriptor) {
     var parsedFields = descriptor.split('_');
     if (parsedFields.length != 5) throw StateError('Descriptor requires 5 _ separated fields: descriptor=$descriptor');
     
@@ -358,13 +361,106 @@ class ExampleDescriptor {
     return exampleDescriptors;
   }
 
-  static List<ExampleDescriptor> parseExampleDescriptorsFrom(List<String> descriptors) {
+  /// Parse the passed
+  static List<ExampleDescriptor> parseDescriptors(List<String> descriptors) {
     return descriptors
-        .map((descriptor) => _parseDescriptorStringFrom(descriptor))
+        .map((descriptor) => _parseDescriptor(descriptor))
         .expand((element) => element)
         .toList();
   }
 
+  static List<ExampleDescriptor> absoluteMinimumNew = parseDescriptors([
+    'ex75_lineChart_row_nonStacked_newAutoLayouter',
+    'ex31_barChart_column_stacked_newAutoLayouter',
+  ]);
+
+  static List<ExampleDescriptor> minimumNew = parseDescriptors([
+    'ex31_*_*_*_newAutoLayouter',
+  ]);
+
+  static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
+    'ex31_*_*_*_newAutoLayouter',
+    'ex75_*_*_*_newAutoLayouter',
+  ]);
+
+  static List<ExampleDescriptor> minimumOld = parseDescriptors([
+    // 'ex10_lineChart_column_nonStacked_oldManualLayouter',
+    // 'ex10_barChart_column_stacked_oldManualLayouter',
+    'ex75_lineChart_column_nonStacked_oldManualLayouter',
+    'ex31_barChart_column_stacked_oldManualLayouter',
+  ]);
+
+  static List<ExampleDescriptor> allSupportedOld = parseDescriptors([
+    'ex10_lineChart_column_nonStacked_oldManualLayouter',
+    'ex10_barChart_column_stacked_oldManualLayouter',
+    'ex30_lineChart_column_nonStacked_oldManualLayouter',
+    'ex30_barChart_column_stacked_oldManualLayouter',
+    'ex31_lineChart_column_nonStacked_oldManualLayouter',
+    'ex31_barChart_column_stacked_oldManualLayouter',
+    'ex32_lineChart_column_nonStacked_oldManualLayouter',
+    'ex32_barChart_column_stacked_oldManualLayouter',
+    'ex33_lineChart_column_nonStacked_oldManualLayouter',
+    'ex34_lineChart_column_nonStacked_oldManualLayouter',
+    'ex35_lineChart_column_nonStacked_oldManualLayouter',
+    'ex35_barChart_column_stacked_oldManualLayouter',
+    'ex40_lineChart_column_nonStacked_oldManualLayouter',
+    'ex50_barChart_column_stacked_oldManualLayouter',
+    'ex52_lineChart_column_nonStacked_oldManualLayouter',
+    'ex52_barChart_column_stacked_oldManualLayouter',
+    'ex60_barChart_column_stacked_oldManualLayouter',
+    'ex60_barChart_column_stacked_oldManualLayouter',
+    'ex60_barChart_column_stacked_oldManualLayouter',
+    'ex60_barChart_column_stacked_oldManualLayouter',
+    'ex70_barChart_column_stacked_oldManualLayouter',
+    'ex71_barChart_column_stacked_oldManualLayouter',
+    'ex72_barChart_column_stacked_oldManualLayouter',
+    'ex73_barChart_column_stacked_oldManualLayouter',
+    'ex74_barChart_column_stacked_oldManualLayouter',
+    'ex75_barChart_column_stacked_oldManualLayouter',
+    'ex75_lineChart_column_nonStacked_oldManualLayouter',
+    'ex76_barChart_column_stacked_oldManualLayouter',
+    'ex90_lineChart_column_nonStacked_oldManualLayouter',
+  ]);
+
+  static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
+
+  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(allSupportedOld);
+
+  static List<ExampleDescriptor> parseEnhancedDescriptors(List<String> descriptors) {
+    List<ExampleDescriptor> allDefined = [];
+    for (var descriptor in descriptors) {
+      _GroupDescriptor? maybeGroupDescriptor = _GroupDescriptor.asEnum(descriptor, orElse: () => null);
+      if (maybeGroupDescriptor == null) {
+        allDefined.addAll(_parseDescriptor(descriptor));
+      } else {
+        switch (maybeGroupDescriptor) {
+          case _GroupDescriptor.absoluteMinimumNew:
+            allDefined.addAll(absoluteMinimumNew);
+            break;
+          case _GroupDescriptor.minimumNew:
+            allDefined.addAll(minimumNew);
+            break;
+          case _GroupDescriptor.allSupportedNew:
+            allDefined.addAll(allSupportedNew);
+            break;
+          case _GroupDescriptor.minimumOld:
+            allDefined.addAll(minimumOld);
+            break;
+          case _GroupDescriptor.allSupportedOld:
+            allDefined.addAll(allSupportedOld);
+            break;
+          case _GroupDescriptor.minimum:
+            allDefined.addAll(minimum);
+            break;
+          case _GroupDescriptor.allSupported:
+            allDefined.addAll(allSupported);
+            break;
+        }
+      }
+    }
+    return allDefined;
+  }
+  
   /// Present this descriptor is a format suitable to run as a test from command line.
   void asCommandLine(bool isAllExamplesRequested, bool isRunBothChartTypes) {
     List<Tuple2<ExampleEnum, ChartType>> combosToRun = isAllExamplesRequested
@@ -380,7 +476,7 @@ class ExampleDescriptor {
         : combosToRun.where((tuple) => tuple.item2 == chartType).toList();
 
     if (combosToRun.isEmpty) {
-      throw StateError('No examples requested to run are defined in examples_descriptor.');
+      throw StateError('No examples requested to run are defined in example_descriptor.');
     }
 
     List orientationsToRun;
@@ -451,4 +547,24 @@ class ExampleDescriptor {
       'chartLayouter=$chartLayouter, ';
 }
 
+enum _GroupDescriptor {
+  absoluteMinimumNew,
+  minimumNew,
+  allSupportedNew,
+  minimumOld,
+  allSupportedOld,
+  minimum,
+  allSupported;
+
+  /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if
+  /// the [enumStr] does not match any enum value.
+  static _GroupDescriptor? asEnum(String enumStr, {required Function orElse}) {
+    if (_GroupDescriptor.values.map((value) => value.name).where((enumName) => enumName == enumStr).toList().isEmpty) {
+      return orElse();
+    }
+    _GroupDescriptor groupDescriptor = enumStr.asEnum(_GroupDescriptor.values);
+    return groupDescriptor;
+  }
+  
+}
 

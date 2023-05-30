@@ -85,7 +85,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
                 # Each element has a string with 2 items (space separated items, no spaces inside items allowed)
                 exampleEnumWithChartTypes+=("$exampleEnum $chartType")
             fi
-        done < example/lib/src/util/examples_descriptor.dart
+        done < example/lib/src/util/example_descriptor.dart
 
         # Generate and write-out the section with small chart images in one table row.
         tableCellLinks=""

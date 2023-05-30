@@ -11,14 +11,14 @@
 #   - Next, uses the program 
 #     'dart run lib/src/chart/util/example_descriptor.dart'
 #   to generate a temp script, which name is placed in the variable named
-#     'examples_descriptor_generated_program'
-#   The program $examples_descriptor_generated_program 
+#     'example_descriptor_generated_program'
+#   The program $example_descriptor_generated_program
 #     can be executed from the script sourcing this script, 
 #     to run the or tests all examples declared in ExampleEnum.
 
 # Input $1: ExampleEnum value, for example ex10RandomData.
 #           If empty or not set, all examples are included in the generated run.
-# Output: variable name 'examples_descriptor_generated_program', which contains the name of the 
+# Output: variable name 'example_descriptor_generated_program', which contains the name of the
 #          generated program 
 
 isFirstRun=$1
@@ -65,29 +65,29 @@ if [[ $isFirstRun == true ]]; then
 fi
 
 # Define the name of the program which the scripts sourcing this file can execute.
-examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
+example_descriptor_generated_program=test/tmp/example_descriptor_generated_program_$RANDOM.sh
 
 # Dart run example_descriptor.dart which generates a script with dart_defines.
-echo Running \"dart run lib/src/chart/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
-echo   which creates $examples_descriptor_generated_program
+echo Running \"dart run lib/src/chart/util/example_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
+echo   which creates $example_descriptor_generated_program
 
-echo "# Sample of how this runs:"  > $examples_descriptor_generated_program
+echo "# Sample of how this runs:"  > $example_descriptor_generated_program
 echo "# flutter drive \
   --dart-define=EXAMPLE_TO_RUN=ex75 \
   --dart-define=CHART_TYPE=barChart \
   --dart-define=CHART_ORIENTATION=row \
   --dart-define=CHART_STACKING=stacked \
   --dart-define=CHART_LAYOUTER=newAutoLayouter \
-  --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $examples_descriptor_generated_program
+  --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $example_descriptor_generated_program
 
-dart run lib/src/chart/util/examples_descriptor.dart \
+dart run lib/src/chart/util/example_descriptor.dart \
   "$exampleEnum" \
   "$chartTypeEnum" \
   "$chartOrientation" \
   "$chartStacking" \
-  "$isUseOldLayouter" >> $examples_descriptor_generated_program
+  "$isUseOldLayouter" >> $example_descriptor_generated_program
 
-chmod u+x $examples_descriptor_generated_program
+chmod u+x $example_descriptor_generated_program
 
 
 

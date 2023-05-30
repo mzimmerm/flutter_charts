@@ -18,9 +18,9 @@ void main() {
     // The app.requestedExampleToRun creates the enums from --dart-define arguments for
     //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and CHART_LAYOUTER.
     //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
-    ExampleDescriptor exampleComboToRun = ExampleDescriptor.requestedExampleToRun();
+    ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
 
-    var screenshotPaths = screenshotPathsFor(exampleComboToRun);
+    var screenshotPaths = screenshotPathsFor(exampleToRun);
     String expectedScreenshotPath = screenshotPaths.item1;
     String screenshotPath = screenshotPaths.item2;
 
@@ -28,7 +28,7 @@ void main() {
     // Set to false to generate initial validated screenshots.
     bool runExpect = true;
 
-    if (runExpect && !ExampleDescriptor.isExampleWithRandomData(exampleComboToRun)) {
+    if (runExpect && !ExampleDescriptor.isExampleWithRandomData(exampleToRun)) {
       File expectedFile = File(expectedScreenshotPath);
       File actualFile = File(screenshotPath);
 

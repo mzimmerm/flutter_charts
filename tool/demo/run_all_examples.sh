@@ -31,21 +31,21 @@ fi
 
 echo
 echo -------------------------------------
-echo Source script starts emulator and generates program test/tmp/examples_descriptor_generated_program_1234.sh. 
+echo Source script starts emulator and generates program test/tmp/example_descriptor_generated_program_1234.sh.
 echo This generated program can run either integration test \(flutter drive\) or the app \(flutter run\), depending on parameters.
 
-#   See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
+#   See the sourced script below for details of variable and contents of $example_descriptor_generated_program.
 isFirstRun=true
-source tool/test/start_emulator_and_generate_examples_descriptor.sh "$isFirstRun" "$exampleEnum"
+source tool/test/start_emulator_and_generate_example_descriptor.sh "$isFirstRun" "$exampleEnum"
 
-echo Will run "$examples_descriptor_generated_program".
-examples_descriptor_generated_program=$examples_descriptor_generated_program
+echo Will run "$example_descriptor_generated_program".
+example_descriptor_generated_program=$example_descriptor_generated_program
 
 echo
 echo -------------------------------------
-echo Running the app with all examples for the examples_descriptor.
+echo Running the app with all examples for the example_descriptor.
 echo The argument --device-id="$device_id" after flutter run is not needed if only one device is connected.
-bash -x "$examples_descriptor_generated_program" \
+bash -x "$example_descriptor_generated_program" \
         "flutter  run" \
         " example/lib/main.dart"
 
