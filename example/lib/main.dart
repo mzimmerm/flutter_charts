@@ -11,6 +11,7 @@ import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
+// todo-00-next : Replace with individual imports. ALSO MODIFY THE EXAMPLE PROJECT TO RUN THE LATEST (CURRENT) VERTION OF FLUTTER_CHARTS.
 import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -20,7 +21,7 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
-    show ExampleDescriptor, ExampleEnum;
+    show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
@@ -54,23 +55,15 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 /// ```dart
 ///    import 'package:flutter_charts/flutter_charts.dart';
 /// ```
-void main(List<String> examplesDescriptors) {
-
+void main() {
+  
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.warning;
 
-  // examplesDescriptors can be pushed in either programatically from arguments (used in tests),
-  //   or via --dart-define=EXAMPLE_DESCRIPTORS
-  // If both yield empty list, the old configuration method using requestedExampleToRun is used
-
-  if (examplesDescriptors.isEmpty) {
-    String descriptorsStr = const String.fromEnvironment('EXAMPLES_DESCRIPTORS', defaultValue: '');
-    if (descriptorsStr != '') {
-      examplesDescriptors = descriptorsStr.split(' ');
-    }
-  }
-
-  print(' ### Log.Info: Command line args = $examplesDescriptors');
+  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+    message: 'From example/lib/src/main.dart',
+  );
 
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
@@ -122,7 +115,6 @@ void main(List<String> examplesDescriptors) {
   //    ```
 
   // Configure the examples to run.
-  List<ExampleDescriptor> examplesToRun = [];
   if (examplesDescriptors.isEmpty) {
     // With no arguments, use the old method - using --dart-define - to extract the (always single) example to run.
     ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
@@ -131,12 +123,9 @@ void main(List<String> examplesDescriptors) {
       print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
       io.exit(0);
     }
-    examplesToRun.add(exampleToRun);
-  } else {
-    // Use the new method to extract examples to run in sequence
-    examplesToRun = ExampleDescriptor.parseEnhancedDescriptors(examplesDescriptors);
+    examplesDescriptors.add(exampleToRun);
   }
-  ExampleRunState exampleRunState = ExampleRunState(examplesToRun: examplesToRun);
+  ExampleRunState exampleRunState = ExampleRunState(examplesToRun: examplesDescriptors);
 
   // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with
   // installing the fonts in pubspec.yaml.
@@ -234,7 +223,8 @@ class ExampleHomePageState extends State<ExampleHomePage> {
 
   /// Describes the example or examples being run.
   final ExampleRunState exampleRunState;
-  String floatingButtonTooltip = 'New Random Data';
+  // todo-00-done : keep the tooltip the same String floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipNewRandomData;
+  String floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
 
   void _chartStateChanger() {
     setState(() {
@@ -251,12 +241,12 @@ class ExampleHomePageState extends State<ExampleHomePage> {
       if (exampleRunState.isConfiguredForMultiExample) {
         exampleRunState.moveToNextExample();
         if (exampleRunState.isRunningExampleLast) {
-          floatingButtonTooltip = 'On Last Example';
+          floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
         } else {
-          floatingButtonTooltip = 'Move to Next Example';
+          floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
         }
       } else {
-        floatingButtonTooltip = 'New Random Data';
+        floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
       }
     });
   }

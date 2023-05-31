@@ -9,9 +9,18 @@ Future<void> main() => integrationDriver();
 
 /// Allows to control apps from tests, while test code runs on a native device, physical or emulated.
 import 'dart:io';
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
 import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {
+
+  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  // This is here only to show a message whether the env variable was picked up.
+  // List<ExampleDescriptor> examplesDescriptors =
+  ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+    message: 'main() of screenshot_create_test_new.dart',
+  );
+
   // KEEP NOTE: 2023-05-23: Broken in Flutter somewhere between 3.7(?) and 3.10.
   //   Added ', [Map<String, Object?>? optionalArgs]' optional argument to keep analyzer happy
   onScreenshot(String screenshotName, List<int> screenshotBytes, [Map<String, Object?>? optionalArgs]) async {

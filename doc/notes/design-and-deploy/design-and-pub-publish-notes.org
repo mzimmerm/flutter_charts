@@ -1958,6 +1958,14 @@ Later:
 -
 
 
+~flutter drive --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart~
+
+followed by
+
+~flutter test --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' test/screenshot_validate_test_new.dart~
+
+NOW WORK TO CREATE AND VALIDATE!!
+
 ** LATER ~Follow linter rules: 1) in late final and 2) use package imports (no relative imports)~
 
 ~Cleanup places using public late final fields~
@@ -1985,7 +1993,7 @@ Use it in one example.
 
 ** Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
 
-** LATER 12. ~CURRENT WORK: BACKUPs~
+** LATER 12. ~BACKUPs~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*

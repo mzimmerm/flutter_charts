@@ -4,6 +4,9 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
+import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
+    show ExampleMainAndTestSupport;
+
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
 ///
@@ -136,7 +139,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _chartStateChanger,
-        tooltip: 'New Random Data',
+        tooltip: ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample,
         child: const Icon(Icons.add),
       ),
     );

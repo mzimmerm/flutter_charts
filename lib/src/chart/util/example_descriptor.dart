@@ -210,6 +210,23 @@ class ExampleDescriptor {
     return _allowed.any((tuple) => tuple.item1 == exampleDescriptor.exampleEnum && tuple.item2 == exampleDescriptor.chartType);
   }
 
+  /// Extract [ExampleDescriptor] list from environment.
+  ///
+  /// The list must be pushed via `--dart-define` for example,
+  /// `--dart-define=EXAMPLES_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter ex75_barChart_row_nonStacked_newAutoLayouter'`
+  ///
+  static List<ExampleDescriptor> extractExamplesDescriptorsFromDartDefine({String? message}) {
+    String env = const String.fromEnvironment('EXAMPLES_DESCRIPTORS', defaultValue: '');
+    List<String> descriptorsStrings = [];
+    if (env != '') {
+      descriptorsStrings = env.split(' ');
+    }
+    if (message != null) {
+      print(' ### Log.Info: $message: Passed examplesDescriptors=$descriptorsStrings, length=${descriptorsStrings.length}');
+    }
+    return ExampleDescriptor.parseEnhancedDescriptors(descriptorsStrings);
+  }
+
   /// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
   ///
   /// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
@@ -219,6 +236,7 @@ class ExampleDescriptor {
   ///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
   ///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
   ///
+  @Deprecated('ExampleDescriptor.requestedExampleToRun will be removed in the next major version')
   static ExampleDescriptor requestedExampleToRun() {
     // Pickup what example to run, and which chart to show (line, vertical bar).
     const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
@@ -360,7 +378,7 @@ class ExampleDescriptor {
     return exampleDescriptors;
   }
 
-  /// Parse the passed
+  /// Parse the passed [descriptors] strings and convert them to [ExampleDescriptor] objects.
   static List<ExampleDescriptor> parseDescriptors(List<String> descriptors) {
     return descriptors
         .map((descriptor) => _parseDescriptor(descriptor))
@@ -374,12 +392,15 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> minimumNew = parseDescriptors([
-    'ex31_*_*_*_newAutoLayouter',
+    'ex31_lineChart_*_nonStacked_newAutoLayouter',
+    'ex31_barChart_*_*_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
-    'ex31_*_*_*_newAutoLayouter',
-    'ex75_*_*_*_newAutoLayouter',
+    'ex31_lineChart_*_nonStacked_newAutoLayouter',
+    'ex31_barChart_*_*_newAutoLayouter',
+    'ex75_lineChart_*_nonStacked_newAutoLayouter',
+    'ex75_barChart_*_*_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimumOld = parseDescriptors([
@@ -546,6 +567,8 @@ class ExampleDescriptor {
       'chartLayouter=$chartLayouter, ';
 }
 
+/// Describes static members on [ExampleDescriptor] that represent groups of descriptors for
+/// testing using a brief name.
 enum _GroupDescriptor {
   absoluteMinimumNew,
   minimumNew,
@@ -567,3 +590,19 @@ enum _GroupDescriptor {
   
 }
 
+/// Encapsulates information needed to run `example/lib/src/main.dart` which are also
+/// needed in tests.
+///
+/// The commonality of need in 2 places is the reason for placing outside the `example/lib` tree.
+///
+class ExampleMainAndTestSupport {
+
+  /// Tooltips on Floating button in the example app, also used in tests.
+  ///
+  // static const String floatingButtonTooltipNewRandomData = 'New Random Data';
+  // static const String floatingButtonTooltipOnLastExample = 'On Last Example';
+  static const String floatingButtonTooltipMoveToNextExample = 'Move to Next Example';
+
+
+
+}

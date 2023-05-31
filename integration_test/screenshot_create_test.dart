@@ -122,11 +122,15 @@ void main() {
   testWidgets('screenshot', (WidgetTester tester) async {
     // Find the command-line provided enums which define chart data, options and type to use in the example app.
     // The app find the enums transiently, here we need it to generate consistent screenshot filename.
+/* todo-00-done
     var screenshotPaths = screenshotPathsFor(ExampleDescriptor.requestedExampleToRun());
     String screenshotPath = screenshotPaths.item2;
+*/
+    var screenshotPaths = ScreenshotPaths(exampleDescriptor: ExampleDescriptor.requestedExampleToRun());
+    String screenshotPath = screenshotPaths.actualScreenshotPath;
 
     // Build the app and run it on device.
-    app.main([]);
+    app.main();
 
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();

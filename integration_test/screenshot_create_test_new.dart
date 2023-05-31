@@ -51,22 +51,38 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
 import '../example/lib/main.dart' as app;
 
 // todo-00-progress
-// import 'dart:io' show sleep;
+import 'dart:io' show sleep;
 // import 'dart:async' show Future;
 
 /// Integration testing by taking a screenshot from the example app,
 ///   and comparing the produced screenshot with a known correct screenshot.
 ///
+/// todo-00-next : update  this section
 /// Flutter integration test of one instance of the example app, with example data, options, and chart type
 ///   dictated by the [ExampleEnum] and [ExamplesChartTypeEnum], set by caller in `--dart-define`.
 ///
 /// The data and options given by the enums are set in [example/lib/main.dart] method 
 /// [_ExampleDefiner.createRequestedChart].
 ///
-/// See [example/lib/main.dart] method [_ExampleDefiner.createRequestedChart] on processed `--dart-define` values.
+/// Two ways to run this test:
 ///
-/// The test can be run from command line or a script as
-/// ```shell
+/// 1. From command line, the 'new' way (2023-06-01) passing the examples to run
+///    in one `--dart-define=EXAMPLES_DESCRIPTORS=ETC`. Notes and details:
+///
+///    - Can be run as
+///      ```shell
+///        flutter drive \
+///          --dart-define=EXAMPLES_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter ex31_barChart_*_*_newAutoLayouter' \
+///          --driver=test_driver/integration_test.dart  \
+///          --target=integration_test/screenshot_create_test_new.dart
+///      ```
+///    - If run as above, the EXAMPLES_DESCRIPTORS appears in the [main] of this file,
+///      the 'screenshot_create_test_new.dart', which is what we want, as this test generates
+///      screenshots of all examples defined in 'EXAMPLES_DESCRIPTORS'.
+///
+/// 2. @deprecated: From command line or a script, passing details of example name, chartType, chartOrientation,
+///    etc in individual `--dart-define` strings.
+///    ```shell
 ///         cd dev/my-projects-source/public-on-github/flutter_charts
 ///         flutter emulator --launch "Nexus_6_API_33"
 ///         sleep 20
@@ -87,9 +103,10 @@ import '../example/lib/main.dart' as app;
 ///           --target=integration_test/screenshot_create_test.dart
 ///
 ///         # Check if file screenshot-1.png exists on top level
-///  ```
+///    ```
 ///
 void main() {
+
   // Binding in Flutter usually means Singleton.
   //
   // Create the singleton (binding) that ties Widgets to the Flutter engine.
@@ -120,19 +137,24 @@ void main() {
   //        ```
   //   - So, in the ensureInitialized(), the singleton instance of IntegrationTestWidgetsFlutterBinding is created.
 
+  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+    message: 'main() of screenshot_create_test_new.dart',
+  );
+
   // Normally, we can do just
   //   IntegrationTestWidgetsFlutterBinding.ensureInitialized()
   // But if we want access to the binding, we can do something like:
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('screenshot', (WidgetTester tester) async {
-    // Find the command-line provided enums which define chart data, options and type to use in the example app.
-    // The app find the enums transiently, here we need it to generate consistent screenshot filename.
+/* todo-00-done
     var screenshotPaths = screenshotPathsFor(ExampleDescriptor.requestedExampleToRun());
     String screenshotPath = screenshotPaths.item2;
+*/
 
     // Build the app and run it on device.
-    app.main([]);
+    app.main();
 
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();
@@ -141,13 +163,13 @@ void main() {
     // This runs successfully from command line, creating 3 screenshots using:
     //  flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=CHART_LAYOUTER=oldManualLayouter   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test_new.dart
 
-    var numExamplesToRun = 3;
-    var examplesRunCounter = 0;
+    // Keep generating screenshots while Tooltip on the FloatingButton is ''
+    for (var exampleDescriptor in examplesDescriptors) {
 
-    while (examplesRunCounter < numExamplesToRun) {
-
-      // Set the screenshot name corresponding to runCounter
-      screenshotPath = '$screenshotPath-$examplesRunCounter';
+      var screenshotPaths = ScreenshotPaths(
+        exampleDescriptor: exampleDescriptor,
+      ); // old: ExampleDescriptor.requestedExampleToRun()
+      String screenshotPath = screenshotPaths.actualScreenshotPath;
 
       // Trigger a frame.
       await tester.pumpAndSettle();
@@ -177,19 +199,34 @@ void main() {
       //   3. Back to top of the loop
 
       // 1. Find the floating action button to tap on.
-      final Finder fab = find.byTooltip('New Random Data');
+      final Finder fab = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
 
       // Emulate a tap on the floating action button.
+      // Important: This ensures the app moves to build and display the next example.
+      //            The loop that runs here ensures it moves to the next example as well,
+      //            to capture the screenshot using the correct corresponding name.
+      //            This whole thing assumes that both this main(), and main() in examples/lib/src/main.dart
+      //            obtain and process the same  [extractExamplesDescriptorsFromDartDefine]!
       await tester.tap(fab);
 
       // Sleep for some time before running next example
       // await Future.delayed(const Duration(seconds: 3));
 
-      // also works: sleep(const Duration(seconds: 3));
+      // sleep(const Duration(seconds: 1));
 
-      // Increase the examples counter
-      examplesRunCounter++;
+      // Trigger a frame again after a tap. This seems to workaround the target artifact on second screenshot.
+      await tester.pumpAndSettle();
+
       // todo-00-progress ^^^
     }
+
+/* todo-00-done : not needed
+    // Trigger a last frame.
+    await tester.pumpAndSettle();
+
+    // And take a dummy screenshot
+    await binding.takeScreenshot('/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested/dummy.png');
+*/
+
   });
 }

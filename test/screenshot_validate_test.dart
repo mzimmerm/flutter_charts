@@ -20,9 +20,15 @@ void main() {
     //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
     ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
 
+/* todo-00-done
     var screenshotPaths = screenshotPathsFor(exampleToRun);
     String expectedScreenshotPath = screenshotPaths.item1;
     String screenshotPath = screenshotPaths.item2;
+*/
+
+    var screenshotPaths = ScreenshotPaths(exampleDescriptor: ExampleDescriptor.requestedExampleToRun());
+    String expectedScreenshotPath = screenshotPaths.expectedScreenshotPath;
+    String screenshotPath = screenshotPaths.actualScreenshotPath;
 
     // Flag controls if this test runs 'expect'.
     // Set to false to generate initial validated screenshots.
