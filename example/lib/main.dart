@@ -11,7 +11,6 @@ import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
-// todo-00-next : Replace with individual imports. ALSO MODIFY THE EXAMPLE PROJECT TO RUN THE LATEST (CURRENT) VERTION OF FLUTTER_CHARTS.
 import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -223,30 +222,36 @@ class ExampleHomePageState extends State<ExampleHomePage> {
 
   /// Describes the example or examples being run.
   final ExampleRunState exampleRunState;
-  // todo-00-done : keep the tooltip the same String floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipNewRandomData;
   String floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
 
+  /// Calls this [ExampleHomePageState] instance's [setState] which is the default [State.setState].
+  ///
+  /// Call to [State.setState] tells the Flutter framework that something has changed in this State.
+  /// Code in [State.setState] will
+  ///   - First invoke the passed method, which makes changes
+  ///     to this [ExampleHomePageState]'s state (see below for details).
+  ///   - Invoke this [ExampleHomePageState.build] method, with the changed State; the build reflects the
+  ///     updated values in the UI.
+  ///
+  /// If we changed state without calling [setState], the build method would not be called again,
+  /// and so nothing would appear to happen.
+  ///
+  /// Implementation:
+  ///   - For multi example will move the [exampleRunState] to next example by invoking
+  ///     `exampleRunState.moveToNextExample()`, which will be plugged in to [ExampleHomePageState.build]
+  ///     as `exampleRunState.runningExample` ; see
+  ///     ```dart
+  ///       ExampleWidgetCreator definer = ExampleWidgetCreator(exampleRunState.runningExample);
+  ///       Widget chartToRun = definer.createRequestedChart();
+  ///       ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
+  ///     ```
+  ///   - For single example there is no state change, [exampleRunState] is kept on the same example;
+  ///     [ExampleHomePageState.build]  may show different data, if data are obtained remotely or generated randomly.
+  ///
   void _chartStateChanger() {
     setState(() {
-      // This call to setState tells the Flutter framework that
-      // something has changed in this State, which causes it to rerun
-      // the build method with the changed State, and display reflects the
-      // updated values. If we changed state without calling
-      // setState(), then the build method would not be called again,
-      // and so nothing would appear to happen.
-
-      // for multi example:
-      //   - move the exampleRunState to next example
-      //   - change floating button tooltip according to position in examples list
       if (exampleRunState.isConfiguredForMultiExample) {
         exampleRunState.moveToNextExample();
-        if (exampleRunState.isRunningExampleLast) {
-          floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
-        } else {
-          floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
-        }
-      } else {
-        floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
       }
     });
   }

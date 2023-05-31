@@ -48,84 +48,15 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show Exam
 import '../test/test_util.dart';
 import '../example/lib/main.dart' as app;
 
-/// Integration testing by taking a screenshot from the example app,
+/// @Deprecated, see 'integration_test/screenshot_create_test_new.dart'.
+///
+///   Integration testing by taking a screenshot from the example app,
 ///   and comparing the produced screenshot with a known correct screenshot.
 ///
-/// Flutter integration test of one instance of the example app, with example data, options, and chart type
-///   dictated by the [ExampleEnum] and [ExamplesChartTypeEnum], set by caller in `--dart-define`.
-///
-/// The data and options given by the enums are set in [example/lib/main.dart] method 
-/// [_ExampleDefiner.createRequestedChart].
-///
-/// See [example/lib/main.dart] method [_ExampleDefiner.createRequestedChart] on processed `--dart-define` values.
-///
-/// The test can be run from command line or a script as
-/// ```shell
-///         cd dev/my-projects-source/public-on-github/flutter_charts
-///         flutter emulator --launch "Nexus_6_API_33"
-///         sleep 20
-///         flutter clean
-///         flutter pub upgrade
-///         flutter pub get
-///
-///         flutter drive \
-///           --driver=test_driver/integration_test.dart
-///           --target=integration_test/screenshot_create_test.dart
-///
-///         # or not-default charts screenshots as
-///
-///         flutter  drive \
-///           --dart-define=EXAMPLE_TO_RUN=ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors \
-///           --dart-define=CHART_TYPE=barChart \
-///           --driver=test_driver/integration_test.dart \
-///           --target=integration_test/screenshot_create_test.dart
-///
-///         # Check if file screenshot-1.png exists on top level
-///  ```
-///
 void main() {
-  // Binding in Flutter usually means Singleton.
-  //
-  // Create the singleton (binding) that ties Widgets to the Flutter engine.
-  //
-  // See 'WidgetsBinding? get instance' in WidgetsBinding mixin on how singletons
-  //   work based on WidgetsBinding and BindingBase [base class for mixins that provide singleton services ("bindings")]
-  //
-  // This is how it works:
-  //   - IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding extends TestWidgetsFlutterBinding
-  //       extends BindingBase  with WidgetsBinding
-  //   - WidgetsBinding mixes in IntegrationTestWidgetsFlutterBinding the method 'initInstances()' which contains
-  //        ```
-  //        void initInstances() {
-  //          super.initInstances();
-  //          _instance = this; // <== If initInstances() is called in a constructor,
-  //                            //     then this == instance of whichever class constuctor this is called in
-  //        }
-  //        ```
-  //   - ensureInitialized() constructs IntegrationTestWidgetsFlutterBinding() which calls super constructors all the
-  //     way to BindingBase constructor. BindingBase constructor looks like:
-  //        ```
-  //        BindingBase() {
-  //          initInstances(); // <== This calls the mixed in method from WidgetsBinding which sets _instance = this.
-  //                           //     At the time of the constructor call, this == IntegrationTestWidgetsFlutterBinding,
-  //                           //       because that is the context ensureInitialized() is called from
-  //                           //     So the _instance above is set to instance of IntegrationTestWidgetsFlutterBinding
-  //        }
-  //        ```
-  //   - So, in the ensureInitialized(), the singleton instance of IntegrationTestWidgetsFlutterBinding is created.
-
-  // Normally, we can do just
-  //   IntegrationTestWidgetsFlutterBinding.ensureInitialized()
-  // But if we want access to the binding, we can do something like:
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('screenshot', (WidgetTester tester) async {
-    // Find the command-line provided enums which define chart data, options and type to use in the example app.
-    // The app find the enums transiently, here we need it to generate consistent screenshot filename.
-/* todo-00-done
-    var screenshotPaths = screenshotPathsFor(ExampleDescriptor.requestedExampleToRun());
-    String screenshotPath = screenshotPaths.item2;
-*/
     var screenshotPaths = ScreenshotPaths(exampleDescriptor: ExampleDescriptor.requestedExampleToRun());
     String screenshotPath = screenshotPaths.actualScreenshotPath;
 
@@ -145,15 +76,5 @@ void main() {
     // the computer where this test runs (not on the device)
     await binding.takeScreenshot(screenshotPath);
 
-    // We cannot compare the actual/expected screenshots here,
-    //   because this test is integration test (aka 'flutter drive' test)
-    //   and runs on the device, and any File access is on the device (except the magic in integration_test.dart).
-    // So, to finish the test and compare actual/expected screenshots, a Flutter regular test (widget test)
-    //   named
-    //   ```dart
-    //     screenshot_validate_test.dart
-    //   ```
-    //   must be run after this test. This test runs on the computer, and compares files on the computer,
-    //   not on the device.
   });
 }

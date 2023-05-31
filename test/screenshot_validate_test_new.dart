@@ -20,16 +20,10 @@ void main() {
   );
 
   test('after screenshot integration, test for sameness', () {
-    // Find the command-line provided enums which define chart data, options and type to run.
-    // The app.requestedExampleToRun creates the enums from --dart-define arguments for
-    //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and CHART_LAYOUTER.
-    //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
 
     for (var exampleDescriptor in examplesDescriptors) {
-      // todo-00-next : add comments and cleanup, add printouts to make clear test progress.
-      // todo-00-done : ExampleDescriptor exampleDescriptor = ExampleDescriptor.requestedExampleToRun();
 
-      print(' ############ Running exampleDescriptor=$exampleDescriptor');
+      print(' ######### Log.Info.Level1: screenshot_validate_test_new.dart: Will COMPARE SCREENSHOT of $exampleDescriptor');
 
       var screenshotPaths = ScreenshotPaths(exampleDescriptor: exampleDescriptor);
       String expectedScreenshotPath = screenshotPaths.expectedScreenshotPath;

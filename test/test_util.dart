@@ -5,18 +5,6 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleDescriptor;
 
-
-/* todo-00-done : remove
-Tuple2<String, String> screenshotPathsFor(
-  ExampleDescriptor exampleDescriptor,
-) {
-  String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleDescriptor);
-  String actualScreenshotPath = relativePath(screenshotDirName(), exampleDescriptor);
-
-  return Tuple2(expectedScreenshotPath, actualScreenshotPath);
-}
-*/
-
 /// Extract paths to screenshots for tests.
 ///
 /// Paths include filename, and are relative to project root.

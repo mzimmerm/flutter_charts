@@ -87,26 +87,37 @@ enum ExampleEnum {
   ex900ErrorFixUserDataAllZero,
 }
 
-/// Defines the list of the examples available to be tested or run interactively in scripts.
+/// Describes and generates properties of one example or a list of pre-configured chart examples.
 ///
-/// Each example properties are the enums from [ExampleEnum] (e.g. [ExampleEnum.ex10RandomData])
-/// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.barChart])
+/// The pre-configured chart examples can be used in several places:
+///   - Run in the example app in `example/lib/src/main.dart`
+///   - Be integration tested for sameness of results (generated screenshots)
+///     in `integration_test/screenshot_create_test_new.dart` and  `test/screenshot_validate_test.dart`.
 ///
-/// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests,
-/// and interactively running in [run_all_examples.sh].
+/// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ChartType].
 ///
-/// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ExamplesChartTypeEnum].
-/// Each enumerate in the [_allowed] list represents one set of chart data, options and type
-///   for the flutter_charts example app in [example/lib/main.dart].
+/// The following static methods support generation of [ExampleDescriptor] lists:
+///   - todo-010
 ///
-/// Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example. The snippet may look like
+/// The following static members contain lists of [ExampleDescriptor]s to be tested or run in the example app:
+///   - todo-010
+///
+/// @Deprecated Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example.
+/// A snippet may look like
 ///    ```shell
-///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart $2
+///      $1 \
+///      --dart-define=EXAMPLE_TO_RUN=ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose \
+///      --dart-define=CHART_TYPE=barChart \
+///      --dart-define=CHART_ORIENTATION=column \
+///      --dart-define=CHART_STACKING=stacked \
+///      --dart-define=CHART_LAYOUTER=oldManualLayouter \
+///      $2
 ///    ```
-/// and is used in the generated tmp file such as `example_descriptor_generated_program_354.sh`.
+/// and is typically stored in a tmp file such as `test/tmp/example_descriptor_generated_program_354.sh`.
 ///
-/// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartType'.
-/// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
+/// @Deprecated [requestedExampleToRun] reads `--dart-define` environment variables and generates an
+///   [ExampleDescriptor] instance
+///
 class ExampleDescriptor {
 
   ExampleDescriptor({
@@ -603,6 +614,22 @@ class ExampleMainAndTestSupport {
   // static const String floatingButtonTooltipOnLastExample = 'On Last Example';
   static const String floatingButtonTooltipMoveToNextExample = 'Move to Next Example';
 
+  /*
+  String get floatingButtonTooltip({required ExampleRunState exampleRunState,}) {
+    String floatingButtonTooltip = 'Initial';
+    if (exampleRunState.isConfiguredForMultiExample) {
+      exampleRunState.moveToNextExample();
+      if (exampleRunState.isRunningExampleLast) {
+        floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
+      } else {
+        floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
+      }
+    } else {
+      floatingButtonTooltip = ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample;
+    }
 
+    return floatingButtonTooltip;
+  }
+  */
 
 }
