@@ -18,7 +18,7 @@ Future<void> main() async {
   // This is here only to show a message whether the env variable was picked up.
   // List<ExampleDescriptor> examplesDescriptors =
   ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
-    message: 'main() of screenshot_create_test_new.dart',
+    message: 'main() of screenshot_create_test.dart',
   );
 
   // KEEP NOTE: 2023-05-23: Broken in Flutter somewhere between 3.7(?) and 3.10.

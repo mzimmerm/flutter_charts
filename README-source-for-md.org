@@ -72,7 +72,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
         # Read examples descriptor file and pull out example enum names and chart types
         #   which are supported in tests. All those examples are guaranteed to be run in example/lib/main.dart,
         #   and also screenshot-generated and tested for sameness with expected screenshots
-        #   in integration_test/screenshot_create_test.dart and test/screenshot_create_test.dart.
+        #   in integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart and test/deprecated_v1/screenshot_create_deprecated_v1_test.dart.
         while read enumLine; do
             if [[ $enumLine =~ "const Tuple2" ]]; then
 
@@ -1392,19 +1392,19 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 
 To run all unit tests with one integration test
 
-~tool/test/run_all_tests.sh ex31SomeNegativeValues~
+~tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues~
 
 To run all unit tests with all integration tests
 
-~tool/test/run_all_tests.sh~
+~tool/test/deprecated_v1/run_all_tests.sh~
 
 To run one integration test
 
-~tool/test/integration_test_validate_screenshots.sh ex31SomeNegativeValues~
+~tool/test/deprecated_v1/integration_test_validate_screenshots.sh ex31SomeNegativeValues~
 
 In all above, you can add cleanup and timing as follows:
 
-~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
+~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
 
 
 * TODO Todos

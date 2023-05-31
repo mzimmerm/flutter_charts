@@ -21,16 +21,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README-source-for-md.org" beforeDir="false" afterPath="$PROJECT_DIR$/README-source-for-md.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/README.org" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/README.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/chart_example_new.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test_new.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test_new.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_util.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_representative_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_representative_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test_new.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_driver/integration_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test_driver/integration_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/frequent_commands.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/frequent_commands.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_all_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_core_new_integration_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_new_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_representative_mini_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_representative_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,38 +216,38 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.26795283&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1477105",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.splitter.proportion": "0.26795283",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tool/test" />
       <recent name="$PROJECT_DIR$/test" />
       <recent name="$PROJECT_DIR$/example/lib" />
       <recent name="$PROJECT_DIR$/integration_test" />
       <recent name="$PROJECT_DIR$/test/util" />
-      <recent name="$PROJECT_DIR$/lib/src/util/vector" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tool/test" />
+      <recent name="$PROJECT_DIR$/integration_test/deprecated_v1" />
+      <recent name="$PROJECT_DIR$/test/deprecated_v1" />
       <recent name="$PROJECT_DIR$/lib/src/chart/util" />
       <recent name="$PROJECT_DIR$/lib/src/chart/view_model" />
-      <recent name="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type" />
-      <recent name="$PROJECT_DIR$/lib/src/chart/type/line/container" />
-      <recent name="$PROJECT_DIR$/lib/src/chart/type/bar/container" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart ex10 (1)">
@@ -1466,8 +1479,8 @@
           <option name="timeStamp" value="3781" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
-          <line>186</line>
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>157</line>
           <option name="timeStamp" value="3782" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1591,8 +1604,8 @@
           <option name="timeStamp" value="3830" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
-          <line>151</line>
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>122</line>
           <option name="timeStamp" value="3833" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1611,13 +1624,13 @@
           <option name="timeStamp" value="3837" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
-          <line>200</line>
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>171</line>
           <option name="timeStamp" value="3838" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart</url>
-          <line>209</line>
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>180</line>
           <option name="timeStamp" value="3839" />
         </line-breakpoint>
       </breakpoints>

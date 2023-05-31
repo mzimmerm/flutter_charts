@@ -116,7 +116,7 @@ There are API changes in this release. Below may or may not be a full list
 
 All tests can be run using
 ```shell
-tool/test/run_all_tests.sh
+tool/test/deprecated_v1/run_all_tests.sh
 ```
 ## Large amount of refactoring.
 

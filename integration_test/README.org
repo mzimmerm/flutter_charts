@@ -6,7 +6,7 @@ They are the ~--target~ executed as
 
 #+begin_src: sh
  "flutter drive" \
-        " --target=integration_test/screenshot_create_test.dart"
+        " --target=integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart"
 #+end_src
 
 These integration tests programs in ~--target~ are executed ON THE DEVICE, AND COULD BE CALLED ON-DEVICE-TESTS.
@@ -17,12 +17,12 @@ Optionally, they can be controlled, from the computer, by another program
 This 'integration test driver' addressed in ~--driver~ runs on the computer, and controls the program in ~--target~
 running on the device (drive).
 
-The full way to run the integration test program ~screenshot_create_test.dart~, and control it
+The full way to run the integration test program ~deprecated_v1/screenshot_create_deprecated_v1_test.dart~, and control it
 from the computer program ~integration_test.dart~ is as follows:
 
 #+begin_src: sh
  "flutter drive" \
-        " --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"
+        " --driver=test_driver/integration_test.dart --target=integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart"
 #+end_src
 
 Note: The naming of the on-device integration test TARGET and it's on-computer controlling program DRIVER

@@ -92,7 +92,7 @@ enum ExampleEnum {
 /// The pre-configured chart examples can be used in several places:
 ///   - Run in the example app in `example/lib/src/main.dart`
 ///   - Be integration tested for sameness of results (generated screenshots)
-///     in `integration_test/screenshot_create_test_new.dart` and  `test/screenshot_validate_test.dart`.
+///     in `integration_test/screenshot_create_test.dart` and  `test/screenshot_validate_test.dart`.
 ///
 /// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ChartType].
 ///

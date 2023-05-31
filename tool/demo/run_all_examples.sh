@@ -8,7 +8,7 @@ set -o errexit
 echo
 echo -------------------------------------
 echo Executes 'flutter run' for the passed exampleEnum or for all examples in ExampleEnum
-echo Code borrowed from tool/test/integration_test_create_then_validate_screenshots.sh
+echo Code borrowed from tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh
 
 
 if [[ "$1" == "--help" ]]; then
@@ -36,7 +36,7 @@ echo This generated program can run either integration test \(flutter drive\) or
 
 #   See the sourced script below for details of variable and contents of $example_descriptor_generated_program.
 isFirstRun=true
-source tool/test/start_emulator_and_generate_example_descriptor.sh "$isFirstRun" "$exampleEnum"
+source tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh "$isFirstRun" "$exampleEnum"
 
 echo Will run "$example_descriptor_generated_program".
 example_descriptor_generated_program=$example_descriptor_generated_program

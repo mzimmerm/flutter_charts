@@ -1,9 +1,3 @@
-/// Flutter test which compares expected screenshots to actual screenshots
-/// for the requested example.
-///
-/// The requested example is given by the app method [requestedExampleToRun], which
-/// in turn is given by the `--dart-define` passed environment to the `flutter test` command.
-///
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 
@@ -12,29 +6,41 @@ import 'test_util.dart';
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor;
 
-/// @Deprecated test that compares expected and actual example screenshots taken from the example app.
+/// Flutter test compares expected screenshots to actual screenshots for all chart examples
+/// defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
+/// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
+///
 void main() {
+
+  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+    message: 'main() of screenshot_validate_test.dart',
+  );
+
   test('after screenshot integration, test for sameness', () {
 
-    ExampleDescriptor exampleDescriptor = ExampleDescriptor.requestedExampleToRun();
+    for (var exampleDescriptor in examplesDescriptors) {
 
-    var screenshotPaths = ScreenshotPaths(exampleDescriptor: exampleDescriptor);
-    String expectedScreenshotPath = screenshotPaths.expectedScreenshotPath;
-    String screenshotPath = screenshotPaths.actualScreenshotPath;
+      print(' \n\n######### Log.Info.Level1: screenshot_validate_test.dart: Will COMPARE SCREENSHOT of $exampleDescriptor');
 
-    // Flag controls if this test runs 'expect'.
-    // Set to false to generate initial validated screenshots.
-    bool runExpect = true;
+      var screenshotPaths = ScreenshotPaths(exampleDescriptor: exampleDescriptor);
+      String expectedScreenshotPath = screenshotPaths.expectedScreenshotPath;
+      String screenshotPath = screenshotPaths.actualScreenshotPath;
 
-    if (runExpect && !ExampleDescriptor.isExampleWithRandomData(exampleDescriptor)) {
-      File expectedFile = File(expectedScreenshotPath);
-      File actualFile = File(screenshotPath);
+      // Flag controls if this test runs 'expect'.
+      // Set to false to generate initial validated screenshots.
+      bool runExpect = true;
 
-      // Compare the screenshot just generated with one that was stored as expected.
-      expectSync(
-        expectedFile.readAsBytesSync(),
-        actualFile.readAsBytesSync(),
-      );
+      if (runExpect && !ExampleDescriptor.isExampleWithRandomData(exampleDescriptor)) {
+        File expectedFile = File(expectedScreenshotPath);
+        File actualFile = File(screenshotPath);
+
+        // Compare the screenshot just generated with one that was stored as expected.
+        expectSync(
+          expectedFile.readAsBytesSync(),
+          actualFile.readAsBytesSync(),
+        );
+      }
     }
   });
 }

@@ -1,28 +1,28 @@
 * A list of frequent commands in this project.
 
-tool/test/run_all_tests.sh 
-tool/test/run_one_screenshot_test.sh ex10RandomData
+tool/test/deprecated_v1/run_all_tests.sh
+tool/test/deprecated_v1/run_one_screenshot_test.sh ex10RandomData
 flutter emulator --launch "Nexus_6_API_33"
 flutter create --template=app flutter_charts_app
 flutter pub get
 flutter pub upgrade
 flutter clean; flutter pub get; 
 # Create screenshot - need drive and integration test
-flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart
+flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --driver=test_driver/integration_test.dart --target=integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart
 # Test screenshot for equality - only needs unit test (hmm, this is likely integration as well)
-flutter test  --dart-define=EXAMPLE_TO_RUN=ex10RandomData  --dart-define=CHART_TYPE=barChart test/screenshot_validate_test.dart
+flutter test  --dart-define=EXAMPLE_TO_RUN=ex10RandomData  --dart-define=CHART_TYPE=barChart test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart
 
 # No clean: Run mini set of flutter integration tests in bash using:
-d1=$(date +%s); tool/test/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+d1=$(date +%s); tool/test/deprecated_v1/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
 
 # No clean: Run mini set of flutter integration tests in eshell using:
-setq d1 (string-to-number (format-time-string "%s")); tool/test/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+setq d1 (string-to-number (format-time-string "%s")); tool/test/deprecated_v1/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
 
 # Bash with clean: Run all tests of all examples:
-d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
 
 # Eshell with clean: Run all tests of all examples:
-setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
 
 # No clean: Run one example:
-tool/test/run_all_tests.sh ex31SomeNegativeValues
+tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues

@@ -6,9 +6,9 @@
 
 ** Eshell
 
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_representative_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_representative_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
   
 * TODO Bugs and issues - flutter_charts
 ** TODO The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
@@ -57,9 +57,9 @@ To upgrade decimal to latest version, so that pub.dev does not complain about "t
 
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
-** Test ~tool/test/run_all_tests.sh~ - details below
+** Test ~tool/test/deprecated_v1/run_all_tests.sh~ - details below
 
-Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
+Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
 
 ** Ensure pub-required files exist: Check the following files exist
 
@@ -117,7 +117,7 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
 First install dartdoc latest compatible with SDK:
 
 ~flutter pub global activate dartdoc~
-** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
+** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
 ** ~git add .; git commit; git push~
 ** ~git checkout master; git fetch; git pull; git merge flutter_charts_v2~
 ** ~git push origin master~
@@ -1950,12 +1950,6 @@ Implementation
   - [ ] Add a loop around the 'pump' until after screenshot is taken
   - [ ] After screenshot is taken, add code mocking clicking the 'next', after that, go to top of loop, before 'pump and settle'
   - [ ] Loop end condition is that 'next' is disabled
-
-
-Later:
-
-- [X] Rename screenshot_check_test and similar to validate_screenshot_test or maybe test_validate_screenshot??
--
 
 
 ~flutter drive --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart~
