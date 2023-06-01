@@ -21,29 +21,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/main_dart.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README-source-for-md.org" beforeDir="false" afterPath="$PROJECT_DIR$/README-source-for-md.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/README.org" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/README.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test_new.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test_new.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_driver/integration_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test_driver/integration_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/demo/run_all_examples.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/frequent_commands.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/frequent_commands.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/integration_test_create_then_validate_screenshots.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tool/test/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_all_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_core_new_integration_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_new_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_one_create_then_validate_screenshot_test.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_representative_mini_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_representative_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_compare_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_compare_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,24 +199,24 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "io.flutter.reload.alreadyRun": "true",
-    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.1477105",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "settings.editor.splitter.proportion": "0.26795283",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.26795283&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/tool/test" />
@@ -250,7 +233,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/view_model" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex10 (1)">
+  <component name="RunManager" selected="Shell Script.run_one_create_then_validate_screenshot_test.sh">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -281,9 +264,9 @@
       <option name="workingDirectory" value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="Flutter-Driver-Screenshot-Create-Test-From-App-With-Loop-HANGS-AT-THE-END" type="FlutterRunConfigurationType" factoryName="Flutter" editBeforeRun="true">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData   --dart-define=CHART_TYPE=lineChart   --dart-define=CHART_ORIENTATION=column   --dart-define=CHART_STACKING=nonStacked   --dart-define=CHART_LAYOUTER=oldManualLayouter  --target=integration_test/screenshot_create_test_new.dart" />
-      <option name="filePath" value="$PROJECT_DIR$/test_driver/integration_test.dart" />
+    <configuration name="Z main.dart ex10 - OLD keep as ref " type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="examples-descriptor as Flutter" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -291,128 +274,128 @@
       <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="main.dart ex10 (1)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='minimumNew'" />
+    <configuration name="main.dart absoluteMinimumNew" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex10" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex30_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex31SomeNegativeValues --dart-define=CHART_TYPE=barChart --dart-define=CHART_LAYOUTER=newAutoLayouter --dart-define=CHART_ORIENTATION=row --dart-define=CHART_STACKING=nonStacked" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new + new Configuration - explicit x, y, some negative, similar to RandomData (1)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_stacked_newAutoLayouter ex75_lineChart_row_nonStacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex32 - explicit x, y, all Y positive, axis starts above zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex32AllPositiveYsYAxisStartsAbove0 --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex33 - explicit x, y, Y negative, axis ends below zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex33AllNegativeYsYAxisEndsBelow0 --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex33_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex34 Custom Font" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex34OptionsDefiningUserTextStyleOnLabels --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex34_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex35 - no labels" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex35AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex35_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex40LanguagesWithYOrdinalUserLabelsAndUserColors --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex40_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex50" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex50StocksWithNegativesWithUserColors --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex50_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex51 logarithmic manual" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex51AnimalsBySeasonManualLogarithmicScale --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex51_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex52 logarithmic" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex52AnimalsBySeasonLogarithmicScale --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex52_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 1" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration1 --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 2 (tilted)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration2 --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 3 (shows 3 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration3 --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 4 (shows 2 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration4 --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex70" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex70_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex71" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex71_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex72" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex72_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex73" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex73_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex74" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex74_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex75 new" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=newAutoLayouter --dart-define=CHART_ORIENTATION=column --dart-define=CHART_STACKING=nonStacked" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex75_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex76" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned --dart-define=CHART_TYPE=barChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex76_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex900 error all 0 data" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex900ErrorFixUserDataAllZero --dart-define=CHART_TYPE=lineChart" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex90_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
@@ -535,10 +518,9 @@
       <item itemvalue="Dart Command Line App.examples_descriptor" />
       <item itemvalue="Dart Command Line App.examples_descriptor_less_args" />
       <item itemvalue="Flutter.examples-descriptor as Flutter" />
-      <item itemvalue="Flutter.main.dart" />
-      <item itemvalue="Flutter.Flutter-Driver-Screenshot-Create-Test-From-App-With-Loop-HANGS-AT-THE-END" />
       <item itemvalue="Flutter.main.dart ex10" />
-      <item itemvalue="Flutter.main.dart ex10 (1)" />
+      <item itemvalue="Flutter.Z main.dart ex10 - OLD keep as ref " />
+      <item itemvalue="Flutter.main.dart absoluteMinimumNew" />
       <item itemvalue="Flutter.main.dart ex70" />
       <item itemvalue="Flutter.main.dart ex71" />
       <item itemvalue="Flutter.main.dart ex72" />
@@ -1632,6 +1614,11 @@
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
           <line>180</line>
           <option name="timeStamp" value="3839" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>399</line>
+          <option name="timeStamp" value="3840" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

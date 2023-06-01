@@ -1,14 +1,22 @@
 #!/bin/bash
 
-# todo-00-last document better
 # Bash with clean: Run all tests of all examples:
-#   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+#   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh absoluteMinimumNew; echo TOOK $(($(date +%s) - $d1)) seconds
 
 # Eshell with clean: Run all tests of all examples:
-#   setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+#   setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh absoluteMinimumNew; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
 
 # No clean: Run one example:
-# tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues
+# tool/test/run_all_tests.sh ex31_barChart_column_stacked_newAutoLayouter ex75_lineChart_row_nonStacked_newAutoLayouter
+
+# Possible groups:
+#  minimumNew
+#  allSupportedNew
+#  minimumOld
+#  allSupportedOld
+#  minimum
+#  allSupported
+
 
 set -o errexit
 

@@ -28,43 +28,9 @@ chartOrientation=$4
 chartStacking=$5
 isUseOldLayouter=$6
 
-if [[ $isFirstRun == true ]]; then
-  tool/test/start_emulator.sh
-
-# todo-00-done  # This is the AVD emulator we request to exist
-# todo-00-done  emulator_used="Nexus_6_API_33"
-# todo-00-done  # old: emulator_used="Nexus_6_API_29_2"
-# todo-00-done
-# todo-00-done  echo Check if emulator exists
-# todo-00-done  if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
-# todo-00-done    echo "Emulator $emulator_used does not exist. Please create it, our integration tests depend on it. Exiting"
-# todo-00-done    exit 1
-# todo-00-done  fi
-# todo-00-done
-# todo-00-done  echo Check if the emulator named $emulator_used is connected to a running device.
-# todo-00-done  # The only way to find out if the emulator is connected is to run ps, searching for the device name.
-# todo-00-done  # The potential alternative "flutter devices" lists only the short device name such as e3565.
-# todo-00-done  if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
-# todo-00-done    echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
-# todo-00-done    flutter emulators --launch "$emulator_used"
-# todo-00-done    echo Sleep 22 on server to give the emulator time to start fully. Sleep 40 on laptop.
-# todo-00-done    sleep 22
-# todo-00-done    echo The AVD emulator $emulator_used succesfully launched.
-# todo-00-done  else
-# todo-00-done    echo The emulator $emulator_used appears running and connected.
-# todo-00-done  fi
-# todo-00-done
-# todo-00-done  # Sleep for a bit and check that SOME device is running
-# todo-00-done  sleep 1
-# todo-00-done  if ! flutter devices  2>/dev/null | grep --quiet "emulator-"; then
-# todo-00-done    echo "Unexpected error: flutter devices is telling us that no emulators are connected to a device. Exiting"
-# todo-00-done    exit 1
-# todo-00-done  fi
-# todo-00-done
-# todo-00-done  echo Checking processes for running emulator name.
-# todo-00-done  device_id=$(flutter devices 2>/dev/null | grep "emulator-" | sed 's/.*\(emulator\-[0-9]\+\).*/\1/')
-# todo-00-done  echo Emulator $emulator_used is running as device_id="$device_id".
-fi
+# if [[ $isFirstRun == true ]]; then
+tool/test/start_emulator.sh
+# fi
 
 # Define the name of the program which the scripts sourcing this file can execute.
 example_descriptor_generated_program=test/tmp/example_descriptor_generated_program_$RANDOM.sh

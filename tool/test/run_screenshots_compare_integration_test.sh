@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# todo-00-last document better
+# Run test which generates screenshots of all examples named in the passed arguments
+# followed by screenshot expected/actual comparison for the same set of examples.
 
 set -o errexit
 

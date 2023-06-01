@@ -247,7 +247,7 @@ class ExampleDescriptor {
   ///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
   ///   and 'CHART_LAYOUTER' into enums which describe the example to run, and the chart type to show.
   ///
-  @Deprecated('ExampleDescriptor.requestedExampleToRun will be removed in the next major version')
+  // @Deprecated('ExampleDescriptor.requestedExampleToRun will be removed in the next major version')
   static ExampleDescriptor requestedExampleToRun() {
     // Pickup what example to run, and which chart to show (line, vertical bar).
     const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
@@ -493,6 +493,7 @@ class ExampleDescriptor {
   }
   
   /// Present this descriptor is a format suitable to run as a test from command line.
+  // @Deprecated('ExampleDescriptor.asCommandLine will be removed in the next major version')
   void asCommandLine(bool isAllExamplesRequested, bool isRunBothChartTypes) {
     List<Tuple2<ExampleEnum, ChartType>> combosToRun = isAllExamplesRequested
         ? _allowed
