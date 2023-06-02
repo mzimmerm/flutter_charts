@@ -19,7 +19,7 @@
     echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
     flutter emulators --launch "$emulator_used"
     echo Sleep 22 on server to give the emulator time to start fully. Sleep 40 on laptop.
-    sleep 22
+    sleep 40
     echo The AVD emulator $emulator_used succesfully launched.
   else
     echo The emulator $emulator_used appears running and connected.

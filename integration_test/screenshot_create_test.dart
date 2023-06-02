@@ -149,6 +149,7 @@ void main() {
 
       // Trigger a frame.
       await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
       // When [binding.takeScreenshot] is called, the [binding] INVOKES the method callback
       // defined for [onScreenshot:] in [test_driver/integration_test.dart] and passes the callback

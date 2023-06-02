@@ -21,12 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/main_dart.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_all_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_compare_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_compare_integration_test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,7 +230,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/view_model" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.run_one_create_then_validate_screenshot_test.sh">
+  <component name="RunManager" selected="Flutter.main.dart ex75 new">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -1462,7 +1459,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
-          <line>157</line>
+          <line>158</line>
           <option name="timeStamp" value="3782" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1607,12 +1604,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
-          <line>171</line>
+          <line>172</line>
           <option name="timeStamp" value="3838" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
-          <line>180</line>
+          <line>181</line>
           <option name="timeStamp" value="3839" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
