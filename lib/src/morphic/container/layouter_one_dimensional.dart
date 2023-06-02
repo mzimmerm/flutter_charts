@@ -67,6 +67,10 @@ enum Packing {
   loose,
 
   // todo-02 with this Packing, ANY ALIGNMENT DOES NOT MAKE SENSE. MAYBE WE INTRODUCE Align.externalTicksDefined and add a validate method that only allows
+  // todo-02 Should add multiple Packing enums, which would collapse to a common 'wide' enum in the 1D layouter.
+  //         the enums can be: RollingPacking (matrjoska, tight, loose) - used in Box layouters
+  //                           ExternalPacking (externalTicksProvided) - used in ExternalTicks layouters
+  //                           WrappingPacking (tight) - used in Wrapping layouters
   externalTicksProvided,
 }
 
@@ -304,6 +308,12 @@ class LayedoutLengthsPositioner {
   ///     - max = first length + second length.
   ///
   ///
+  // todo-00-progress: Add a member isStopBeforeFirstOverflow. If true, and first overflow happens,
+  //                   stop and return PositionedLineSegments which may not contain all legths (PositionedLineSegments)
+  //                   Change _MainAndCrossPositionedSegments (isStopBeforeFirstOverflow must be there and also in PositionedLineSegments)
+  //                     to be able to report on which length it stopped (this should be clear from PositionedLineSegments length)
+  //                     caller can then call asRectangles, create another _MainAndCrossPositionedSegments from less children,
+  //                     and repeat, until all children are layed out
   PositionedLineSegments positionLengths() {
     PositionedLineSegments positionedLineSegments;
     switch (lengthsPositionerProperties.packing) {

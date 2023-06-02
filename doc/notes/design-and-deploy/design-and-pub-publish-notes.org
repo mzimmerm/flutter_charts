@@ -1927,29 +1927,27 @@ Not sure if to do this ... Need to think through the separation of View and View
 - [X] Search all data_container*dart for 'import.*model' regex - BUT USAGE OF 'view_model' is fine
 
 
-** IN-PROGRESS-NOW ~13. Create a test app for super fast testing~ 2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
+** DONE ~13. Create a test app for super fast testing~ 2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
 
-- [ ] Create a test app that can:
-  1. [ ] run first chart in list
-  2. [ ] delay 2s
-  3. [ ] take screenshot from the app,
-  4. [ ] delay 2s
-  5. [ ] run another chart
-  6. [ ] back to 1.
-- [ ] Add spacing
-- [ ]
+- [X] Create a test app that can:
+  1. [X] run first chart in list
+  2. [X] delay 2s
+  3. [X] take screenshot from the app,
+  4. [X] delay 2s
+  5. [X] run another chart
+  6. [X] back to 1.
 
 Implementation
 
-- [ ] Modify/copy the existing main.dart, to ~main_new.dart~, in main_loop_charts.dart add a button 'next' instead of + button
-  - [ ] Clicking 'next' will run another test, from a list of tests (ex10-ex900, different combinations of chart, orientation, stacking
-    - [ ] start with 2 tests in the list
-  - [ ] Make 'next' disabled after last test is run
-- [ ] Modify/copy the existing driver test ~screenshot_create_test_new.dart~
-  - [ ] Run as
-  - [ ] Add a loop around the 'pump' until after screenshot is taken
-  - [ ] After screenshot is taken, add code mocking clicking the 'next', after that, go to top of loop, before 'pump and settle'
-  - [ ] Loop end condition is that 'next' is disabled
+- [X] Modify/copy the existing main.dart, to ~main_new.dart~, in main_loop_charts.dart add a button 'next' instead of + button
+  - [X] Clicking 'next' will run another test, from a list of tests (ex10-ex900, different combinations of chart, orientation, stacking
+    - [X] start with 2 tests in the list
+  - [X] Make 'next' disabled after last test is run
+- [X] Modify/copy the existing driver test ~screenshot_create_test_new.dart~
+  - [X] Run as
+  - [X] Add a loop around the 'pump' until after screenshot is taken
+  - [X] After screenshot is taken, add code mocking clicking the 'next', after that, go to top of loop, before 'pump and settle'
+  - [X] Loop end condition is that 'next' is disabled
 
 
 ~flutter drive --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart~
@@ -1960,22 +1958,17 @@ followed by
 
 NOW WORK TO CREATE AND VALIDATE!!
 
-** LATER ~Follow linter rules: 1) in late final and 2) use package imports (no relative imports)~
 
-~Cleanup places using public late final fields~
+** IN-PROGRESS-NOW ~add  WrappingColumn/Row layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 
-See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-without-initializers and change all public late final members to private, adding a public getter.
-
-~use package imports (no relative imports)~
-
-See https://dart.dev/tools/linter-rules#always_use_package_imports 
-** LATER ~add WrappingLayouter.Column/Row, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
-
-Column: lays out left to right, when reaches constraints width,  wraps to next line, starting to the left of 'max height'
-Row: lays out top to bottom, when it reaches constraints height, wraps to top,       starting to the righ of 'max width'
+WrappingRow (used in Orientation=Column): lays out left to right, when next child would overflow constraints width,  wraps next child to next line, starting to the left of the 'max height' of previous lines
+  - Keep list of lines with the children they display
+  - Can calculate max height (cross-length) 
+WrappingColumn: lays out top to bottom, when it reaches constraints height, wraps to top,       starting to the righ of 'max width'
 
 Use it in one example. 
 
+** LATER ~Add (reuse or improve existing) StackingLayouter~
 
 ** LATER ~add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~ 4 days. Should start May28, end June 1.
 
@@ -1985,6 +1978,15 @@ Use it in one example.
 
 ** ~Milestone: 2 weeks: June 4~
 
+** LATER ~Follow linter rules: 1) in late final and 2) use package imports (no relative imports)~
+
+~Cleanup places using public late final fields~
+
+See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-without-initializers and change all public late final members to private, adding a public getter.
+
+~use package imports (no relative imports)~
+
+See https://dart.dev/tools/linter-rules#always_use_package_imports 
 ** Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
 
 ** LATER 12. ~BACKUPs~
