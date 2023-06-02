@@ -1,5 +1,4 @@
 import 'dart:math' as math show max;
-import 'package:tuple/tuple.dart';
 
 // this level or equivalent
 import 'container_layouter_base.dart';
@@ -319,17 +318,17 @@ class LayedoutLengthsPositioner {
     switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: _assertLengthsPositiveAndReturn(
-              lengths.map((length) => _positionMatrjoskaLineSegmentFor(length)).toList(growable: false)),
+          lineSegments:
+              _assertLengthsPositiveAndReturn(_positionAsSegments(_positionMatrjoskaLineSegmentFromPreviousAndLength)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
+
         break;
       case Packing.tight:
         positionedLineSegments = PositionedLineSegments(
           lineSegments:
-              _assertLengthsPositiveAndReturn(
-                  _positionTightOrLooseAsSegments(_positionTightLineSegmentFor)),
+              _assertLengthsPositiveAndReturn(_positionAsSegments(_positionTightLineSegmentFromPreviousAndLength)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
@@ -337,16 +336,14 @@ class LayedoutLengthsPositioner {
       case Packing.loose:
         positionedLineSegments = PositionedLineSegments(
           lineSegments:
-              _assertLengthsPositiveAndReturn(
-                  _positionTightOrLooseAsSegments(_positionLooseLineSegmentFor)),
+              _assertLengthsPositiveAndReturn(_positionAsSegments(_positionLooseLineSegmentFromPreviousAndLength)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
       case Packing.externalTicksProvided:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: _assertLengthsPositiveAndReturn(
-              _positionToExternalTicksAsSegments()),
+          lineSegments: _assertLengthsPositiveAndReturn(_positionToExternalTicksAsSegments()),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
@@ -360,9 +357,11 @@ class LayedoutLengthsPositioner {
 
   double get _maxLength => lengths.isNotEmpty ? lengths.reduce(math.max) : 0.0;
 
-  List<util_dart.LineSegment> _positionTightOrLooseAsSegments(
-    util_dart.LineSegment Function(util_dart.LineSegment?, double) fromPreviousLengthPositionThis,
-  ) {
+  /// Closure returns current segment position using a function which calculates current segment position
+  /// from previous segment position and current segment's length. todo-00-next: document better
+  List<util_dart.LineSegment> _positionAsSegments(
+      util_dart.LineSegment Function(util_dart.LineSegment?, double) fromPreviousLengthPositionThis,
+      ) {
     List<util_dart.LineSegment> lineSegments = [];
     util_dart.LineSegment? previousSegment;
     for (int i = 0; i < lengths.length; i++) {
@@ -424,42 +423,47 @@ class LayedoutLengthsPositioner {
     return positionedSegments;
   }
 
-  util_dart.LineSegment _positionTightLineSegmentFor(
-    util_dart.LineSegment? previousSegment,
-    double length,
-  ) {
-    return _positionTightOrLooseLineSegmentFor(_tightStartOffset, previousSegment, length);
-  }
-
-  util_dart.LineSegment _positionLooseLineSegmentFor(
-    util_dart.LineSegment? previousSegment,
-    double length,
-  ) {
-    return _positionTightOrLooseLineSegmentFor(_looseStartOffset, previousSegment, length);
-  }
-
-  util_dart.LineSegment _positionTightOrLooseLineSegmentFor(
-    Tuple2<double, double> Function(bool) getStartOffset,
-    util_dart.LineSegment? previousSegment,
-    double length,
-  ) {
+  util_dart.LineSegment _positionTightOrLooseLineSegmentFromPreviousAndLength(
+      _StartAndRightPad Function(bool) getStartOffset,
+      util_dart.LineSegment? previousSegment,
+      double length,
+      ) {
     bool isFirstLength = false;
     if (previousSegment == null) {
       isFirstLength = true;
       previousSegment = const util_dart.LineSegment(0.0, 0.0);
     }
-    Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
+    _StartAndRightPad startOffsetAndRightPad = getStartOffset(isFirstLength);
     // todo-020 : The processing of result startOffsetAndRightPad MUST be different for Align.end, so there must be some
     //             switch .. case added for all Alignments. This is the reason of a bug where Align.end does not work correctly,
     //             although it is hidden, as the result now is satisfactory, despite setting isOverflow true on the result.
     //             ALSO A QUESTION: ALIGN.END, DOES IT MEAN FIRST LENGTH IS AT THE END? SHOULD NOT BE - START AND END SHOULD BE THE SAME ORDER.!!
     //               PERHAPS THERE SHOULD BE ENUM START_TO_END (DEFAULT, DOES NOT REVERT ORDER), AND END_TO_START WHICH REVERSES ORDED.
-    double startOffset = startOffsetAndRightPad.item1;
-    double rightPad = startOffsetAndRightPad.item2;
+    double startOffset = startOffsetAndRightPad.startOffset;
+    double rightPad = startOffsetAndRightPad.freePaddingRight;
     double start = startOffset + previousSegment.max;
     double end = startOffset + previousSegment.max + length;
     totalPositionedLengthIncludesPadding = end + rightPad;
     return util_dart.LineSegment(start, end);
+  }
+
+  /// Given a [previousSegment] which captures the position of previous segment as [util_dart.LineSegment.min] and
+  /// [util_dart.LineSegment.max], and a [length] of this segment, calculates and returns the position of the
+  /// segment with length [length], taking into account the [lengthsPositionerProperties],
+  /// the free padding maintained in [_freePadding] (which can be distributed at the beginning, at the end, or between
+  /// [lengths]), the total available length [lengthsConstraint], as well as overflow state [isOverflown].
+  util_dart.LineSegment _positionTightLineSegmentFromPreviousAndLength(
+    util_dart.LineSegment? previousSegment,
+    double length,
+  ) {
+    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_tightStartOffset, previousSegment, length);
+  }
+
+  util_dart.LineSegment _positionLooseLineSegmentFromPreviousAndLength(
+    util_dart.LineSegment? previousSegment,
+    double length,
+  ) {
+    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_looseStartOffset, previousSegment, length);
   }
 
   /// Intended for use in  [Packing.matrjoska], creates and returns a [util_dart.LineSegment] for the passed [length],
@@ -469,7 +473,12 @@ class LayedoutLengthsPositioner {
   ///
   /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLayedOutLengthIncludesPadding].
-  util_dart.LineSegment _positionMatrjoskaLineSegmentFor(double length) {
+  ///
+  /// The [previousSegment] is unused in matrjoska (at the moment at least)
+  util_dart.LineSegment _positionMatrjoskaLineSegmentFromPreviousAndLength(
+    util_dart.LineSegment? previousSegment,
+    double length,
+  ) {
     double start, end, freePadding;
     switch (lengthsPositionerProperties.align) {
       case Align.start:
@@ -510,7 +519,7 @@ class LayedoutLengthsPositioner {
 
   ///
   /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
-  Tuple2<double, double> _tightStartOffset(bool isFirstLength) {
+  _StartAndRightPad _tightStartOffset(bool isFirstLength) {
     double freePadding, startOffset, freePaddingRight;
     switch (lengthsPositionerProperties.align) {
       case Align.start:
@@ -534,12 +543,12 @@ class LayedoutLengthsPositioner {
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
     }
-    return Tuple2(startOffset, freePaddingRight);
+    return _StartAndRightPad(startOffset, freePaddingRight);
   }
 
   ///
   /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
-  Tuple2<double, double> _looseStartOffset(bool isFirstLength) {
+  _StartAndRightPad _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
     double freePadding, startOffset, freePaddingRight;
     switch (lengthsPositionerProperties.align) {
@@ -564,7 +573,7 @@ class LayedoutLengthsPositioner {
         startOffset = freePadding;
         break;
     }
-    return Tuple2(startOffset, freePaddingRight);
+    return _StartAndRightPad(startOffset, freePaddingRight);
   }
 
   List<util_dart.LineSegment> _assertLengthsPositiveAndReturn(List<util_dart.LineSegment> lineSegments) {
@@ -575,6 +584,18 @@ class LayedoutLengthsPositioner {
     }
     return lineSegments;
   }
+}
+
+class _StartAndRightPad {
+
+  _StartAndRightPad(
+    this.startOffset,
+    this.freePaddingRight
+  );
+
+  final double startOffset;
+  final double freePaddingRight;
+
 }
 
 /// A value class which holds on the result of invocation
