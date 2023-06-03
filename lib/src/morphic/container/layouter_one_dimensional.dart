@@ -179,22 +179,22 @@ class LengthsPositionerProperties {
 /// in the name [LayedoutLengthsPositioner].
 ///
 /// The [lengthsPositionerProperties] specifies [Packing] and [Align] properties.
-/// They control the layout result, along with [lengthsConstraint],
+/// They control the layout result, along with [_lengthsConstraint],
 /// which is the constraint for the layed out segments.
 ///
 /// The core method providing the layout role is [positionLengths],
 /// which lays out the member [lengths] according to the
 /// properties specified in member [lengthsPositionerProperties], and creates list
 /// of layed out segments from the [lengths]; the layed out segments may be padded
-/// if there is length available towards the [lengthsConstraint].
+/// if there is length available towards the [_lengthsConstraint].
 ///
 /// Note: The total length of [lengths] depends on Packing - it is
 ///   - sum lengths for tight or loose
 ///   - max length for matrjoska
 ///
-/// If the total length of [lengths] is below [lengthsConstraint],
+/// If the total length of [lengths] is below [_lengthsConstraint],
 /// and the combination of Packing and Align allows free spacing, the remaining
-/// [lengthsConstraint] are used to add spaces between, around, or to the left of the
+/// [_lengthsConstraint] are used to add spaces between, around, or to the left of the
 /// resulting segments.
 ///
 /// See [positionLengths] for more details of this class' objects behavior.
@@ -207,39 +207,53 @@ class LayedoutLengthsPositioner {
   /// The passed objects must all correspond to the axis for which the positioner is being created:
   /// - [layoutAxis] defines horizontal or vertical,
   /// - [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
-  /// - [lengthsConstraint] is the double 1D positive length into which the [lengths] should fit after positioning
+  /// - [_lengthsConstraint] is the double 1D positive length into which the [lengths] should fit after positioning
   ///    by [positionLengths].
   /// - [externalTicksLayoutDescriptor] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
     required this.lengths,
     required this.lengthsPositionerProperties,
-    required this.lengthsConstraint,
-  }) {
+    required double lengthsConstraint,
+    bool isStopBeforeFirstOverflow = false, // todo-00-done : added
+  }) :
+        _lengthsConstraint = lengthsConstraint,
+        _isStopBeforeFirstOverflow = isStopBeforeFirstOverflow
+  {
     // 2023-04-27: Added assert only positive or 0 lengths allowed. Later we can use negative positioning
     for(var length in lengths) {
-      assert (length >= 0.0);
+      if (length < 0.0) {
+        throw StateError('$runtimeType: at least one lenght in lengths is negative: $lengths');
+      }
     }
-    assert(lengthsConstraint != double.infinity);
-    switch (lengthsPositionerProperties.packing) {
-      case Packing.matrjoska:
-        // Caller should allow for lengthsConstraint to be exceeded by _maxLength, set isOverflown, deal with it in caller
-        isOverflown = (_maxLength > lengthsConstraint);
-        _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _maxLength;
-        break;
-      case Packing.tight:
-      case Packing.loose:
-        // Caller should allow for lengthsConstraint to be exceeded by _sumLengths, set isOverflown, deal with it in caller
-        isOverflown = (_sumLengths > lengthsConstraint);
-        _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths;
-        break;
-      case Packing.externalTicksProvided:
-        assert(lengthsPositionerProperties.externalTicksLayoutDescriptor != null);
-        assert(lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length == lengths.length);
-        // For external layout, isOverflown is calculated after positioning.
-        // For external layout, _freePadding is unused and unchanged, but late init it to 0.0 if it is used
-        _freePadding = 0.0;
-        break;
+    if (_lengthsConstraint == double.infinity || _lengthsConstraint < 0) {
+      throw StateError('$runtimeType: lengthsConstraint must be finite non-negative, but it is $_lengthsConstraint');
+    }
+
+    if (_isStopBeforeFirstOverflow) {
+      // If set _freePadding and isOverflown is set later during processing
+      // todo-00-progress-last : added this branch consider if this makes sense. We have to ensure that late finals isOverflown and _freePadding are set!!!
+    } else {
+      switch (lengthsPositionerProperties.packing) {
+        case Packing.matrjoska:
+          // Caller should allow for lengthsConstraint to be exceeded by _maxLength, set isOverflown, deal with it in caller
+          _isOverflown = (_maxLength > _lengthsConstraint);
+          _freePadding = _isOverflown ? 0.0 : _lengthsConstraint - _maxLength;
+          break;
+        case Packing.tight:
+        case Packing.loose:
+          // Caller should allow for lengthsConstraint to be exceeded by _sumLengths, set isOverflown, deal with it in caller
+          _isOverflown = (_sumLengths > _lengthsConstraint);
+          _freePadding = _isOverflown ? 0.0 : _lengthsConstraint - _sumLengths;
+          break;
+        case Packing.externalTicksProvided:
+          assert(lengthsPositionerProperties.externalTicksLayoutDescriptor != null);
+          assert(lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length == lengths.length);
+          // For external layout, isOverflown is calculated after positioning.
+          // For external layout, _freePadding is unused and unchanged, but late init it to 0.0 if it is used
+          _freePadding = 0.0;
+          break;
+      }
     }
   }
 
@@ -247,22 +261,42 @@ class LayedoutLengthsPositioner {
   final List<double> lengths;
   final LengthsPositionerProperties lengthsPositionerProperties;
   late final double _freePadding;
-  late final double lengthsConstraint;
-  late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
-  double totalPositionedLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
+  late final double _lengthsConstraint;
+  /// Indicates the [lengths] cannot be layed out, given the [lengthsPositionerProperties],
+  /// in the length available in [_lengthsConstraint].
+  ///
+  /// Calculated in constructor to true if lengthsConstraint < _maxLength or _sumLengths.
+  ///
+  /// Passed to [PositionedLineSegments] for clients to know about overflow situation.
+  late final bool _isOverflown;
+  /// During processing, manages the total length of [lengths] positioned so far.
+  /// Can change multiple times, set after each child length in lengths is converted to [LineSegment].
+  /// todo-010 : Not used in anything in layout, only in test. Consider removal
+  double _totalPositionedLengthIncludesPadding = 0.0;
+  /// If `true`, the [positionLengths] algorithm stops and returns before positioning the length which would
+  /// exceed the [_lengthsConstraint].
+  ///
+  /// Used in [WrappingBoxLayouter] and extensions to wrap to next line (or column)
+  /// before exceeding the [_lengthsConstraint].
+  final bool _isStopBeforeFirstOverflow; // todo-00-done : added
+
+  // todo-00-done : added for _isStopBeforeFirstOverflow
+  bool _isExceedLengthsConstraint(util_dart.LineSegment positionedSegment) {
+    return positionedSegment.max > _lengthsConstraint;
+  }
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
   /// defined in member [lengthsPositionerProperties].
   ///
   /// From the [lengths], it creates a list of layed out segments ; the layed out segments may be padded
-  /// if there is length available towards the [lengthsConstraint].
+  /// if there is length available towards the [_lengthsConstraint].
   ///
   /// The input are members
   ///   - [lengths] which holds the lengths to lay out, and
   ///   - [lengthsPositionerProperties] which specifies the layout properties:
   ///     - [LengthsPositionerProperties.packing] and [LengthsPositionerProperties.align] that control the layout process
   ///       (where the imaginary sticks are positioned in the result).
-  ///     - [lengthsConstraint] which is effectively the 1-dimensional constraint for the
+  ///     - [_lengthsConstraint] which is effectively the 1-dimensional constraint for the
   ///       min and max values of the layed out segments.
   ///
   /// The result of this method is a [LayedOutLineSegments] object. In this object, this method wraps
@@ -271,7 +305,7 @@ class LayedoutLengthsPositioner {
   ///     is placed in [LayedOutLineSegments.totalLayedOutLengthIncludesPadding].
   ///
   /// The [LayedOutLineSegments.lineSegments] in the result have min and max, which are positioned by the algorithm
-  /// along an interval starting at `0.0`, and generally ending at [lengthsConstraint].
+  /// along an interval starting at `0.0`, and generally ending at [_lengthsConstraint].
   ///
   /// The algorithm keeps track of, and results in, the [totalLayedOutLengthIncludesPadding]
   /// which is effectively the layout size of all the layed out imaginary sticks [LayedOutLineSegments.lineSegments].
@@ -280,19 +314,19 @@ class LayedoutLengthsPositioner {
   ///   - sum lengths for tight or loose
   ///   - max length for matrjoska
   ///
-  /// If the total length of [lengths] is below [lengthsConstraint],
+  /// If the total length of [lengths] is below [_lengthsConstraint],
   /// and the combination of Packing and Align allows free spacing, the remaining
-  /// [lengthsConstraint] are used to add spaces between, around, or to the left of the
+  /// [_lengthsConstraint] are used to add spaces between, around, or to the left of the
   /// resulting segments.
   ///
   /// OVERFLOW NOTES: This algorithm allows (as a valid but suspect result) an 'overflow condition', in which
   ///
   ///    -  The last endpoint of [LayedOutLineSegments.lineSegments] > [lengthsConstraint],
-  ///       see [isOverflown].
-  ///    - In [isOverflown] condition, no padding is used. Also, several things are true
+  ///       see [_isOverflown].
+  ///    - In [_isOverflown] condition, no padding is used. Also, several things are true
   ///      -
   ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] = the sum or max of [lengths] depending on Packing.
-  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] > [lengthsConstraint]
+  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] > [_lengthsConstraint]
   ///
   ///
   /// Example:
@@ -307,12 +341,8 @@ class LayedoutLengthsPositioner {
   ///     - max = first length + second length.
   ///
   ///
-  // todo-00-progress: Add a member isStopBeforeFirstOverflow. If true, and first overflow happens,
-  //                   stop and return PositionedLineSegments which may not contain all legths (PositionedLineSegments)
-  //                   Change _MainAndCrossPositionedSegments (isStopBeforeFirstOverflow must be there and also in PositionedLineSegments)
-  //                     to be able to report on which length it stopped (this should be clear from PositionedLineSegments length)
-  //                     caller can then call asRectangles, create another _MainAndCrossPositionedSegments from less children,
-  //                     and repeat, until all children are layed out
+  /// If [_isStopBeforeFirstOverflow] is `true`, and first overflow happens, stop and return PositionedLineSegments
+  /// which may not contain all lengths (PositionedLineSegments). Caller must process this situation.
   PositionedLineSegments positionLengths() {
     PositionedLineSegments positionedLineSegments;
     switch (lengthsPositionerProperties.packing) {
@@ -320,8 +350,8 @@ class LayedoutLengthsPositioner {
         positionedLineSegments = PositionedLineSegments(
           lineSegments:
               _assertLengthsPositiveAndReturn(_positionAsSegments(_positionMatrjoskaLineSegmentFromPreviousAndLength)),
-          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
-          isOverflown: isOverflown,
+          totalPositionedLengthIncludesPadding: _totalPositionedLengthIncludesPadding,
+          isOverflown: _isOverflown,
         );
 
         break;
@@ -329,23 +359,23 @@ class LayedoutLengthsPositioner {
         positionedLineSegments = PositionedLineSegments(
           lineSegments:
               _assertLengthsPositiveAndReturn(_positionAsSegments(_positionTightLineSegmentFromPreviousAndLength)),
-          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
-          isOverflown: isOverflown,
+          totalPositionedLengthIncludesPadding: _totalPositionedLengthIncludesPadding,
+          isOverflown: _isOverflown,
         );
         break;
       case Packing.loose:
         positionedLineSegments = PositionedLineSegments(
           lineSegments:
               _assertLengthsPositiveAndReturn(_positionAsSegments(_positionLooseLineSegmentFromPreviousAndLength)),
-          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
-          isOverflown: isOverflown,
+          totalPositionedLengthIncludesPadding: _totalPositionedLengthIncludesPadding,
+          isOverflown: _isOverflown,
         );
         break;
       case Packing.externalTicksProvided:
         positionedLineSegments = PositionedLineSegments(
           lineSegments: _assertLengthsPositiveAndReturn(_positionToExternalTicksAsSegments()),
-          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
-          isOverflown: isOverflown,
+          totalPositionedLengthIncludesPadding: _totalPositionedLengthIncludesPadding,
+          isOverflown: _isOverflown,
         );
         break;
     }
@@ -368,8 +398,20 @@ class LayedoutLengthsPositioner {
       if (i == 0) {
         previousSegment = null;
       }
-      previousSegment = fromPreviousLengthPositionThis(previousSegment, lengths[i]);
-      lineSegments.add(previousSegment);
+      // todo-00-done : previousSegment = fromPreviousLengthPositionThis(previousSegment, lengths[i]);
+      util_dart.LineSegment lengthSegment = fromPreviousLengthPositionThis(previousSegment, lengths[i]);
+      if (_isStopBeforeFirstOverflow && _isExceedLengthsConstraint(lengthSegment)) {
+        // If client wants to stop before overflow:
+        //   - for first segment, still add it, it will overflow but do not want to loose it
+        //   - for further segments, do not add, and return the previous list which did not overflow
+        if (i == 0) {
+          lineSegments.add(lengthSegment);
+        }
+        return lineSegments;
+      }
+      lineSegments.add(lengthSegment);
+
+      previousSegment = lengthSegment;
     }
     return lineSegments;
   }
@@ -411,18 +453,43 @@ class LayedoutLengthsPositioner {
 
     // Before returning, we can calculate the overflow and total length
     if (positionedSegments.isEmpty) {
-      totalPositionedLengthIncludesPadding = 0.0;
-      isOverflown = false;
+      _totalPositionedLengthIncludesPadding = 0.0;
+      _isOverflown = false;
     }
 
     util_dart.Interval envelope = positionedSegments[0].envelope(positionedSegments);
 
-    totalPositionedLengthIncludesPadding = envelope.length;
-    isOverflown = !ticksDescriptor.tickValuesRange.containsFully(envelope);
+    _totalPositionedLengthIncludesPadding = envelope.length;
+    _isOverflown = !ticksDescriptor.tickValuesRange.containsFully(envelope);
 
     return positionedSegments;
   }
 
+  /// For this [lengthsPositionerProperties] packing [Packing.tight] or [Packing.loose],
+  /// creates and returns a [util_dart.LineSegment] for the passed [length],
+  /// positioning the [length] after the [previousSegment]
+  /// according to this [lengthsPositionerProperties] alignment.
+  ///
+  /// The [previousSegment] captures the position of previous segment as [util_dart.LineSegment.min] and
+  /// [util_dart.LineSegment.max], and a [length] of this segment, calculates and returns the position of the
+  /// segment with length [length], taking into account the [lengthsPositionerProperties],
+  /// the free padding maintained in [_freePadding] (which can be distributed at the beginning, at the end, or between
+  /// [lengths]), the total available length [_lengthsConstraint], as well as overflow state [_isOverflown].
+  util_dart.LineSegment _positionTightLineSegmentFromPreviousAndLength(
+    util_dart.LineSegment? previousSegment,
+    double length,
+  ) {
+    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_tightStartOffset, previousSegment, length);
+  }
+
+  util_dart.LineSegment _positionLooseLineSegmentFromPreviousAndLength(
+    util_dart.LineSegment? previousSegment,
+    double length,
+  ) {
+    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_looseStartOffset, previousSegment, length);
+  }
+
+  /// Common process to position length as [util_dart.LineSegment] for [Packing.tight] or [Packing.loose].
   util_dart.LineSegment _positionTightOrLooseLineSegmentFromPreviousAndLength(
       _StartAndRightPad Function(bool) getStartOffset,
       util_dart.LineSegment? previousSegment,
@@ -443,38 +510,23 @@ class LayedoutLengthsPositioner {
     double rightPad = startOffsetAndRightPad.freePaddingRight;
     double start = startOffset + previousSegment.max;
     double end = startOffset + previousSegment.max + length;
-    totalPositionedLengthIncludesPadding = end + rightPad;
+    _totalPositionedLengthIncludesPadding = end + rightPad;
     return util_dart.LineSegment(start, end);
   }
 
-  /// Given a [previousSegment] which captures the position of previous segment as [util_dart.LineSegment.min] and
-  /// [util_dart.LineSegment.max], and a [length] of this segment, calculates and returns the position of the
-  /// segment with length [length], taking into account the [lengthsPositionerProperties],
-  /// the free padding maintained in [_freePadding] (which can be distributed at the beginning, at the end, or between
-  /// [lengths]), the total available length [lengthsConstraint], as well as overflow state [isOverflown].
-  util_dart.LineSegment _positionTightLineSegmentFromPreviousAndLength(
-    util_dart.LineSegment? previousSegment,
-    double length,
-  ) {
-    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_tightStartOffset, previousSegment, length);
-  }
-
-  util_dart.LineSegment _positionLooseLineSegmentFromPreviousAndLength(
-    util_dart.LineSegment? previousSegment,
-    double length,
-  ) {
-    return _positionTightOrLooseLineSegmentFromPreviousAndLength(_looseStartOffset, previousSegment, length);
-  }
-
-  /// Intended for use in  [Packing.matrjoska], creates and returns a [util_dart.LineSegment] for the passed [length],
-  /// positioning the [util_dart.LineSegment] according to [align].
+  /// For this [lengthsPositionerProperties] packing [Packing.matrjoska],
+  /// creates and returns a [util_dart.LineSegment] for the passed [length],
+  /// positioning the [length] after the [previousSegment]
+  /// according to this [lengthsPositionerProperties] alignment.
   ///
-  /// [Packing.matrjoska] ignores order of lengths, so there is no dependence on length predecessor.
+  /// [Packing.matrjoska] ignores order of lengths, so there is no dependence
+  /// on the length predecessor, the [previousSegment].
   ///
   /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLayedOutLengthIncludesPadding].
   ///
-  /// The [previousSegment] is unused in matrjoska (at the moment at least)
+  /// See [_positionTightLineSegmentFromPreviousAndLength] for discussion of state of this instance
+  /// used in the calculation.
   util_dart.LineSegment _positionMatrjoskaLineSegmentFromPreviousAndLength(
     util_dart.LineSegment? previousSegment,
     double length,
@@ -488,7 +540,7 @@ class LayedoutLengthsPositioner {
         freePadding = 0.0;
         start = freePadding;
         end = length;
-        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
+        _totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.center:
         // matrjoska does not do any padding, for Start or End, or Center : freePadding = _freePadding / 2;
@@ -496,21 +548,21 @@ class LayedoutLengthsPositioner {
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
-        totalPositionedLengthIncludesPadding = _maxLength + 2 * freePadding;
+        _totalPositionedLengthIncludesPadding = _maxLength + 2 * freePadding;
         break;
       case Align.centerExpand:
         freePadding = 0.0; // for centerExpand, no free padding
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
-        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
+        _totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.end:
         // matrjoska does not do any padding, for Start or End, or Center
         freePadding = 0.0;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
-        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
+        _totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
     }
 
@@ -613,7 +665,7 @@ class _StartAndRightPad {
 ///   - [totalPositionedLengthIncludesPadding] is the total length used by the positioner during
 ///     [LayedoutLengthsPositioner.positionLengths].
 ///   - [isOverflown] is set to true if the [totalPositionedLengthIncludesPadding] needed
-///     was larger then [LayedoutLengthsPositioner.lengthsConstraint].
+///     was larger then [LayedoutLengthsPositioner._lengthsConstraint].
 ///
 /// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
 ///
@@ -646,11 +698,12 @@ class PositionedLineSegments {
   /// Total length after layout that includes padding.
   ///
   /// If there is padding, this may be BEYOND max on last lineSegments
+  /// todo-010 : Not used in anything in layout, only in test. Consider removal
   final double totalPositionedLengthIncludesPadding;
-  /// A marker that the process that lead to layout overflew it's original constraints given in
-  /// [LayedoutLengthsPositioner.lengthsConstraint].
+  /// A marker that the process that lead to layout, the [LayedoutLengthsPositioner.positionLengths]
+  /// overflew it's original constraints given in [LayedoutLengthsPositioner._lengthsConstraint].
   ///
-  /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
+  /// It can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
   final bool isOverflown;
 
   /// Returns copy of this instance's [lineSegments] that are reversed and

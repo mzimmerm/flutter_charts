@@ -1235,6 +1235,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 
+    // todo-010 : I think this can be simplified by taking all rects, and create binding rect with 0!
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -1513,6 +1514,7 @@ abstract class PositioningBoxContainer extends BoxContainer {
   ///
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
+    // todo-010: change to StateError
     assert(positionedRectsInMe.length == children.length);
     // todo-014 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
@@ -1619,6 +1621,7 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   }
 
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
+  // todo-010 add crossLayoutAxis as perpendicular to main, then find all places in code which likely calculate crossLayoutAxis manually in code.
 
   // todo-023 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
@@ -2081,9 +2084,12 @@ class Column extends TransposingRoller {
   }
 }
 
+// todo-00-done : added Wrapping Layouters
+/// Marker class (todo-010: maybe it will obtain common [layout] related methods from [WrappingRow])
+/// for layouters that use up all available length along the [mainLayoutAxis] orientation,
+/// then wrap in the [crossLayoutAxis] orientation.
 abstract class WrappingBoxLayouter extends MainAndCrossAxisBoxLayouter {
-  // todo-00-progress
-  /// Constructor assumes fixed (not user settable) [Align] and [Packing] on the main and cross axis.
+  /// Constructor passing to super with all main and cross axis [Align] and [Packing] forwarded.
   WrappingBoxLayouter({
     required super.children,
     required super.mainAxisAlign,
@@ -2096,39 +2102,34 @@ abstract class WrappingBoxLayouter extends MainAndCrossAxisBoxLayouter {
 }
 
 class WrappingRow extends WrappingBoxLayouter {
-  // todo-00-progress
   /// Constructs with default [Align] and [Packing]
   WrappingRow({
     required List<BoxContainer> children,
     ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
-    children: children,
-    // Always start (so on left)
-    mainAxisAlign: Align.start,
-    // Always tight - if you want spacing, pad children so not needed
-    mainAxisPacking: Packing.tight,
-    // Always center
-    crossAxisAlign: Align.center,
-    // Always matrjoska, at least start with that
-    crossAxisPacking: Packing.matrjoska,
-    constraintsDivideMethod: constraintsDivideMethod,
-    constraintsWeight: constraintsWeight,
-  );
+          children: children,
+          // Always start (so on left)
+          mainAxisAlign: Align.start,
+          // Always tight - if you want spacing, pad children so not needed
+          mainAxisPacking: Packing.tight,
+          // Always center
+          crossAxisAlign: Align.center,
+          // Always matrjoska, at least start with that
+          crossAxisPacking: Packing.matrjoska,
+          constraintsDivideMethod: constraintsDivideMethod,
+          constraintsWeight: constraintsWeight,
+        );
 
-
-  // todo-00-last : probably remove. Only need to override PositionChildren
+  // todo-00-done : overridden to process in wrapping rows
   @override
   void _layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
-    // Common processing for greedy and not-greedy:
-    // First, calculate children offsets within self.
-    // Note: - When the greedy child is re-layed out, it has a final size (remainder after non greedy sizes added up),
-    //         we can deal with the greedy child as if non greedy child.
-    //       - no-op on baseclass [BoxLayouter].
-    List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_children); // todo-00-progress : maybe this is the only thing to override
+    List<List<ui.Rect>> positionedRectsByRowInMe = layout_Post_NotLeaf_PositionChildren_InWrappingRows(_children);
 
     // Apply the calculated positionedRectsInMe as offsets on children.
-    _layout_Post_NotLeaf_OffsetChildren(positionedRectsInMe, _children);
+    _layout_Post_NotLeaf_OffsetChildren_InWrappingRows(positionedRectsByRowInMe, _children);
+
+    // todo-00-next fix comment
     // Finally, when all children are at the right offsets within me, invoke
     // [_layout_Post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
     //
@@ -2138,27 +2139,67 @@ class WrappingRow extends WrappingBoxLayouter {
     //   2. Use the previously created [positionedRectsInMe], which is each child rectangle,
     //      then create bounding rectangle of [positionedRectsInMe].
     // In [_layout_Post_NotLeaf_SetSize_FromPositionedChildren] we use method 2, but assert sameness between them
-    _layout_Post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
+    _layout_Post_NotLeaf_SetSize_FromPositionedChildren_InWrappingRows(positionedRectsByRowInMe);
   }
 
-  // todo-00-progress
-  @override
-  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // This is a no-op because it does not change children positions from where they are at their current offsets.
-    // However, implementation is needed BoxContainer extensions which are positioning
-    // - in other words, all, NOT NonPositioningBoxLayouter extensions.
-    // return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
+  void _layout_Post_NotLeaf_OffsetChildren_InWrappingRows(
+      List<List<ui.Rect>> positionedRectsByRowInMe, List<LayoutableBox> children) {
+    // todo-00-done : finished this algorithm
+    //  todo-00-next : assert must be on total rects number = children number. also change to StateError, but needs ROWS: assert(positionedRectsInMe.length == children.length);
 
-    // todo-00-progress - See RollingBoxLayouter
+    double prevLinesCrossLengthSum = 0;
+    int childrenIndex = 0;
+    // Iterate rects in rows, on each row keep max cross-length, and sum line cross-lengths (prevLinesCrossLengthSum)
+    for (int row = 0; row < positionedRectsByRowInMe.length; row++) {
+      double thisLineCrossLengthMax = 0;
+      // On new row, move positionedRectsInMe[row][column] in the cross direction, by prevLinesCrossLengthSum
+      for (int column = 0; column < positionedRectsByRowInMe[row].length; column++) {
+        thisLineCrossLengthMax = math.max(
+          thisLineCrossLengthMax,
+          positionedRectsByRowInMe[row][column].size.lengthAlong(mainLayoutAxis.perpendicularAxis()),
+        );
 
-    // todo-00-progress: Add a member isStopBeforeFirstOverflow. If true, and first overflow happens,
-    //                   stop and return PositionedLineSegments which may not contain all legths (PositionedLineSegments)
-    //                   Change _MainAndCrossPositionedSegments (isStopBeforeFirstOverflow must be there and also in PositionedLineSegments)
-    //                     to be able to report on which length it stopped (this should be clear from PositionedLineSegments length)
-    //                     caller can then call asRectangles, create another _MainAndCrossPositionedSegments from less children,
-    //                     and repeat, until all children are layed out
+        positionedRectsByRowInMe[row][column] = positionedRectsByRowInMe[row][column]
+            .shiftAlong(layoutAxis: mainLayoutAxis.perpendicularAxis(), byLength: prevLinesCrossLengthSum);
+
+        // Finally apply the offset of the shifted rectangles on the corresponding child
+        children[childrenIndex].applyParentOffset(this, positionedRectsByRowInMe[row][column].topLeft);
+      }
+      // At the end of row, calculate length and go to next child
+      prevLinesCrossLengthSum += thisLineCrossLengthMax;
+      childrenIndex++;
+    }
+  }
+
+  // todo-00-done
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren_InWrappingRows(
+      List<List<ui.Rect>> positionedRectsByRowInMe) {
+    List<ui.Rect> allPositionedRects = positionedRectsByRowInMe.expand((element) => element).toList();
+    allPositionedRects.add(const ui.Rect.fromLTWH(0.0, 0.0, 0.0, 0.0));
+
+    ui.Rect positionedChildrenOuterRectIncludingFreePadding = util_flutter.boundingRect(allPositionedRects);
+
+    layoutSize = positionedChildrenOuterRectIncludingFreePadding.size;
+
+    /* todo-00-last : this algorithm must be put back and fixed
+    ui.Rect positionedChildrenOuterRect = util_flutter
+        .boundingRect(positionedRectsByRowInMe.map((ui.Rect childRect) => childRect).toList(growable: false));
+
+    __layout_Post_Assert_Layedout_Rects(positionedRectsByRowInMe, positionedChildrenOuterRect);
 
 
+    ui.Rect positionedChildrenOuterRectIncludingFreePadding = util_flutter.boundingRect(
+      [
+        const ui.Rect.fromLTWH(0.0, 0.0, 0.0, 0.0),
+        positionedChildrenOuterRect,
+      ],
+    );
+    layoutSize = positionedChildrenOuterRectIncludingFreePadding.size;
+    */
+  }
+
+  // todo-00-done
+  List<List<ui.Rect>> layout_Post_NotLeaf_PositionChildren_InWrappingRows(List<LayoutableBox> children) {
     // WrappingRow (used in Orientation=Column): lays out left to right, when next child would overflow constraints width,
     // wraps next child to next line, starting to the left of the 'max height' of previous lines
     //   - Keep list of lines with the children they display
@@ -2166,19 +2207,31 @@ class WrappingRow extends WrappingBoxLayouter {
     // See _MainAndCrossPositionedSegments , can we use the positioning, or do we do it hardcoded here? matrjoska may be hard
     // WrappingColumn: lays out top to bottom, when it reaches constraints height, wraps to top,       starting to the right of 'max width'
 
-    // todo-00-last
-    return _MainAndCrossPositionedSegments(
-      parentBoxLayouter: this,
-      parentConstraints: constraints,
-      children: children,
-      mainAxisLayoutProperties: mainAxisLayoutProperties,
-      crossAxisLayoutProperties: crossAxisLayoutProperties,
-      mainLayoutAxis: mainLayoutAxis,
-    ).asRectangles();
+    var remainingChildren = List<LayoutableBox>.from(children);
+    List<List<ui.Rect>> lineRectanglesRows = [];
+    List<ui.Rect> lineRectangles = [];
+    do {
+      lineRectangles = _MainAndCrossPositionedSegments(
+        parentBoxLayouter: this,
+        parentConstraints: constraints,
+        children: remainingChildren,
+        mainAxisLayoutProperties: mainAxisLayoutProperties,
+        crossAxisLayoutProperties: crossAxisLayoutProperties,
+        mainLayoutAxis: mainLayoutAxis,
+        isStopBeforeFirstOverflowOnMainAxis: true,
+      ).asRectangles();
+      lineRectanglesRows.add(lineRectangles);
+      // If only some children were processed, we need to wrap to next row.
+      if (lineRectangles.length < remainingChildren.length) {
+        // Prepare a list of all remaining children, and do their layout
+        remainingChildren = List<LayoutableBox>.from(remainingChildren.sublist(lineRectangles.length));
+      }
+    } while (lineRectangles.isNotEmpty);
+
+    return lineRectanglesRows;
   }
 
-  // todo-00: is this needed? See this in ExternalTicksBoxLayouter  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-
+// todo-00-next: is this needed? See this in ExternalTicksBoxLayouter  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 }
 
 /// Layouter which positions it's children along it's layout axis to a externally passed grid along the
@@ -3948,6 +4001,7 @@ class _MainAndCrossPositionedSegments {
     required this.mainLayoutAxis,
     required this.mainAxisLayoutProperties,
     required this.crossAxisLayoutProperties,
+    this.isStopBeforeFirstOverflowOnMainAxis = false, // todo-00-done : added
   })
   {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
@@ -3957,6 +4011,7 @@ class _MainAndCrossPositionedSegments {
       lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
       lengthsPositionerProperties: mainAxisLayoutProperties,
       lengthsConstraint: parentConstraints.maxLengthAlongAxis(mainLayoutAxis),
+      isStopBeforeFirstOverflow: isStopBeforeFirstOverflowOnMainAxis,
     );
 
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
@@ -3994,6 +4049,7 @@ class _MainAndCrossPositionedSegments {
   final LengthsPositionerProperties crossAxisLayoutProperties;
   late final PositionedLineSegments mainAxisPositionedSegments;
   late final PositionedLineSegments crossAxisPositionedSegments;
+  final bool isStopBeforeFirstOverflowOnMainAxis;
 
   /// Converts the line segments from [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
   /// (they correspond to children widths and heights that have been layed out)

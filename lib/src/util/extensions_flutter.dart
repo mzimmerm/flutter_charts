@@ -201,5 +201,18 @@ extension RectExtension on ui.Rect {
 
     return intersection;
   }
+
+  // todo-00-done
+  ui.Rect shiftAlong({
+    required LayoutAxis layoutAxis,
+    required double byLength,
+  }) {
+    switch (layoutAxis) {
+      case LayoutAxis.horizontal:
+        return shift(ui.Offset(byLength, 0));
+      case LayoutAxis.vertical:
+        return shift(ui.Offset(0, byLength));
+    }
+  }
 }
 
