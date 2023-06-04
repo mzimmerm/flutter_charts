@@ -136,7 +136,7 @@ extension RectExtension on ui.Rect {
   // todo-00-progress :
   /// Return `true` if this is outside of other (they do not intersect or touch)
   ///
-  /// Very specifically, this MUST not use [epsilon], otherwise the [paintWarningIfLayoutOverflows]
+  /// Very specifically, this MUST not use [epsilon], otherwise the [paintWarningIfLayoutOverflowsRootConstraints]
   /// does not work correctly.
   bool isStrictlyOutsideOf(ui.Rect other) {
     ui.Rect intersection = intersect(other);
@@ -144,6 +144,21 @@ extension RectExtension on ui.Rect {
     bool isIntersect = intersection.width > 0.0 && intersection.height > 0.0;
     // todo-00-progress-last-done: bool isIntersect = intersection.width > epsilon && intersection.height > epsilon;
     return !isIntersect;
+  }
+
+  bool isOutsideOfWithinEpsilon(ui.Rect other) {
+    return !isIntersectWithinEpsilon(other);
+  }
+
+  bool isIntersectWithinEpsilon(ui.Rect other) {
+    ui.Rect intersection = intersect(other);
+
+    // Small intersect in at least one orientation is considered no intersect
+    if (intersection.width.abs() < epsilon || intersection.height.abs() < epsilon) {
+      return false;
+    }
+    // Not intersecting ui.Rect have negative width and height.
+    return intersection.width > 0.0 && intersection.height > 0.0;
   }
 
   // TODO-00-PROGRESS-LAST-LAST-LAST
@@ -228,6 +243,11 @@ extension RectExtension on ui.Rect {
         return shift(ui.Offset(0, byLength));
     }
   }
+
+  bool isPointWithinEpsilon() {
+    return width.abs() < epsilon || height.abs() < epsilon;
+  }
+
 }
 
 extension OffsetExtension on ui.Offset {

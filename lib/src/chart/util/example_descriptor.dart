@@ -421,6 +421,8 @@ class ExampleDescriptor {
     'ex31_barChart_*_*_newAutoLayouter',
     'ex75_lineChart_*_nonStacked_newAutoLayouter',
     'ex75_barChart_*_*_newAutoLayouter',
+    'ex800_barChart_*_*_newAutoLayouter',
+    'ex800_lineChart_*_nonStacked_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimumOld = parseDescriptors([

@@ -1443,7 +1443,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // Check for overflow on every not-leaf not-overridden paint.
     // This is probably not enough as leafs are not reached.
     // But in the new layouter, not-leafs should be fully correctly contained within parents, so checking parents is enough.
-    paintWarningIfLayoutOverflows(canvas);
+    paintWarningIfLayoutOverflowsRootConstraints(canvas);
 
     if (orderedSkip) return;
 
@@ -1453,7 +1453,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
   }
 
   /// Paints a yellow-and-black (currently grey) warning rectangle about this [BoxLayouter] overflowing root constraints.
-  void paintWarningIfLayoutOverflows(ui.Canvas canvas) {
+  void paintWarningIfLayoutOverflowsRootConstraints(ui.Canvas canvas) {
     // Find constraints on top container - [get topContainerConstraints],
     //   and access them from any BoxContainer.
     BoxContainerConstraints rootConstraints = root.constraints;
@@ -1461,6 +1461,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     ui.Rect rootConstraintsMaxRect = rootOffset & rootConstraints.maxSize; // assume constraints full box with maxSize
 
     ui.Rect myPaintedRect = offset & layoutSize;
+    print(' ### Log.Info: paintWarningIfLayoutOverflowsRootConstraints: rootOffset=$rootOffset, '
+        'myPaintedRect=$myPaintedRect, rootConstraints=$rootConstraints');
+
     // Check if myPaintedRect is beyond the rootConstraints
     bool rootConstraintsContainMyPaintedRect = rootConstraints.whenOffsetContainsFullyOtherRect(
         rootOffset, myPaintedRect);
