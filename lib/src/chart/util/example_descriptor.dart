@@ -82,6 +82,7 @@ enum ExampleEnum {
   ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
   ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
   ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
+  ex800EU12CountriesHistoricalPopulation,
 
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
@@ -205,6 +206,9 @@ class ExampleDescriptor {
     //
     const Tuple2(ExampleEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
         ChartType.barChart),
+    //
+    const Tuple2(ExampleEnum.ex800EU12CountriesHistoricalPopulation,
+        ChartType.barChart),
 
     //
     const Tuple2(ExampleEnum.ex900ErrorFixUserDataAllZero, ChartType.lineChart),
@@ -320,7 +324,8 @@ class ExampleDescriptor {
         .where((tuple) => tuple.item1.name.startsWith(exampleNameStartStr))
         .map((tuple) => tuple.item1).toList();
     if (exampleEnums.isEmpty) {
-      throw StateError('Invalid (zero based) ExampleEnum field 0 in $descriptor');
+      throw StateError('Invalid (zero based) ExampleEnum field 0 in descriptor=$descriptor. '
+          'Perhaps descriptor missing in _allowed=$_allowed?');
     }
     // ExampleEnum exampleEnum = exampleEnums.first;
     exampleEnums = exampleEnums.toSet().toList();
@@ -396,6 +401,10 @@ class ExampleDescriptor {
         .expand((element) => element)
         .toList();
   }
+
+  static List<ExampleDescriptor> current = parseDescriptors([
+    'ex800_barChart_column_stacked_newAutoLayouter',
+  ]);
 
   static List<ExampleDescriptor> absoluteMinimumNew = parseDescriptors([
     'ex75_lineChart_row_nonStacked_newAutoLayouter',

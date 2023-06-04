@@ -991,6 +991,71 @@ class ExampleWidgetCreator {
         );
         break;
 
+        // todo-00-done
+      case ExampleEnum.ex800EU12CountriesHistoricalPopulation:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+              LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
+        );
+
+        chartModel = ChartModel(
+          dataRows: animalsDefaultData,
+          inputUserLabels: animalsXUserLabels,
+          legendNames: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+
+        chartModel = ChartModel(
+          dataRows: const [
+            [61.9, 69.8, 73.1, 78.3, 82.2, 83.1],
+            [39.0, 42.5, 45.4, 53.7, 58.8, 67.4],
+            [37.9, 44.0, 50.6, 56.5, 56.9, 59.2],
+            [21.3, 26.0, 30.5, 37.6, 40.8, 47.4],
+            [25.0, 40.6, 42.4, 50.0, 49.4, 41.9],
+            [27.2, 34.8, 29.5, 35.5, 38.6, 38.2],
+            [16.0, 19.9, 18.4, 22.2, 22.4, 19.2],
+            [06.7, 08.8, 11.0, 14.0, 15.0, 17.0],
+            [07.4, 08.3, 09.1, 09.8, 10.2, 11.4],
+            [09.9, 11.2, 09.4, 10.2, 10.2, 10.7],
+            [05.8, 06.3, 07.4, 08.3, 08.8, 10.3],
+            [03.0, 03.5, 03.9, 04.9, 05.4, 05.4],
+          ],
+          inputUserLabels: const ['1920', '1940', '1960', '1980', '2000', '2020'],
+          legendNames: const [
+            'Germany',
+            'France',
+            'Italy',
+            'Spain',
+            'Ukraine',
+            'Poland',
+            'Romania',
+            'Netherlands',
+            'Belgium',
+            'Czechia',
+            'Sweden',
+            'Slovakia',
+          ],
+          legendColors: const [
+            Colors.black,
+            Colors.blue,
+            Colors.cyan,
+            Colors.brown,
+            Colors.yellow,
+            Colors.red,
+            Colors.lightGreen,
+            Colors.deepPurple,
+            Colors.black12,
+            Colors.black26,
+            Colors.black38,
+            Colors.black45,
+          ],
+
+          chartOptions: chartOptions,
+        );
+
+        break;
+
       case ExampleEnum.ex900ErrorFixUserDataAllZero:
 
         /// Bug Fix: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.

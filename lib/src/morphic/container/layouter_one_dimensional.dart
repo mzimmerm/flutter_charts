@@ -215,7 +215,7 @@ class LayedoutLengthsPositioner {
     required this.lengths,
     required this.lengthsPositionerProperties,
     required double lengthsConstraint,
-    bool isStopBeforeFirstOverflow = false, // todo-00-done : added
+    bool isStopBeforeFirstOverflow = false,
   }) :
         _lengthsConstraint = lengthsConstraint,
         _isStopBeforeFirstOverflow = isStopBeforeFirstOverflow
@@ -232,7 +232,11 @@ class LayedoutLengthsPositioner {
 
     if (_isStopBeforeFirstOverflow) {
       // If set _freePadding and isOverflown is set later during processing
-      // todo-00-progress-last : added this branch consider if this makes sense. We have to ensure that late finals isOverflown and _freePadding are set!!!
+      // todo-00-next : added this branch consider if this makes sense.
+      //  We have to ensure that late finals isOverflown and _freePadding are set!
+      //  But likely, this should be done when _isStopBeforeFirstOverflow is returning!!!
+      _freePadding = 0.0;
+      _isOverflown = false;
     } else {
       switch (lengthsPositionerProperties.packing) {
         case Packing.matrjoska:
@@ -278,9 +282,9 @@ class LayedoutLengthsPositioner {
   ///
   /// Used in [WrappingBoxLayouter] and extensions to wrap to next line (or column)
   /// before exceeding the [_lengthsConstraint].
-  final bool _isStopBeforeFirstOverflow; // todo-00-done : added
+  final bool _isStopBeforeFirstOverflow;
 
-  // todo-00-done : added for _isStopBeforeFirstOverflow
+  // todo-00-done : added for _isStopBeforeFirstOverflow: Document and review how it is used
   bool _isExceedLengthsConstraint(util_dart.LineSegment positionedSegment) {
     return positionedSegment.max > _lengthsConstraint;
   }
@@ -388,7 +392,7 @@ class LayedoutLengthsPositioner {
   double get _maxLength => lengths.isNotEmpty ? lengths.reduce(math.max) : 0.0;
 
   /// Closure returns current segment position using a function which calculates current segment position
-  /// from previous segment position and current segment's length. todo-00-next: document better
+  /// from previous segment position and current segment's length. todo-0100 document better
   List<util_dart.LineSegment> _positionAsSegments(
       util_dart.LineSegment Function(util_dart.LineSegment?, double) fromPreviousLengthPositionThis,
       ) {
@@ -398,10 +402,9 @@ class LayedoutLengthsPositioner {
       if (i == 0) {
         previousSegment = null;
       }
-      // todo-00-done : previousSegment = fromPreviousLengthPositionThis(previousSegment, lengths[i]);
       util_dart.LineSegment lengthSegment = fromPreviousLengthPositionThis(previousSegment, lengths[i]);
       if (_isStopBeforeFirstOverflow && _isExceedLengthsConstraint(lengthSegment)) {
-        // If client wants to stop before overflow:
+        // If client asked to stop before overflow (used by [WrappingBoxLayouter]):
         //   - for first segment, still add it, it will overflow but do not want to loose it
         //   - for further segments, do not add, and return the previous list which did not overflow
         if (i == 0) {

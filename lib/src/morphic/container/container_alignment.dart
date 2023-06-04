@@ -10,16 +10,16 @@ import 'dart:ui' as ui;
 /// Any point (offset) within the square represents a specific alignment (position, offset) of a child rectangle
 /// inside this [Aligner].
 ///
-/// [alignX], [alignY] represent how much is child offset in the [Aligner] during layout.
-/// Alignment with ```alignX = -1; alignY = -1``` causes no offset of child in [Aligner].
-/// Alignment with ```alignX = +1; alignY = +1``` causes offset of child in [Aligner] such that
-/// the child is pushed inside Aligner all the way down and right (given text right to left).
+/// [alignX], [alignY] represent how much is the alignerChild offset in the [Aligner] during layout.
+/// Alignment with ```alignX = -1; alignY = -1``` causes no offset of alignerChild in [Aligner] .
+/// Alignment with ```alignX = +1; alignY = +1``` causes offset of alignerChild in [Aligner] such that
+/// the alignerChild is pushed inside Aligner all the way down and right (given text right to left).
 ///
 /// Basic positioning (alignments) are
 /// [Alignment.startTop], [Alignment.endTop], [Alignment.endBottom],  [Alignment.startBottom],
 /// and [Alignment.center].
 ///
-/// [Alignment] can represent any general child-inside-parent positioning (child offset in parent).
+/// [Alignment] can represent any general alignerChild-inside-parent positioning (alignerChild offset in parent).
 ///
 /// In a layout used in this snippet
 ///   ```dart
@@ -33,63 +33,71 @@ import 'dart:ui' as ui;
 ///              ),
 ///            childWidthBy: 2,
 ///            childHeightBy: 3,
-///            child: child
+///            child: alignerChild
 ///          ),
 ///        )
 ///   ```
 ///
-/// The [Aligner.childWidthBy]
+/// the [Aligner.childWidthBy] is the multiplier of the `alignerChild` width; the causes [Aligner.layoutSize] width 
+/// to be the [Aligner.childWidthBy] multiple of `alignerChild`'s layoutSize. In other words, [Aligner.childWidthBy] 
+/// makes more space for the `alignerChild` than it's layoutSize; the `alignerChild` is then positioned inside 
+/// [Aligner] at a position specified by [Alignment].
+/// 
 ///
-/// The [Aligner]s size is
+/// In more details, the [Aligner]s size is
 ///   ```dart
 ///     alignerSize = Size(
-///       childWidth * childWidthBy,
-///       childHeight * childHeightBy,
+///       alignerChildWidth * childWidthBy,
+///       alignerChildHeight * childHeightBy,
 ///       )
 ///   ```
 ///
-/// The child is then positioned in the [Aligner] at offset controlled by [alignX] and [alignY]
+/// The alignerChild is then positioned in the [Aligner] at offset controlled by [alignX] and [alignY]
 ///   ```dart
-///     childTopLefOffsetX = [childWidth *  (childWidthBy  - 1)] * (alignX + 1) / 2
-///     childTopLefOffsetY = [childHeight * (childHeightBy - 1)] * (alignY + 1) / 2
-///     Offset(childTopLefOffsetX, childTopLefOffsetY);
+///     alignerChildTopLefOffsetX = [alignerChildWidth *  (alignerChildWidthBy  - 1)] * (alignX + 1) / 2
+///     alignerChildTopLefOffsetY = [alignerChildHeight * (alignerChildHeightBy - 1)] * (alignY + 1) / 2
+///     Offset(alignerChildTopLefOffsetX, alignerChildTopLefOffsetY);
 ///   ```
 ///   (1)
 ///
 /// To visualize what this means, imagine the [Alignment] square is transformed to alignerSize.
 ///
-/// Then the child is positioned in [Aligner], making sure the whole child fits into the [Aligner].
+/// Then the alignerChild is positioned in [Aligner], making sure the whole alignerChild fits into the [Aligner].
 ///
-/// We know that ```alignerWidth = childWidth * childWidthBy```
+/// We know that ```alignerWidth = alignerChildWidth * alignerChildWidthBy```
 ///
 /// Let's workout a few border situations, to come up with a generic formula, given
 /// [Aligner.childWidthBy] and [Alignment.alignX] :
 /// ```
-///     - alignX =-1 => centerOffsetX = childWidth / 2
-///     - alignX = 0 => centerOffsetX = childWidth / 2 + (alignerWidth - childWidth) / 2 = alignerWidth / 2 = (childWidth * childWidthBy) / 2
-///     - alignX =+1 => centerOffsetX =  alignerWidth - (childWidth / 2) = childWidth * childWidthBy - (childWidth / 2) = childWidth * (childWidthBy - 1/2)
+///     - alignX =-1 => centerOffsetX = alignerChildWidth / 2
+///     - alignX = 0 => centerOffsetX = alignerChildWidth / 2 + (alignerWidth - alignerChildWidth) / 2 
+///                                   = alignerWidth / 2 = (alignerChildWidth * childWidthBy) / 2
+///     - alignX =+1 => centerOffsetX = alignerWidth - (alignerChildWidth / 2) 
+///                                   = alignerChildWidth * alignerChildWidthBy - (alignerChildWidth / 2) 
+///                                   = alignerChildWidth * (alignerChildWidthBy - 1/2)
 /// ```
 ///
-/// So the above is offset of the center of the child in aligner.
+/// So the above is offset of the center of the alignerChild in aligner.
 ///
-/// The offset of child's topLeft corner is then, for any align Value:
+/// The offset of alignerChild's topLeft corner is then, for any align Value:
 /// ```
-///     - alignX =-1, 0, 1 => topLefOffsetX = centerOffsetX - (childWidth / 2)
+///     - alignX =-1, 0, 1 => topLefOffsetX = centerOffsetX - (alignerChildWidth / 2)
 /// ```
 /// But if we express the 'align sensitive' centerOffset again, we have:
 /// ```
-///     - alignX =-1 => topLefOffsetX = childWidth / 2                    - (childWidth / 2)                                           = 0
-///     - alignX = 0 => topLefOffsetX = (childWidth * childWidthBy) / 2   - (childWidth / 2)                                           = (childWidth * (childWidthBy - 1)) / 2
-///     - alignX =+1 => topLefOffsetX = childWidth * (childWidthBy - 1/2) - (childWidth / 2) = childWidth * (childWidthBy - 1/2 - 1/2) = (childWidth * (childWidthBy - 1))
+///     - alignX =-1 => topLefOffsetX = alignerChildWidth / 2                    - (alignerChildWidth / 2)                                           = 0
+///     - alignX = 0 => topLefOffsetX = (alignerChildWidth * alignerChildWidthBy) / 2   - (alignerChildWidth / 2)                                           = (alignerChildWidth * (alignerChildWidthBy - 1)) / 2
+///     - alignX =+1 => topLefOffsetX = alignerChildWidth * (alignerChildWidthBy - 1/2) - (alignerChildWidth / 2) 
+///                                   = alignerChildWidth * (alignerChildWidthBy - 1/2 - 1/2) = (alignerChildWidth * (alignerChildWidthBy - 1))
 /// ```
 ///
 /// *So for a generic [alignX], the formula can be derived by looking at the above and realizing*
-///  that the 'end value' is ```childWidth * (childWidthBy - 1)```, when we linearly extrapolate it back to 0
+///  that the 'end value' is ```alignerChildWidth * (alignerChildWidthBy - 1)```, when we linearly extrapolate it back to 0
 ///  using values 0, 1/2, 1 for alignX = -1, 0, +1 we get the desired result.
 ///  The linear extrapolate that gives 0, 1/2, 1 for alignX = -1, 0, +1 can be constructed as ```(alignX + 1) / 2```.
 ///
 /// ```
-///     topLefOffsetX = (childWidth * (childWidthBy - 1)) * (alignX + 1) / 2
+///     topLefOffsetX = (alignerChildWidth * (alignerChildWidthBy - 1)) * (alignX + 1) / 2
 /// ```
 /// Which shows the reason for (1)
 ///
@@ -120,8 +128,8 @@ import 'dart:ui' as ui;
 ///                 |                |                |
 ///                 |                |                |
 ///   Aligner------>+----------------+----------------+
-///     childWidthBy=2               ^
-///     childHeightBy=3              |
+///     alignerChildWidthBy=2        ^
+///     alignerChildHeightBy=3       |
 ///                                  |
 ///                                  Child
 ///                                    for alignX=1

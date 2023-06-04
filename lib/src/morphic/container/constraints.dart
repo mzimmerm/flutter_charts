@@ -1,9 +1,11 @@
 import 'dart:ui' show Offset, Rect, Size;
+import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
 
 import 'container_edge_padding.dart';
 import 'morphic_dart_enums.dart';
 import '../../util/extensions_flutter.dart';
+import '../../util/util_dart.dart' show epsilon;
 import 'layouter_one_dimensional.dart';
 import 'container_layouter_base.dart' show BoxContainer;
 
@@ -148,11 +150,11 @@ abstract class BoundingBoxesBase {
   /// Returns [true] if the set all points of a left-top origin-positioned rectangle representing the passed [size]
   /// is a subset of the set of points in the area between the embedded rectangles of this [BoundingBoxesBase] - that is,
   /// [size] is between [minSize] and [maxSize], inclusive the borders of all sizes.
-  bool containsFully(Size size) {
-    return size.width <= maxSize.width &&
-        size.height <= maxSize.height &&
-        size.width >= minSize.width &&
-        size.height >= minSize.height;
+  bool containsFullyWithinEpsilon(Size size) {
+    return size.width <= maxSize.width + epsilon &&
+        size.height <= maxSize.height + epsilon &&
+        minSize.width <= size.width + epsilon &&
+        minSize.height <= size.height + epsilon;
   }
 
   double maxLengthAlongAxis(LayoutAxis layoutAxis) {
@@ -376,7 +378,7 @@ abstract class BoundingBoxesBase {
     // If other is outside of insideRect and other is inside outsideRect,
     // then other is inside this bounding box
     // Need: Rect.isOutsideOf(other)
-    return other.isOutsideOf(insideRect) && other.isInsideOf(outsideRect);
+    return other.isStrictlyOutsideOf(insideRect) && other.isInsideOfWithinEpsilon(outsideRect);
   }
 
   @override

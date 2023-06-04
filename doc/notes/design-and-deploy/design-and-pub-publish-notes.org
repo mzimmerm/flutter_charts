@@ -1959,14 +1959,50 @@ followed by
 NOW WORK TO CREATE AND VALIDATE!!
 
 
-** IN-PROGRESS-NOW ~add  WrappingColumn/Row layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
+** IN-PROGRESS-NOW ~add  WrappingRow/Column layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 
 WrappingRow (used in Orientation=Column): lays out left to right, when next child would overflow constraints width,  wraps next child to next line, starting to the left of the 'max height' of previous lines
   - Keep list of lines with the children they display
   - Can calculate max height (cross-length) 
 WrappingColumn: lays out top to bottom, when it reaches constraints height, wraps to top,       starting to the righ of 'max width'
 
-Use it in one example. 
+Use it in one example:
+
+- [X] Find out what is actual default in ~_createChildrenOfLegendContainer~: ANS: ~legendIsRowStartTightItemIsRowStartTight~ - see LegendOptions
+- [X] To ~ExampleEnum~ add example ~ex800EU10TopUkraineSupport~ ex800_barChart_column_stacked_newAutoLayouter like the one above
+- [X] In ~LegendAndItemLayoutEnum~, add ~legendIsWrappingRowItemIsRowStartTight~
+- [X] in ~_createChildrenOfLegendContainer~, add the above condition
+- [X] Make sure ~ex800EU10TopUkraineSupport~ ex800_barChart_column_stacked_newAutoLayouter uses the ~legendIsWrappingRowItemIsRowStartTight~ - WHERE IS THIS DONE?
+- [X] Add to main, the ~ex800_barChart_column_stacked_newAutoLayouter~ branch.
+  - [X] Add data with 12 series
+- [ ] Add to run configurations, ex800
+- [ ] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
+- [X] Finish the todo-00!!!
+- [ ] Test ex800 from IntelliJ
+
+
+
+todo:
+
+- [ ] Increase color generation to be fixed for 12 series.
+
+
+
+** TODO-NEXT ~Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
+
+1. [ ] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
+2. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
+3. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
+   - [ ] Under all such places, create directory ~alternative~; there, create files with same name and classes
+4. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
+   - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
+   - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
+   - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
+5. [ ] Equivalent of 4. for ~LegendItemContainer~
+6. [ ] 
+7. [ ] 
+8. [ ] 
+9. 
 
 ** LATER ~Add (reuse or improve existing) StackingLayouter~
 

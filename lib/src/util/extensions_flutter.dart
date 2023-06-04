@@ -4,6 +4,7 @@ import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter p
 
 import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
+import 'package:flutter_charts/src/util/util_dart.dart' show epsilon, isCloserThanEpsilon;
 
 import '../morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
 import '../morphic/container/morphic_dart_enums.dart' show LayoutAxis;
@@ -132,16 +133,29 @@ extension RectExtension on ui.Rect {
     return inflateWithPadding(padding.negate());
   }
 
-  bool isOutsideOf(ui.Rect other) {
+  // todo-00-progress :
+  /// Return `true` if this is outside of other (they do not intersect or touch)
+  ///
+  /// Very specifically, this MUST not use [epsilon], otherwise the [paintWarningIfLayoutOverflows]
+  /// does not work correctly.
+  bool isStrictlyOutsideOf(ui.Rect other) {
     ui.Rect intersection = intersect(other);
     // Not intersecting ui.Rect have negative width and height
     bool isIntersect = intersection.width > 0.0 && intersection.height > 0.0;
+    // todo-00-progress-last-done: bool isIntersect = intersection.width > epsilon && intersection.height > epsilon;
     return !isIntersect;
   }
 
-  bool isInsideOf(ui.Rect other) {
+  // TODO-00-PROGRESS-LAST-LAST-LAST
+  bool isInsideOfWithinEpsilon(ui.Rect other) {
     ui.Rect intersection = intersect(other);
     return intersection == this;
+    // todo-00-last : old version above breaks ex72, new version below breaks ex800. RESOLVE THIS
+    // todo-00-last-done : return intersection.isEqualWithinEpsilon(intersect(other));
+  }
+
+  bool isEqualWithinEpsilon(ui.Rect other) {
+    return topLeft.isEqualWithinEpsilon(other.topLeft) && bottomRight.isEqualWithinEpsilon(other.bottomRight);
   }
 
   /// If [other] intersects with self, returns the intersect, otherwise, moves [other]
@@ -202,7 +216,7 @@ extension RectExtension on ui.Rect {
     return intersection;
   }
 
-  // todo-00-done
+  /// Shift along the passed axis by [byLength].
   ui.Rect shiftAlong({
     required LayoutAxis layoutAxis,
     required double byLength,
@@ -216,3 +230,8 @@ extension RectExtension on ui.Rect {
   }
 }
 
+extension OffsetExtension on ui.Offset {
+  bool isEqualWithinEpsilon(ui.Offset other) {
+    return (isCloserThanEpsilon(dx, other.dx) && isCloserThanEpsilon(dy, other.dy));
+  }
+}
