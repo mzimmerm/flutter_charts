@@ -138,10 +138,10 @@ extension RectExtension on ui.Rect {
   /// In other words, returns `true` if the rectangles do not intersect even one pixel; they can touch though.
   ///
   bool isOutsideOfWithinEpsilon(ui.Rect other) {
-    return !isIntersectWithinEpsilon(other);
+    return !isIntersectsWithWithinEpsilon(other);
   }
 
-  bool isIntersectWithinEpsilon(ui.Rect other) {
+  bool isIntersectsWithWithinEpsilon(ui.Rect other) {
     ui.Rect intersection = intersect(other);
 
     // [epsilon] or smaller intersect in at least one orientation is considered no intersect.
@@ -149,8 +149,13 @@ extension RectExtension on ui.Rect {
       return false;
     }
 
-    // Not intersecting ui.Rect have negative width and height.
-    return intersection.width > 0.0 && intersection.height > 0.0; // todo-00-next: Should this be >= 1.0 - epsilon?? test that!
+    // Return `true` if this instance is outside of [other] within [epsilon], in other words:
+    //   The intersection length in both directions is one pixel or more. (Adjusted for epsilon)
+    // Note: previous version
+    //          return intersection.width > 0.0 && intersection.height > 0.0;
+    //       would be equivalent to width >= 1, but does not take into account epsilon error,
+    //       for example 0.001 would qualify, yet this would not be intersect
+    return intersection.width >= 1.0 - epsilon && intersection.height >= 1.0 - epsilon;
   }
 
   /// Returns `true` if this rectangle's corner points are all the same, or differ by at most [epsilon]

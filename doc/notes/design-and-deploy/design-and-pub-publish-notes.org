@@ -1959,7 +1959,7 @@ followed by
 NOW WORK TO CREATE AND VALIDATE!!
 
 
-** IN-PROGRESS-NOW ~add  WrappingRow/Column layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
+** DONE ~14. Add  WrappingRow/Column layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 
 Use it in one example:
 
@@ -1974,10 +1974,29 @@ Use it in one example:
 - [X] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
 - [X] Finish the todo-00!!!
 - [X] Test ex800 from IntelliJ
-- [ ] 
 
 
 
+** IN-PROGRESS ~15. RUNNING ISSUES TO SOLVE~
+
+- [ ] Fix issue: After WrappingBoxLayouter this issue:
+  - There is a println warning on ex800
+    - Log.Warning: HeightSizerLayouter: layoutSize calculated is Size(309.4, 395.4) exceeds, in width, the constraint width=395.42857142857144
+  - is there same println warning on other examples as on ex800?
+  - NOT on Ex31
+  - NOT on Ex72 (this is the overflow example, but still not that warning!)
+  - NOT on Ex75
+  - [ ] Fix this
+- [ ] At some point during running a test, I got this error (does not repeat, but there are also hangups during test startup sometimes):
+  - VMServiceFlutterDriver: Flutter Driver extension is taking a long time to become available. Ensure your test app (often "lib/main.dart") imports "package:flutter_driver/driver_extension.dart" and calls enableFlutterDriverExtension() as the first call in main().
+  - [ ] Add the above action and test
+
+** IN-PROGRESS-NOW ~15. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~ 4 days. Should start May28, end June 1.
+
+
+*** ~Think about, look at existing code, how Grid Lines should be added~
+
+*** ~Add (reuse or improve existing) StackingLayouter~
 
 ** TODO-NEXT ~Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
 
@@ -1993,15 +2012,13 @@ Use it in one example:
 6. [ ] 
 7. [ ] 
 8. [ ] 
-9. 
 
-** LATER ~Add (reuse or improve existing) StackingLayouter~
+** IN-PROGRESS ~16. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 
-** LATER ~add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~ 4 days. Should start May28, end June 1.
+Thoughts on descriptive format of such layout templates:
 
-
-** LATER ~figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
-  
+- 'chartType=barChart_chartLayoutTemplate=Column(Legend, (Table(OutputAxisVertical11, DataContainer12, EmptyCorner21, InputAxisHorizontal22))_chartStacking=stacked' : the name of OutputAxisVertical determines 'column', OutputAxisHorizontal would be 'row'
+  - this could be also called 'chartType=barChart_chartLayoutTemplate=default_chartStacking=stacked'
 
 ** ~Milestone: 2 weeks: June 4~
 
