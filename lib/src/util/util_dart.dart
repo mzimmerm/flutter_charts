@@ -273,7 +273,7 @@ class Interval {
       return false;
     }
 
-    // now Dart knows other is LayedOutLineSegments, but for clarity:
+    // now Dart knows other is PositionedLineSegments, but for clarity:
     Interval otherInterval = other;
     
     return (min == otherInterval.min && 

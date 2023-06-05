@@ -540,7 +540,7 @@ class RootSandboxSizers {
       print(' ### Log.Info: No width sizer was placed on the sandbox, returning 0 width.');
       return 0.0;
     }
-    print(' ### Log.Info: widthSizerEnsuredLength, returning ${__widthSizer!.length}.');
+    // print(' ### Log.Info: widthSizerEnsuredLength, returning ${__widthSizer!.length}.');
     return __widthSizer!.length;
   }
 
@@ -550,7 +550,7 @@ class RootSandboxSizers {
       print(' ### Log.Info: No height sizer was placed on the sandbox, returning 0 height.');
       return 0.0;
     }
-    print(' ### Log.Info: heightSizerEnsuredLength, returning ${__heightSizer!.length}.');
+    // print(' ### Log.Info: heightSizerEnsuredLength, returning ${__heightSizer!.length}.');
     return __heightSizer!.length;
   }
 }
@@ -1237,7 +1237,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 
-    // todo-010 : I think this can be simplified by taking all rects, and create binding rect with 0!
+    // todo-011-simplify : I think this can be simplified by taking all rects, and create binding rect with 0!
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -1461,7 +1461,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     if (rootOffset != const Offset(0.0, 0.0)) {
       throw StateError(' ### Error: root.offset=$rootOffset, but should be (0.0, 0.0)');
     }
-    // todo-010 : Because root offset is always 0.0, do not move self by offset.
+    // todo-011-simplify-performance : Because root offset is always 0.0, do not move self by offset.
     //            Also change all methods called below and in [BoundingBoxesBase] to work with sizes, not offsets.
     ui.Rect rootConstraintsMaxRect = rootOffset & rootConstraints.maxSize; // assume constraints full box with maxSize
 
@@ -1527,8 +1527,10 @@ abstract class PositioningBoxContainer extends BoxContainer {
   ///
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-    // todo-0100: change to StateError
-    assert(positionedRectsInMe.length == children.length);
+    if (positionedRectsInMe.length != children.length) {
+      throw StateError('Uneven length: positionedRectsInMe=$positionedRectsInMe, children=$children');
+    }
+
     // todo-014 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
@@ -1633,8 +1635,8 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
     );
   }
 
-  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
-  // todo-0101 add crossLayoutAxis as perpendicular to main, then find all places in code which likely calculate crossLayoutAxis manually in code.
+  late final LayoutAxis mainLayoutAxis;
+  late final LayoutAxis crossLayoutAxis;
 
   // todo-023 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
@@ -1849,7 +1851,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
   ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
   ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
-  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
+  ///     another and for the [crossLayoutAxis] (using the [crossAxisLayoutProperties]).
   ///   - Both main and cross axis properties are members of this [RollingBoxLayouter].
   ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
   ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
@@ -1868,6 +1870,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       mainAxisLayoutProperties: mainAxisLayoutProperties,
       crossAxisLayoutProperties: crossAxisLayoutProperties,
       mainLayoutAxis: mainLayoutAxis,
+      crossLayoutAxis: crossLayoutAxis,
     ).asRectangles();
   }
 
@@ -2054,6 +2057,7 @@ class Row extends TransposingRoller {
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
     mainLayoutAxis = LayoutAxis.horizontal;
+    crossLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
@@ -2086,6 +2090,7 @@ class Column extends TransposingRoller {
     constraintsWeight: constraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
+    crossLayoutAxis = LayoutAxis.horizontal;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
@@ -2097,9 +2102,12 @@ class Column extends TransposingRoller {
   }
 }
 
-/// Marker class (todo-0100: maybe it will obtain common [layout] related methods from [WrappingRow])
-/// for layouters that use up all available length along the [mainLayoutAxis] orientation,
-/// then wrap in the [crossLayoutAxis] orientation.
+/// Base class for layouters that use up all available [constraints] to [layout] children
+/// along the [mainLayoutAxis] orientation, then wrap in the [crossLayoutAxis] orientation.
+///
+/// All necessary [layout] related methods for the extensions [WrappingRow] and [WrappingColumn]
+/// are implemented in this base class. Any new extensions with a different wrapping behavior
+/// will likely need to override some [layout] related methods.
 abstract class WrappingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// Constructor passing to super with all main and cross axis [Align] and [Packing] forwarded.
   WrappingBoxLayouter({
@@ -2111,32 +2119,6 @@ abstract class WrappingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     super.constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     super.constraintsWeight = ConstraintsWeight.defaultWeight,
   });
-}
-
-class WrappingRow extends WrappingBoxLayouter {
-  /// Constructs with default [Align] and [Packing]
-  WrappingRow({
-    required List<BoxContainer> children,
-    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
-    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
-  }) : super(
-          children: children,
-          // Always start (so on left)
-          mainAxisAlign: Align.start,
-          // Always tight - if you want spacing, pad children so not needed
-          mainAxisPacking: Packing.tight,
-          // Always center
-          crossAxisAlign: Align.center,
-          // Always matrjoska, at least start with that
-          crossAxisPacking: Packing.matrjoska,
-          constraintsDivideMethod: constraintsDivideMethod,
-          constraintsWeight: constraintsWeight,
-        );
-
-  /* todo-00-last-done : added earlier (reason: I AM OVERRIDING BECAUSE THIS CAUSES OVERFLOW), now removing, validate it
-  @override
-  __layout_Post_AssertSizeInsideConstraints() {}
-  */
 
   /// Overridden to position [children] in wrapping rows or columns.
   @override
@@ -2197,6 +2179,7 @@ class WrappingRow extends WrappingBoxLayouter {
         mainAxisLayoutProperties: mainAxisLayoutProperties,
         crossAxisLayoutProperties: crossAxisLayoutProperties,
         mainLayoutAxis: mainLayoutAxis,
+        crossLayoutAxis: crossLayoutAxis,
         isStopBeforeFirstOverflowOnMainAxis: true,
       ).asRectangles();
       // Add row of rectangles into list of rows
@@ -2232,13 +2215,13 @@ class WrappingRow extends WrappingBoxLayouter {
       for (int column = 0; column < positionedRectsByRowInMe[row].length; column++) {
         thisRowCrossLengthMax = math.max(
           thisRowCrossLengthMax,
-          positionedRectsByRowInMe[row][column].size.lengthAlong(mainLayoutAxis.perpendicularAxis()),
+          positionedRectsByRowInMe[row][column].size.lengthAlong(crossLayoutAxis),
         );
 
         // Shift each rectangle in this row, in the cross direction, by [prevLinesCrossLengthSum].
         // This moves all rectangles in row 1..end down - this is effectively wrapping.
         positionedRectsByRowInMe[row][column] = positionedRectsByRowInMe[row][column].shiftAlong(
-          layoutAxis: mainLayoutAxis.perpendicularAxis(),
+          layoutAxis: crossLayoutAxis,
           byLength: prevLinesCrossLengthSum,
         );
 
@@ -2264,6 +2247,54 @@ class WrappingRow extends WrappingBoxLayouter {
     ui.Rect positionedChildrenOuterRectIncludingFreePadding = util_flutter.boundingRect(allPositionedRects);
 
     layoutSize = positionedChildrenOuterRectIncludingFreePadding.size;
+  }
+
+}
+
+class WrappingColumn extends WrappingBoxLayouter {
+  /// Constructs with default [Align] and [Packing]
+  WrappingColumn({
+    required List<BoxContainer> children,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
+    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
+  }) : super(
+    children: children,
+    // Always start (so on left)
+    mainAxisAlign: Align.start,
+    // Always tight - if you want spacing, pad children so not needed
+    mainAxisPacking: Packing.tight,
+    // Always center
+    crossAxisAlign: Align.center,
+    // Always matrjoska, at least start with that
+    crossAxisPacking: Packing.matrjoska,
+    constraintsDivideMethod: constraintsDivideMethod,
+    constraintsWeight: constraintsWeight,
+  ) {
+    mainLayoutAxis = LayoutAxis.vertical;
+    crossLayoutAxis = LayoutAxis.horizontal;
+  }
+}
+class WrappingRow extends WrappingBoxLayouter {
+  /// Constructs with default [Align] and [Packing]
+  WrappingRow({
+    required List<BoxContainer> children,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
+    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
+  }) : super(
+          children: children,
+          // Always start (so on left)
+          mainAxisAlign: Align.start,
+          // Always tight - if you want spacing, pad children so not needed
+          mainAxisPacking: Packing.tight,
+          // Always center
+          crossAxisAlign: Align.center,
+          // Always matrjoska, at least start with that
+          crossAxisPacking: Packing.matrjoska,
+          constraintsDivideMethod: constraintsDivideMethod,
+          constraintsWeight: constraintsWeight,
+        ) {
+    mainLayoutAxis = LayoutAxis.horizontal;
+    crossLayoutAxis = LayoutAxis.vertical;
   }
 
 }
@@ -2381,6 +2412,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
       mainAxisLayoutProperties: mainAxisLayoutProperties,
       crossAxisLayoutProperties: crossAxisLayoutProperties,
       mainLayoutAxis: mainLayoutAxis,
+      crossLayoutAxis: crossLayoutAxis,
     ).asRectangles();
   }
 
@@ -2509,6 +2541,7 @@ class ExternalTicksRow extends TransposingExternalTicks {
     // constraintsWeight: constraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.horizontal;
+    crossLayoutAxis = LayoutAxis.vertical;
   }
 }
 
@@ -2530,6 +2563,7 @@ class ExternalTicksColumn extends TransposingExternalTicks {
     mainAxisExternalTicksLayoutDescriptor: mainAxisExternalTicksLayoutDescriptor,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
+    crossLayoutAxis = LayoutAxis.horizontal;
   }
 }
 
@@ -3311,13 +3345,14 @@ class TableLayouter extends PositioningBoxLayouter {
   /// defined by it's cell definer [TableLayoutCellDefiner]
   /// (located in the same row, column position of the [TableLayouter.tableLayoutDefiner]).
   ///
-  /// In other implementations, such as [Column], all children are layed out at once, because all children
-  /// have the same [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
-  /// given the [mainLayoutAxis].
+  /// In other implementations, such as those extending [RollingBoxLayouter],
+  /// all children are layed out at once, because all children
+  /// have the same [RollingBoxLayouter.mainAxisLayoutProperties] and [RollingBoxLayouter.crossAxisLayoutProperties]
+  /// given the [RollingBoxLayouter.mainLayoutAxis] and [RollingBoxLayouter.crossLayoutAxis].
   ///
   /// The above is not the case in this [TableLayouter]:
-  ///   Here, in principle, each cell container has different
-  ///   [mainAxisLayoutProperties] and [crossAxisLayoutProperties] given the [mainLayoutAxis].
+  ///   Here, in principle, each cell container has different equivalent of
+  ///   [RollingBoxLayouter.mainAxisLayoutProperties] and [RollingBoxLayouter.crossAxisLayoutProperties].
   ///   This method creates rectangles one by one for each cell container, then
   ///   table-positions the rectangles within this [TableLayouter]'s [constraints].
   ///
@@ -3383,6 +3418,7 @@ class TableLayouter extends PositioningBoxLayouter {
           packing: Packing.tight,
         );
         var mainLayoutAxis = LayoutAxis.horizontal;
+        var crossLayoutAxis = LayoutAxis.vertical;
 
         // Use the 1Dim Positioner on main and cross direction, to position
         // [cellDefiner.cellForThisDefiner] inside the cell constraint [cellWidthHeightAsConstraintForChild]
@@ -3394,6 +3430,7 @@ class TableLayouter extends PositioningBoxLayouter {
           mainAxisLayoutProperties: mainAxisLayoutProperties,
           crossAxisLayoutProperties: crossAxisLayoutProperties,
           mainLayoutAxis: mainLayoutAxis,
+          crossLayoutAxis: crossLayoutAxis,
         ).asRectangles().first;
 
         // Now offset the rectangle by the left-top position of the (row, column) cell being layedout.
@@ -4019,7 +4056,7 @@ class _MainAndCrossPositionedSegments {
   ///   - The result is the children 1D positions using the [LayedoutLengthsPositioner],
   ///     and keeps the children positions on state in a 'primitive one-dimensional format',
   ///     in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
-  ///     which contain the 1D [LayedOutLineSegments] along main and cross axis.
+  ///     which contain the 1D [PositionedLineSegments] along main and cross axis.
   ///
   /// Note that, in the[LayedoutLengthsPositioner.positionLengths],  the offset on each element
   /// is calculated using the [mainAxisLayoutProperties] in the main axis direction,
@@ -4033,13 +4070,13 @@ class _MainAndCrossPositionedSegments {
     required this.parentConstraints,
     required this.children,
     required this.mainLayoutAxis,
+    required this.crossLayoutAxis,
     required this.mainAxisLayoutProperties,
     required this.crossAxisLayoutProperties,
     this.isStopBeforeFirstOverflowOnMainAxis = false,
   })
   {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
-    var crossLayoutAxis = mainLayoutAxis.perpendicularAxis();
 
     LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
       lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
@@ -4054,11 +4091,9 @@ class _MainAndCrossPositionedSegments {
       lengthsConstraint: parentConstraints.maxLengthAlongAxis(crossLayoutAxis),
     );
 
-    // Layout the lengths along each axis to line segments (offset-ed lengths).
+    // Layout the lengths along each axis as positioned [LineSegment]s (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout the lengths' according to it's specific rules,
     // controlled by [Packing] (tight, loose, center) and [Align] (start, end, matrjoska).
-    // The [layoutLengths] method actually includes positioning the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
-    //   which is the total length of children.
     mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.positionLengths();
     crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.positionLengths();
   }
@@ -4078,8 +4113,8 @@ class _MainAndCrossPositionedSegments {
   /// so it is passed separately.
   final BoxContainerConstraints parentConstraints;
   final List<LayoutableBox> children;
-  // todo-0100 : Each place that defines mainLayoutAxis, also add crossLayoutAxis (late final?) as perpendicular, and remove processing outside.
   final LayoutAxis mainLayoutAxis;
+  final LayoutAxis crossLayoutAxis;
   final LengthsPositionerProperties mainAxisLayoutProperties;
   final LengthsPositionerProperties crossAxisLayoutProperties;
   late final PositionedLineSegments mainAxisPositionedSegments;

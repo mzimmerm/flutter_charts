@@ -1961,11 +1961,6 @@ NOW WORK TO CREATE AND VALIDATE!!
 
 ** IN-PROGRESS-NOW ~add  WrappingRow/Column layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
 
-WrappingRow (used in Orientation=Column): lays out left to right, when next child would overflow constraints width,  wraps next child to next line, starting to the left of the 'max height' of previous lines
-  - Keep list of lines with the children they display
-  - Can calculate max height (cross-length) 
-WrappingColumn: lays out top to bottom, when it reaches constraints height, wraps to top,       starting to the righ of 'max width'
-
 Use it in one example:
 
 - [X] Find out what is actual default in ~_createChildrenOfLegendContainer~: ANS: ~legendIsRowStartTightItemIsRowStartTight~ - see LegendOptions
@@ -1975,16 +1970,12 @@ Use it in one example:
 - [X] Make sure ~ex800EU10TopUkraineSupport~ ex800_barChart_column_stacked_newAutoLayouter uses the ~legendIsWrappingRowItemIsRowStartTight~ - WHERE IS THIS DONE?
 - [X] Add to main, the ~ex800_barChart_column_stacked_newAutoLayouter~ branch.
   - [X] Add data with 12 series
-- [ ] Add to run configurations, ex800
-- [ ] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
+- [X] Add to run configurations, ex800
+- [X] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
 - [X] Finish the todo-00!!!
-- [ ] Test ex800 from IntelliJ
+- [X] Test ex800 from IntelliJ
+- [ ] 
 
-
-
-todo:
-
-- [ ] Increase color generation to be fixed for 12 series.
 
 
 

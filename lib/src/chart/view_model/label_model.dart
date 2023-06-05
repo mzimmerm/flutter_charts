@@ -322,7 +322,7 @@ class DataRangeTicksAndLabelsDescriptor {
       throw StateError('Cannot distribute negative number of positions');
     }
 
-    // Use existing positioner to find segments for labels
+    // Use existing positioner to find layedout line segments for labels
     PositionedLineSegments positionedSegments = LayedoutLengthsPositioner(
       lengths: List.generate(labelPointsCount, (index) => interval.length / labelPointsCount),
       lengthsPositionerProperties: const LengthsPositionerProperties(

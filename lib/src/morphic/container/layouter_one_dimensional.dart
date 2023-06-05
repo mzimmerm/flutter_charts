@@ -201,12 +201,13 @@ class LengthsPositionerProperties {
 ///
 class LayedoutLengthsPositioner {
 
-  /// Creates a [LayedoutLengthsPositioner] for the passed [lengths] which should be
-  /// lengths of [children], along the axis we create the positioner for.
+  /// Constructor of a [LayedoutLengthsPositioner] for the passed [lengths] which should be
+  /// lengths of children, along the axis the positioner handles.
   ///
-  /// The passed objects must all correspond to the axis for which the positioner is being created:
-  /// - [layoutAxis] defines horizontal or vertical,
-  /// - [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
+  /// Note: The axis the positioner handles is not a member, arguably it should be! Clients manage that information.
+  ///
+  /// The passed objects must all correspond to the axis for which this positioner is being created:
+  /// - The [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
   /// - [_lengthsConstraint] is the double 1D positive length into which the [lengths] should fit after positioning
   ///    by [positionLengths].
   /// - [externalTicksLayoutDescriptor] only applies for [Packing.externalTicksProvided]
@@ -277,7 +278,7 @@ class LayedoutLengthsPositioner {
   late final bool _isOverflown;
   /// During processing, manages the total length of [lengths] positioned so far.
   /// Can change multiple times, set after each child length in lengths is converted to [LineSegment].
-  /// todo-010 : Not used in anything in layout, only in test. Consider removal
+  /// todo-011-simplify : Not used in anything in layout, only in test. Consider removal
   double _totalPositionedLengthIncludesPadding = 0.0;
   /// If `true`, the [positionLengths] algorithm stops and returns before positioning the length which would
   /// exceed the [_lengthsConstraint].
@@ -296,6 +297,8 @@ class LayedoutLengthsPositioner {
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
   /// defined in member [lengthsPositionerProperties].
   ///
+  /// Returns the imaginary sticks layed out, as [PositionedLineSegments].
+  ///
   /// From the [lengths], it creates a list of layed out segments ; the layed out segments may be padded
   /// if there is length available towards the [_lengthsConstraint].
   ///
@@ -307,16 +310,7 @@ class LayedoutLengthsPositioner {
   ///     - [_lengthsConstraint] which is effectively the 1-dimensional constraint for the
   ///       min and max values of the layed out segments.
   ///
-  /// The result of this method is a [LayedOutLineSegments] object. In this object, this method wraps
-  ///   - The layed out imaginary sticks of [lengths], are placed in [LayedOutLineSegments.lineSegments]
-  ///   - The total layed out length of the layed out [LayedOutLineSegments.lineSegments], INCLUDING PADDING,
-  ///     is placed in [LayedOutLineSegments.totalLayedOutLengthIncludesPadding].
-  ///
-  /// The [LayedOutLineSegments.lineSegments] in the result have min and max, which are positioned by the algorithm
-  /// along an interval starting at `0.0`, and generally ending at [_lengthsConstraint].
-  ///
-  /// The algorithm keeps track of, and results in, the [totalLayedOutLengthIncludesPadding]
-  /// which is effectively the layout size of all the layed out imaginary sticks [LayedOutLineSegments.lineSegments].
+  /// The result of this method is a [PositionedLineSegments] object which wraps the imaginary layed out sticks.
   ///
   /// Note: The total length of [lengths] depends on Packing - it is
   ///   - sum lengths for tight or loose
@@ -329,21 +323,21 @@ class LayedoutLengthsPositioner {
   ///
   /// OVERFLOW NOTES: This algorithm allows (as a valid but suspect result) an 'overflow condition', in which
   ///
-  ///    -  The last endpoint of [LayedOutLineSegments.lineSegments] > [lengthsConstraint],
+  ///    -  The last endpoint of [PositionedLineSegments.lineSegments] > [lengthsConstraint],
   ///       see [_isOverflown].
   ///    - In [_isOverflown] condition, no padding is used. Also, several things are true
   ///      -
-  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] = the sum or max of [lengths] depending on Packing.
-  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] > [_lengthsConstraint]
+  ///      - [PositionedLineSegments.totalPositionedLengthIncludesPadding] = the sum or max of [lengths] depending on Packing.
+  ///      - [PositionedLineSegments.totalPositionedLengthIncludesPadding] > [_lengthsConstraint]
   ///
   ///
   /// Example:
   ///   - Laying out using the [Packing.tight] and [Align.start], in [LengthsPositionerProperties] :
-  ///     - The first length in [lengths] creates the first [LineSegment] in [layedOutLineSegments];
+  ///     - The first length in [lengths] creates the first [LineSegment] in [PositionedLineSegments];
   ///       this first [LineSegment] has
   ///       - min = 0.0
   ///       - max = first length
-  ///   - The second length in [lengths] creates the second [LineSegment] in [layedOutLineSegments];
+  ///   - The second length in [lengths] creates the second [LineSegment] in [PositionedLineSegments];
   ///     this second [LineSegment] has
   ///     - min = first length (tight to the end of the first segment)
   ///     - max = first length + second length.
@@ -395,8 +389,13 @@ class LayedoutLengthsPositioner {
 
   double get _maxLength => lengths.isNotEmpty ? lengths.reduce(math.max) : 0.0;
 
-  /// Closure returns current segment position using a function which calculates current segment position
-  /// from previous segment position and current segment's length. todo-0100 document better
+  /// Calculates and returns [util_dart.LineSegment]s positioned from [lengths]
+  /// using a function [fromPreviousLengthPositionThis] which calculates current segment position
+  /// from previous segment position and current segment's length.
+  ///
+  /// There are several implementations of [fromPreviousLengthPositionThis], each calculating
+  /// for a specific [Packing]. For [Packing.externalTicksProvided], there is a specific function
+  /// [_positionToExternalTicksAsSegments] with a different signature for the same purpose.
   List<util_dart.LineSegment> _positionAsSegments(
       util_dart.LineSegment Function(util_dart.LineSegment?, double) fromPreviousLengthPositionThis,
       ) {
@@ -423,14 +422,17 @@ class LayedoutLengthsPositioner {
     return lineSegments;
   }
 
-  /// Invoked for [Packing.externalTicksProvided], positions the member [lengths]
-  /// to the right, center, or left of the external ticks, defined by the member [externalTicksLayoutDescriptor].
+  /// Invoked for [Packing.externalTicksProvided], returns positions for the member [lengths]
+  /// to the right, center, or left of the external ticks in [ExternalTicksLayoutDescriptor.tickPixels].
   ///
-  /// The member [externalTicksLayoutDescriptor] must be not null for [Packing.externalTicksProvided].
+  /// The position being right, center, or left of the external ticks
+  /// is defined by the member's [lengthsPositionerProperties] enum member
+  /// [LengthsPositionerProperties.externalTicksLayoutDescriptor];
+  /// this nullable enum member must be not null for [Packing.externalTicksProvided].
   List<util_dart.LineSegment> _positionToExternalTicksAsSegments() {
-    // depending on externalTicksLayoutDescriptor.externalTickAtPosition,
-    // iterate externalTicksLayoutDescriptor.tickValues, and place each lenght in lengths to position given by the tickValue,
-    // moved a bit depending on externalTickAtPosition\
+    // depending on [ExternalTicksLayoutDescriptor.externalTickAtPosition] value of [ExternalTickAtPosition]
+    // childStart, childEnd, or childCenter, iterate [lengths], and place each [tickPixels] member
+    // in lengths to position given by the tickValue, moved left or right depending on externalTickAtPosition
 
     ExternalTicksLayoutDescriptor ticksDescriptor = lengthsPositionerProperties.externalTicksLayoutDescriptor!;
 
@@ -472,16 +474,6 @@ class LayedoutLengthsPositioner {
     return positionedSegments;
   }
 
-  /// For this [lengthsPositionerProperties] packing [Packing.tight] or [Packing.loose],
-  /// creates and returns a [util_dart.LineSegment] for the passed [length],
-  /// positioning the [length] after the [previousSegment]
-  /// according to this [lengthsPositionerProperties] alignment.
-  ///
-  /// The [previousSegment] captures the position of previous segment as [util_dart.LineSegment.min] and
-  /// [util_dart.LineSegment.max], and a [length] of this segment, calculates and returns the position of the
-  /// segment with length [length], taking into account the [lengthsPositionerProperties],
-  /// the free padding maintained in [_freePadding] (which can be distributed at the beginning, at the end, or between
-  /// [lengths]), the total available length [_lengthsConstraint], as well as overflow state [_isOverflown].
   util_dart.LineSegment _positionTightLineSegmentFromPreviousAndLength(
     util_dart.LineSegment? previousSegment,
     double length,
@@ -496,7 +488,20 @@ class LayedoutLengthsPositioner {
     return _positionTightOrLooseLineSegmentFromPreviousAndLength(_looseStartOffset, previousSegment, length);
   }
 
-  /// Common process to position length as [util_dart.LineSegment] for [Packing.tight] or [Packing.loose].
+  /// Creates and returns a [util_dart.LineSegment] for the passed [length],
+  /// positioning the [length] after the [previousSegment].
+  ///
+  /// Common process to position length as [util_dart.LineSegment] given [lengthsPositionerProperties] with
+  /// [Packing.tight] or [Packing.loose].
+  ///
+  /// - The [previousSegment] captures the position of previous segment as [util_dart.LineSegment.min] and
+  ///   [util_dart.LineSegment.max].
+  /// - [length] is the length of this segment.
+  /// - [getStartOffset] function calculates start offset of the first length.
+  /// - Calculates and returns the position of the segment with length [length],
+  ///   taking into account the [lengthsPositionerProperties] alignment and padding,
+  ///   the free padding maintained in [_freePadding] (which can be distributed at the beginning, at the end, or between
+  ///   [lengths]), the total available length [_lengthsConstraint], as well as overflow state [_isOverflown].
   util_dart.LineSegment _positionTightOrLooseLineSegmentFromPreviousAndLength(
       _StartAndRightPad Function(bool) getStartOffset,
       util_dart.LineSegment? previousSegment,
@@ -530,7 +535,7 @@ class LayedoutLengthsPositioner {
   /// on the length predecessor, the [previousSegment].
   ///
   /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
-  /// as well as the whole largest Matrjoska alignment inside the available [totalLayedOutLengthIncludesPadding].
+  /// as well as the whole largest Matrjoska alignment inside the available [totalPositionedLengthIncludesPadding].
   ///
   /// See [_positionTightLineSegmentFromPreviousAndLength] for discussion of state of this instance
   /// used in the calculation.
@@ -576,8 +581,10 @@ class LayedoutLengthsPositioner {
     return util_dart.LineSegment(start, end);
   }
 
+  /// Calculates offset at the start of each length segment, for [Packing.tight].
   ///
-  /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
+  /// Needed to set [totalPositionedLengthIncludesPadding] every time this is called for each child.
+  /// Value of last child sticks.
   _StartAndRightPad _tightStartOffset(bool isFirstLength) {
     double freePadding, startOffset, freePaddingRight;
     switch (lengthsPositionerProperties.align) {
@@ -605,8 +612,10 @@ class LayedoutLengthsPositioner {
     return _StartAndRightPad(startOffset, freePaddingRight);
   }
 
+  /// Calculates offset at the start of each length segment, for [Packing.loose].
   ///
-  /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
+  /// Needed to set [totalPositionedLengthIncludesPadding] every time this is called for each child.
+  /// Value of last child sticks.
   _StartAndRightPad _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
     double freePadding, startOffset, freePaddingRight;
@@ -661,28 +670,26 @@ class _StartAndRightPad {
 /// of the 1-dimensional layouter [LayedoutLengthsPositioner.positionLengths].
 ///
 /// It's members and what each holds on:
-///   - [lineSegments] a list of [util_dart.LineSegment]s that have been positioned
-///     by [LayedoutLengthsPositioner.positionLengths] from a list of lengths
-///     [LayedoutLengthsPositioner.lengths] which the [LayedoutLengthsPositioner] was asked to lay out.
+///   - [lineSegments] is a list of [util_dart.LineSegment]s that have been positioned
+///     by [LayedoutLengthsPositioner.positionLengths] from [LayedoutLengthsPositioner.lengths] leading to this object.
 ///     Each line segment in [lineSegments] has a min and max (start and end), where
 ///     the [LayedoutLengthsPositioner.positionLengths] positioned them; the min and max values are
-///     starting at 0.0 and ending at [totalPositionedLengthIncludesPadding].
-///     If [totalPositionedLengthIncludesPadding] needed by the layouter was
-///     greater than LayedoutLengthsPositioner.lengthsConstraint] [isOverflown] is set to true.
-///   - [totalPositionedLengthIncludesPadding] is the total length used by the positioner during
+///     starting at 0.0 and ending at or before [totalPositionedLengthIncludesPadding].
+///     If [totalPositionedLengthIncludesPadding] ended up greater than [LayedoutLengthsPositioner.lengthsConstraints]
+///     then [isOverflown] was set to true.
+///   - [totalPositionedLengthIncludesPadding] is the total length managed by the [LayedoutLengthsPositioner] during
 ///     [LayedoutLengthsPositioner.positionLengths].
 ///   - [isOverflown] is set to true if the [totalPositionedLengthIncludesPadding] needed
-///     was larger then [LayedoutLengthsPositioner._lengthsConstraint].
-///
-/// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
+///     was larger then [LayedoutLengthsPositioner._lengthsConstraint]. It is only a marker that the process that
+///     lead to layout overflew it's constraints.
 ///
 /// The clients of this object usually use this object to convert the member [lineSegments]
 /// to one side of a rectangle along the axis corresponding to children (future) positions.
 ///
 /// Note: on creation, it should be passed segments [lineSegments] already
 ///       layed out to their positions with [LayedoutLengthsPositioner.positionLengths]
-///       and [totalLayedOutLengthIncludesPadding]
-///       calculated by [LayedoutLengthsPositioner.totalLayedOutLengthIncludesPadding],
+///       and [totalPositionedLengthIncludesPadding]
+///       calculated by [LayedoutLengthsPositioner.totalPositionedLengthIncludesPadding],
 ///       as well as [isOverflown].
 ///
 class PositionedLineSegments {
@@ -705,7 +712,7 @@ class PositionedLineSegments {
   /// Total length after layout that includes padding.
   ///
   /// If there is padding, this may be BEYOND max on last lineSegments
-  /// todo-010 : Not used in anything in layout, only in test. Consider removal
+  /// todo-011-simplify : Not used in anything in layout, only in test. Consider removal
   final double totalPositionedLengthIncludesPadding;
   /// A marker that the process that lead to layout, the [LayedoutLengthsPositioner.positionLengths]
   /// overflew it's original constraints given in [LayedoutLengthsPositioner._lengthsConstraint].
@@ -742,7 +749,7 @@ class PositionedLineSegments {
       return false;
     }
 
-    // Dart knows other is LayedOutLineSegments, but for clarity:
+    // Dart knows other is PositionedLineSegments, but for clarity:
     PositionedLineSegments otherSegment = other;
     if (lineSegments.length != otherSegment.lineSegments.length) {
       return false;

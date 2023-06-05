@@ -98,10 +98,20 @@ enum ExampleEnum {
 /// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ChartType].
 ///
 /// The following static methods support generation of [ExampleDescriptor] lists:
-///   - todo-010
+///  - [extractExamplesDescriptorsFromDartDefine]
+///  - [_parseDescriptor]
+///  - [parseDescriptors]
+///  - [parseEnhancedDescriptors]
 ///
 /// The following static members contain lists of [ExampleDescriptor]s to be tested or run in the example app:
-///   - todo-010
+///  - [current]
+///  - [absoluteMinimumNew]
+///  - [minimumNew]
+///  - [minimum]
+///  - [minimumOld]
+///  - [allSupportedNew]
+///  - [allSupportedOld]
+///  - [allSupported]
 ///
 /// @Deprecated Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example.
 /// A snippet may look like
