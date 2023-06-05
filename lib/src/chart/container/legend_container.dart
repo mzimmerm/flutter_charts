@@ -128,7 +128,6 @@ class LegendContainer extends container_common.ChartAreaContainer {
           children: children,
         );
         break;
-        // todo-00-done :
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         childLayout = container_base.WrappingRow(
           children: children,
@@ -288,7 +287,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
           children: children,
         );
         break;
-        // todo-00-done
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,

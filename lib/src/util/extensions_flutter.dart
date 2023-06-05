@@ -133,19 +133,10 @@ extension RectExtension on ui.Rect {
     return inflateWithPadding(padding.negate());
   }
 
-  // todo-00-progress :
-  /// Return `true` if this is outside of other (they do not intersect or touch)
+  /// Return `true` if this instance is outside of [other] within [epsilon].
   ///
-  /// Very specifically, this MUST not use [epsilon], otherwise the [paintWarningIfLayoutOverflowsRootConstraints]
-  /// does not work correctly.
-  bool isStrictlyOutsideOf(ui.Rect other) {
-    ui.Rect intersection = intersect(other);
-    // Not intersecting ui.Rect have negative width and height
-    bool isIntersect = intersection.width > 0.0 && intersection.height > 0.0;
-    // todo-00-progress-last-done: bool isIntersect = intersection.width > epsilon && intersection.height > epsilon;
-    return !isIntersect;
-  }
-
+  /// In other words, returns `true` if the rectangles do not intersect even one pixel; they can touch though.
+  ///
   bool isOutsideOfWithinEpsilon(ui.Rect other) {
     return !isIntersectWithinEpsilon(other);
   }
@@ -153,22 +144,16 @@ extension RectExtension on ui.Rect {
   bool isIntersectWithinEpsilon(ui.Rect other) {
     ui.Rect intersection = intersect(other);
 
-    // Small intersect in at least one orientation is considered no intersect
+    // [epsilon] or smaller intersect in at least one orientation is considered no intersect.
     if (intersection.width.abs() < epsilon || intersection.height.abs() < epsilon) {
       return false;
     }
+
     // Not intersecting ui.Rect have negative width and height.
-    return intersection.width > 0.0 && intersection.height > 0.0;
+    return intersection.width > 0.0 && intersection.height > 0.0; // todo-00-next: Should this be >= 1.0 - epsilon?? test that!
   }
 
-  // TODO-00-PROGRESS-LAST-LAST-LAST
-  bool isInsideOfWithinEpsilon(ui.Rect other) {
-    ui.Rect intersection = intersect(other);
-    return intersection == this;
-    // todo-00-last : old version above breaks ex72, new version below breaks ex800. RESOLVE THIS
-    // todo-00-last-done : return intersection.isEqualWithinEpsilon(intersect(other));
-  }
-
+  /// Returns `true` if this rectangle's corner points are all the same, or differ by at most [epsilon]
   bool isEqualWithinEpsilon(ui.Rect other) {
     return topLeft.isEqualWithinEpsilon(other.topLeft) && bottomRight.isEqualWithinEpsilon(other.bottomRight);
   }

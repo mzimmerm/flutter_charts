@@ -437,5 +437,5 @@ enum LegendAndItemLayoutEnum {
   legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped
   legendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
   legendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
-  legendIsWrappingRowItemIsRowStartTight, // legend items wrap in row // todo-00-done : added
+  legendIsWrappingRowItemIsRowStartTight, // legend items wrap in row
 }

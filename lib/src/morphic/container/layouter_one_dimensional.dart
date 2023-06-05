@@ -232,9 +232,9 @@ class LayedoutLengthsPositioner {
 
     if (_isStopBeforeFirstOverflow) {
       // If set _freePadding and isOverflown is set later during processing
-      // todo-00-next : added this branch consider if this makes sense.
-      //  We have to ensure that late finals isOverflown and _freePadding are set!
-      //  But likely, this should be done when _isStopBeforeFirstOverflow is returning!!!
+      // We have to ensure that late finals isOverflown and _freePadding are set!
+      // But likely, this should be done when _isStopBeforeFirstOverflow is returning,
+      // to allow for some _freePadding to be used! But this does not seem crucial ATM.
       _freePadding = 0.0;
       _isOverflown = false;
     } else {
@@ -265,6 +265,8 @@ class LayedoutLengthsPositioner {
   final List<double> lengths;
   final LengthsPositionerProperties lengthsPositionerProperties;
   late final double _freePadding;
+  /// The maximum length the [lengths] positioned as [PositionedLineSegments] returned
+  /// from [positionLengths] should use before being considered overflown.
   late final double _lengthsConstraint;
   /// Indicates the [lengths] cannot be layed out, given the [lengthsPositionerProperties],
   /// in the length available in [_lengthsConstraint].
@@ -284,7 +286,9 @@ class LayedoutLengthsPositioner {
   /// before exceeding the [_lengthsConstraint].
   final bool _isStopBeforeFirstOverflow;
 
-  // todo-00-done : added for _isStopBeforeFirstOverflow: Document and review how it is used
+  /// Return `true` if the passed [positionedSegment] would exceed the [_lengthsConstraint].
+  ///
+  /// Should be only called if [_isStopBeforeFirstOverflow] `true`
   bool _isExceedLengthsConstraint(util_dart.LineSegment positionedSegment) {
     return positionedSegment.max > _lengthsConstraint;
   }

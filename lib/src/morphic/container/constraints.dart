@@ -366,59 +366,47 @@ abstract class BoundingBoxesBase {
     return Tuple2(offset & minSize, offset & maxSize);
   }
 
-  /// Utility method allows to check this [BoundingBoxesBase], if both [minSize] and [maxSize]
+  /// Return `true` if this [BoundingBoxesBase], after both [minSize] and [maxSize]
   /// are moved by (offset by) [offset], the resulting 'rectangle of size [maxSize] with a hole of size [minSize]',
-  /// does contain [other] rectangle.
+  /// does fully contain [other] rectangle within [epsilon].
   ///
   /// Very useful for layout algorithms to check for overflow etc.
-  /// todo-00-next : refactor so that second param is size. Document as:
-  ///
-  /// Instances of [BoundingBoxesBase] represent two sizes. Ask if the passed size fits in.
-  bool whenOffsetContainsFullyOtherRectOLD(Offset offset, Rect other) {
-    Tuple2<Rect, Rect> offsetBox = _offsetBy(offset);
-    Rect insideRect = offsetBox.item1;
-    Rect outsideRect = offsetBox.item2;
-
-    // todo-00-progress
-    // If other is outside of insideRect and other is inside outsideRect,
-    // then other is inside this bounding box
-    // Need: Rect.isOutsideOf(other)
-    return other.isStrictlyOutsideOf(insideRect) && other.isInsideOfWithinEpsilon(outsideRect);
-  }
-
-  @override
-  String toString() {
-    return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
-  }
-
-  bool whenOffsetContainsFullyOtherRect(Offset offset, Rect otherRect) {
+  bool whenOffsetContainsFullyOtherRectWithinEpsilon(Offset offset, Rect otherRect) {
     Tuple2<Rect, Rect> offsetBox = _offsetBy(offset);
     Rect myInsideRect = offsetBox.item1;
     Rect myOutsideRect = offsetBox.item2;
 
-    // todo-00-progress
     // If other is outside of insideRect and other is inside outsideRect,
     // then other is inside this bounding box
     // Need: Rect.isOutsideOf(other)
 
     return _isOtherRectOutsideOfMyInsideWithinEpsilon(otherRect, myInsideRect) 
-        && _isOtherInsideOfMyOutsideWithinEpsilon(otherRect, myOutsideRect);
+        && _isOtherRectInsideOfMyOutsideWithinEpsilon(otherRect, myOutsideRect);
 
     // return other.isStrictlyOutsideOf(insideRect) && other.isInsideOfWithinEpsilon(outsideRect);
   }
 
-  bool _isOtherInsideOfMyOutsideWithinEpsilon(Rect otherRect, Rect myOutsideRect) {
+  /// Returns `true` if the passed [otherRect] is inside of this [BoundingBoxesBase]'s [maxSize] passed as
+  /// [myOutsideRect] after being moved by a common offset.
+  bool _isOtherRectInsideOfMyOutsideWithinEpsilon(Rect otherRect, Rect myOutsideRect) {
     // otherRect is inside myOutsideRect if after intersect, intersectRect == otherRect within epsilon
     Rect intersectRect = myOutsideRect.intersect(otherRect);
     return intersectRect.isEqualWithinEpsilon(otherRect);
   }
-  
+
+  /// Returns `true` if the passed [otherRect] is outside of this [BoundingBoxesBase]'s [minSize] passed as
+  /// [myInsideRect] after being moved by a common offset.
   bool _isOtherRectOutsideOfMyInsideWithinEpsilon(Rect otherRect, Rect myInsideRect) {
     // If this [BoundingBoxesBase]'s insideRect is a point within epsilon, any [other] is considered outside.
     if (myInsideRect.isPointWithinEpsilon()) {
       return true;
     }
     return otherRect.isOutsideOfWithinEpsilon(myInsideRect);
+  }
+
+  @override
+  String toString() {
+    return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
   }
 
 }

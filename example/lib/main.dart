@@ -991,7 +991,6 @@ class ExampleWidgetCreator {
         );
         break;
 
-        // todo-00-done
       case ExampleEnum.ex800EU12CountriesHistoricalPopulation:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
