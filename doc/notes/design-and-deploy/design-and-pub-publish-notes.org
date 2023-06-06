@@ -481,12 +481,12 @@ Look for places like this
 **** DONE Rename DataRows to RawDataRows, DataRow to RawDataRow.
 
 *We only use dataRows and dataYs which represent transformed data, so make it consistent*
-- [-] Rename DataRows and related to RawDataRows
-- [-] Rename DataRow to RawDataRow.
+- [X] Rename DataRows and related to RawDataRows
+- [X] Rename DataRow to RawDataRow.
 - [X] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
 - [X] Rename LabelInfo.transformedDataValue to dataValue
-- [ ] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
-- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
+- [X] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
+- [X] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
 **** DONE LabelInfo: Make some parts a getter rather than member
 
 - [X] Convert LabelInfo.rawDataValue to getter
@@ -511,23 +511,23 @@ So this was NOT done.
 *** DONE New Container structural changes: Make Containers (Layouters?) a hierarchy and add fields, towards "Everything is a container"
 
 - [X] Add ~BoxContainerParentSandbox parentSandbox~ and move parent managed fields here
-- [-] Add hierarchy fields
+- [X] Add hierarchy fields
   - [X] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
   - [X] ~children~ should be just a List<Containers>
-  - [ ] ~traverse()~ 
+  - [X] ~traverse()~ 
   - [X] ~flatten()~ 
-  - [ ] ~isUniqueName()~
+  - [X] ~isUniqueName()~
   - [X] ~isRoot()~
   - [X] ~addChildToHierarchyDeprecated(Container)~ - can never be root
   - [X] ~name~ not null, required
-- [ ] Add Constructors
-  - [ ] ~Container.root~, configure as root
+- [X] Add Constructors
+  - [X] ~Container.root~, configure as root
     - member ~name~ set in all constructors or defaults to random string, functions as unique key. later Ensure name unique in hierarchy. 
-  - [ ] constructor from children by passing children: List<Container>
-- [ ] Layout related stuff
-  - [?] later/NOT AT ALL: add member ~boxContainerConstraints~ - NOT NOW, later - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
-  - [L] implement default method ~layout(BoxContainerConstraints)~ - see [[Layouter general function]]
-  - [?] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
+  - [X] constructor from children by passing children: List<Container>
+- [X] Layout related stuff
+  - later/NOT AT ALL: add member ~boxContainerConstraints~ - NOT NOW, later - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
+  - [X] implement default method ~layout(BoxContainerConstraints)~ - see [[Layouter general function]]
+  - [X] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
     - applies offset on self (call super)
 
 
@@ -1979,7 +1979,7 @@ Use it in one example:
 
 ** IN-PROGRESS ~15. RUNNING ISSUES TO SOLVE~
 
-- [ ] Fix issue: After WrappingBoxLayouter this issue:
+- [-] IN-PROGRESS : Fix issue: After WrappingBoxLayouter this issue:
   - There is a println warning on ex800
     - Log.Warning: HeightSizerLayouter: layoutSize calculated is Size(309.4, 395.4) exceeds, in width, the constraint width=395.42857142857144
   - is there same println warning on other examples as on ex800?
@@ -1996,6 +1996,7 @@ Use it in one example:
 
 *** ~Think about, look at existing code, how Grid Lines should be added~
 
+*** ~Start work on dotted grid lines collecting requirements for StackingLayouter changes~
 *** ~Add (reuse or improve existing) StackingLayouter~
 
 ** TODO-NEXT ~Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
@@ -2059,7 +2060,7 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 ** TODO-NEXT 11. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
 
 
-- [-] EVEN-LATER BoxContainer debuggability
+- [ ] EVEN-LATER BoxContainer debuggability
   - [X] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
 - [ ] EVEN-LATER Add to  LineSegment a field 'isAddedPadding' and 'isSegment'. That way we can clearly see what is what

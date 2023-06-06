@@ -587,8 +587,8 @@ class RootSandboxSizers {
 ///
 /// The [length] is assumed to be in units pixel -
 /// this is the width or height in pixels, to which the far-away children
-/// will linearly extrapolate their width or height.  In other words,
-/// the far-away children will fill the [length] in the appropriate direction.
+/// will linearly extrapolate their width or height, or affine transfer their position.
+/// In other words, the far-away children will fill the [length] in the appropriate direction.
 ///
 mixin FromConstraintsSizerMixin on BoxContainer {
 
@@ -631,29 +631,43 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
     children: children,
   );
 
-  /// Returns a [ui.Size] which is a modified superclass [layoutSize].
+  /// Returns a [ui.Size] which is a modified superclass [layoutSize] increased to the previously set [length] in the
+  /// width or height direction, indicated by [isWidthMain].
   ///
   /// The returned modification of `super.layoutSize` is as follows:
-  ///   - Length is this sizer main  direction, is increased to the full available [constraints] of this layouter.
+  ///   - Length in this sizer main  direction, is increased to the full available [length]
+  ///     from [constraints] of this layouter during [HeightSizerLayouter.applyParentConstraints]
+  ///     or [WidthSizerLayouter.applyParentConstraints]
   ///   - Length in this sizer cross direction, is kept.
-  ui.Size layoutSizeIncreasedToLength({required bool isWidthMain}) {
-    // In the main direction (e.g. width), must increase layoutSize calculated by super
-    // to the constraints size from this Sizer [length].
-    // If the [super.layoutSize] does not fit into this Sizer [length], display a warning,
-    // AND use the bigger not-fitting [super.layoutSize].
+  ///
+  /// Implementation note:
+  ///   Because this method [_layoutSizeIncreasedToLength] is invoked in the overridden `get layoutSize`,
+  ///   it must be when parent is asking for my size, so super.layoutSize (and in fact, this.layoutSize)
+  ///   is set by the invocation time (because my layoutSize is set in my layout,
+  ///   but queried/get during parent layout). The [length] was set at the beginning of my layout,
+  ///   in [HeightSizerLayouter.applyParentConstraints], so that is ready and set at the invocation time of this method.
+  ui.Size _layoutSizeIncreasedToLength({required bool isWidthMain}) {
+    // In the main direction (e.g. width), increase the [super.layoutSize] (this was set as children envelope),
+    // to [length], which is the full constraints of this Sizer.
+    //
+    // If the [super.layoutSize] width or height does not fit into this Sizer [length], display a warning,
+    // AND STILL use the bigger not-fitting [super.layoutSize] width or height.
     // AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller should warn or throw exception.
     ui.Size superLayoutSize = super.layoutSize;
     if (isWidthMain) {
-      if (super.layoutSize.width <= length) {
+      if (super.layoutSize.width <= length + epsilon) {
         return ui.Size(length, superLayoutSize.height);
       }
     } else {
       // Height is the direction
-      if (super.layoutSize.height <= length) {
+      if (super.layoutSize.height <= length + epsilon) {
         return ui.Size(superLayoutSize.width, length);
       }
     }
-    print(' ### Log.Warning: $runtimeType: layoutSize calculated is $superLayoutSize exceeds, in width, the constraint width=$length');
+    // [super.layoutSize] width or height does not fit into this Sizer [length], display a warning,
+    // AND use the bigger not-fitting [super.layoutSize] width or height.
+    print(' ### Log.Warning: $runtimeType: layoutSize calculated is $superLayoutSize exceeds, '
+        'in ${isWidthMain?"width":"height"}, the constraint length=$length');
     return super.layoutSize;
   }
 
@@ -669,6 +683,8 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
 
 }
 
+/// Note: This is actually UNUSED, and probably not needed. WidthSizer should remain WidthSizer,
+///       no matter what chart orientation. Same for HeightSizer.
 abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
   /// Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as
   /// the superclass constructor; Intended to be called by extensions [HeightSizerLayouter] and [WidthSizerLayouter].
@@ -720,7 +736,7 @@ class WidthSizerLayouter extends TransposingSizerLayouter {
 
   @override
   Size get layoutSize {
-    return layoutSizeIncreasedToLength(isWidthMain: true);
+    return _layoutSizeIncreasedToLength(isWidthMain: true);
   }
 }
 
@@ -751,7 +767,7 @@ class HeightSizerLayouter extends TransposingSizerLayouter {
   /// Ensures the height component of [layoutSize] uses the full height of [constraints].
   @override
   Size get layoutSize {
-    return layoutSizeIncreasedToLength(isWidthMain: false);
+    return _layoutSizeIncreasedToLength(isWidthMain: false);
   }
 
 }
@@ -1398,6 +1414,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // This is a no-op because it does not change children positions from where they are at their current offsets.
     // However, implementation is needed BoxContainer extensions which are positioning
     // - in other words, all, NOT NonPositioningBoxLayouter extensions.
+    // todo-011-layouter : should this be moved to NonPositioningBoxLayouter?
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 
