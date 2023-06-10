@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart' show immutable;
 
 // extension libraries
 import 'container/container_common.dart';
-import 'container/axis_container.dart';
+import 'container/axis_and_grid_container.dart';
 import 'chart_type/line/options.dart';
 import 'chart_type/bar/options.dart';
 

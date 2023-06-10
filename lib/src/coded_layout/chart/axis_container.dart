@@ -9,7 +9,7 @@ import 'data_container.dart';
 import 'label_container.dart';
 import '../../chart/container/container_common.dart';
 import '../../chart/container/legend_container.dart';
-import '../../chart/container/axis_container.dart';
+import '../../chart/container/axis_and_grid_container.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'

@@ -20,7 +20,7 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 
 // this level chart
 import 'package:flutter_charts/src/chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import 'package:flutter_charts/src/chart/container/axis_container.dart';
+import 'package:flutter_charts/src/chart/container/axis_and_grid_container.dart';
 
 // up level chart
 import 'package:flutter_charts/src/chart/options.dart';
@@ -37,6 +37,8 @@ import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
+
+import 'package:flutter_charts/src/chart/container/data_grid_container.dart';
 
 /// Container for data on the chart.
 ///
@@ -106,27 +108,37 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                makeInnerContainerForBothBarsAreasAndInputAxisLine(
-                  // Row with columns of positive values
-                  positiveBarsContainer: makeInnerBarsContainer(
-                    barsAreaSign: Sign.positiveOr0,
-                    outerDataContainer: this,
-                    constraintsWeight: ConstraintsWeight(weight: chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
-                  ),
-                  // X axis line. Could place in Row with main constraints weight=0.0
-                  inputAxisLine: TransposingInputAxisLineContainer(
-                    chartViewModel: chartViewModel,
-                    inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
-                    outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
-                    constraintsWeight: const ConstraintsWeight(weight: 0.0),
-                  ),
-                  // Row with columns of negative values
-                  negativeBarsContainer: makeInnerBarsContainer(
-                    barsAreaSign: Sign.negative,
-                    outerDataContainer: this,
-                    constraintsWeight: ConstraintsWeight(weight: chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.negative)),
-                  ),
-                  outerDataContainer: this,
+                // todo-00-done: added wrapper TransposingStackLayouter
+                TransposingStackLayouter(
+                  children: [
+                    TransposingGrid(),
+                    makeInnerContainerForBothBarsAreasAndInputAxisLine(
+                      // Row with columns of positive values
+                      positiveBarsContainer: makeInnerBarsContainer(
+                        barsAreaSign: Sign.positiveOr0,
+                        outerDataContainer: this,
+                        constraintsWeight: ConstraintsWeight(
+                            weight:
+                                chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
+                      ),
+                      // X axis line. Could place in Row with main constraints weight=0.0
+                      inputAxisLine: TransposingInputAxisLineContainer(
+                        chartViewModel: chartViewModel,
+                        inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
+                        outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
+                        constraintsWeight: const ConstraintsWeight(weight: 0.0),
+                      ),
+                      // Row with columns of negative values
+                      negativeBarsContainer: makeInnerBarsContainer(
+                        barsAreaSign: Sign.negative,
+                        outerDataContainer: this,
+                        constraintsWeight: ConstraintsWeight(
+                            weight:
+                                chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.negative)),
+                      ),
+                      outerDataContainer: this,
+                    ),
+                  ],
                 ),
               ],
             ),

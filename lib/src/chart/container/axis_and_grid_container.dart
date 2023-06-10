@@ -183,10 +183,13 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
 }
 
 class TransposingInputAxisContainer extends TransposingAxisContainer {
-  /// Constructs the container that holds X labels.
+  /// Constructs the container that holds labels for input values (aka independent labels, X labels).
   ///
-  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
+  /// The [constraints] provided by container-parent is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use the necessary vertical space.
+  /// todo-00-last: refactor this into a common class up to inner children, name it  TransposingInputAxisOrGridContainer,
+  /// can pass children either list of [AxisLabelContainer] or a list of [LineBetweenPointOffsetsContainer] and become
+  /// [TransposingInputAxisContainer] or [TransposingInputValuesGrid]
   TransposingInputAxisContainer({
     required ChartViewModel chartViewModel,
     required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
@@ -195,6 +198,8 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
         ) {
     List<BoxContainer> children = directionWrapperAround(
       [
+        // Transposing Column with single child, the TransposingExternalTicks.Row,
+        // which has one item per label in [_inputRangeDescriptor.labelInfoList]
         TransposingRoller.Column(
           chartOrientation: chartViewModel.chartOrientation,
           children: [
@@ -227,6 +232,9 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
   }
 }
 
+/// todo-00-last: refactor this into a common class up to inner children, name it  TransposingOutputAxisOrGridContainer,
+/// can pass children either list of [AxisLabelContainer] or a list of [LineBetweenPointOffsetsContainer] and become
+/// [TransposingOutputAxisContainer] or [TransposingOutputValuesGrid]. Also needs to pass [isShowOutputAxisLine]
 class TransposingOutputAxisContainer extends TransposingAxisContainer {
   TransposingOutputAxisContainer({
     required ChartViewModel chartViewModel,

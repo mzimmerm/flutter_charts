@@ -1,6 +1,6 @@
 // base libraries
 import '../../../container/root_container.dart';
-import '../../../container/axis_container.dart';
+import '../../../container/axis_and_grid_container.dart';
 import '../../../container/data_container.dart';
 import '../../../container/legend_container.dart';
 import '../../../view_model/view_model.dart';

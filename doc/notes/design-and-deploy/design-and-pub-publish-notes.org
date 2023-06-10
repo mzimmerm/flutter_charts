@@ -1794,7 +1794,7 @@ Classes:
   
 *** DONE Create a *completely new* BoxContainers for everything. For now, keep ~PointPresenter~ s and related.
 
-Todos and steps
+steps
 
 - [X] ~SegmentContainer~
 - [X] ~TableLayouterCell~
@@ -1977,25 +1977,101 @@ Use it in one example:
 
 
 
-** IN-PROGRESS ~15. RUNNING ISSUES TO SOLVE~
+** IN-PROGRESS ~15. RUNNING ISSUES and TODOs~
 
-- [-] IN-PROGRESS : Fix issue: After WrappingBoxLayouter this issue:
+*** Running Issues
+
+- [X] IN-PROGRESS : Fix issue: After WrappingBoxLayouter this issue:
   - There is a println warning on ex800
     - Log.Warning: HeightSizerLayouter: layoutSize calculated is Size(309.4, 395.4) exceeds, in width, the constraint width=395.42857142857144
+      - Happens in BarChartDataContainer->Padder->HeightSizerLayouter
+      - superLayoutSize=(309,395)
+      - length=395
   - is there same println warning on other examples as on ex800?
   - NOT on Ex31
   - NOT on Ex72 (this is the overflow example, but still not that warning!)
   - NOT on Ex75
-  - [ ] Fix this
+  - [X] Fix this - *The core issue was an epsilon difference, fixed that. Also fixed the error text which was misleading*
+    
 - [ ] At some point during running a test, I got this error (does not repeat, but there are also hangups during test startup sometimes):
   - VMServiceFlutterDriver: Flutter Driver extension is taking a long time to become available. Ensure your test app (often "lib/main.dart") imports "package:flutter_driver/driver_extension.dart" and calls enableFlutterDriverExtension() as the first call in main().
   - [ ] Add the above action and test
+  -
+
+
+*** Running TODOs
+
+- [ ] Implement ability to hide Container for layout and painting, or just painting
+  - [ ] Add ContainerHiding class that controls every BoxContainer layout and paind
+    - maybe this is enum
+    - isLayoutOnly
+    - isPainted
+    - if first false, second must be false
+    - layoutNoPaint
+    - noLayoutNoPaint
+    - [ ] Think about places where and how to use it. Look at current code
+    - 
+- 
+
+
+
 
 ** IN-PROGRESS-NOW ~15. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~ 4 days. Should start May28, end June 1.
 
 
 *** ~Think about, look at existing code, how Grid Lines should be added~
 
+- [X] In ~DataContainer.buildAndReplaceChildren~, surround ~makeInnerContainerForBothBarsAreasAndInputAxisLine~ with ~TransposingStackLayouter~, which adds the ~TransposingGrid~ sibling to ~ContainerForBothBarsAreasAndInputAxisLine~
+- [X] Add ~TransposingGrid~ container, 
+- [X] Test with ~TransposingGrid~ is empty! *results should not change*
+- [ ] Add ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~ first empty, then add lines in the same positions asmiddle of labels . *study how to externally position the lines - use the same layouter*
+- [ ] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis: *
+  #+begin_src dart
+    TransposingInputAxisContainer({
+      required ChartViewModel chartViewModel,
+      required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
+    }) : super(
+            chartViewModel: chartViewModel,
+          ) {
+      List<BoxContainer> children = directionWrapperAround(
+        [
+          TransposingRoller.Column(
+            chartOrientation: chartViewModel.chartOrientation,
+            children: [
+              TransposingExternalTicks.Row(
+                chartOrientation: chartViewModel.chartOrientation,
+                // HERE , USE THE SAME TICKS FROM _INPUT_RANGE_DESCRIPTOR ALSO FOR THE GRID LINES IN HORIZONTAL DIRECTION
+                mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
+                  externalTickAtPosition: ExternalTickAtPosition.childCenter,
+                ),
+                children:  [
+                  // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
+                  //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
+                  //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
+                  for (var labelInfo in _inputRangeDescriptor.labelInfoList)
+                    AxisLabelContainer(
+                      chartViewModel: chartViewModel,
+                      label: labelInfo.formattedLabel,
+                      labelTiltMatrix: vector_math.Matrix2.identity(),
+                      // No tilted labels in VerticalAxisContainer
+                      labelStyle: _labelStyle,
+                    )
+                ],
+              ),
+            ],
+          )
+        ],
+        _padGroup,
+      );
+
+      addChildren(children);
+    }
+
+  #+end_src
+- [ ] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
+- [ ] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
+- [ ] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
+  
 *** ~Start work on dotted grid lines collecting requirements for StackingLayouter changes~
 *** ~Add (reuse or improve existing) StackingLayouter~
 

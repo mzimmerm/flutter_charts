@@ -3,7 +3,7 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import '../../../chart/container/legend_container.dart';
-import '../../../chart/container/axis_container.dart';
+import '../../../chart/container/axis_and_grid_container.dart';
 import '../../../chart/view_model/view_model.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;

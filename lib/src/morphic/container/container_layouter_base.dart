@@ -3621,15 +3621,18 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
   }) : super(children: children);
 }
 
-/// A minimalistic layouter which positions each of it's children's rectangles on top of each other,
-/// so that the children's rectangles top left is on the top left position of it's constraint.
+/// A minimalistic layouter which positions each of it's [children]'s rectangles on top of each other, so that
+/// each child's rectangle top left is on the top left position of this [TransposingStackLayouter]'s [constraints].
 ///
 /// A perhaps better description is that this layouter does not change positions of it's children in itself at all -
 /// it is simply a non-positioning layouter.
 ///
+/// As all [children] are stacked on top of each other, the rectangles to which each child [paint]s do overlap.
+/// The painted result is determined by the [children] order.
+///
 /// Passes the same [constraints] it receives from parent to each of it's children.
 ///
-/// For this layouter to act as stack layouter, a bit of cooperation from the parent and children is needed, as follows:
+/// For this layouter to act as stack layouter, cooperation from the parent and children is needed, as follows:
 ///   - Parent must ensure that the full constraints passed to this layouter do not overflow in some way.
 ///     This is not a strong requirement, almost (every?) parent layouter must endure this.
 ///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
@@ -3642,6 +3645,7 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///            the StackingOrigin is absolute in the Box of TransposingStackLayouter constraints
 ///          - lays out children, each child rectangle is aligned with the same corner and same direction as StackingOrigin
 ///          - the result layoutSize is the envelope of child rectangles.
+///          - children are not required to return [layoutSize] same as passed constraints.
 /// 2. By extending NonPositioningBoxLayouter:
 ///           - layoutSize is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
 ///           - all children Just paint into the FULL CONSTRAINTS == layoutSize

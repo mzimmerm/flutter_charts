@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart' as logger;
 
 import '../../../chart/container/legend_container.dart';
-import '../../../chart/container/axis_container.dart';
+import '../../../chart/container/axis_and_grid_container.dart';
 
 // base libraries
 import '../../../chart/view_model/view_model.dart';

@@ -369,7 +369,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   }
 }
 
-/// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values.
+/// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
+/// each data value is a [PointModel].
 ///
 /// As we consider the [ChartModel] to represent a 2D array 'rows first', in other words,
 /// 'one data series is a row', with rows (each-series) ordered 'top-to-bottom',
