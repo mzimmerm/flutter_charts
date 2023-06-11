@@ -318,7 +318,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   @override
   ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
     required BarsContainer positiveBarsContainer,
-    required TransposingInputAxisLineContainer inputAxisLine,
+    required TransposingInputAxisLine inputAxisLine,
     required BarsContainer negativeBarsContainer,
     required DataContainer outerDataContainer,
     ContainerKey? key,

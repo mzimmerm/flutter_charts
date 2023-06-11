@@ -10,6 +10,10 @@ import 'coded_layout/bar/view_model.dart'; // OLD VIEW MODEL BAR
 
 import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy;
+import '../morphic/container/container_layouter_base.dart' show BoxContainer;
+import '../chart/options.dart' show ChartPaddingGroup;
+
+List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in CL');
 
 /// Classes (the only classes) that know about both new auto layout and old coded_layout
 /// classes.

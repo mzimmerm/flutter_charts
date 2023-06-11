@@ -46,9 +46,9 @@ import 'package:flutter_charts/src/chart/container/data_grid_container.dart';
 ///
 /// To be precise, it also does include the input values axis, in detail:
 ///   - It does NOT include: neither the output values axis nor the output values labels.
-///     The output values axis and labels are visually represented by [TransposingOutputAxisContainer].
+///     The output values axis and labels are visually represented by [TransposingOutputAxisOrGrid].
 ///   - From the input values axis and label, it does include only the axis, but not the labels.
-///     The input values labels are visually represented by [TransposingInputAxisContainer].
+///     The input values labels are visually represented by [TransposingInputAxisOrGrid].
 ///
 /// Important note about override:
 ///   1. Extensibility:  Consider a client that needs to place a value into each data rectangle on a bar chart.
@@ -122,7 +122,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                                 chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
                       ),
                       // X axis line. Could place in Row with main constraints weight=0.0
-                      inputAxisLine: TransposingInputAxisLineContainer(
+                      inputAxisLine: TransposingInputAxisLine(
                         chartViewModel: chartViewModel,
                         inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
                         outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
@@ -165,7 +165,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   /// [DataContainer] client-overridable method hook for extending [PositiveAndNegativeBarsWithInputAxisLineContainer].
   ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
     required BarsContainer positiveBarsContainer,
-    required TransposingInputAxisLineContainer inputAxisLine,
+    required TransposingInputAxisLine inputAxisLine,
     required BarsContainer negativeBarsContainer,
     required DataContainer outerDataContainer,
     ContainerKey? key,
@@ -281,7 +281,7 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
   });
 
   final BarsContainer positiveBarsContainer;
-  final TransposingInputAxisLineContainer inputAxisLine;
+  final TransposingInputAxisLine inputAxisLine;
   final BarsContainer negativeBarsContainer;
 
   /// non-child, kept to establish inner/outer relationship

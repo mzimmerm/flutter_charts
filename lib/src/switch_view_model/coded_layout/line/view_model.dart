@@ -14,6 +14,7 @@ import '../../../coded_layout/chart/chart_type/line/root_container.dart';
 
 import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../view_model_cl.dart'; // OLD
+import '../../view_model.dart' show directionWrapperAroundCL;
 
 class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
   SwitchLineChartViewModelCL({
@@ -34,9 +35,20 @@ class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
   LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainerCL(
       legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewModel: this),
-      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewModel: this),
-      verticalAxisContainer: VerticalAxisContainerCL(chartViewModel: this),
+      horizontalAxisContainer: HorizontalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+      ),
+      verticalAxisContainerFirst: VerticalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+        isShowOutputAxisLine: false,
+      ),
+      verticalAxisContainer: VerticalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+        isShowOutputAxisLine: false,
+      ),
       dataContainer: LineChartDataContainerCL(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

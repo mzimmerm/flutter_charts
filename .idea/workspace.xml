@@ -22,20 +22,19 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/flutter_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_charts.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_type/bar/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_type/bar/container/root_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_type/line/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_type/line/container/root_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/root_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -247,7 +246,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/view_model" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex31 - new - explicit x, y, some negative, similar to RandomData">
+  <component name="RunManager" selected="Flutter Test.tests in widget_test.dart">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -438,12 +437,6 @@
       <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Valid descriptor: Partially descriptive multi-ex-matching String" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Valid descriptor: Partially descriptive multi-ex-matching String" />
-      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
     <configuration name="integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
       <option name="testFile" value="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" />
       <option name="useRegexp" value="false" />
@@ -454,6 +447,11 @@
       <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
       <option name="useRegexp" value="false" />
       <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tests in widget_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/widget_test.dart" />
+      <option name="useRegexp" value="false" />
       <method v="2" />
     </configuration>
     <configuration name="Test driver test" type="ShConfigurationType">
@@ -560,10 +558,10 @@
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref " />
       <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />
       <item itemvalue="Flutter Test.TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.tests in widget_test.dart" />
       <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
       <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
       <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
-      <item itemvalue="Flutter Test.Valid descriptor: Partially descriptive multi-ex-matching String" />
       <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
       <item itemvalue="Shell Script.Test driver test" />
       <item itemvalue="Shell Script.run_one_create_then_validate_screenshot_test.sh" />
@@ -572,11 +570,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.tests in widget_test.dart" />
         <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
         <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
         <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
         <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
-        <item itemvalue="Flutter Test.Valid descriptor: Partially descriptive multi-ex-matching String" />
       </list>
     </recent_temporary>
   </component>
@@ -1336,7 +1334,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
-          <line>457</line>
+          <line>484</line>
           <option name="timeStamp" value="3671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1511,7 +1509,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
-          <line>75</line>
+          <line>79</line>
           <option name="timeStamp" value="3824" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1611,18 +1609,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1462</line>
-          <option name="timeStamp" value="3898" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
           <line>1499</line>
           <option name="timeStamp" value="3900" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1501</line>
-          <option name="timeStamp" value="3901" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
@@ -1739,8 +1727,46 @@
           <line>85</line>
           <option name="timeStamp" value="3925" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
+          <line>146</line>
+          <option name="timeStamp" value="3926" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
+          <line>384</line>
+          <option name="timeStamp" value="3927" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
+          <line>279</line>
+          <option name="timeStamp" value="3928" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>122</line>
+          <option name="timeStamp" value="3929" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>124</line>
+          <option name="timeStamp" value="3930" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
+          <line>78</line>
+          <option name="timeStamp" value="3931" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
+          <line>385</line>
+          <option name="timeStamp" value="3932" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="FlutterRunConfigurationType" />
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

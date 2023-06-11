@@ -13,7 +13,7 @@ import '../../chart/container/axis_and_grid_container.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_model/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
-    show LayoutableBox;
+    show LayoutableBox, BoxContainer;
 import '../../chart/options.dart';
 import '../../util/util_dart.dart';
 import '../../chart/view_model/label_model.dart';
@@ -36,7 +36,10 @@ abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvide
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [HorizontalAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutputAxisContainer {
+class VerticalAxisContainerCL
+    extends AxisContainerCL
+    // todo-00-done-last-last : can we remove the OrGrid?     implements TransposingOutputAxisOrGrid {
+    implements TransposingOutputAxis {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -44,6 +47,8 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
   /// all available vertical space, and only use necessary horizontal space.
   VerticalAxisContainerCL({
     required ChartViewModel chartViewModel,
+    required this.directionWrapperAround,
+    required this.isShowOutputAxisLine,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
     chartViewModel: chartViewModel,
@@ -57,6 +62,18 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
   /// Maximum label height found by the first layout (pre-layout),
   /// is ONLY used to 'shorten' VerticalAxisContainer constraints on top.
   double yLabelsMaxHeightFromFirstLayout = 0.0;
+
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
+
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  bool isShowOutputAxisLine;
+
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => throw UnimplementedError();
 
   /// Overridden method creates this [VerticalAxisContainerCL]'s hierarchy-children Y labels
   /// (instances of [OutputLabelContainer]) which are maintained in this [VerticalAxisContainerCL.outputLabelContainerCLs].
@@ -210,7 +227,8 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
 class HorizontalAxisContainerCL
     extends AdjustableLabelsChartAreaContainer
     with PixelRangeProvider
-    implements TransposingInputAxisContainer {
+    // todo-00-done-last-last : can we remove the OrGrid? Yes
+    implements TransposingInputAxis {
 
   /// Constructs the container that holds X labels.
   ///
@@ -218,6 +236,7 @@ class HorizontalAxisContainerCL
   /// all available horizontal space, and only use necessary vertical space.
   HorizontalAxisContainerCL({
     required ChartViewModel chartViewModel,
+    required this.directionWrapperAround,
   }) : super(
     chartViewModel: chartViewModel,
   );
@@ -237,6 +256,14 @@ class HorizontalAxisContainerCL
   /// Because [layoutSize] is late final, we cannot keep setting it during relayout.
   /// Instead, we set this member, and when relayouting is done, we use it to late-set [layoutSize] once.
   ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
+
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
+
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => throw UnimplementedError();
 
   @override
   /// Overridden method creates this [HorizontalAxisContainerCL]'s hierarchy-children X labels

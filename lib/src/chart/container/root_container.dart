@@ -95,9 +95,9 @@ class ChartRootContainer extends ChartAreaContainer {
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
   // covariant needed on some, probably not all
-  covariant late TransposingAxisContainer horizontalAxisContainer;
-  covariant late TransposingAxisContainer verticalAxisContainer;
-  covariant late TransposingAxisContainer verticalAxisContainerFirst;
+  covariant late TransposingAxisOrGrid horizontalAxisContainer;
+  covariant late TransposingAxisOrGrid verticalAxisContainer;
+  covariant late TransposingAxisOrGrid verticalAxisContainerFirst;
   covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,

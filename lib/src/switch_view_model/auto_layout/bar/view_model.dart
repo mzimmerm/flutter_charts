@@ -38,9 +38,9 @@ class SwitchBarChartViewModel extends SwitchChartViewModel {
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
       legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: TransposingAxisContainer.Horizontal(chartViewModel: this),
-      verticalAxisContainerFirst: TransposingAxisContainer.Vertical(chartViewModel: this),
-      verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxisOrGrid.HorizontalAxis(chartViewModel: this),
+      verticalAxisContainerFirst: TransposingAxisOrGrid.VerticalAxis(chartViewModel: this),
+      verticalAxisContainer: TransposingAxisOrGrid.VerticalAxis(chartViewModel: this),
       dataContainer: BarChartDataContainer(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

@@ -39,7 +39,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   });
 }
 
-class TransposingInputAxisLineContainer extends AxisLineContainer {
+class TransposingInputAxisLine extends AxisLineContainer {
   /// Creating a horizontal line between inputValue x min and x max, with outputValue y max.
   /// The reason for using y max: We want to paint HORIZONTAL line with 0 thickness, so
   ///   the layoutSize.height of the AxisLineContainer must be 0.
@@ -48,7 +48,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
   /// To achieve the 0 inner y pixel coordinates after all transforms, we need to start at the point
   ///   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
   /// See documentation in [PointOffset.affmapInContextOf] column section for details.
-  TransposingInputAxisLineContainer({
+  TransposingInputAxisLine({
     required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
     required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
     required ChartViewModel chartViewModel,
@@ -78,11 +78,11 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
 
 /// Container for the Vertical axis line only, no other elements.
 /// what chart orientation.
-class TransposingOutputAxisLineContainer extends AxisLineContainer {
+class TransposingOutputAxisLine extends AxisLineContainer {
   /// Here we use the magic of PointOffset transforms to define a HORIZONTAL line, which after
   ///   PointOffset transforms becomes VERTICAL due to the transpose of coordinates.
   /// See documentation in [PointOffset.affmapInContextOf] row section for details.
-  TransposingOutputAxisLineContainer({
+  TransposingOutputAxisLine({
     required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
     required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
     required ChartViewModel chartViewModel,
@@ -100,8 +100,8 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
         );
 }
 
-abstract class TransposingAxisContainer extends container_common.ChartAreaContainer {
-  TransposingAxisContainer({
+abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer {
+  TransposingAxisOrGrid({
     required super.chartViewModel,
   }) {
     _outputRangeDescriptor = chartViewModel.outputRangeDescriptor;
@@ -124,36 +124,38 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   late final DataRangeTicksAndLabelsDescriptor _inputRangeDescriptor;
   late final LabelStyle _labelStyle;
 
-  factory TransposingAxisContainer.Vertical({
+  factory TransposingAxisOrGrid.VerticalAxis({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
-        return TransposingOutputAxisContainer(
+        return TransposingOutputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
+          isShowOutputAxisLine: true,
         );
       case ChartOrientation.row:
-        return TransposingInputAxisContainer(
+        return TransposingInputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
         );
     }
   }
 
-  factory TransposingAxisContainer.Horizontal({
+  factory TransposingAxisOrGrid.HorizontalAxis({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
-        return TransposingInputAxisContainer(
+        return TransposingInputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
         );
       case ChartOrientation.row:
-        return TransposingOutputAxisContainer(
+        return TransposingOutputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
+          isShowOutputAxisLine: true,
         );
     }
   }
@@ -182,20 +184,28 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   }
 }
 
-class TransposingInputAxisContainer extends TransposingAxisContainer {
-  /// Constructs the container that holds labels for input values (aka independent labels, X labels).
+abstract class TransposingInputAxisOrGrid extends TransposingAxisOrGrid {
+  /// Constructs the abstract container for extensions holding one of:
+  ///   - labels for input values (aka independent labels, X labels), [TransposingInputAxis],
+  ///   - (transposing) grid lines for input values, [TransposingInputGrid]
   ///
   /// The [constraints] provided by container-parent is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use the necessary vertical space.
-  /// todo-00-last: refactor this into a common class up to inner children, name it  TransposingInputAxisOrGridContainer,
-  /// can pass children either list of [AxisLabelContainer] or a list of [LineBetweenPointOffsetsContainer] and become
-  /// [TransposingInputAxisContainer] or [TransposingInputValuesGrid]
-  TransposingInputAxisContainer({
-    required ChartViewModel chartViewModel,
-    required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
-  }) : super(
-          chartViewModel: chartViewModel,
-        ) {
+  ///
+  /// The [externallyTickedAxisChildren] should return a list of [AxisLabelContainer]s or [GridLine]s.
+  ///
+  /// The [directionWrapperAround] should be set to a padding common with [DataContainer].
+  TransposingInputAxisOrGrid({
+    required super.chartViewModel,
+    required this.directionWrapperAround,
+    // required this.externallyTickedAxisChildren,
+  });
+
+  List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround;
+  List<BoxContainer> get externallyTickedAxisChildren;
+
+  @override
+  void buildAndReplaceChildren() {
     List<BoxContainer> children = directionWrapperAround(
       [
         // Transposing Column with single child, the TransposingExternalTicks.Row,
@@ -208,7 +218,9 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
-              children:  [
+              children:
+/* todo-00-last-done
+              [
                 // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
                 //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
                 //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
@@ -221,6 +233,8 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
                     labelStyle: _labelStyle,
                   )
               ],
+*/
+            externallyTickedAxisChildren,
             ),
           ],
         )
@@ -228,20 +242,59 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
       _padGroup,
     );
 
-    addChildren(children);
+    replaceChildrenWith(children);
   }
 }
 
-/// todo-00-last: refactor this into a common class up to inner children, name it  TransposingOutputAxisOrGridContainer,
-/// can pass children either list of [AxisLabelContainer] or a list of [LineBetweenPointOffsetsContainer] and become
-/// [TransposingOutputAxisContainer] or [TransposingOutputValuesGrid]. Also needs to pass [isShowOutputAxisLine]
-class TransposingOutputAxisContainer extends TransposingAxisContainer {
-  TransposingOutputAxisContainer({
-    required ChartViewModel chartViewModel,
-    required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
-  }) : super(
-          chartViewModel: chartViewModel,
-        ) {
+class TransposingInputAxis extends TransposingInputAxisOrGrid {
+  TransposingInputAxis({
+    required super.chartViewModel,
+    required super.directionWrapperAround,
+  });
+
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => [
+    // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
+    //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
+    //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
+    for (var labelInfo in _inputRangeDescriptor.labelInfoList)
+      AxisLabelContainer(
+        chartViewModel: chartViewModel,
+        label: labelInfo.formattedLabel,
+        labelTiltMatrix: vector_math.Matrix2.identity(),
+        // No tilted labels in VerticalAxisContainer
+        labelStyle: _labelStyle,
+      )
+  ];
+
+}
+
+/// Constructs the abstract container for extensions holding one of:
+///   - labels for output values (aka dependent labels, Y labels), [TransposingOutputAxis],
+///   - (transposing) grid lines for input values, [TransposingOutputGrid]
+///
+/// The [constraints] provided by container-parent is (assumed) to direct the expansion to fill
+/// all available vertical space, and only use the necessary horizontal space.
+///
+/// The [externallyTickedAxisChildren] should return a list of [AxisLabelContainer]s or [GridLine]s.
+///
+/// The [isShowOutputAxisLine] should be `true` if used on axis, `false` if used on grid.
+///
+/// The [directionWrapperAround] should be set to a padding common with [DataContainer].
+///
+abstract class TransposingOutputAxisOrGrid extends TransposingAxisOrGrid {
+  TransposingOutputAxisOrGrid({
+    required super.chartViewModel,
+    required this.directionWrapperAround,
+    required this.isShowOutputAxisLine,
+  });
+
+  List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround;
+  List<BoxContainer> get externallyTickedAxisChildren;
+  bool isShowOutputAxisLine;
+
+  @override
+  void buildAndReplaceChildren() {
     List<BoxContainer> children = directionWrapperAround(
       [
         // Row with Column of Y labels and Y axis (Output labels and output axis)
@@ -255,8 +308,10 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                 mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
-                children: [
-                  // Add all labels from generator as children. See comment in TransposingInputAxisContainer
+                children:
+/* todo-00-done
+                [
+                  // Add all labels from generator as children. See comment in TransposingInputAxis
                   for (var labelInfo in _outputRangeDescriptor.labelInfoList)
                     AxisLabelContainer(
                       chartViewModel: chartViewModel,
@@ -266,13 +321,16 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                       labelStyle: _labelStyle,
                     )
                 ],
+*/
+              externallyTickedAxisChildren,
               ),
               // Y axis line to the right of labels
-              TransposingOutputAxisLineContainer(
-                inputRangeDescriptor: _inputRangeDescriptor,
-                outputRangeDescriptor: _outputRangeDescriptor,
-                chartViewModel: chartViewModel,
-              ),
+              if (isShowOutputAxisLine)
+                TransposingOutputAxisLine(
+                  inputRangeDescriptor: _inputRangeDescriptor,
+                  outputRangeDescriptor: _outputRangeDescriptor,
+                  chartViewModel: chartViewModel,
+                ),
             ]),
       ],
       _padGroup,
@@ -281,3 +339,26 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
     addChildren(children);
   }
 }
+
+class TransposingOutputAxis extends TransposingOutputAxisOrGrid {
+  TransposingOutputAxis({
+    required super.chartViewModel,
+    required super.directionWrapperAround,
+    required super.isShowOutputAxisLine,
+  });
+
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => [
+    // Add all labels from generator as children. See comment in TransposingInputAxis
+    for (var labelInfo in _outputRangeDescriptor.labelInfoList)
+      AxisLabelContainer(
+        chartViewModel: chartViewModel,
+        label: labelInfo.formattedLabel,
+        labelTiltMatrix: vector_math.Matrix2.identity(),
+        // No tilted labels in VerticalAxisContainer
+        labelStyle: _labelStyle,
+      )
+  ];
+
+}
+

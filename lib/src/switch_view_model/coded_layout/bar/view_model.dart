@@ -14,6 +14,7 @@ import '../../../coded_layout/chart/chart_type/bar/root_container.dart';
 
 import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../view_model_cl.dart'; // OLD
+import '../../view_model.dart' show directionWrapperAroundCL;
 
 class SwitchBarChartViewModelCL extends SwitchChartViewModelCL {
   SwitchBarChartViewModelCL({
@@ -34,9 +35,20 @@ class SwitchBarChartViewModelCL extends SwitchChartViewModelCL {
   BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainerCL(
       legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewModel: this),
-      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewModel: this),
-      verticalAxisContainer: VerticalAxisContainerCL(chartViewModel: this),
+      horizontalAxisContainer: HorizontalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+      ),
+      verticalAxisContainerFirst: VerticalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+        isShowOutputAxisLine: false,
+      ),
+      verticalAxisContainer: VerticalAxisContainerCL(
+        chartViewModel: this,
+        directionWrapperAround: directionWrapperAroundCL,
+        isShowOutputAxisLine: false,
+      ),
       dataContainer: BarChartDataContainerCL(chartViewModel: this),
       chartViewModel: chartViewModel,
     );
