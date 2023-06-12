@@ -514,15 +514,17 @@ class RootSandboxSizers {
     }
 
     if (currentSizer != null) {
+/* todo-00-last-last : put this back !!!! */
       util_dart.assertDoubleResultsSame(
         currentSizer.length,
         newSizer.length,
         'The root sandbox sizer currentSizer length differs from the newSizer length.\n'
         'Root currentSizer.length=${currentSizer.length}, newSizer.length=${newSizer.length}.\n'
-        'Current Sizer currentSizer type =${currentSizer.runtimeType}.\n'
-        'Reason: Multiple [WidthSizerLayouter]s or [WidthSizerLayouter]s were placed in the container hierarchy, '
-        'but the positions are in places where the widths of the constraints passed to them are not the same.'
+        'currentSizer type =${currentSizer.runtimeType}, newSizer type =${newSizer.runtimeType}.\n'
+        'Reason: Multiple [WidthSizerLayouter]s or [HeightSizerLayouter]s were placed in the container hierarchy, '
+        'but the positions are in places where the widths or heights of the constraints passed to them are not the same.'
       );
+/* */
       return;
     }
     if (newSizer is WidthSizerLayouter) {

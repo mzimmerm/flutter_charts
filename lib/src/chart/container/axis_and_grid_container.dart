@@ -1,17 +1,25 @@
+/* todo-00-last : remove
+import 'dart:math';
+import 'dart:ui' as ui show Size;
+*/
+
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
-import '../../morphic/container/container_layouter_base.dart';
-import '../../morphic/container/morphic_dart_enums.dart';
-import '../../morphic/container/container_edge_padding.dart';
-import '../../morphic/container/label_container.dart';
-import '../../morphic/container/chart_support/chart_style.dart';
-import '../../morphic/container/layouter_one_dimensional.dart' show Align;
-import '../../morphic/ui2d/point.dart';
-import '../view_model/label_model.dart';
-import '../chart_label_container.dart';
-import '../view_model/view_model.dart';
-import '../options.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
+import 'package:flutter_charts/src/morphic/container/label_container.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
+
+import 'package:flutter_charts/src/chart/chart_label_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+import 'package:flutter_charts/src/chart/options.dart';
+
+
 
 // this level libraries
 import 'container_common.dart' as container_common;
@@ -33,6 +41,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.fromPointOffset,
     super.toPointOffset,
     // For the pos/neg to create weight-defined constraints when in Column or Row, ConstraintsWeight must be set.
+    // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight between positive and negative sections.
     super.constraintsWeight = const ConstraintsWeight(weight: 0),
     required super.linePaint,
     required super.chartViewModel,
@@ -61,6 +70,7 @@ class TransposingInputAxisLine extends AxisLineContainer {
           //   todo-02-design : Deal with it better, but at the moment, I do not know how.
           fromPointOffset: PointOffset(
             inputValue: inputRangeDescriptor.dataRange.min,
+            // todo-010 : is this orientation switch needed? rationalize
             outputValue: chartViewModel.chartOrientation == ChartOrientation.column
                 ? outputRangeDescriptor.dataRange.max
                 : outputRangeDescriptor.dataRange.min,
@@ -160,6 +170,44 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
     }
   }
 
+  // todo-00-done : added vvvvvvv
+  factory TransposingAxisOrGrid.VerticalGrid({
+    required ChartViewModel chartViewModel,
+  }) {
+    switch (chartViewModel.chartOrientation) {
+      case ChartOrientation.column:
+        return TransposingInputGrid(
+          chartViewModel: chartViewModel,
+          directionWrapperAround: _verticalGridWrapperAround, // todo-00-last : done set to0
+        );
+      case ChartOrientation.row:
+        return TransposingOutputGrid(
+          chartViewModel: chartViewModel,
+          directionWrapperAround: _verticalGridWrapperAround, // todo-00-last : done set to0
+          isShowOutputAxisLine: true,
+        );
+    }
+  }
+
+  factory TransposingAxisOrGrid.HorizontalGrid({
+    required ChartViewModel chartViewModel,
+  }) {
+    switch (chartViewModel.chartOrientation) {
+      case ChartOrientation.column:
+        return TransposingOutputGrid(
+          chartViewModel: chartViewModel,
+          directionWrapperAround: _horizontalWrapperAround,
+          isShowOutputAxisLine: true,
+        );
+      case ChartOrientation.row:
+        return TransposingInputGrid(
+          chartViewModel: chartViewModel,
+          directionWrapperAround: _horizontalWrapperAround,
+        );
+    }
+  }
+  
+  // todo-00-done : added ^^^^^^^
   static List<BoxContainer> _horizontalWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
     return [
       WidthSizerLayouter(
@@ -182,6 +230,22 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
       ),
     ];
   }
+
+  // todo-00-last-last-last : added and set to 0 : why is 0 needed?????
+  static List<BoxContainer> _verticalGridWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
+    return [
+      // Row contains Column of labels and vertical LineSegment for Y axis
+      Padder(
+        edgePadding: const EdgePadding.withSides(
+          top: 0, // padGroup.heightPadTopOfYAndData(),
+          bottom: 0, // padGroup.heightPadBottomOfYAndData(),
+        ),
+        child: HeightSizerLayouter(
+          children: children,
+        ),
+      ),
+    ];
+  }
 }
 
 abstract class TransposingInputAxisOrGrid extends TransposingAxisOrGrid {
@@ -194,11 +258,10 @@ abstract class TransposingInputAxisOrGrid extends TransposingAxisOrGrid {
   ///
   /// The [externallyTickedAxisChildren] should return a list of [AxisLabelContainer]s or [GridLine]s.
   ///
-  /// The [directionWrapperAround] should be set to a padding common with [DataContainer].
+  /// The [directionWrapperAround] MUST be set to a padding that is the same as one used in [DataContainer].
   TransposingInputAxisOrGrid({
     required super.chartViewModel,
     required this.directionWrapperAround,
-    // required this.externallyTickedAxisChildren,
   });
 
   List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround;
@@ -218,23 +281,7 @@ abstract class TransposingInputAxisOrGrid extends TransposingAxisOrGrid {
               mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
-              children:
-/* todo-00-last-done
-              [
-                // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-                //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
-                //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
-                for (var labelInfo in _inputRangeDescriptor.labelInfoList)
-                  AxisLabelContainer(
-                    chartViewModel: chartViewModel,
-                    label: labelInfo.formattedLabel,
-                    labelTiltMatrix: vector_math.Matrix2.identity(),
-                    // No tilted labels in VerticalAxisContainer
-                    labelStyle: _labelStyle,
-                  )
-              ],
-*/
-            externallyTickedAxisChildren,
+              children: externallyTickedAxisChildren,
             ),
           ],
         )
@@ -267,6 +314,63 @@ class TransposingInputAxis extends TransposingInputAxisOrGrid {
       )
   ];
 
+}
+
+// todo-00-last-progress
+class TransposingInputGrid extends TransposingInputAxisOrGrid {
+  TransposingInputGrid({
+    required super.chartViewModel,
+    required super.directionWrapperAround,
+  });
+
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => [
+        // For each label, add a grid line in the external ticks center for line chart,
+        //   in the external ticks end for bar chart.
+        for (var labelInfo in _inputRangeDescriptor.labelInfoList)
+          // todo-00-last-progress
+          LineBetweenPointOffsetsContainer(
+            fromPointOffset: PointOffset(
+              inputValue: 0, // inputRangeDescriptor.dataRange.min,
+              outputValue: _outputRangeDescriptor.dataRange.min,
+            ),
+            toPointOffset: PointOffset(
+              inputValue: 0, // inputRangeDescriptor.dataRange.max,
+              outputValue: _outputRangeDescriptor.dataRange.max,
+            ),
+            linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+            chartViewModel: chartViewModel,
+          )
+      ];
+}
+
+// todo-00-last-progress
+class TransposingOutputGrid extends TransposingOutputAxisOrGrid {
+  TransposingOutputGrid({
+    required super.chartViewModel,
+    required super.directionWrapperAround,
+    required super.isShowOutputAxisLine,
+  });
+
+  @override
+  List<BoxContainer> get externallyTickedAxisChildren => [
+
+    for (var labelInfo in _outputRangeDescriptor.labelInfoList)
+    // todo-00-last-progress
+      // todo-00-last-last : this must be replaced with code taken from output axis TransposingOutputAxis
+      LineBetweenPointOffsetsContainer(
+        fromPointOffset: PointOffset(
+          inputValue: 0, // inputRangeDescriptor.dataRange.min,
+          outputValue: _outputRangeDescriptor.dataRange.min,
+        ),
+        toPointOffset: PointOffset(
+          inputValue: 0, // inputRangeDescriptor.dataRange.max,
+          outputValue: _outputRangeDescriptor.dataRange.max,
+        ),
+        linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+        chartViewModel: chartViewModel,
+      )
+  ];
 }
 
 /// Constructs the abstract container for extensions holding one of:
@@ -308,21 +412,7 @@ abstract class TransposingOutputAxisOrGrid extends TransposingAxisOrGrid {
                 mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
-                children:
-/* todo-00-done
-                [
-                  // Add all labels from generator as children. See comment in TransposingInputAxis
-                  for (var labelInfo in _outputRangeDescriptor.labelInfoList)
-                    AxisLabelContainer(
-                      chartViewModel: chartViewModel,
-                      label: labelInfo.formattedLabel,
-                      labelTiltMatrix: vector_math.Matrix2.identity(),
-                      // No tilted labels in VerticalAxisContainer
-                      labelStyle: _labelStyle,
-                    )
-                ],
-*/
-              externallyTickedAxisChildren,
+                children: externallyTickedAxisChildren,
               ),
               // Y axis line to the right of labels
               if (isShowOutputAxisLine)
@@ -359,6 +449,36 @@ class TransposingOutputAxis extends TransposingOutputAxisOrGrid {
         labelStyle: _labelStyle,
       )
   ];
+}
 
+// todo-00-progress
+class TransposingGrid extends NonPositioningBoxLayouter {
+
+  /// The required generative constructor
+  TransposingGrid({
+    // List<BoxContainer>? children,
+    required this.transposingInputGrid,
+  }) : super(
+    children: [transposingInputGrid],
+  );
+
+  TransposingInputGrid transposingInputGrid;
+
+  @override
+  void buildAndReplaceChildren() {
+    replaceChildrenWith([
+      TransposingStackLayouter(children: [transposingInputGrid,]),
+    ]);
+  }
+
+  /* todo-00-progress : remove this and add  implementation buildAndReplaceChildren which has TransposingInputValuesGrid and input
+  @override
+  bool get isLeaf => true;
+
+  @override
+  void layout_Post_Leaf_SetSize_FromInternals() {
+    layoutSize = const ui.Size(0.0, 0.0);
+  }
+  */
 }
 

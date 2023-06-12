@@ -22,11 +22,10 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 import 'package:flutter_charts/src/chart/container/container_common.dart' as container_common show ChartAreaContainer;
 import 'package:flutter_charts/src/chart/container/axis_and_grid_container.dart';
 
-// up level chart
+// up and down levels
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, ClsPointToNullableContainer, PointsBarModel, BasePointModel;
 import 'package:flutter_charts/src/chart/view_model/label_model.dart' show DataRangeTicksAndLabelsDescriptor;
-
 import 'package:flutter_charts/src/util/util_flutter.dart' show  To2DPixelRange;
 
 // morphic
@@ -37,8 +36,6 @@ import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
-
-import 'package:flutter_charts/src/chart/container/data_grid_container.dart';
 
 /// Container for data on the chart.
 ///
@@ -111,7 +108,11 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                 // todo-00-done: added wrapper TransposingStackLayouter
                 TransposingStackLayouter(
                   children: [
-                    TransposingGrid(),
+                    TransposingGrid(
+                      // todo-00-last : remove 'as'
+                      // transposingInputGrid: TransposingInputAxisOrGrid.VerticalGrid(chartViewModel: chartViewModel),
+                      transposingInputGrid: TransposingAxisOrGrid.VerticalGrid(chartViewModel: chartViewModel) as TransposingInputGrid,
+                    ),
                     makeInnerContainerForBothBarsAreasAndInputAxisLine(
                       // Row with columns of positive values
                       positiveBarsContainer: makeInnerBarsContainer(
@@ -126,6 +127,8 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                         chartViewModel: chartViewModel,
                         inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
                         outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
+                        // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight
+                        //   between positive and negative sections.
                         constraintsWeight: const ConstraintsWeight(weight: 0.0),
                       ),
                       // Row with columns of negative values

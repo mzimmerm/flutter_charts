@@ -65,7 +65,6 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
   }
 }
 
-
 /// [ChartAreaContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.

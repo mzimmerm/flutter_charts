@@ -136,7 +136,11 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   /// Internal calculation of [layoutSize] returns the [ui.Size] of this container.
   ///
   /// The size is already oriented correctly by taking into account the [chart_orientation.ChartOrientation],
-  /// because the underlying [_fromOffsetPixels] and [_toOffsetPixels] have done the same in the [layout] implementation.
+  /// because the underlying [_fromOffsetPixels] and [_toOffsetPixels]
+  /// have been affmap-ed in the [layout] implementation to the appropriate coordinate system.
+  ///
+  /// Note: This implementation will always cause length along one direction to be `0`,
+  ///       for horizontal or vertical lines.
   ui.Size get _layoutSize {
     return ui.Size(
       (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue).abs(),
@@ -144,7 +148,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
   }
 
-  /// Override method in superclass [Container].
+  /// Override method in superclass [Container], on every parent move by [offset] does
+  /// moves the beginning and end points [_fromOffsetPixels] and [_toOffsetPixels] by the same [offset].
   @override
   void applyParentOffset(container_base.LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
