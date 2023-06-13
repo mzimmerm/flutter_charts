@@ -9,7 +9,6 @@ import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../../chart/chart_type/bar/container/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-// import '../../../chart/bar/container_delete.dart';
 import '../../../chart/chart_type/bar/container/data_container.dart';
 
 // this level: switch/auto_layout/bar
@@ -38,9 +37,9 @@ class SwitchBarChartViewModel extends SwitchChartViewModel {
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
       legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: TransposingAxisOrGrid.HorizontalAxis(chartViewModel: this),
-      verticalAxisContainerFirst: TransposingAxisOrGrid.VerticalAxis(chartViewModel: this),
-      verticalAxisContainer: TransposingAxisOrGrid.VerticalAxis(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxis.HorizontalAxis(chartViewModel: this),
+      verticalAxisContainerFirst: TransposingAxis.VerticalAxis(chartViewModel: this),
+      verticalAxisContainer: TransposingAxis.VerticalAxis(chartViewModel: this),
       dataContainer: BarChartDataContainer(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

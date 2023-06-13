@@ -38,7 +38,6 @@ abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvide
 /// - See the [HorizontalAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
 class VerticalAxisContainerCL
     extends AxisContainerCL
-    // todo-00-done-last-last : can we remove the OrGrid?     implements TransposingOutputAxisOrGrid {
     implements TransposingOutputAxis {
 
   /// Constructs the container that holds Y labels.
@@ -71,9 +70,11 @@ class VerticalAxisContainerCL
   @override
   bool isShowOutputAxisLine;
 
+  /* todo-00-done : no longer needed
   /// Override needed because this member is from an implement class, not extend  class
   @override
-  List<BoxContainer> get externallyTickedAxisChildren => throw UnimplementedError();
+  List<BoxContainer> get _externallyTickedAxisOrGridChildren => throw UnimplementedError();
+  */
 
   /// Overridden method creates this [VerticalAxisContainerCL]'s hierarchy-children Y labels
   /// (instances of [OutputLabelContainer]) which are maintained in this [VerticalAxisContainerCL.outputLabelContainerCLs].
@@ -227,7 +228,6 @@ class VerticalAxisContainerCL
 class HorizontalAxisContainerCL
     extends AdjustableLabelsChartAreaContainer
     with PixelRangeProvider
-    // todo-00-done-last-last : can we remove the OrGrid? Yes
     implements TransposingInputAxis {
 
   /// Constructs the container that holds X labels.
@@ -263,7 +263,17 @@ class HorizontalAxisContainerCL
 
   /// Override needed because this member is from an implement class, not extend  class
   @override
-  List<BoxContainer> get externallyTickedAxisChildren => throw UnimplementedError();
+  bool get isShowOutputAxisLine =>  throw UnimplementedError();
+
+  @override
+  set isShowOutputAxisLine(bool value) =>  throw UnimplementedError();
+
+
+  /* todo-00-done : no longer needed
+  /// Override needed because this member is from an implement class, not extend  class
+  @override
+  List<BoxContainer> get _externallyTickedAxisOrGridChildren => throw UnimplementedError();
+  */
 
   @override
   /// Overridden method creates this [HorizontalAxisContainerCL]'s hierarchy-children X labels

@@ -2071,6 +2071,10 @@ Use it in one example:
 - [ ] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
 - [ ] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
 - [ ] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
+- [ ] ~Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.~
+- [ ] ~In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine~
+- 
+- 
   
 *** ~Start work on dotted grid lines collecting requirements for StackingLayouter changes~
 *** ~Add (reuse or improve existing) StackingLayouter~

@@ -514,7 +514,6 @@ class RootSandboxSizers {
     }
 
     if (currentSizer != null) {
-/* todo-00-last-last : put this back !!!! */
       util_dart.assertDoubleResultsSame(
         currentSizer.length,
         newSizer.length,
@@ -524,7 +523,6 @@ class RootSandboxSizers {
         'Reason: Multiple [WidthSizerLayouter]s or [HeightSizerLayouter]s were placed in the container hierarchy, '
         'but the positions are in places where the widths or heights of the constraints passed to them are not the same.'
       );
-/* */
       return;
     }
     if (newSizer is WidthSizerLayouter) {
@@ -616,13 +614,16 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 
 }
 
-/// Base class of sizers layouters, which provides the ability to find and set
-/// itself on the sandbox, by calling the mixed in method
+/// Base class of sizers layouters, which provide an 'anchor parent size in pixels' for children that need to
+/// size and position themselves exactly proportionally to a fixed 'anchor parent size in pixels'.
+///
+/// On behalf of extensions, provides the ability to find and set itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
-/// Motivation: Sizer layouters provide an 'anchor parent size' for children that need to
-///             size and position themselves exactly proportionally to a fixed 'anchor parent size'.
-///             A chart is an example, where the chart axis and it's scale serve as the 'anchor parent size'.
+/// Motivation: Sizer layouters provide an 'anchor parent size in pixels' for children that need to
+///             size and position themselves exactly proportionally to a fixed 'anchor parent size in pixels'.
+///             A chart is an example, where the chart axis and it's scale serve as the 'anchor parent size in pixels'
+///             to which all data values are scaled (affmap-ed) to.
 ///
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
 
@@ -685,7 +686,7 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
 
 }
 
-/// Note: This is actually UNUSED, and probably not needed. WidthSizer should remain WidthSizer,
+/// todo-0100 : Note: The Transposing portion of the layouter is actually UNUSED, and probably not needed. WidthSizer should remain WidthSizer,
 ///       no matter what chart orientation. Same for HeightSizer.
 abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
   /// Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as

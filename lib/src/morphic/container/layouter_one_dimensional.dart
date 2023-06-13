@@ -252,8 +252,20 @@ class LayedoutLengthsPositioner {
           _freePadding = _isOverflown ? 0.0 : _lengthsConstraint - _sumLengths;
           break;
         case Packing.externalTicksProvided:
-          assert(lengthsPositionerProperties.externalTicksLayoutDescriptor != null);
-          assert(lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length == lengths.length);
+          if (lengthsPositionerProperties.externalTicksLayoutDescriptor == null) {
+            throw StateError('lengthsPositionerProperties.externalTicksLayoutDescriptor is null but must NOT be.');
+          }
+          if (lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length != lengths.length) {
+            throw StateError('Invalid state: '
+                'lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length != lengths.length. '
+                'LEFT.length=${lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues.length}, '
+                'RIGHT.length=${lengths.length}. '
+                'LEFT=${lengthsPositionerProperties.externalTicksLayoutDescriptor!.tickValues}, '
+                'RIGHT=$lengths.'
+                '',
+            );
+
+          }
           // For external layout, isOverflown is calculated after positioning.
           // For external layout, _freePadding is unused and unchanged, but late init it to 0.0 if it is used
           _freePadding = 0.0;

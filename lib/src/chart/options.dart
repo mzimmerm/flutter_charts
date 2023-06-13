@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart' show immutable;
 
 // extension libraries
 import 'container/container_common.dart';
-import 'container/axis_and_grid_container.dart';
 import 'chart_type/line/options.dart';
 import 'chart_type/bar/options.dart';
 
@@ -395,6 +394,7 @@ class ChartPaddingGroup {
 
   final ChartOptions fromChartOptions;
 
+  // todo-0100 : rename anything with X or Y appropriately (Vertical/Horizontal? Input/Output?)
   double heightPadBottomOfYAndData() {
     return math.max(
         fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,

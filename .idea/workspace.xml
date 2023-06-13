@@ -22,12 +22,15 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/container_common.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/container_common.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_grid_container.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/layouter_one_dimensional.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/layouter_one_dimensional.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,7 +209,6 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
-    "dart.analysis.tool.window.visible": "false",
     "io.flutter.reload.alreadyRun": "true",
     "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test",
     "project.structure.last.edited": "Project",
@@ -1077,12 +1079,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>3397</line>
+          <line>3398</line>
           <option name="timeStamp" value="2672" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>2452</line>
+          <line>2453</line>
           <option name="timeStamp" value="2757" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1092,12 +1094,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>734</line>
+          <line>735</line>
           <option name="timeStamp" value="2913" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>605</line>
+          <line>603</line>
           <option name="timeStamp" value="2914" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1117,22 +1119,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>517</line>
+          <line>516</line>
           <option name="timeStamp" value="3306" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1305</line>
+          <line>1306</line>
           <option name="timeStamp" value="3315" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>3801</line>
+          <line>3802</line>
           <option name="timeStamp" value="3339" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>527</line>
+          <line>525</line>
           <option name="timeStamp" value="3343" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1147,17 +1149,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>534</line>
+          <line>532</line>
           <option name="timeStamp" value="3354" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>2426</line>
+          <line>2427</line>
           <option name="timeStamp" value="3364" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1915</line>
+          <line>1916</line>
           <option name="timeStamp" value="3387" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1177,7 +1179,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>4216</line>
+          <line>4217</line>
           <option name="timeStamp" value="3468" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1187,7 +1189,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>994</line>
+          <line>995</line>
           <option name="timeStamp" value="3511" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1247,12 +1249,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
-          <line>527</line>
+          <line>529</line>
           <option name="timeStamp" value="3601" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
-          <line>532</line>
+          <line>534</line>
           <option name="timeStamp" value="3602" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1262,52 +1264,52 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>2420</line>
+          <line>2421</line>
           <option name="timeStamp" value="3621" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1548</line>
+          <line>1549</line>
           <option name="timeStamp" value="3648" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1430</line>
+          <line>1431</line>
           <option name="timeStamp" value="3650" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1155</line>
+          <line>1156</line>
           <option name="timeStamp" value="3651" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1119</line>
+          <line>1120</line>
           <option name="timeStamp" value="3652" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1121</line>
+          <line>1122</line>
           <option name="timeStamp" value="3653" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1062</line>
+          <line>1063</line>
           <option name="timeStamp" value="3655" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1065</line>
+          <line>1066</line>
           <option name="timeStamp" value="3656" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1069</line>
+          <line>1070</line>
           <option name="timeStamp" value="3657" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1258</line>
+          <line>1259</line>
           <option name="timeStamp" value="3658" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1317,7 +1319,7 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1152</line>
+          <line>1153</line>
           <option name="timeStamp" value="3668" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1327,7 +1329,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
-          <line>484</line>
+          <line>494</line>
           <option name="timeStamp" value="3671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1337,7 +1339,7 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1610</line>
+          <line>1611</line>
           <option name="timeStamp" value="3677" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1387,7 +1389,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
-          <line>515</line>
+          <line>517</line>
           <option name="timeStamp" value="3760" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1562,12 +1564,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>4160</line>
+          <line>4161</line>
           <option name="timeStamp" value="3853" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>4219</line>
+          <line>4220</line>
           <option name="timeStamp" value="3854" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1582,12 +1584,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>670</line>
+          <line>671</line>
           <option name="timeStamp" value="3881" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1308</line>
+          <line>1309</line>
           <option name="timeStamp" value="3892" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1602,7 +1604,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1501</line>
+          <line>1502</line>
           <option name="timeStamp" value="3900" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1612,58 +1614,48 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>657</line>
+          <line>658</line>
           <option name="timeStamp" value="3903" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>771</line>
+          <line>772</line>
           <option name="timeStamp" value="3904" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>740</line>
+          <line>741</line>
           <option name="timeStamp" value="3905" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>693</line>
+          <line>694</line>
           <option name="timeStamp" value="3906" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>700</line>
+          <line>701</line>
           <option name="timeStamp" value="3907" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>712</line>
+          <line>713</line>
           <option name="timeStamp" value="3908" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>609</line>
+          <line>607</line>
           <option name="timeStamp" value="3909" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>611</line>
+          <line>609</line>
           <option name="timeStamp" value="3910" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>596</line>
+          <line>594</line>
           <option name="timeStamp" value="3911" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>224</line>
-          <option name="timeStamp" value="3912" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>225</line>
-          <option name="timeStamp" value="3915" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
@@ -1682,27 +1674,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>555</line>
+          <line>553</line>
           <option name="timeStamp" value="3920" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>545</line>
+          <line>543</line>
           <option name="timeStamp" value="3921" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>660</line>
+          <line>661</line>
           <option name="timeStamp" value="3922" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>665</line>
+          <line>666</line>
           <option name="timeStamp" value="3923" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>672</line>
+          <line>673</line>
           <option name="timeStamp" value="3924" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1739,6 +1731,11 @@
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
           <line>385</line>
           <option name="timeStamp" value="3932" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/layouter_one_dimensional.dart</url>
+          <line>257</line>
+          <option name="timeStamp" value="3933" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
