@@ -2691,7 +2691,7 @@ class TableLayoutCellDefiner {
   Align? verticalAlign;
 
   // Late final constraints, can be pre-set by client OR set during [layout],
-  // this is especially useful for the first layed out: e.g. VerticalAxisContainer,
+  // this is especially useful for the first layed out: e.g. OutputAxisContainer,
   // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
   // THE ChartRootContainer AND the TableLayouter must add children in build,
   // because only then TableLayouter has constraints set!!!

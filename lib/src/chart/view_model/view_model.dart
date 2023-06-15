@@ -103,7 +103,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
     // Create [outputRangeDescriptor] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewModel] constructor or later
-    // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewModel] is the first time we can
+    // (e.g. [ChartRootContainer], [OutputAxisContainer]). But here, in [ChartViewModel] is the first time we can
     // create the [inputRangeDescriptor] and [inputRangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor], so do that.
     outputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
@@ -116,7 +116,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
       userLabels: _chartModel.outputUserLabels,
     );
 
-    // See comment in VerticalAxisContainer constructor
+    // See comment in OutputAxisContainer constructor
     inputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
@@ -289,8 +289,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
     // Create the concrete [ChartRootContainer] for this concrete [ChartViewModel].
     // After this invocation, the created root container is populated with children
-    // HorizontalAxisContainer, VerticalAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeTicksAndLabelsDescriptor.
+    // InputAxisContainer, OutputAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
+    // depending on the concrete container. For example OutputAxisContainer is populated with DataRangeTicksAndLabelsDescriptor.
 
     String isFirstStr = _debugPrintBegin();
 
@@ -337,8 +337,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// in [BoxContainer.buildAndReplaceChildren] which is invoked later, during [layout].
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
-  /// [root_container.ChartRootContainer.legendContainer],  [root_container.ChartRootContainer.verticalAxisContainer],
-  ///  [root_container.ChartRootContainer.horizontalAxisContainer],
+  /// [root_container.ChartRootContainer.legendContainer],  [root_container.ChartRootContainer.outputAxisContainer],
+  ///  [root_container.ChartRootContainer.inputAxisContainer],
   ///  and [root_container.ChartRootContainer.dataContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above

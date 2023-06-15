@@ -35,16 +35,16 @@ class SwitchBarChartViewModelCL extends SwitchChartViewModelCL {
   BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainerCL(
       legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: HorizontalAxisContainerCL(
+      inputAxisContainer: InputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),
-      verticalAxisContainerFirst: VerticalAxisContainerCL(
+      outputAxisContainerFirst: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
         isShowOutputAxisLine: false,
       ),
-      verticalAxisContainer: VerticalAxisContainerCL(
+      outputAxisContainer: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
         isShowOutputAxisLine: false,

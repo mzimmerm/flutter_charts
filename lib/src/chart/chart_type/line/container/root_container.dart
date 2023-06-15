@@ -10,16 +10,16 @@ import '../../../view_model/view_model.dart';
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required LegendContainer    legendContainer,
-    required TransposingAxisOrGrid      horizontalAxisContainer,
-    required TransposingAxisOrGrid      verticalAxisContainerFirst,
-    required TransposingAxisOrGrid      verticalAxisContainer,
+    required TransposingAxisOrGrid      inputAxisContainer,
+    required TransposingAxisOrGrid      outputAxisContainerFirst,
+    required TransposingAxisOrGrid      outputAxisContainer,
     required DataContainer   dataContainer,
     required ChartViewModel  chartViewModel,
   }) : super(
     legendContainer: legendContainer,
-    horizontalAxisContainer: horizontalAxisContainer,
-    verticalAxisContainerFirst: verticalAxisContainerFirst,
-    verticalAxisContainer: verticalAxisContainer,
+    inputAxisContainer: inputAxisContainer,
+    outputAxisContainerFirst: outputAxisContainerFirst,
+    outputAxisContainer: outputAxisContainer,
     dataContainer: dataContainer,
     chartViewModel: chartViewModel,
     );

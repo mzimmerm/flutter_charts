@@ -239,9 +239,9 @@ mixin DoubleLinkedOwner<E> {
 /// create an 'appropriate', 'not-overlapping' children of itself.
 ///
 /// Example:
-///   - An example is the Y axis ([VerticalAxisContainer] instance), which creates only as many labels
+///   - An example is the Y axis ([OutputAxisContainer] instance), which creates only as many labels
 ///     ([OutputLabelContainer]s instances) as they fit, given how many pixels
-///     the Y axis has available. Such pixel availability is applied on  [VerticalAxisContainer]
+///     the Y axis has available. Such pixel availability is applied on  [OutputAxisContainer]
 ///
 ///
 /// Important note:

@@ -20,8 +20,8 @@ import 'chart_type/bar/options.dart';
 class ChartOptions {
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
-  final HorizontalAxisContainerOptions horizontalAxisContainerOptions;
-  final VerticalAxisContainerOptions verticalAxisContainerOptions;
+  final InputAxisContainerOptions inputAxisContainerOptions;
+  final OutputAxisContainerOptions outputAxisContainerOptions;
   final DataContainerOptions dataContainerOptions;
   final LabelCommonOptions labelCommonOptions;
   final LineChartOptions lineChartOptions;
@@ -30,8 +30,8 @@ class ChartOptions {
   const ChartOptions({
     this.iterativeLayoutOptions = const IterativeLayoutOptions(),
     this.legendOptions = const LegendOptions(),
-    this.horizontalAxisContainerOptions = const HorizontalAxisContainerOptions(),
-    this.verticalAxisContainerOptions = const VerticalAxisContainerOptions(),
+    this.inputAxisContainerOptions = const InputAxisContainerOptions(),
+    this.outputAxisContainerOptions = const OutputAxisContainerOptions(),
     this.dataContainerOptions = const DataContainerOptions(),
     this.labelCommonOptions = const LabelCommonOptions(),
     this.lineChartOptions = const LineChartOptions(),
@@ -44,10 +44,10 @@ class ChartOptions {
           legendOptions: const LegendOptions(
             isLegendContainerShown: false,
           ),
-          horizontalAxisContainerOptions: const HorizontalAxisContainerOptions(
+          inputAxisContainerOptions: const InputAxisContainerOptions(
             isShown: false,
           ),
-          verticalAxisContainerOptions: const VerticalAxisContainerOptions(
+          outputAxisContainerOptions: const OutputAxisContainerOptions(
             isShown: false,
             isHorizontalGridLinesShown: false,
           ),
@@ -136,7 +136,7 @@ class LegendOptions {
 }
 
 @immutable
-class HorizontalAxisContainerOptions {
+class InputAxisContainerOptions {
   final bool isShown;
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
@@ -145,7 +145,7 @@ class HorizontalAxisContainerOptions {
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right. Unused.
   final double labelPadLR;
 
-  const HorizontalAxisContainerOptions({
+  const InputAxisContainerOptions({
     this.isShown = true,
     this.labelPadTB = 6.0,
     this.labelPadLR = 40.0,
@@ -154,13 +154,13 @@ class HorizontalAxisContainerOptions {
 }
 
 @immutable
-class VerticalAxisContainerOptions {
+class OutputAxisContainerOptions {
   final bool isShown;
 
-  /// In the current implementation, X gridlines (horizontal) disappear when `isVerticalAxisContainerShown = false`,
+  /// In the current implementation, X gridlines (horizontal) disappear when `isOutputAxisContainerShown = false`,
   /// which is probably reasonable, although should be fixed.
   ///
-  /// However, Y gridlines (vertical) are showing even when `isHorizontalAxisContainerShown = false`.
+  /// However, Y gridlines (vertical) are showing even when `isInputAxisContainerShown = false`.
   /// This option allows to toggle it.
   final bool isHorizontalGridLinesShown;
 
@@ -170,7 +170,7 @@ class VerticalAxisContainerOptions {
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
   final double labelPadLR;
 
-  const VerticalAxisContainerOptions({
+  const OutputAxisContainerOptions({
     this.isShown = true,
     this.isHorizontalGridLinesShown = true,
     this.labelPadTB = 40.0,
@@ -190,7 +190,7 @@ String inputValueToLabel(num value) {
 
     return val + yLabelUnits;
    */
-  throw StateError('HorizontalAxisContainerOptions.valueToLabel should not be used YET');
+  throw StateError('InputAxisContainerOptions.valueToLabel should not be used YET');
 }
 
 String outputValueToLabel(num value) {

@@ -23,9 +23,9 @@ class ChartRootContainer extends ChartAreaContainer {
 
   ChartRootContainer({
     required this.legendContainer,
-    required this.horizontalAxisContainer,
-    required this.verticalAxisContainer,
-    required this.verticalAxisContainerFirst,
+    required this.inputAxisContainer,
+    required this.outputAxisContainer,
+    required this.outputAxisContainerFirst,
     required this.dataContainer,
     required ChartViewModel   chartViewModel,
   }) : super(chartViewModel: chartViewModel) {
@@ -42,13 +42,13 @@ class ChartRootContainer extends ChartAreaContainer {
     TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-012 will go away when we use VerticalAxisContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-012 will go away when we use OutputAxisContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );
 
     // [YDEX_cellDefinersTable] is table with the following order of containers (left to right, top to bottom):
-    //   VerticalAxisContainer, DataContainer, EmptyAxisCornerContainer, HorizontalAxisContainer
+    //   OutputAxisContainer, DataContainer, EmptyAxisCornerContainer, InputAxisContainer
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
       [vertAxisDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 0)],
@@ -63,12 +63,12 @@ class ChartRootContainer extends ChartAreaContainer {
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewModel: chartViewModel);
 
-    // verticalAxisContainer and horizontalAxisContainer are already transposed during creation.
+    // outputAxisContainer and inputAxisContainer are already transposed during creation.
     TableLayouter chartBody = TableLayouter(
       tableLayoutDefiner: tableLayoutDefiner,
       cellsTable: [
-        [verticalAxisContainer, dataContainer],
-        [axisCornerContainer, horizontalAxisContainer],
+        [outputAxisContainer, dataContainer],
+        [axisCornerContainer, inputAxisContainer],
       ],
     );
 
@@ -95,9 +95,9 @@ class ChartRootContainer extends ChartAreaContainer {
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
   // covariant needed on some, probably not all
-  covariant late TransposingAxisOrGrid horizontalAxisContainer;
-  covariant late TransposingAxisOrGrid verticalAxisContainer;
-  covariant late TransposingAxisOrGrid verticalAxisContainerFirst;
+  covariant late TransposingAxisOrGrid inputAxisContainer;
+  covariant late TransposingAxisOrGrid outputAxisContainer;
+  covariant late TransposingAxisOrGrid outputAxisContainerFirst;
   covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,

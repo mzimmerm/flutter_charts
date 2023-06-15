@@ -42,7 +42,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Keeps data values grouped in columns.
   ///
   /// This column grouped data instance is managed here in the [DataContainerCL],
-  /// as their data points are needed both during [VerticalAxisContainerCL.layout]
+  /// as their data points are needed both during [OutputAxisContainerCL.layout]
   /// to calculate extrapolating, and also here in [DataContainerCL.layout] to create
   /// [PointPresentersColumns] instance.
   ///
@@ -81,7 +81,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Use this DataContainer layout dependency on [xTickXs] as guidelines for X labels
-    // in [HorizontalAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
+    // in [InputAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
@@ -135,7 +135,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Use this DataContainer layout dependency on [yTickYs] as guidelines for Y labels
-    // in [VerticalAxisContainer.outputLabelContainerCLs], for each create one [LineContainer] as child of [_horizontalGridLinesContainer]
+    // in [OutputAxisContainer.outputLabelContainerCLs], for each create one [LineContainer] as child of [_horizontalGridLinesContainer]
 
     // Construct the GridLinesContainer with children: [LineContainer]s
     _horizontalGridLinesContainer = GridLinesContainer(
@@ -168,7 +168,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Uses all available space in the [constraints] set in parent [buildAndReplaceChildren],
   /// which it divides evenly between it's children.
   ///
-  /// First lays out the Grid, then, scales the columns to the [VerticalAxisContainerCL]'s extrapolate
+  /// First lays out the Grid, then, scales the columns to the [OutputAxisContainerCL]'s extrapolate
   /// based on the available size.
   @override
   void layout() {
@@ -233,7 +233,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
 
     // 2. Layout the data container by extrapolating.
-    // Scale the [pointsColumns] to the [VerticalAxisContainer]'s extrapolate.
+    // Scale the [pointsColumns] to the [OutputAxisContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
     _affmapPointsColumns();
@@ -264,7 +264,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     _horizontalGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartViewModel.chartOptions.verticalAxisContainerOptions.isHorizontalGridLinesShown) {
+    if (chartViewModel.chartOptions.outputAxisContainerOptions.isHorizontalGridLinesShown) {
       _verticalGridLinesContainer.paint(canvas);
     }
   }

@@ -124,7 +124,7 @@ mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
         chartViewModel: chartViewModel,
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(),
-        // No tilted labels in VerticalAxisContainer
+        // No tilted labels in OutputAxisContainer
         labelStyle: _labelStyle,
       )
   ];
@@ -288,7 +288,7 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
     super.isShowOutputAxisLine = false,
   });
 
-  factory TransposingAxis.VerticalAxis({
+  factory TransposingAxis.OutputAxis({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -306,7 +306,7 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
     }
   }
 
-  factory TransposingAxis.HorizontalAxis({
+  factory TransposingAxis.InputAxis({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -371,7 +371,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     required super.chartViewModel,
   });
 
-  factory TransposingGrid.VerticalGrid({
+  factory TransposingGrid.OutputGrid({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -386,7 +386,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     }
   }
 
-  factory TransposingGrid.HorizontalGrid({
+  factory TransposingGrid.InputGrid({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -488,7 +488,7 @@ class TransposingCrossGrid extends TransposingStackLayouter { //  extends NonPos
     required this.chartViewModel,
     // required this.transposingOutputGrid,
   }) {
-    transposingInputGrid = TransposingGrid.VerticalGrid(chartViewModel: chartViewModel);
+    transposingInputGrid = TransposingGrid.OutputGrid(chartViewModel: chartViewModel);
     // , transposingOutputGrid =  TransposingGrid.HorizontalGrid(chartViewModel: chartViewModel) as TransposingOutputGrid;
   }
   final ChartViewModel chartViewModel;

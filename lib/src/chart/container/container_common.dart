@@ -14,12 +14,12 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 /// The basic top level chart blocks are:
 /// - [ChartRootContainer] - the whole chart
 /// - [LegendContainer] - manages the legend
-/// - [VerticalAxisContainer] - manages the Y labels layout, which defines:
+/// - [OutputAxisContainer] - manages the Y labels layout, which defines:
 ///   - Y axis label sizes
 ///   - Y positions of Y axis labels, defined as yTickY.
 ///     yTicksY s are the Y points of extrapolated data values
 ///     and also Y points on which the Y labels are centered.
-/// - [HorizontalAxisContainer] - Equivalent to VerticalAxisContainer, but manages X direction
+/// - [InputAxisContainer] - Equivalent to OutputAxisContainer, but manages X direction
 ///   layout and labels.
 /// - [DataContainer] and extensions - manages the area which displays:
 ///   - Data as bar chart, line chart, or other chart type.
@@ -57,7 +57,7 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
   // todo-later : Go over all usages, and move child building to this method
   //              from constructors.
   //              In particular: why do we construct in buildAndReplaceChildren in DataContainer,
-  //                             while construct in constructor in NewVerticalAxisContainer?
+  //                             while construct in constructor in NewOutputAxisContainer?
   //                             Etc
   @override
   void buildAndReplaceChildren() {
