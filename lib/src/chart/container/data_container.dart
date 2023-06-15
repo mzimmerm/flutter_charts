@@ -105,16 +105,14 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                // todo-00-done: added wrapper TransposingStackLayouter
+                // Wrapper StackLayouter for [TransposingGrid] which underlays the core of [DataContainer]:
+                // The containers that show positive and negative bars or lines.
                 TransposingStackLayouter(
                   children: [
-/* todo-00-done PUT THIS BACK, BUT FIX TransposingGrid
-                    TransposingGrid(
-                      // todo-00-last : remove 'as'
-                      // transposingInputGrid: TransposingInputAxisOrGrid.VerticalGrid(chartViewModel: chartViewModel),
-                      transposingInputGrid: TransposingGrid.VerticalGrid(chartViewModel: chartViewModel) as TransposingInputGrid,
+                    TransposingCrossGrid(
+                      chartViewModel: chartViewModel,
                     ),
-*/
+
                     makeInnerContainerForBothBarsAreasAndInputAxisLine(
                       // Row with columns of positive values
                       positiveBarsContainer: makeInnerBarsContainer(

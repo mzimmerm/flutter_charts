@@ -70,12 +70,6 @@ class VerticalAxisContainerCL
   @override
   bool isShowOutputAxisLine;
 
-  /* todo-00-done : no longer needed
-  /// Override needed because this member is from an implement class, not extend  class
-  @override
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => throw UnimplementedError();
-  */
-
   /// Overridden method creates this [VerticalAxisContainerCL]'s hierarchy-children Y labels
   /// (instances of [OutputLabelContainer]) which are maintained in this [VerticalAxisContainerCL.outputLabelContainerCLs].
   ///
@@ -267,13 +261,6 @@ class HorizontalAxisContainerCL
 
   @override
   set isShowOutputAxisLine(bool value) =>  throw UnimplementedError();
-
-
-  /* todo-00-done : no longer needed
-  /// Override needed because this member is from an implement class, not extend  class
-  @override
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => throw UnimplementedError();
-  */
 
   @override
   /// Overridden method creates this [HorizontalAxisContainerCL]'s hierarchy-children X labels

@@ -160,10 +160,31 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
 
 // -------------------------------------
 mixin _BuilderMixin {
+
+  /// Implementations should build a container with labels (for axis) or grid lines (for grid).
+  ///
+  /// The container should be ticked by input or output range, depending on which range is rendered.
+  ///
+  /// Invoked by [TransposingAxis] and [TransposingGrid] in their core build methods
+  /// [TransposingAxis.buildAndReplaceChildren] and [TransposingGrid.buildAndReplaceChildren].
+  /// 
+  /// Implemented by all leaf-classes, 
+  /// [TransposingInputAxis],  [TransposingInputGrid], [TransposingOutputAxis], [TransposingOutputGrid], 
+  /// where it delegates to either [_InputAxisOrGridBuilderMixin._buildTransposingContainerTickedByInputRange]
+  /// or  [_OutputAxisOrGridBuilderMixin._buildTransposingContainerTickedByOutputRange],
+  /// depending on whether they are input or output containers.
+  ///
   TransposingRoller _buildTransposingContainerTickedByRange();
 }
 
-mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren implements _BuilderMixin {
+/// Builds the core container for [TransposingInputAxis] or [TransposingInputGrid], 
+/// ticked by input [DataRangeTicksAndLabelsDescriptor].
+///
+/// See the [_OutputAxisOrGridBuilderMixin] for documentation of the invoked
+/// [_AxisOrGridChildren._externallyTickedAxisOrGridChildren]. and how it forms the axis or grid
+/// depending on being mixed in the [TransposingAxis] or [TransposingGrid].
+///
+mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
 
   TransposingRoller _buildTransposingContainerTickedByInputRange() {
     // Transposing Column with single child, the TransposingExternalTicks.Row,
@@ -185,7 +206,18 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
 
 }
 
-mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren implements _BuilderMixin  {
+/// Builds the core container for [TransposingOutputAxis] or [TransposingOutputGrid], 
+/// ticked by output [DataRangeTicksAndLabelsDescriptor].
+///
+/// The invoked [_AxisOrGridChildren._externallyTickedAxisOrGridChildren] is called with
+/// [DataRangeTicksAndLabelsDescriptor] argument [_outputRangeDescriptor]. This call to
+/// [_AxisOrGridChildren._externallyTickedAxisOrGridChildren] returns a list of:
+///   - axis labels if mixed in [TransposingAxis] to form [TransposingOutputAxis] the or grid lines,
+///   - grid lines if mixed in [TransposingGrid] to form [TransposingOutputGrid] the or grid lines,
+///
+///
+/// The [isShowOutputAxisLine] should be `true` if used on an axis, `false` if used on a grid.
+mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
 
   TransposingRoller _buildTransposingContainerTickedByOutputRange() {
     return TransposingRoller.Row(
@@ -248,6 +280,7 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
 
 }
 
+/// Abstract class common for input and output axis.
 abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxisMixin implements _BuilderMixin  {
   TransposingAxis({
     required super.chartViewModel,
@@ -293,7 +326,6 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
 
   List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround;
 
-  // todo-00-last-last : move those to TransposingAxis
   static List<BoxContainer> _horizontalWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
     return [
       WidthSizerLayouter(
@@ -322,29 +354,7 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
     // The [directionWrapperAround] may add padding, then wraps children in [HeightSizerLayouter] or [WidthSizerLayouter]
     List<BoxContainer> children = directionWrapperAround(
       [
-        // Row with Column of Y labels and Y axis (Output labels and output axis)
-        /* todo-00-done : moved to _buildTransposingContainerTickedByOutputRange
-        TransposingRoller.Row(
-            chartOrientation: chartViewModel.chartOrientation,
-            mainAxisAlign: Align.start, // default
-            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
-            children: [
-              TransposingExternalTicks.Column(
-                chartOrientation: chartViewModel.chartOrientation,
-                mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
-                  externalTickAtPosition: ExternalTickAtPosition.childCenter,
-                ),
-                children: _externallyTickedAxisOrGridChildren,
-              ),
-              // Y axis line to the right of labels
-              if (isShowOutputAxisLine)
-                TransposingOutputAxisLine(
-                  inputRangeDescriptor: _inputRangeDescriptor,
-                  outputRangeDescriptor: _outputRangeDescriptor,
-                  chartViewModel: chartViewModel,
-                ),
-            ])
-        */
+        // Builds container with input or output labels, ticked by input or output range.
         _buildTransposingContainerTickedByRange(),
       ],
       _padGroup,
@@ -355,12 +365,12 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
 
 }
 
+/// Abstract class common for input and output grid.
 abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGridMixin implements _BuilderMixin {
   TransposingGrid({
     required super.chartViewModel,
   });
 
-  // todo-00-done : added vvvvvvv
   factory TransposingGrid.VerticalGrid({
     required ChartViewModel chartViewModel,
   }) {
@@ -390,130 +400,51 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
         );
     }
   }
-  // todo-00-done : added ^^^^^^^
-
-  // todo-00-last-last : remove : added and set to 0 : why is 0 needed?????
-/* todo-00-done
-  static List<BoxContainer> _verticalGridWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
-    return [
-      // Row contains Column of labels and vertical LineSegment for Y axis
-      Padder(
-        edgePadding: const EdgePadding.withSides(
-          top: 0, // padGroup.heightPadTopOfYAndData(),
-          bottom: 0, // padGroup.heightPadBottomOfYAndData(),
-        ),
-        child: HeightSizerLayouter(
-          children: children,
-        ),
-      ),
-    ];
-  }
-*/
 
   @override
   void buildAndReplaceChildren() {
-    List<BoxContainer> children =
-    [
-      _buildTransposingContainerTickedByRange(),
-    ];
+    // The [directionWrapperAround] may add padding, then wraps children in [HeightSizerLayouter] or [WidthSizerLayouter]
+    List<BoxContainer> children =  [
+        // Builds container with input or output grid lines, ticked by input or output range.
+        _buildTransposingContainerTickedByRange(),
+      ];
 
     replaceChildrenWith(children);
   }
 
 }
 
-/* todo-00-last-last-last-progress KEEP : THIS NEEDS TO BE ADDRESSED
-class TransposingGrid extends NonPositioningBoxLayouter {
 
-  /// The required generative constructor
-  TransposingGrid({
-    // List<BoxContainer>? children,
-    required this.transposingInputGrid,
-  }) : super(
-    children: [transposingInputGrid],
-  );
-
-  TransposingInputGrid transposingInputGrid;
-
-  @override
-  void buildAndReplaceChildren() {
-    replaceChildrenWith([
-      TransposingStackLayouter(children: [transposingInputGrid,]),
-    ]);
-  }
-
-}
-*/
-
-
-/// todo-00-document what this belongs to : Constructs the abstract container for extensions holding one of:
-///   - labels for output values (aka dependent labels, Y labels), [TransposingOutputAxis],
-///   - (transposing) grid lines for input values, [TransposingOutputGrid]
+/// Container of input axis.
 ///
-/// The [constraints] provided by container-parent is (assumed) to direct the expansion to fill
-/// all available vertical space, and only use the necessary horizontal space.
-///
-/// The [_externallyTickedAxisOrGridChildren] should return a list of [AxisLabelContainer]s or [GridLine]s.
-///
-/// The [isShowOutputAxisLine] should be `true` if used on axis, `false` if used on grid.
-///
-/// The [directionWrapperAround] should be set to a padding common with [DataContainer].
-
-
+/// The [directionWrapperAround] must be the same (and use same padding) as [DataContainer].
 class TransposingInputAxis extends TransposingAxis with _InputAxisOrGridBuilderMixin {
   TransposingInputAxis({
     required super.chartViewModel,
     required super.directionWrapperAround,
   });
 
-
-  /* todo-00-done : moved to mixin
-  @override
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => [
-    // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-    //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
-    //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
-    for (var labelInfo in _inputRangeDescriptor.labelInfoList)
-      AxisLabelContainer(
-        chartViewModel: chartViewModel,
-        label: labelInfo.formattedLabel,
-        labelTiltMatrix: vector_math.Matrix2.identity(),
-        // No tilted labels in VerticalAxisContainer
-        labelStyle: _labelStyle,
-      )
-  ];
-*/
-
+  /// When invoked by [buildAndReplaceChildren] in [TransposingAxis],
+  /// builds container of labels for input range [_inputRangeDescriptor].
   @override
   TransposingRoller _buildTransposingContainerTickedByRange() {
     return _buildTransposingContainerTickedByInputRange();
   }
 
-
 }
 
+/// Container of output axis.
+///
+/// The [directionWrapperAround] must be the same (and use same padding) as [DataContainer].
 class TransposingOutputAxis extends TransposingAxis with _OutputAxisOrGridBuilderMixin {
   TransposingOutputAxis({
     required super.chartViewModel,
     required super.directionWrapperAround,
-    required super.isShowOutputAxisLine,
+    super.isShowOutputAxisLine = true,
   });
 
-/* todo-00-done : moved to mixin
-  @override
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => [
-    // Add all labels from generator as children. See comment in TransposingInputAxis
-    for (var labelInfo in _outputRangeDescriptor.labelInfoList)
-      AxisLabelContainer(
-        chartViewModel: chartViewModel,
-        label: labelInfo.formattedLabel,
-        labelTiltMatrix: vector_math.Matrix2.identity(),
-        // No tilted labels in VerticalAxisContainer
-        labelStyle: _labelStyle,
-      )
-  ];
-*/
-
+  /// When invoked by [buildAndReplaceChildren] in [TransposingAxis],
+  /// builds container of labels for output range [_outputRangeDescriptor].
   @override
   TransposingRoller _buildTransposingContainerTickedByRange() {
     return _buildTransposingContainerTickedByOutputRange();
@@ -526,28 +457,8 @@ class TransposingInputGrid extends TransposingGrid with _InputAxisOrGridBuilderM
     required super.chartViewModel,
   });
 
-/* todo-00-done : moved to mixin
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => [
-        // For each label, add a grid line in the external ticks center for line chart,
-        //   in the external ticks end for bar chart.
-        for (var labelInfo in _inputRangeDescriptor.labelInfoList)
-          LineBetweenPointOffsetsContainer(
-            fromPointOffset: PointOffset(
-              // input value can (and must) be 0 ONLY with assumption that this is value inside a cross-direction layouter.
-              // so the whole TransposingInputGrid can only live in
-              inputValue: 0, // inputRangeDescriptor.dataRange.min,
-              outputValue: _outputRangeDescriptor.dataRange.min,
-            ),
-            toPointOffset: PointOffset(
-              inputValue: 0, // inputRangeDescriptor.dataRange.max,
-              outputValue: _outputRangeDescriptor.dataRange.max,
-            ),
-            linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
-            chartViewModel: chartViewModel,
-          )
-      ];
-*/
-
+  /// When invoked by [buildAndReplaceChildren] in [TransposingGrid],
+  /// builds container of grid lines for input range [_inputRangeDescriptor].
   @override
   TransposingRoller _buildTransposingContainerTickedByRange() {
     return _buildTransposingContainerTickedByInputRange();
@@ -561,27 +472,8 @@ class TransposingOutputGrid extends TransposingGrid with _OutputAxisOrGridBuilde
     required super.chartViewModel,
   });
 
-/* todo-00-done : moved to mixin BUT OUTPUT NOT YET DONE
-  @override
-  List<BoxContainer> get _externallyTickedAxisOrGridChildren => [
-
-    for (var labelInfo in _outputRangeDescriptor.labelInfoList)
-      // todo-00-last : this must be replaced with code taken from output axis TransposingOutputAxis
-      LineBetweenPointOffsetsContainer(
-        fromPointOffset: PointOffset(
-          inputValue: 0, // inputRangeDescriptor.dataRange.min,
-          outputValue: _outputRangeDescriptor.dataRange.min,
-        ),
-        toPointOffset: PointOffset(
-          inputValue: 0, // inputRangeDescriptor.dataRange.max,
-          outputValue: _outputRangeDescriptor.dataRange.max,
-        ),
-        linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
-        chartViewModel: chartViewModel,
-      )
-  ];
-*/
-
+  /// When invoked by [buildAndReplaceChildren] in [TransposingGrid],
+  /// builds container of grid lines for output range [_outputRangeDescriptor].
   @override
   TransposingRoller _buildTransposingContainerTickedByRange() {
     return _buildTransposingContainerTickedByOutputRange();
@@ -589,4 +481,30 @@ class TransposingOutputGrid extends TransposingGrid with _OutputAxisOrGridBuilde
 
 }
 
+/// Container with both horizontal and vertical grid lines.
+///
+class TransposingCrossGrid extends TransposingStackLayouter { //  extends NonPositioningBoxLayouter {
+  TransposingCrossGrid({
+    required this.chartViewModel,
+    // required this.transposingOutputGrid,
+  }) {
+    transposingInputGrid = TransposingGrid.VerticalGrid(chartViewModel: chartViewModel);
+    // , transposingOutputGrid =  TransposingGrid.HorizontalGrid(chartViewModel: chartViewModel) as TransposingOutputGrid;
+  }
+  final ChartViewModel chartViewModel;
+  late TransposingGrid transposingInputGrid;
+  // late TransposingGrid transposingOutputGrid;
 
+  @override
+  void buildAndReplaceChildren() {
+    List<BoxContainer> children =
+    [
+      // TransposingStackLayouter(children: [
+      transposingInputGrid,
+      // transposingOutputGrid
+      //  ]),
+    ];
+
+    replaceChildrenWith(children);
+  }
+}

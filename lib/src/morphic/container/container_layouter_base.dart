@@ -1286,8 +1286,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
-    throw UnimplementedError('On leaf [BoxLayouter] which does NOT override [layout], this method named '
-        '[layout_Post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
+    throw UnimplementedError('$runtimeType: This instance is a leaf [BoxLayouter] which does NOT override [layout]: '
+        'this method named [layout_Post_Leaf_SetSize_FromInternals] must be overridden. Invoked on instance=$this.');
   }
 
   ui.Rect __layout_Post_Assert_Layedout_Rects(List<ui.Rect> positionedChildrenRects, ui.Rect positionedChildrenOuterRect) {
@@ -3631,16 +3631,19 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 /// it is simply a non-positioning layouter.
 ///
 /// As all [children] are stacked on top of each other, the rectangles to which each child [paint]s do overlap.
-/// The painted result is determined by the [children] order.
+/// The painted result is determined by the [children] order; any later child paint over their predecessors.
 ///
 /// Passes the same [constraints] it receives from parent to each of it's children.
 ///
-/// For this layouter to act as stack layouter, cooperation from the parent and children is needed, as follows:
-///   - Parent must ensure that the full constraints passed to this layouter do not overflow in some way.
-///     This is not a strong requirement, almost (every?) parent layouter must endure this.
+/// For this layouter to act as an actual stack layouter, cooperation from the parent and children is needed, as follows:
+///   - Parent must ensure that the full constraints passed to this layouter do not overflow in some way (todo-011 what??)
+///     This is not a strong requirement, almost (every?) parent layouter must ensure this.
 ///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
-///     the stack layouter parent.
+///     this [TransposingStackLayouter] parent.
 ///
+/// 2. By extending the [NonPositioningBoxLayouter] the following can be said :
+///           - The [layoutSize] is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
+///           - All [children] paint into the FULL CONSTRAINTS == layoutSize
 /// 1. todo-011 LATER: Create a better StackLayouter, so that:
 ///          - allows to obtain constraints that are in some sense limited (divided in both directions)
 ///          - defines the StackingOrigin (maybe something EXISTS for it??? I THINK SO)
@@ -3649,9 +3652,6 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///          - lays out children, each child rectangle is aligned with the same corner and same direction as StackingOrigin
 ///          - the result layoutSize is the envelope of child rectangles.
 ///          - children are not required to return [layoutSize] same as passed constraints.
-/// 2. By extending NonPositioningBoxLayouter:
-///           - layoutSize is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
-///           - all children Just paint into the FULL CONSTRAINTS == layoutSize
 ///
 class TransposingStackLayouter extends NonPositioningBoxLayouter {
 
