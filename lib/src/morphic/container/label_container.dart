@@ -17,7 +17,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   /// Late initialized in layout.
   late final double labelMaxWidth;
 
-  /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [textPainter].
+  /// Offset of this [ChartLabelContainer]'s label, created by the [textPainter].
   ///
   ui.Offset offsetOfPotentiallyRotatedLabel = ui.Offset.zero;
 
@@ -198,7 +198,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   }
 
   /// Creates the envelope rectangle [EnvelopedRotatedRect], which [EnvelopedRotatedRect.topLeft]
-  /// is used to position this [LabelContainerOriginalKeep] for painting with or without tilt.
+  /// is used to position this [ChartLabelContainer] for painting with or without tilt.
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -214,7 +214,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
 }
 
 /// Class for value objects which group the text styles that may affect
-/// [LabelContainerOriginalKeep]'s instances layout.
+/// [ChartLabelContainer]'s instances layout.
 class LabelStyle {
   widgets.TextStyle textStyle;
   ui.TextDirection textDirection;

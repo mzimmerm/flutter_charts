@@ -11,7 +11,7 @@ import 'options.dart' show ChartOptions;
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
 /// The [layoutSize] is exactly that of by the contained
-/// layed out [textPainter] (this [LabelContainerOriginalKeep] has no margins, padding,
+/// layed out [textPainter] (this [ChartLabelContainer] has no margins, padding,
 /// or additional content in addition to the [_textPainter).
 ///
 /// However, if this object is tilted, as specified by [labelTiltMatrix], the

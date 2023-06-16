@@ -170,11 +170,11 @@ mixin _BuilderMixin {
   /// 
   /// Implemented by all leaf-classes, 
   /// [TransposingInputAxis],  [TransposingInputGrid], [TransposingOutputAxis], [TransposingOutputGrid], 
-  /// where it delegates to either [_InputAxisOrGridBuilderMixin._buildTransposingContainerTickedByInputRange]
-  /// or  [_OutputAxisOrGridBuilderMixin._buildTransposingContainerTickedByOutputRange],
+  /// where it delegates to either [_InputAxisOrGridBuilderMixin._buildInputRangeTickedTransposingRow]
+  /// or  [_OutputAxisOrGridBuilderMixin._buildOutputRangeTickedTransposingColumn],
   /// depending on whether they are input or output containers.
   ///
-  TransposingRoller _buildTransposingContainerTickedByRange();
+  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn();
 }
 
 /// Builds the core container for [TransposingInputAxis] or [TransposingInputGrid], 
@@ -186,7 +186,7 @@ mixin _BuilderMixin {
 ///
 mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
 
-  TransposingRoller _buildTransposingContainerTickedByInputRange() {
+  TransposingRoller _buildInputRangeTickedTransposingRow() {
     // Transposing Column with single child, the TransposingExternalTicks.Row,
     // which has one item per label in [_inputRangeDescriptor.labelInfoList]
     // todo-0100 : is the column needed here? try to remove
@@ -219,7 +219,7 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
 /// The [isShowOutputAxisLine] should be `true` if used on an axis, `false` if used on a grid.
 mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
 
-  TransposingRoller _buildTransposingContainerTickedByOutputRange() {
+  TransposingRoller _buildOutputRangeTickedTransposingColumn() {
     return TransposingRoller.Row(
         chartOrientation: chartViewModel.chartOrientation,
         mainAxisAlign: Align.start, // default
@@ -355,7 +355,7 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
     List<BoxContainer> children = directionWrapperAround(
       [
         // Builds container with input or output labels, ticked by input or output range.
-        _buildTransposingContainerTickedByRange(),
+        _buildTickedInputRangeRowOrOutputRangeColumn(),
       ],
       _padGroup,
     );
@@ -371,7 +371,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     required super.chartViewModel,
   });
 
-  factory TransposingGrid.OutputGrid({
+  factory TransposingGrid.InputGrid({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -386,7 +386,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     }
   }
 
-  factory TransposingGrid.InputGrid({
+  factory TransposingGrid.OutputGrid({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {
@@ -406,7 +406,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     // The [directionWrapperAround] may add padding, then wraps children in [HeightSizerLayouter] or [WidthSizerLayouter]
     List<BoxContainer> children =  [
         // Builds container with input or output grid lines, ticked by input or output range.
-        _buildTransposingContainerTickedByRange(),
+        _buildTickedInputRangeRowOrOutputRangeColumn(),
       ];
 
     replaceChildrenWith(children);
@@ -427,8 +427,8 @@ class TransposingInputAxis extends TransposingAxis with _InputAxisOrGridBuilderM
   /// When invoked by [buildAndReplaceChildren] in [TransposingAxis],
   /// builds container of labels for input range [_inputRangeDescriptor].
   @override
-  TransposingRoller _buildTransposingContainerTickedByRange() {
-    return _buildTransposingContainerTickedByInputRange();
+  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+    return _buildInputRangeTickedTransposingRow();
   }
 
 }
@@ -446,8 +446,8 @@ class TransposingOutputAxis extends TransposingAxis with _OutputAxisOrGridBuilde
   /// When invoked by [buildAndReplaceChildren] in [TransposingAxis],
   /// builds container of labels for output range [_outputRangeDescriptor].
   @override
-  TransposingRoller _buildTransposingContainerTickedByRange() {
-    return _buildTransposingContainerTickedByOutputRange();
+  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+    return _buildOutputRangeTickedTransposingColumn();
   }
 }
 
@@ -460,8 +460,8 @@ class TransposingInputGrid extends TransposingGrid with _InputAxisOrGridBuilderM
   /// When invoked by [buildAndReplaceChildren] in [TransposingGrid],
   /// builds container of grid lines for input range [_inputRangeDescriptor].
   @override
-  TransposingRoller _buildTransposingContainerTickedByRange() {
-    return _buildTransposingContainerTickedByInputRange();
+  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+    return _buildInputRangeTickedTransposingRow();
   }
 
 }
@@ -475,8 +475,8 @@ class TransposingOutputGrid extends TransposingGrid with _OutputAxisOrGridBuilde
   /// When invoked by [buildAndReplaceChildren] in [TransposingGrid],
   /// builds container of grid lines for output range [_outputRangeDescriptor].
   @override
-  TransposingRoller _buildTransposingContainerTickedByRange() {
-    return _buildTransposingContainerTickedByOutputRange();
+  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+    return _buildOutputRangeTickedTransposingColumn();
   }
 
 }
@@ -488,7 +488,7 @@ class TransposingCrossGrid extends TransposingStackLayouter { //  extends NonPos
     required this.chartViewModel,
     // required this.transposingOutputGrid,
   }) {
-    transposingInputGrid = TransposingGrid.OutputGrid(chartViewModel: chartViewModel);
+    transposingInputGrid = TransposingGrid.InputGrid(chartViewModel: chartViewModel);
     // , transposingOutputGrid =  TransposingGrid.HorizontalGrid(chartViewModel: chartViewModel) as TransposingOutputGrid;
   }
   final ChartViewModel chartViewModel;

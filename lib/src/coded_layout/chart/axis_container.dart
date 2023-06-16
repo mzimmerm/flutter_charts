@@ -417,10 +417,10 @@ class InputAxisContainerCL
 
   /// Paints this [InputAxisContainerCL] on the passed [canvas].
   ///
-  /// Delegates painting to all contained [LabelContainerOriginalKeep]s.
-  /// Any contained [LabelContainerOriginalKeep] must have been offset to the appropriate position.
+  /// Delegates painting to all contained [ChartLabelContainer]s.
+  /// Any contained [ChartLabelContainer] must have been offset to the appropriate position.
   ///
-  /// A special situation is when the [LabelContainerOriginalKeep]s are tilted, say counterclockwise.
+  /// A special situation is when the [ChartLabelContainer]s are tilted, say counterclockwise.
   /// Because labels are always painted horizontally in the screen coordinate system, we much tilt them
   /// by painting them on a rotated position.
   /// This is achieved as follows: At the moment of calling this [paint],

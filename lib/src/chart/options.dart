@@ -49,7 +49,7 @@ class ChartOptions {
           ),
           outputAxisContainerOptions: const OutputAxisContainerOptions(
             isShown: false,
-            isHorizontalGridLinesShown: false,
+            isInputGridLinesShown: false,
           ),
         );
 }
@@ -162,7 +162,7 @@ class OutputAxisContainerOptions {
   ///
   /// However, Y gridlines (vertical) are showing even when `isInputAxisContainerShown = false`.
   /// This option allows to toggle it.
-  final bool isHorizontalGridLinesShown;
+  final bool isInputGridLinesShown;
 
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
   final double labelPadTB;
@@ -172,7 +172,7 @@ class OutputAxisContainerOptions {
 
   const OutputAxisContainerOptions({
     this.isShown = true,
-    this.isHorizontalGridLinesShown = true,
+    this.isInputGridLinesShown = true,
     this.labelPadTB = 40.0,
     this.labelPadLR = 6.0,
   });

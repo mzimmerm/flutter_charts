@@ -178,7 +178,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
 ///
 /// Two child containers are created during the [layout]:
 ///    - [LegendIndicatorRectContainer] indRectContainer for the series color indicator
-///    - [LabelContainerOriginalKeep] labelContainer for the series label
+///    - [ChartLabelContainer] labelContainer for the series label
 
 
 /// Container of one item in the chart legend; each instance corresponds to one row (series) of data.
