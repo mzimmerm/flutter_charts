@@ -291,7 +291,7 @@ class DataContainerOptions {
     ui.Paint paint = ui.Paint();
     paint.color = gridLinesColor;
     paint.style = ui.PaintingStyle.stroke;
-    paint.strokeWidth = 1.0;
+    paint.strokeWidth = 6.0; // todo-00-last : put back : 1.0;
 
     return paint;
   }

@@ -42,12 +42,10 @@ class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
       outputAxisContainerFirst: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
-        isShowOutputAxisLine: false,
       ),
       outputAxisContainer: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
-        isShowOutputAxisLine: false,
       ),
       dataContainer: LineChartDataContainerCL(chartViewModel: this),
       chartViewModel: chartViewModel,

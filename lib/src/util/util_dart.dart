@@ -146,9 +146,16 @@ class Interval {
     return includes(other.min) || includes(other.max);
   }
 
-  bool isAcrossZero() {
+  bool get isAcrossZero {
     return (min < 0.0 && max > 0.0);
   }
+
+  double zeroElse({required double Function() elseReturn}) {
+    if (isAcrossZero) return 0.0;
+    return elseReturn();
+  }
+
+  double get zeroElseMin => zeroElse(elseReturn: () => min);
 
   /// Returns [true] if the passed [other] is inside self.
   bool containsFully(Interval other) {

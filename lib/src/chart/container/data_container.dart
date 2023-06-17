@@ -109,13 +109,27 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                 // The containers that show positive and negative bars or lines.
                 TransposingStackLayouter(
                   children: [
-/* todo-00-last : put back */
+/* todo-00-last : put back
                     TransposingCrossGrid(
                       chartViewModel: chartViewModel,
                     ),
- /* */
+  */
+                    // InputAxisLine and OutputAxisLine could be part of the grid
+                    TransposingInputAxisLine(
+                      chartViewModel: chartViewModel,
+                      inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
+                      outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
+                      // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight
+                      //   between positive and negative sections.
+                      constraintsWeight: const ConstraintsWeight(weight: 0.0),
+                    ),
+                    TransposingOutputAxisLine(
+                      inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
+                      outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
+                      chartViewModel: chartViewModel,
+                    ),
 
-                    makeInnerContainerForBothBarsAreasAndInputAxisLine(
+                    makeInnerContainerForBothBarsAreas(
                       // Row with columns of positive values
                       positiveBarsContainer: makeInnerBarsContainer(
                         barsAreaSign: Sign.positiveOr0,
@@ -123,15 +137,6 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                         constraintsWeight: ConstraintsWeight(
                             weight:
                                 chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
-                      ),
-                      // X axis line. Could place in Row with main constraints weight=0.0
-                      inputAxisLine: TransposingInputAxisLine(
-                        chartViewModel: chartViewModel,
-                        inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
-                        outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
-                        // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight
-                        //   between positive and negative sections.
-                        constraintsWeight: const ConstraintsWeight(weight: 0.0),
                       ),
                       // Row with columns of negative values
                       negativeBarsContainer: makeInnerBarsContainer(
@@ -168,9 +173,8 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   bool isOuterMakingInnerContainers = false;
 
   /// [DataContainer] client-overridable method hook for extending [PositiveAndNegativeBarsWithInputAxisLineContainer].
-  ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
+  ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreas({
     required BarsContainer positiveBarsContainer,
-    required TransposingInputAxisLine inputAxisLine,
     required BarsContainer negativeBarsContainer,
     required DataContainer outerDataContainer,
     ContainerKey? key,
@@ -178,7 +182,6 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     return ContainerForBothBarsAreasAndInputAxisLine(
       chartViewModel: chartViewModel,
       positiveBarsContainer: positiveBarsContainer,
-      inputAxisLine: inputAxisLine,
       negativeBarsContainer: negativeBarsContainer,
       outerDataContainer: outerDataContainer,
       key: key,
@@ -278,7 +281,6 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
   ContainerForBothBarsAreasAndInputAxisLine({
     required super.chartViewModel,
     required this.positiveBarsContainer,
-    required this.inputAxisLine,
     required this.negativeBarsContainer,
     required this.outerDataContainer,
     super.key,
@@ -286,7 +288,6 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
   });
 
   final BarsContainer positiveBarsContainer;
-  final TransposingInputAxisLine inputAxisLine;
   final BarsContainer negativeBarsContainer;
 
   /// non-child, kept to establish inner/outer relationship
@@ -300,7 +301,6 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
         mainAxisAlign: Align.start, // default
         children: [
           positiveBarsContainer,
-          inputAxisLine,
           negativeBarsContainer,
         ],
       )
@@ -649,8 +649,8 @@ abstract class PointContainer extends BasePointContainer {
   ///                         constraints are those given to 'container-parent bar'. They are sized in both directions
   ///   8. After affmap, the code makes two changes to the transferred pixelPointOffset:
   ///     - 8.1: repositions the PointOffset, in the cross direction, in the middle of the constraint,
-  ///            see [affmapBetweenRanges]
-  ///     - 8.2: sets the [PointOffset.barPointRectSize], see [affmapBetweenRanges]
+  ///            see [PointOffset.affmapBetweenRanges]
+  ///     - 8.2: sets the [PointOffset.barPointRectSize], see [PointOffset.affmapBetweenRanges]
   ///
   PointOffset layoutUsingPointModelAffmapToPixels() {
 

@@ -47,7 +47,6 @@ class OutputAxisContainerCL
   OutputAxisContainerCL({
     required ChartViewModel chartViewModel,
     required this.directionWrapperAround,
-    required this.isShowOutputAxisLine,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
     chartViewModel: chartViewModel,
@@ -66,9 +65,9 @@ class OutputAxisContainerCL
   @override
   List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
 
-  /// Override needed because this member is from an implement class, not extend  class
   @override
-  bool isShowOutputAxisLine;
+  DataRangeTicksAndLabelsDescriptor crossRangeDescriptor(DataRangeTicksAndLabelsDescriptor rangeDescriptor) =>
+      throw UnimplementedError();
 
   /// Overridden method creates this [OutputAxisContainerCL]'s hierarchy-children Y labels
   /// (instances of [OutputLabelContainer]) which are maintained in this [OutputAxisContainerCL.outputLabelContainerCLs].
@@ -255,12 +254,9 @@ class InputAxisContainerCL
   @override
   List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
 
-  /// Override needed because this member is from an implement class, not extend  class
   @override
-  bool get isShowOutputAxisLine =>  throw UnimplementedError();
-
-  @override
-  set isShowOutputAxisLine(bool value) =>  throw UnimplementedError();
+  DataRangeTicksAndLabelsDescriptor crossRangeDescriptor(DataRangeTicksAndLabelsDescriptor rangeDescriptor) =>
+      throw UnimplementedError();
 
   @override
   /// Overridden method creates this [InputAxisContainerCL]'s hierarchy-children X labels

@@ -22,14 +22,58 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration1_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration1_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration2_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration2_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration3_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration3_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration4_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration4_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex900ErrorFixUserDataAllZero_lineChart.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex900ErrorFixUserDataAllZero_lineChart.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/legend_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/util/util_dart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/util/util_dart.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,29 +246,29 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.26795283&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1477105",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.splitter.proportion": "0.26795283",
+    "show.migrate.to.gradle.popup": "false"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Dart&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Dart"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/tool/test" />
@@ -298,7 +342,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_row_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
@@ -407,12 +451,6 @@
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="Invalid descriptor: throws StateError with appropriate message" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
-      <option name="testName" value="Invalid descriptor: throws StateError with appropriate message" />
-      <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
-      <option name="useRegexp" value="false" />
-      <method v="2" />
-    </configuration>
     <configuration name="TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
       <option name="testFile" value="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" />
       <option name="useRegexp" value="false" />
@@ -440,6 +478,12 @@
     </configuration>
     <configuration name="tests in example_descriptor_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testFile" value="$PROJECT_DIR$/test/chart/util/example_descriptor_test.dart" />
+      <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="tests in util_flutter_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testFile" value="$PROJECT_DIR$/test/util/util_flutter_test.dart" />
       <option name="useRegexp" value="false" />
       <option name="additionalArgs" value="" />
       <method v="2" />
@@ -553,8 +597,8 @@
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref " />
       <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />
       <item itemvalue="Flutter Test.TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" />
+      <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
       <item itemvalue="Flutter Test.tests in widget_test.dart" />
-      <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
       <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
       <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
       <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
@@ -565,11 +609,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Flutter Test.tests in util_flutter_test.dart" />
         <item itemvalue="Flutter Test.tests in widget_test.dart" />
         <item itemvalue="Flutter Test.tests in example_descriptor_test.dart" />
         <item itemvalue="Flutter Test.Valid descriptor: 2 Fully descriptive multi-ex-matching Strings" />
         <item itemvalue="Flutter Test.Valid descriptor: Fuzzy descriptive single-ex-matching String" />
-        <item itemvalue="Flutter Test.Invalid descriptor: throws StateError with appropriate message" />
       </list>
     </recent_temporary>
   </component>
@@ -1074,7 +1118,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/util/util_dart.dart</url>
-          <line>672</line>
+          <line>679</line>
           <option name="timeStamp" value="2367" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
@@ -1106,11 +1150,6 @@
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/constraints.dart</url>
           <line>346</line>
           <option name="timeStamp" value="2948" />
-        </line-breakpoint>
-        <line-breakpoint type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart</url>
-          <line>90</line>
-          <option name="timeStamp" value="2977" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
@@ -1314,7 +1353,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart</url>
-          <line>481</line>
+          <line>477</line>
           <option name="timeStamp" value="3671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1351,11 +1390,6 @@
           <url>file://$PROJECT_DIR$/lib/src/util/util_flutter.dart</url>
           <line>28</line>
           <option name="timeStamp" value="3724" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart</url>
-          <line>321</line>
-          <option name="timeStamp" value="3737" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/painter.dart</url>
@@ -1568,11 +1602,6 @@
           <option name="timeStamp" value="3892" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
-          <line>105</line>
-          <option name="timeStamp" value="3897" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
           <line>1502</line>
           <option name="timeStamp" value="3900" />
@@ -1589,7 +1618,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
-          <line>384</line>
+          <line>383</line>
           <option name="timeStamp" value="3927" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1614,13 +1643,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart</url>
-          <line>385</line>
+          <line>384</line>
           <option name="timeStamp" value="3932" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>502</line>
-          <option name="timeStamp" value="3934" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
@@ -1634,48 +1658,33 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>140</line>
+          <line>145</line>
           <option name="timeStamp" value="3938" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>232</line>
-          <option name="timeStamp" value="3940" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>200</line>
-          <option name="timeStamp" value="3941" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/data_container.dart</url>
-          <line>112</line>
-          <option name="timeStamp" value="3942" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>490</line>
-          <option name="timeStamp" value="3943" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>487</line>
-          <option name="timeStamp" value="3944" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>378</line>
+          <line>380</line>
           <option name="timeStamp" value="3945" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>463</line>
-          <option name="timeStamp" value="3946" />
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart</url>
+          <line>101</line>
+          <option name="timeStamp" value="3958" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>456</line>
-          <option name="timeStamp" value="3947" />
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart</url>
+          <line>114</line>
+          <option name="timeStamp" value="3959" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart</url>
+          <line>132</line>
+          <option name="timeStamp" value="3960" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>101</line>
+          <option name="timeStamp" value="3961" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

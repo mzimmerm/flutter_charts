@@ -316,9 +316,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   set isOuterMakingInnerContainers(bool isValue) => throw UnimplementedError();
 
   @override
-  ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
+  ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreas({
     required BarsContainer positiveBarsContainer,
-    required TransposingInputAxisLine inputAxisLine,
     required BarsContainer negativeBarsContainer,
     required DataContainer outerDataContainer,
     ContainerKey? key,

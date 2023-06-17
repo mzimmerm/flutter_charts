@@ -90,8 +90,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   void layout() {
     buildAndReplaceChildren();
 
-    assert(fromPointOffset != null);
-    assert(toPointOffset != null);
+    if (fromPointOffset == null) throw StateError('$runtimeType: fromPointOffset must not be null.');
+    if (toPointOffset == null) throw StateError('$runtimeType: toPointOffset must not be null.');
 
     // Code here takes care of the pixel positioning of the points, aka layout.
 

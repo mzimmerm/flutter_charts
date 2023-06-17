@@ -44,13 +44,8 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
 }
 
 class TransposingInputAxisLine extends AxisLineContainer {
-  /// Creating a horizontal line between inputValue x min and x max, with outputValue y max.
-  /// The reason for using y max: We want to paint HORIZONTAL line with 0 thickness, so
-  ///   the layoutSize.height of the AxisLineContainer must be 0.
-  /// That means, the AxisLineContainer INNER y pixel coordinates of both end points
-  ///   must be 0 after all transforms.
-  /// To achieve the 0 inner y pixel coordinates after all transforms, we need to start at the point
-  ///   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
+  /// Constructs a horizontal line which renders the input axis.
+  /// See [TransposingOutputAxisLine] constructor.
   /// See documentation in [PointOffset.affmapInContextOf] column section for details.
   TransposingInputAxisLine({
     required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
@@ -58,34 +53,30 @@ class TransposingInputAxisLine extends AxisLineContainer {
     required ChartViewModel chartViewModel,
     required super.constraintsWeight,
   }) : super(
-          // Logic to handle PointOffset depending on orientation. Not possible to do pure affmap
-          //   (from default column logic using outputValue:  outputRangeDescriptor.dataRange.max ),
-          //   because [inputAxisLine] lives in [ContainerForBothBarsAreasAndInputAxisLine] inside Column,
-          //   which adds offset and messes up positioning endpoints of axis line using pure affmap.
-          //   todo-02-design : Deal with it better, but at the moment, I do not know how.
           fromPointOffset: PointOffset(
             inputValue: inputRangeDescriptor.dataRange.min,
-            // todo-010 : is this orientation switch needed? rationalize
-            outputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? outputRangeDescriptor.dataRange.max
-                : outputRangeDescriptor.dataRange.min,
+            outputValue: outputRangeDescriptor.dataRange.zeroElseMin,
           ),
           toPointOffset: PointOffset(
             inputValue: inputRangeDescriptor.dataRange.max,
-            outputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? outputRangeDescriptor.dataRange.max
-                : outputRangeDescriptor.dataRange.min,
+            outputValue: outputRangeDescriptor.dataRange.zeroElseMin,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
         );
+
 }
 
 /// Container for the Vertical axis line only, no other elements.
 /// what chart orientation.
 class TransposingOutputAxisLine extends AxisLineContainer {
-  /// Here we use the magic of PointOffset transforms to define a HORIZONTAL line, which after
-  ///   PointOffset transforms becomes VERTICAL due to the transpose of coordinates.
+  /// Constructs vertical line which renders output axis.
+  ///
+  /// The axis line ends are two points, the 'from' and 'to' [PointOffset] points, which form a HORIZONTAL line.
+  ///
+  /// If in [ChartOrientation.row] mode this horizontal line transforms and becomes VERTICAL due to the transpose
+  ///   of coordinates in [AxisLineContainer.layout] calling [PointOffset.affmapBetweenRanges] on both points.
+  ///
   /// See documentation in [PointOffset.affmapInContextOf] row section for details.
   TransposingOutputAxisLine({
     required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
@@ -93,11 +84,11 @@ class TransposingOutputAxisLine extends AxisLineContainer {
     required ChartViewModel chartViewModel,
   }) : super(
           fromPointOffset: PointOffset(
-            inputValue: inputRangeDescriptor.dataRange.min,
+            inputValue: inputRangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
             outputValue: outputRangeDescriptor.dataRange.min,
           ),
           toPointOffset: PointOffset(
-            inputValue: inputRangeDescriptor.dataRange.min,
+            inputValue: inputRangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
             outputValue: outputRangeDescriptor.dataRange.max,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
@@ -107,11 +98,17 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 
 // -------------------------------------
 
-/// Mixin injects children into
+/// Mixin injects children into the build methods
+///   - [_InputAxisOrGridBuilderMixin._buildInputRangeTickedTransposingRow] and
+///   - [_OutputAxisOrGridBuilderMixin._buildOutputRangeTickedTransposingColumn]
+/// which builds the ticked axis or grid.
+///
+/// The passed [rangeDescriptor] is used to iterate labels on which the ticked labels or grid lines are placed. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
 mixin _AxisOrGridChildren {
   List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor);
 }
 
+/// See also [_AxisOrGridChildren].
 mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildren {
 
   @override
@@ -131,9 +128,17 @@ mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
 
 }
 
+/// See also [_AxisOrGridChildren].
 mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildren {
 
-  // input
+  /// Implementation of [_AxisOrGridChildren] mixin's method which injects children
+  /// into the build methods for grid lines.
+  ///
+  /// The passed [rangeDescriptor] must be the one in direction that iterates labels or grid lines.
+  ///
+  /// Important note:
+  ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptor]
+  ///   from which it needs the start and end of the grid lines!
   @override
   List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) => [
     // For each label, add a grid line in the external ticks center for line chart,
@@ -144,18 +149,17 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
           // input value can (and must) be 0 ONLY with assumption that this is value inside a cross-direction layouter.
           // so the whole TransposingInputGrid can only live in
           inputValue: 0, // inputRangeDescriptor.dataRange.min,
-          outputValue: _outputRangeDescriptor.dataRange.min,
+          outputValue: crossRangeDescriptor(rangeDescriptor).dataRange.min,
         ),
         toPointOffset: PointOffset(
           inputValue: 0, // inputRangeDescriptor.dataRange.max,
-          outputValue: _outputRangeDescriptor.dataRange.max,
+          outputValue: crossRangeDescriptor(rangeDescriptor).dataRange.max,
         ),
         linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
         chartViewModel: chartViewModel,
       )
   ];
 
-// output // todo-00-last : for OUTPUT _externallyTickedAxisOrGridChildren, we LIKELY NEED DIFFERENT CODE taken from output axis TransposingOutputAxis
 }
 
 // -------------------------------------
@@ -215,8 +219,6 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
 ///   - axis labels if mixed in [TransposingAxis] to form [TransposingOutputAxis] the or grid lines,
 ///   - grid lines if mixed in [TransposingGrid] to form [TransposingOutputGrid] the or grid lines,
 ///
-///
-/// The [isShowOutputAxisLine] should be `true` if used on an axis, `false` if used on a grid.
 mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
 
   TransposingRoller _buildOutputRangeTickedTransposingColumn() {
@@ -232,13 +234,6 @@ mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildre
             ),
             children: _externallyTickedAxisOrGridChildren(_outputRangeDescriptor),
           ),
-          // Y axis line to the right of labels
-          if (isShowOutputAxisLine)
-            TransposingOutputAxisLine(
-              inputRangeDescriptor: _inputRangeDescriptor,
-              outputRangeDescriptor: _outputRangeDescriptor,
-              chartViewModel: chartViewModel,
-            ),
         ]);
   }
 
@@ -254,7 +249,6 @@ mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildre
 abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer {
   TransposingAxisOrGrid({
     required super.chartViewModel,
-    this.isShowOutputAxisLine = false,
   }) {
     _outputRangeDescriptor = chartViewModel.outputRangeDescriptor;
     _inputRangeDescriptor = chartViewModel.inputRangeDescriptor;
@@ -276,7 +270,17 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
   late final DataRangeTicksAndLabelsDescriptor _inputRangeDescriptor;
   late final LabelStyle _labelStyle;
 
-  bool isShowOutputAxisLine;
+  /// Returns the descriptor of the 'other direction' axis.
+  DataRangeTicksAndLabelsDescriptor crossRangeDescriptor(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
+    if (rangeDescriptor == _inputRangeDescriptor) {
+      return _outputRangeDescriptor;
+    }
+    if (rangeDescriptor == _outputRangeDescriptor) {
+      return _inputRangeDescriptor;
+    }
+    throw StateError('$runtimeType: The passed descriptor $rangeDescriptor is neither of member '
+        '_inputRangeDescriptor nor _outputRangeDescriptor');
+  }
 
 }
 
@@ -285,7 +289,6 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
   TransposingAxis({
     required super.chartViewModel,
     required this.directionWrapperAround,
-    super.isShowOutputAxisLine = false,
   });
 
   factory TransposingAxis.OutputAxis({
@@ -296,7 +299,6 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
         return TransposingOutputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
-          isShowOutputAxisLine: true,
         );
       case ChartOrientation.row:
         return TransposingInputAxis(
@@ -319,7 +321,6 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
         return TransposingOutputAxis(
           chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
-          isShowOutputAxisLine: true,
         );
     }
   }
@@ -374,6 +375,7 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
   factory TransposingGrid.InputGrid({
     required ChartViewModel chartViewModel,
   }) {
+/* todo-00-next : check how this works, simplify, and so similar simplification on labels.
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingInputGrid(
@@ -384,11 +386,17 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
           chartViewModel: chartViewModel,
         );
     }
+ */
+
+    return TransposingInputGrid(
+      chartViewModel: chartViewModel,
+    );
   }
 
   factory TransposingGrid.OutputGrid({
     required ChartViewModel chartViewModel,
   }) {
+/* todo-00-next  : check how this works, simplify, and so similar simplification on labels.
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingOutputGrid(
@@ -399,6 +407,10 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
           chartViewModel: chartViewModel,
         );
     }
+*/
+    return TransposingOutputGrid(
+      chartViewModel: chartViewModel,
+    );
   }
 
   @override
@@ -413,7 +425,6 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
   }
 
 }
-
 
 /// Container of input axis.
 ///
@@ -440,7 +451,6 @@ class TransposingOutputAxis extends TransposingAxis with _OutputAxisOrGridBuilde
   TransposingOutputAxis({
     required super.chartViewModel,
     required super.directionWrapperAround,
-    super.isShowOutputAxisLine = true,
   });
 
   /// When invoked by [buildAndReplaceChildren] in [TransposingAxis],
