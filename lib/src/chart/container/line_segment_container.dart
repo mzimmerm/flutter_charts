@@ -44,7 +44,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     this.toPointOffset,
     required this.linePaint,
     required super.chartViewModel,
-    super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
+    super.constraintsWeight,
   });
 
   /// Model contains the transformed, not-extrapolated values of the point where the line starts.

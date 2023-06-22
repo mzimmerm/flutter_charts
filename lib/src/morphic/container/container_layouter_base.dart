@@ -1373,6 +1373,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // todo-020 : can key and children be required, final, and non nullable?
     ContainerKey? key,
     List<BoxContainer>? children,
+    // ConstraintsWeight is by default the ConstraintsWeight.defaultWeight, which causes the parent
+    // [layout] (unless overridden) to give this container as child it's full parent constraints.
+    // If we want the parent [layout] to divide constraints, set it to `const ConstraintsWeight(weight: 0)`
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) {
     // Late initialize the constraintsWeight

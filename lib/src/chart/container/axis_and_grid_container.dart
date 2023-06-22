@@ -35,9 +35,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
     super.fromPointOffset,
     super.toPointOffset,
-    // For the pos/neg to create weight-defined constraints when in Column or Row, ConstraintsWeight must be set.
-    // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight between positive and negative sections.
-    super.constraintsWeight = const ConstraintsWeight(weight: 0),
+    super.constraintsWeight, //  = const ConstraintsWeight(weight: 0),
     required super.linePaint,
     required super.chartViewModel,
   });
@@ -51,7 +49,7 @@ class TransposingInputAxisLine extends AxisLineContainer {
     required DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
     required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
     required ChartViewModel chartViewModel,
-    required super.constraintsWeight,
+    super.constraintsWeight,
   }) : super(
           fromPointOffset: PointOffset(
             inputValue: inputRangeDescriptor.dataRange.min,
@@ -139,26 +137,66 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
   /// Important note:
   ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptor]
   ///   from which it needs the start and end of the grid lines!
+/* todo-00-done : experimenting with this: For input grid, should be like TransposingOutputAxisLine
   @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) => [
-    // For each label, add a grid line in the external ticks center for line chart,
-    //   in the external ticks end for bar chart.
-    for (var labelInfo in rangeDescriptor.labelInfoList)
-      LineBetweenPointOffsetsContainer(
-        fromPointOffset: PointOffset(
-          // input value can (and must) be 0 ONLY with assumption that this is value inside a cross-direction layouter.
-          // so the whole TransposingInputGrid can only live in
-          inputValue: 0, // inputRangeDescriptor.dataRange.min,
-          outputValue: crossRangeDescriptor(rangeDescriptor).dataRange.min,
-        ),
-        toPointOffset: PointOffset(
-          inputValue: 0, // inputRangeDescriptor.dataRange.max,
-          outputValue: crossRangeDescriptor(rangeDescriptor).dataRange.max,
-        ),
-        linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
-        chartViewModel: chartViewModel,
-      )
-  ];
+  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
+    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor1 = crossRangeDescriptor(rangeDescriptor);
+
+    return [
+      // For each label, add a grid line in the external ticks center for line chart,
+      //   in the external ticks end for bar chart.
+      for (var labelInfo in rangeDescriptor.labelInfoList)
+        LineBetweenPointOffsetsContainer(
+          fromPointOffset: PointOffset(
+            // input value can (and must) be 0 ONLY with assumption that this is value inside a cross-direction layouter.
+            // so the whole TransposingInputGrid can only live in
+            inputValue: rangeDescriptor.dataRange.max, // works: 100, // rangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
+            outputValue: crossRangeDescriptor1.dataRange.min,
+          ),
+          toPointOffset: PointOffset(
+            inputValue: rangeDescriptor.dataRange.max, // works: 100, // rangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.max,
+            outputValue: crossRangeDescriptor1.dataRange.max,
+          ),
+          linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+          chartViewModel: chartViewModel,
+        )
+    ];
+  }
+*/
+
+  @override
+  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
+    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor1 = crossRangeDescriptor(rangeDescriptor);
+
+    return [
+      // For each label, add a grid line in the external ticks center for line chart,
+      //   in the external ticks end for bar chart.
+      for (var labelInfo in rangeDescriptor.labelInfoList)
+        // ChartOrientation.column inputValue:
+        //   - always start at min. affmap will place it to affmap-input.min
+        //   - Then, ticks will move it to tick position
+        // ChartOrientation.row inputValue:
+        //   - always start at max. affmap will place it to affmap-output.min
+        //   - Then, ticks will move it to tick position
+        //
+        LineBetweenPointOffsetsContainer(
+          fromPointOffset: PointOffset(
+            inputValue: chartViewModel.chartOrientation == ChartOrientation.column
+                ? _inputRangeDescriptor.dataRange.min
+                : _inputRangeDescriptor.dataRange.max,
+            outputValue: _outputRangeDescriptor.dataRange.min, // works: crossRangeDescriptor1.dataRange.min,
+          ),
+          toPointOffset: PointOffset(
+            inputValue:  chartViewModel.chartOrientation == ChartOrientation.column
+                ? _inputRangeDescriptor.dataRange.min
+                : _inputRangeDescriptor.dataRange.max,
+            outputValue: _outputRangeDescriptor.dataRange.max, // works: crossRangeDescriptor1.dataRange.max,
+          ),
+          linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+          chartViewModel: chartViewModel,
+        )
+    ];
+  }
 
 }
 

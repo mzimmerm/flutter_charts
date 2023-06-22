@@ -113,15 +113,12 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                     TransposingCrossGrid(
                       chartViewModel: chartViewModel,
                     ),
-  */
+*/
                     // InputAxisLine and OutputAxisLine could be part of the grid
                     TransposingInputAxisLine(
                       chartViewModel: chartViewModel,
                       inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
                       outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
-                      // ConstraintsWeight.weight 0 ensures the parent layouter divides all weight
-                      //   between positive and negative sections.
-                      constraintsWeight: const ConstraintsWeight(weight: 0.0),
                     ),
                     TransposingOutputAxisLine(
                       inputRangeDescriptor: chartViewModel.inputRangeDescriptor,

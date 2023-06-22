@@ -155,6 +155,7 @@ class Interval {
     return elseReturn();
   }
 
+  /// If this interval contains zero `0.0`, returns zero, else returns [min] of this [Interval].
   double get zeroElseMin => zeroElse(elseReturn: () => min);
 
   /// Returns [true] if the passed [other] is inside self.
