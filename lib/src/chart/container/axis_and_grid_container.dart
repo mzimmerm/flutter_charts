@@ -103,27 +103,30 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 ///
 /// The passed [rangeDescriptor] is used to iterate labels on which the ticked labels or grid lines are placed. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
 mixin _AxisOrGridChildren {
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor);
+  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency);
 }
 
 /// See also [_AxisOrGridChildren].
 mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildren {
 
   @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) => [
-    // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-    //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
-    //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
-    for (var labelInfo in rangeDescriptor.labelInfoList)
-      AxisLabelContainer(
-        chartViewModel: chartViewModel,
-        label: labelInfo.formattedLabel,
-        labelTiltMatrix: vector_math.Matrix2.identity(),
-        // No tilted labels in OutputAxisContainer
-        labelStyle: _labelStyle,
-      )
-  ];
+  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency) {
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(dataDependency);
 
+    return [
+      // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
+      //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
+      //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
+      for (var labelInfo in rangeDescriptor.labelInfoList)
+        AxisLabelContainer(
+          chartViewModel: chartViewModel,
+          label: labelInfo.formattedLabel,
+          labelTiltMatrix: vector_math.Matrix2.identity(),
+          // No tilted labels in OutputAxisContainer
+          labelStyle: _labelStyle,
+        )
+    ];
+  }
 }
 
 /// See also [_AxisOrGridChildren].
@@ -135,38 +138,18 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
   /// The passed [rangeDescriptor] must be the one in direction that iterates labels or grid lines.
   ///
   /// Important note:
-  ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptor]
+  ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptorOf]
   ///   from which it needs the start and end of the grid lines!
-/* todo-00-done : experimenting with this: For input grid, should be like TransposingOutputAxisLine
   @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
-    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor1 = crossRangeDescriptor(rangeDescriptor);
+  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency) {
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(dataDependency);
+    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = crossRangeDescriptorOf(rangeDescriptor);
 
-    return [
-      // For each label, add a grid line in the external ticks center for line chart,
-      //   in the external ticks end for bar chart.
-      for (var labelInfo in rangeDescriptor.labelInfoList)
-        LineBetweenPointOffsetsContainer(
-          fromPointOffset: PointOffset(
-            // input value can (and must) be 0 ONLY with assumption that this is value inside a cross-direction layouter.
-            // so the whole TransposingInputGrid can only live in
-            inputValue: rangeDescriptor.dataRange.max, // works: 100, // rangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
-            outputValue: crossRangeDescriptor1.dataRange.min,
-          ),
-          toPointOffset: PointOffset(
-            inputValue: rangeDescriptor.dataRange.max, // works: 100, // rangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.max,
-            outputValue: crossRangeDescriptor1.dataRange.max,
-          ),
-          linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
-          chartViewModel: chartViewModel,
-        )
-    ];
-  }
-*/
+    // Note: NOW WE BUILD INPUT, SO rangeDescriptor == _inputRangeDescriptor
 
-  @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
-    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor1 = crossRangeDescriptor(rangeDescriptor);
+    // For the data dependency cross the   dependency lines we are building:
+    //   - line is always from min to max
+    // For the data dependency same as the dependency lines we are building, line is from min to
 
     return [
       // For each label, add a grid line in the external ticks center for line chart,
@@ -182,15 +165,15 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
         LineBetweenPointOffsetsContainer(
           fromPointOffset: PointOffset(
             inputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? _inputRangeDescriptor.dataRange.min
-                : _inputRangeDescriptor.dataRange.max,
-            outputValue: _outputRangeDescriptor.dataRange.min, // works: crossRangeDescriptor1.dataRange.min,
+                ? rangeDescriptor.dataRange.min
+                : rangeDescriptor.dataRange.max,
+            outputValue: crossRangeDescriptor.dataRange.min, // works: crossRangeDescriptor.dataRange.min,
           ),
           toPointOffset: PointOffset(
             inputValue:  chartViewModel.chartOrientation == ChartOrientation.column
-                ? _inputRangeDescriptor.dataRange.min
-                : _inputRangeDescriptor.dataRange.max,
-            outputValue: _outputRangeDescriptor.dataRange.max, // works: crossRangeDescriptor1.dataRange.max,
+                ? rangeDescriptor.dataRange.min
+                : rangeDescriptor.dataRange.max,
+            outputValue: crossRangeDescriptor.dataRange.max, // works: crossRangeDescriptor.dataRange.max,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
@@ -240,7 +223,7 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
           mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
           ),
-          children: _externallyTickedAxisOrGridChildren(_inputRangeDescriptor),
+          children: _externallyTickedAxisOrGridChildren(DataDependency.inputData),
         ),
       ],
     );
@@ -270,7 +253,7 @@ mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildre
             mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
               externalTickAtPosition: ExternalTickAtPosition.childCenter,
             ),
-            children: _externallyTickedAxisOrGridChildren(_outputRangeDescriptor),
+            children: _externallyTickedAxisOrGridChildren(DataDependency.outputData),
           ),
         ]);
   }
@@ -309,7 +292,7 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
   late final LabelStyle _labelStyle;
 
   /// Returns the descriptor of the 'other direction' axis.
-  DataRangeTicksAndLabelsDescriptor crossRangeDescriptor(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
+  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorOf(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
     if (rangeDescriptor == _inputRangeDescriptor) {
       return _outputRangeDescriptor;
     }

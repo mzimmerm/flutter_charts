@@ -348,6 +348,15 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     required covariant ChartViewModel chartViewModel,
   });
 
+  DataRangeTicksAndLabelsDescriptor rangeDescriptorFor(DataDependency dataDependency) {
+    switch (dataDependency) {
+      case DataDependency.inputData:
+        return inputRangeDescriptor;
+      case DataDependency.outputData:
+        return outputRangeDescriptor;
+    }
+  }
+
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
 
