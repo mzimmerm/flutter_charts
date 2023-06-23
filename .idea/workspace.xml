@@ -22,28 +22,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,6 +201,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
@@ -311,7 +291,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_row_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
@@ -1627,7 +1607,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>401</line>
+          <line>425</line>
           <option name="timeStamp" value="3945" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1652,7 +1632,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
-          <line>521</line>
+          <line>545</line>
           <option name="timeStamp" value="3962" />
         </line-breakpoint>
       </breakpoints>

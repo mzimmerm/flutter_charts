@@ -101,7 +101,8 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 ///   - [_OutputAxisOrGridBuilderMixin._buildOutputRangeTickedTransposingColumn]
 /// which builds the ticked axis or grid.
 ///
-/// The passed [rangeDescriptor] is used to iterate labels on which the ticked labels or grid lines are placed. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
+/// The passed [rangeDescriptor] is used to iterate labels on which the ticked 
+/// labels or grid lines are placed. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
 mixin _AxisOrGridChildren {
   List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency);
 }
@@ -135,7 +136,10 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
   /// Implementation of [_AxisOrGridChildren] mixin's method which injects children
   /// into the build methods for grid lines.
   ///
-  /// The passed [rangeDescriptor] must be the one in direction that iterates labels or grid lines.
+  /// The passed [dataDependency] describes the children (labels for axis, grid lines for grid)
+  /// being build:
+  ///   - for [dataDependency] equal to [DataDependency.inputData], children for input axis are built;
+  ///     that also implies that the [_inputRangeDescriptor] is used to 
   ///
   /// Important note:
   ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptorOf]
@@ -145,35 +149,55 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
     DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(dataDependency);
     DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = crossRangeDescriptorOf(rangeDescriptor);
 
-    // Note: NOW WE BUILD INPUT, SO rangeDescriptor == _inputRangeDescriptor
+    // The dataDependency for which we build these grid lines,
+    // is cross to the direction of the grid lines, in detail:
+    //   - if passed = input,  lines are parallel to output, that is, lines have same input  values.
+    //   - if passed = output, lines are parallel to input,  that is, lines have same output values.
+    // So:
+    //   - in the cross direction to the passed data dependency, line is from min to max on the data dependency cross-range
+    //   - in the direction       of the passed data dependency, line is from min to min or from max to max on the data dependency range,
+    //     depending on orientation:
+    //       ChartOrientation.column inputValue:
+    //         - always start and end at min. affmap will place it to affmap-input.min
+    //         - Then, ticks will move it to tick position
+    //       ChartOrientation.row inputValue:
+    //         - always start and end at max. affmap will place it to affmap-output.min
+    //         - Then, ticks will move it to tick position
+    double inputValueFrom, inputValueTo, outputValueFrom, outputValueTo;
 
-    // For the data dependency cross the   dependency lines we are building:
-    //   - line is always from min to max
-    // For the data dependency same as the dependency lines we are building, line is from min to
+    switch(dataDependency) {
+      case DataDependency.inputData:
+        // cross direction, from min to max on cross range (output range)
+        outputValueFrom = crossRangeDescriptor.dataRange.min;
+        outputValueTo = crossRangeDescriptor.dataRange.max;
+        // same direction, from min to min or max to max on range (output range) depending on orientation
+        inputValueFrom = chartViewModel.chartOrientation == ChartOrientation.column
+            ? rangeDescriptor.dataRange.min
+            : rangeDescriptor.dataRange.max;
+        inputValueTo = inputValueFrom;
+        break;
+      case DataDependency.outputData:
+        // cross direction, from min to max on cross range (input range)
+        inputValueFrom = crossRangeDescriptor.dataRange.min;
+        inputValueTo = crossRangeDescriptor.dataRange.max;
+        // same direction, from min to min or max to max on range (input range) depending on orientation
+        outputValueFrom = chartViewModel.chartOrientation == ChartOrientation.column
+            ? rangeDescriptor.dataRange.min
+            : rangeDescriptor.dataRange.max;
+        outputValueTo = outputValueFrom;
+        break;
+    }
 
     return [
-      // For each label, add a grid line in the external ticks center for line chart,
-      //   in the external ticks end for bar chart.
       for (var labelInfo in rangeDescriptor.labelInfoList)
-        // ChartOrientation.column inputValue:
-        //   - always start at min. affmap will place it to affmap-input.min
-        //   - Then, ticks will move it to tick position
-        // ChartOrientation.row inputValue:
-        //   - always start at max. affmap will place it to affmap-output.min
-        //   - Then, ticks will move it to tick position
-        //
         LineBetweenPointOffsetsContainer(
           fromPointOffset: PointOffset(
-            inputValue: chartViewModel.chartOrientation == ChartOrientation.column
-                ? rangeDescriptor.dataRange.min
-                : rangeDescriptor.dataRange.max,
-            outputValue: crossRangeDescriptor.dataRange.min, // works: crossRangeDescriptor.dataRange.min,
+            inputValue: inputValueFrom,
+            outputValue: outputValueFrom,
           ),
           toPointOffset: PointOffset(
-            inputValue:  chartViewModel.chartOrientation == ChartOrientation.column
-                ? rangeDescriptor.dataRange.min
-                : rangeDescriptor.dataRange.max,
-            outputValue: crossRangeDescriptor.dataRange.max, // works: crossRangeDescriptor.dataRange.max,
+            inputValue:  inputValueTo,
+            outputValue: outputValueTo,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
