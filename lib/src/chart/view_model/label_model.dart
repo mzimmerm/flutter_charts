@@ -221,7 +221,7 @@ class DataRangeTicksAndLabelsDescriptor {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Given the member [chartOrientation] and passed [dataDependency], deduces if this [DataRangeTicksAndLabelsDescriptor]
+  /// Given the member [chartOrientation] and passed [axisDataDependency], deduces if this [DataRangeTicksAndLabelsDescriptor]
   /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
   ///
   /// Returns true if this [DataRangeTicksAndLabelsDescriptor] labels will be shown on [LayoutAxis.vertical].

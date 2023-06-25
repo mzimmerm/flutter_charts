@@ -465,7 +465,8 @@ class GridLinesContainer extends ChartAreaContainer {
 
   /// Override from base class sets the layout size.
   ///
-  /// This [GridLinesContainer] can be leaf if there are no labels or labels are not shown.
+  /// This [GridLinesContainer] can be leaf if there are no grid lines.
+  ///
   /// Leaf containers which do not override [BoxLayouter.layout] must override this method,
   /// setting [layoutSize].
   @override

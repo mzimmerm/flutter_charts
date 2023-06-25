@@ -65,10 +65,6 @@ class OutputAxisContainerCL
   @override
   List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
 
-  @override
-  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorOf(DataRangeTicksAndLabelsDescriptor rangeDescriptor) =>
-      throw UnimplementedError();
-
   /// Overridden method creates this [OutputAxisContainerCL]'s hierarchy-children Y labels
   /// (instances of [OutputLabelContainer]) which are maintained in this [OutputAxisContainerCL.outputLabelContainerCLs].
   ///
@@ -253,10 +249,6 @@ class InputAxisContainerCL
   /// Override needed because this member is from an implement class, not extend  class
   @override
   List<BoxContainer> Function(List<BoxContainer> p1, ChartPaddingGroup p2) directionWrapperAround;
-
-  @override
-  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorOf(DataRangeTicksAndLabelsDescriptor rangeDescriptor) =>
-      throw UnimplementedError();
 
   @override
   /// Overridden method creates this [InputAxisContainerCL]'s hierarchy-children X labels

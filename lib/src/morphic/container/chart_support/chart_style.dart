@@ -93,7 +93,7 @@ enum ChartOrientation {
   }
 
   /// For a chart orientation represented by this instance, describes orientation of the axis
-  /// which displays [DataDependency] described in the passed [dataDependency]
+  /// which displays [DataDependency] described in the passed [axisDataDependency]
   /// 
   /// Motivation: For any chart orientation, and any axis on the chart, we need to know if the data values axis
   ///   and the pixel axis which displays them, run in the same direction; this knowledge is equivalent to the knowledge whether

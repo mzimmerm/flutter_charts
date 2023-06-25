@@ -20,6 +20,10 @@ import 'package:flutter_charts/src/chart/options.dart';
 import 'container_common.dart' as container_common;
 import 'line_segment_container.dart';
 
+// todo-00-next : do not extend LineBetweenPointOffsetsContainer, but make it a (single) child, similar (same as?)
+//                  _ChildrenOfGridMixin on TransposingAxisOrGrid, see _ChildrenOfGridMixin._externallyTickedAxisLabelsOrGridLinesOnAxis
+//                  which adds LineBetweenPointOffsetsContainer as children
+
 /// Container for line showing a horizontal or vertical axis.
 ///
 /// Defined by its end points, [fromPointOffset] and [toPointOffset].
@@ -39,6 +43,44 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     required super.linePaint,
     required super.chartViewModel,
   });
+
+  /// Unused
+  void howFromToAreCalculated(DataDependency axisDataDependency) {
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
+    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
+
+    double inputValueFrom, inputValueTo, outputValueFrom, outputValueTo;
+
+    switch (axisDataDependency) {
+      case DataDependency.inputData:
+      // cross direction (output), zero or min on cross range
+        outputValueFrom = crossRangeDescriptor.dataRange.zeroElseMin;
+        outputValueTo = crossRangeDescriptor.dataRange.zeroElseMin;
+        // same direction (input), from min to max on range independent of orientation
+        inputValueFrom = rangeDescriptor.dataRange.min;
+        inputValueTo = rangeDescriptor.dataRange.max;
+        break;
+      case DataDependency.outputData:
+      // cross direction (input), zero or min on cross range
+        inputValueFrom = crossRangeDescriptor.dataRange.zeroElseMin;
+        inputValueTo = crossRangeDescriptor.dataRange.zeroElseMin;
+        // same direction (output), from min to max on range independent of orientation
+        outputValueFrom = rangeDescriptor.dataRange.min;
+        outputValueTo = rangeDescriptor.dataRange.max;
+        break;
+    }
+
+    fromPointOffset = PointOffset(
+      inputValue: inputValueFrom,
+      outputValue: outputValueFrom,
+    );
+    toPointOffset = PointOffset(
+      inputValue: inputValueTo,
+      outputValue: outputValueTo,
+    );
+
+  }
+
 }
 
 class TransposingInputAxisLine extends AxisLineContainer {
@@ -101,22 +143,27 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 ///   - [_OutputAxisOrGridBuilderMixin._buildOutputRangeTickedTransposingColumn]
 /// which builds the ticked axis or grid.
 ///
-/// The passed [rangeDescriptor] is used to iterate labels on which the ticked 
-/// labels or grid lines are placed. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
+/// The passed [axisDataDependency] defines if the method builds the input or output;
+/// it is translated to [DataRangeTicksAndLabelsDescriptor] which is used to iterate the ticked
+/// labels or grid lines. // todo-01000 : the actual labelInfo is not used. Add some kind of iterator to range to replace it.
 mixin _AxisOrGridChildren {
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency);
+  List<BoxContainer> _externallyTickedAxisLabelsOrGridLinesOnAxis({
+    required DataDependency axisDataDependency,
+  });
 }
 
 /// See also [_AxisOrGridChildren].
 mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildren {
 
   @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency) {
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(dataDependency);
+  List<BoxContainer> _externallyTickedAxisLabelsOrGridLinesOnAxis({
+    required DataDependency axisDataDependency,
+  }) {
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
 
     return [
       // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-      //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
+      //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the [ChartViewModel] constructor,
       //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
       for (var labelInfo in rangeDescriptor.labelInfoList)
         AxisLabelContainer(
@@ -130,42 +177,53 @@ mixin _ChildrenOfAxisMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
   }
 }
 
+/// Implements [_externallyTickedAxisLabelsOrGridLinesOnAxis] for grid lines.
+///
+/// The implementation returns a list of [LineBetweenPointOffsetsContainer], each
+/// representing one grid line for input axis or output axis, as defined by the passed [axisDataDependency].
+///
 /// See also [_AxisOrGridChildren].
+///
+///
 mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildren {
 
   /// Implementation of [_AxisOrGridChildren] mixin's method which injects children
   /// into the build methods for grid lines.
   ///
-  /// The passed [dataDependency] describes the children (labels for axis, grid lines for grid)
+  /// The passed [axisDataDependency] describes the children (labels for axis, grid lines for grid)
   /// being build:
-  ///   - for [dataDependency] equal to [DataDependency.inputData], children for input axis are built;
+  ///   - for [axisDataDependency] equal to [DataDependency.inputData], children for input axis are built;
   ///     that also implies that the [_inputRangeDescriptor] is used to 
   ///
   /// Important note:
-  ///   This method also needs the cross-descriptor, obtained by [TransposingAxisOrGrid.crossRangeDescriptorOf]
+  ///   This method also needs the cross-descriptor, obtained by [ChartViewModel.crossRangeDescriptorFor]
   ///   from which it needs the start and end of the grid lines!
   @override
-  List<BoxContainer> _externallyTickedAxisOrGridChildren(DataDependency dataDependency) {
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(dataDependency);
-    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = crossRangeDescriptorOf(rangeDescriptor);
+  List<BoxContainer> _externallyTickedAxisLabelsOrGridLinesOnAxis({
+    required DataDependency axisDataDependency,
+  }) {
+
+    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
+    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
 
     // The dataDependency for which we build these grid lines,
     // is cross to the direction of the grid lines, in detail:
     //   - if passed = input,  lines are parallel to output, that is, lines have same input  values.
     //   - if passed = output, lines are parallel to input,  that is, lines have same output values.
-    // So:
-    //   - in the cross direction to the passed data dependency, line is from min to max on the data dependency cross-range
-    //   - in the direction       of the passed data dependency, line is from min to min or from max to max on the data dependency range,
-    //     depending on orientation:
-    //       ChartOrientation.column inputValue:
-    //         - always start and end at min. affmap will place it to affmap-input.min
+    // So (this example is for DataDependency.inputData):
+    //   - in the cross direction to the passed data dependency, line is from min to max
+    //     on the data dependency cross-range
+    //   - in the direction       of the passed data dependency, line is from min to min or from max to max
+    //     on the data dependency range, depending on orientation. In detail:
+    //       inputValue: for ChartOrientation.column
+    //         - Start and end at min. affmap places it to affmap-input.min horizontal pixels
     //         - Then, ticks will move it to tick position
-    //       ChartOrientation.row inputValue:
-    //         - always start and end at max. affmap will place it to affmap-output.min
+    //       inputValue: forChartOrientation.row
+    //         - Start and end at max. affmap places it to affmap-output.min vertical pixels
     //         - Then, ticks will move it to tick position
     double inputValueFrom, inputValueTo, outputValueFrom, outputValueTo;
 
-    switch(dataDependency) {
+    switch(axisDataDependency) {
       case DataDependency.inputData:
         // cross direction, from min to max on cross range (output range)
         outputValueFrom = crossRangeDescriptor.dataRange.min;
@@ -182,8 +240,8 @@ mixin _ChildrenOfGridMixin on TransposingAxisOrGrid implements _AxisOrGridChildr
         inputValueTo = crossRangeDescriptor.dataRange.max;
         // same direction, from min to min or max to max on range (input range) depending on orientation
         outputValueFrom = chartViewModel.chartOrientation == ChartOrientation.column
-            ? rangeDescriptor.dataRange.min
-            : rangeDescriptor.dataRange.max;
+            ? rangeDescriptor.dataRange.max // affmap places it to min on vertical pixels, ticks move it to position
+            : rangeDescriptor.dataRange.min;
         outputValueTo = outputValueFrom;
         break;
     }
@@ -230,7 +288,7 @@ mixin _BuilderMixin {
 /// ticked by input [DataRangeTicksAndLabelsDescriptor].
 ///
 /// See the [_OutputAxisOrGridBuilderMixin] for documentation of the invoked
-/// [_AxisOrGridChildren._externallyTickedAxisOrGridChildren]. and how it forms the axis or grid
+/// [_AxisOrGridChildren._externallyTickedAxisLabelsOrGridLinesOnAxis]. and how it forms the axis or grid
 /// depending on being mixed in the [TransposingAxis] or [TransposingGrid].
 ///
 mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren {
@@ -247,7 +305,7 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
           mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
           ),
-          children: _externallyTickedAxisOrGridChildren(DataDependency.inputData),
+          children: _externallyTickedAxisLabelsOrGridLinesOnAxis(axisDataDependency: DataDependency.inputData),
         ),
       ],
     );
@@ -258,9 +316,9 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildren
 /// Builds the core container for [TransposingOutputAxis] or [TransposingOutputGrid], 
 /// ticked by output [DataRangeTicksAndLabelsDescriptor].
 ///
-/// The invoked [_AxisOrGridChildren._externallyTickedAxisOrGridChildren] is called with
+/// The invoked [_AxisOrGridChildren._externallyTickedAxisLabelsOrGridLinesOnAxis] is called with
 /// [DataRangeTicksAndLabelsDescriptor] argument [_outputRangeDescriptor]. This call to
-/// [_AxisOrGridChildren._externallyTickedAxisOrGridChildren] returns a list of:
+/// [_AxisOrGridChildren._externallyTickedAxisLabelsOrGridLinesOnAxis] returns a list of:
 ///   - axis labels if mixed in [TransposingAxis] to form [TransposingOutputAxis] the or grid lines,
 ///   - grid lines if mixed in [TransposingGrid] to form [TransposingOutputGrid] the or grid lines,
 ///
@@ -277,7 +335,7 @@ mixin _OutputAxisOrGridBuilderMixin on TransposingAxisOrGrid, _AxisOrGridChildre
             mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
               externalTickAtPosition: ExternalTickAtPosition.childCenter,
             ),
-            children: _externallyTickedAxisOrGridChildren(DataDependency.outputData),
+            children: _externallyTickedAxisLabelsOrGridLinesOnAxis(axisDataDependency: DataDependency.outputData),
           ),
         ]);
   }
@@ -315,18 +373,6 @@ abstract class TransposingAxisOrGrid extends container_common.ChartAreaContainer
   late final DataRangeTicksAndLabelsDescriptor _inputRangeDescriptor;
   late final LabelStyle _labelStyle;
 
-  /// Returns the descriptor of the 'other direction' axis.
-  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorOf(DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
-    if (rangeDescriptor == _inputRangeDescriptor) {
-      return _outputRangeDescriptor;
-    }
-    if (rangeDescriptor == _outputRangeDescriptor) {
-      return _inputRangeDescriptor;
-    }
-    throw StateError('$runtimeType: The passed descriptor $rangeDescriptor is neither of member '
-        '_inputRangeDescriptor nor _outputRangeDescriptor');
-  }
-
 }
 
 /// Abstract class common for input and output axis.
@@ -336,6 +382,8 @@ abstract class TransposingAxis extends TransposingAxisOrGrid with _ChildrenOfAxi
     required this.directionWrapperAround,
   });
 
+  // todo-00 : Try to use the same approach as TransposingGrid and extensions, where
+  //           there is no need to distinguish between row and column. This is automatically done by the (grid) line transposing itself
   factory TransposingAxis.OutputAxis({
     required ChartViewModel chartViewModel,
   }) {
@@ -417,46 +465,47 @@ abstract class TransposingGrid extends TransposingAxisOrGrid with _ChildrenOfGri
     required super.chartViewModel,
   });
 
-  factory TransposingGrid.InputGrid({
-    required ChartViewModel chartViewModel,
-  }) {
-/* todo-00-next : check how this works, simplify, and so similar simplification on labels.
-    switch (chartViewModel.chartOrientation) {
-      case ChartOrientation.column:
-        return TransposingInputGrid(
-          chartViewModel: chartViewModel,
-        );
-      case ChartOrientation.row:
-        return TransposingOutputGrid(
-          chartViewModel: chartViewModel,
-        );
-    }
- */
-
-    return TransposingInputGrid(
-      chartViewModel: chartViewModel,
-    );
-  }
-
-  factory TransposingGrid.OutputGrid({
-    required ChartViewModel chartViewModel,
-  }) {
-/* todo-00-next  : check how this works, simplify, and so similar simplification on labels.
-    switch (chartViewModel.chartOrientation) {
-      case ChartOrientation.column:
-        return TransposingOutputGrid(
-          chartViewModel: chartViewModel,
-        );
-      case ChartOrientation.row:
-        return TransposingInputGrid(
-          chartViewModel: chartViewModel,
-        );
-    }
-*/
-    return TransposingOutputGrid(
-      chartViewModel: chartViewModel,
-    );
-  }
+  // todo-00-done : remove LATER, KEEP UNTIL TransposingAxis is done same way if possible.
+//   factory TransposingGrid.InputGrid({
+//     required ChartViewModel chartViewModel,
+//   }) {
+// /* todo-00-next : check how this works, simplify, and so similar simplification on labels.
+//     switch (chartViewModel.chartOrientation) {
+//       case ChartOrientation.column:
+//         return TransposingInputGrid(
+//           chartViewModel: chartViewModel,
+//         );
+//       case ChartOrientation.row:
+//         return TransposingOutputGrid(
+//           chartViewModel: chartViewModel,
+//         );
+//     }
+//  */
+//
+//     return TransposingInputGrid(
+//       chartViewModel: chartViewModel,
+//     );
+//   }
+//
+//   factory TransposingGrid.OutputGrid({
+//     required ChartViewModel chartViewModel,
+//   }) {
+// /* todo-00-next  : check how this works, simplify, and so similar simplification on labels.
+//     switch (chartViewModel.chartOrientation) {
+//       case ChartOrientation.column:
+//         return TransposingOutputGrid(
+//           chartViewModel: chartViewModel,
+//         );
+//       case ChartOrientation.row:
+//         return TransposingInputGrid(
+//           chartViewModel: chartViewModel,
+//         );
+//     }
+// */
+//     return TransposingOutputGrid(
+//       chartViewModel: chartViewModel,
+//     );
+//   }
 
   @override
   void buildAndReplaceChildren() {
@@ -543,12 +592,13 @@ class TransposingCrossGrid extends TransposingStackLayouter { //  extends NonPos
     required this.chartViewModel,
     // required this.transposingOutputGrid,
   }) {
-    transposingInputGrid = TransposingGrid.InputGrid(chartViewModel: chartViewModel);
-    // , transposingOutputGrid =  TransposingGrid.HorizontalGrid(chartViewModel: chartViewModel) as TransposingOutputGrid;
+    // todo-00-done : transposingInputGrid = TransposingGrid.InputGrid(chartViewModel: chartViewModel);
+    transposingInputGrid = TransposingInputGrid(chartViewModel: chartViewModel);
+    transposingOutputGrid = TransposingOutputGrid(chartViewModel: chartViewModel);
   }
   final ChartViewModel chartViewModel;
   late TransposingGrid transposingInputGrid;
-  // late TransposingGrid transposingOutputGrid;
+  late TransposingGrid transposingOutputGrid;
 
   @override
   void buildAndReplaceChildren() {
@@ -556,7 +606,7 @@ class TransposingCrossGrid extends TransposingStackLayouter { //  extends NonPos
     [
       // TransposingStackLayouter(children: [
       transposingInputGrid,
-      // transposingOutputGrid
+      transposingOutputGrid
       //  ]),
     ];
 

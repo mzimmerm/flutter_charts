@@ -357,6 +357,15 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     }
   }
 
+  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorFor(DataDependency dataDependency) {
+    switch (dataDependency) {
+      case DataDependency.inputData:
+        return outputRangeDescriptor;
+      case DataDependency.outputData:
+        return inputRangeDescriptor;
+    }
+  }
+
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
 
