@@ -40,9 +40,9 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
       legendContainer: LegendContainer(chartViewModel: this),
-      inputAxisContainer: TransposingAxis.InputAxis(chartViewModel: this),
-      outputAxisContainerFirst: TransposingAxis.OutputAxis(chartViewModel: this),
-      outputAxisContainer: TransposingAxis.OutputAxis(chartViewModel: this),
+      inputAxisContainer: TransposingAxisLabels.InputAxis(chartViewModel: this),
+      outputAxisContainerFirst: TransposingAxisLabels.OutputAxis(chartViewModel: this),
+      outputAxisContainer: TransposingAxisLabels.OutputAxis(chartViewModel: this),
       dataContainer: LineChartDataContainer(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

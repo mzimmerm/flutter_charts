@@ -38,7 +38,7 @@ abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvide
 /// - See the [InputAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
 class OutputAxisContainerCL
     extends AxisContainerCL
-    implements TransposingOutputAxis {
+    implements TransposingOutputAxisLabels {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -217,7 +217,7 @@ class OutputAxisContainerCL
 class InputAxisContainerCL
     extends AdjustableLabelsChartAreaContainer
     with PixelRangeProvider
-    implements TransposingInputAxis {
+    implements TransposingInputAxisLabels {
 
   /// Constructs the container that holds X labels.
   ///
