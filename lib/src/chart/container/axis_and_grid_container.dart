@@ -44,7 +44,8 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     required super.chartViewModel,
   });
 
-  /// Unused
+  /// Unused - KEEP if we want to make AxisLineContainer to contain LineBetweenPointOffsetsContainer,
+  /// rather than extend it.
   void howFromToAreCalculated(DataDependency axisDataDependency) {
     DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
     DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
@@ -281,7 +282,8 @@ mixin _AxisOrGridBuilderMixin {
   /// or  [_OutputAxisOrGridBuilderMixin._buildOutputRangeTickedTransposingColumn],
   /// depending on whether they are input or output containers.
   ///
-  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn();
+  // todo-00-done-last TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn();
+  TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn();
 }
 
 /// Builds the core container for [TransposingInputAxisLabels] or [TransposingInputGridLines], 
@@ -293,22 +295,25 @@ mixin _AxisOrGridBuilderMixin {
 ///
 mixin _InputAxisOrGridBuilderMixin on TransposingAxisLabelsOrGridLines, _AxisOrGridChildrenMixin {
 
-  TransposingRoller _buildInputRangeTickedTransposingRow() {
+  // todo-00-done-last TransposingRoller _buildInputRangeTickedTransposingRow() {
+  TransposingExternalTicks _buildInputRangeTickedTransposingRow() {
     // Transposing Column with single child, the TransposingExternalTicks.Row,
     // which has one item per label in [_inputRangeDescriptor.labelInfoList]
-    // todo-0100 : is the column needed here? try to remove
-    return TransposingRoller.Column(
-      chartOrientation: chartViewModel.chartOrientation,
-      children: [
+    // todo-000 : is the column needed here? try to remove
+    // todo-00-last : try to get rid of the external Column
+    return
+      // todo-00-done-last TransposingRoller.Column(
+      // todo-00-done-last chartOrientation: chartViewModel.chartOrientation,
+      // todo-00-done-last children: [
         TransposingExternalTicks.Row(
           chartOrientation: chartViewModel.chartOrientation,
           mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
           ),
           children: _externallyTickedAxisLabelsOrGridLinesOnAxis(axisDataDependency: DataDependency.inputData),
-        ),
-      ],
-    );
+        );
+     // todo-00-done-last ,])
+
   }
 
 }
@@ -324,20 +329,24 @@ mixin _InputAxisOrGridBuilderMixin on TransposingAxisLabelsOrGridLines, _AxisOrG
 ///
 mixin _OutputAxisOrGridBuilderMixin on TransposingAxisLabelsOrGridLines, _AxisOrGridChildrenMixin {
 
-  TransposingRoller _buildOutputRangeTickedTransposingColumn() {
-    return TransposingRoller.Row(
-        chartOrientation: chartViewModel.chartOrientation,
-        mainAxisAlign: Align.start, // default
-        isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
-        children: [
+  // todo-00-last : try to get rid of the external Row
+  // todo-00-done-last  TransposingRoller _buildOutputRangeTickedTransposingColumn() {
+  TransposingExternalTicks _buildOutputRangeTickedTransposingColumn() {
+    return
+      // todo-00-done-last TransposingRoller.Row(
+      // todo-00-done-last   chartOrientation: chartViewModel.chartOrientation,
+      // todo-00-done-last   mainAxisAlign: Align.start, // default
+      // todo-00-done-last   isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
+      // todo-00-done-last   children: [
           TransposingExternalTicks.Column(
             chartOrientation: chartViewModel.chartOrientation,
             mainAxisExternalTicksLayoutDescriptor: _outputRangeDescriptor.asExternalTicksLayoutDescriptor(
               externalTickAtPosition: ExternalTickAtPosition.childCenter,
             ),
             children: _externallyTickedAxisLabelsOrGridLinesOnAxis(axisDataDependency: DataDependency.outputData),
-          ),
-        ]);
+          )
+      // todo-00-done-last  ,])
+    ;
   }
 
 }
@@ -375,18 +384,25 @@ abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAr
 
 }
 
-/// Abstract class common for input and output axis.
+/// Abstract container of axis labels, common for input and output axis.
 abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines with _ChildrenOfAxisMixin implements _AxisOrGridBuilderMixin  {
   TransposingAxisLabels({
     required super.chartViewModel,
     required this.directionWrapperAround,
   });
 
-  // todo-00 : Try to use the same approach as TransposingGrid and extensions, where
+  // todo-00-last : Try to use the same approach as TransposingGrid and extensions, where
   //           there is no need to distinguish between row and column. This is automatically done by the (grid) line transposing itself
   factory TransposingAxisLabels.OutputAxis({
     required ChartViewModel chartViewModel,
   }) {
+/* todo-00-last-done-removed : Removing the switch as in OutputGridLines does not work.
+     return TransposingOutputAxisLabels(
+      chartViewModel: chartViewModel,
+      directionWrapperAround: _verticalWrapperAround,
+    );
+
+ */
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingOutputAxisLabels(
@@ -404,6 +420,12 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines wi
   factory TransposingAxisLabels.InputAxis({
     required ChartViewModel chartViewModel,
   }) {
+/* todo-00-last-done-removed : Removing the switch as in InputGridLines does not work.
+    return TransposingInputAxisLabels(
+      chartViewModel: chartViewModel,
+      directionWrapperAround: _horizontalWrapperAround,
+    );
+ */
     switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingInputAxisLabels(
@@ -469,7 +491,7 @@ abstract class TransposingGridLines extends TransposingAxisLabelsOrGridLines wit
 //   factory TransposingGrid.InputGrid({
 //     required ChartViewModel chartViewModel,
 //   }) {
-// /* todo-00-next : check how this works, simplify, and so similar simplification on labels.
+// /* todo-00-done : check how this works, simplify, and so similar simplification on labels.
 //     switch (chartViewModel.chartOrientation) {
 //       case ChartOrientation.column:
 //         return TransposingInputGrid(
@@ -490,7 +512,7 @@ abstract class TransposingGridLines extends TransposingAxisLabelsOrGridLines wit
 //   factory TransposingGrid.OutputGrid({
 //     required ChartViewModel chartViewModel,
 //   }) {
-// /* todo-00-next  : check how this works, simplify, and so similar simplification on labels.
+// /* todo-00-done  : check how this works, simplify, and so similar simplification on labels.
 //     switch (chartViewModel.chartOrientation) {
 //       case ChartOrientation.column:
 //         return TransposingOutputGrid(
@@ -532,7 +554,8 @@ class TransposingInputAxisLabels extends TransposingAxisLabels with _InputAxisOr
   /// When invoked by [buildAndReplaceChildren] in [TransposingAxisLabels],
   /// builds container of labels for input range [_inputRangeDescriptor].
   @override
-  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  // todo-00-done-last TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn() {
     return _buildInputRangeTickedTransposingRow();
   }
 
@@ -550,7 +573,8 @@ class TransposingOutputAxisLabels extends TransposingAxisLabels with _OutputAxis
   /// When invoked by [buildAndReplaceChildren] in [TransposingAxisLabels],
   /// builds container of labels for output range [_outputRangeDescriptor].
   @override
-  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  // todo-00-done-last TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn() {
     return _buildOutputRangeTickedTransposingColumn();
   }
 }
@@ -564,7 +588,8 @@ class TransposingInputGridLines extends TransposingGridLines with _InputAxisOrGr
   /// When invoked by [buildAndReplaceChildren] in [TransposingGridLines],
   /// builds container of grid lines for input range [_inputRangeDescriptor].
   @override
-  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  // todo-00-done-last TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn() {
     return _buildInputRangeTickedTransposingRow();
   }
 
@@ -579,7 +604,8 @@ class TransposingOutputGridLines extends TransposingGridLines with _OutputAxisOr
   /// When invoked by [buildAndReplaceChildren] in [TransposingGridLines],
   /// builds container of grid lines for output range [_outputRangeDescriptor].
   @override
-  TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  // todo-00-done-last TransposingRoller _buildTickedInputRangeRowOrOutputRangeColumn() {
+  TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn() {
     return _buildOutputRangeTickedTransposingColumn();
   }
 
@@ -592,7 +618,6 @@ class TransposingCrossGridLines extends TransposingStackLayouter { //  extends N
     required this.chartViewModel,
     // required this.transposingOutputGrid,
   }) {
-    // todo-00-done : transposingInputGrid = TransposingGrid.InputGrid(chartViewModel: chartViewModel);
     transposingInputGrid = TransposingInputGridLines(chartViewModel: chartViewModel);
     transposingOutputGrid = TransposingOutputGridLines(chartViewModel: chartViewModel);
   }

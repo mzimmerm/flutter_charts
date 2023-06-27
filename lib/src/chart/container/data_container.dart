@@ -109,17 +109,18 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                 // The containers that show positive and negative bars or lines.
                 TransposingStackLayouter(
                   children: [
-/* todo-00-last : put back */
+
                     TransposingCrossGridLines(
                       chartViewModel: chartViewModel,
                     ),
-/* */
+
                     // InputAxisLine and OutputAxisLine could be part of the grid
                     TransposingInputAxisLine(
                       chartViewModel: chartViewModel,
                       inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
                       outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
                     ),
+
                     TransposingOutputAxisLine(
                       inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
                       outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
