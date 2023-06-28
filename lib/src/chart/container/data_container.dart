@@ -117,13 +117,9 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                     // InputAxisLine and OutputAxisLine could be part of the grid
                     TransposingInputAxisLine(
                       chartViewModel: chartViewModel,
-                      inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
-                      outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
                     ),
 
                     TransposingOutputAxisLine(
-                      inputRangeDescriptor: chartViewModel.inputRangeDescriptor,
-                      outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
                       chartViewModel: chartViewModel,
                     ),
 

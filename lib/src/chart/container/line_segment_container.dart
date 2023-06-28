@@ -5,7 +5,6 @@ import 'container_common.dart' as container_common;
 import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_style.dart' as chart_orientation;
-import '../view_model/view_model.dart' as view_model;
 import '../model/data_model.dart' as model;
 
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
@@ -16,8 +15,13 @@ import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2
 /// The  [fromPointOffset] and [toPointOffset] are late, and SHOULD be set in the constructor;
 /// MUST be set before [layout] is called.
 ///
-/// Does NOT define [chart_orientation.ChartOrientation]. Will transform according to member
-/// [view_model.ChartViewModel.chartOrientation].
+/// The line is determined by its end points, [fromPointOffset] and [toPointOffset].
+/// When defining these end points, assume that orientation is [ChartOrientation.column].
+///
+/// At runtime, the orientation [ChartOrientation] is determined by member [chartViewModel]'s
+/// [ChartViewModel.chartOrientation]; if orientation is set to [ChartOrientation.row],
+/// the line is transformed to their row orientation by affmap-ing the end points [fromPointOffset] and [toPointOffset]
+/// using their [PointOffset.affmapBetweenRanges].
 ///
 /// The nullability of [fromPointOffset] and [toPointOffset] is an awkward lip service to
 /// straightforward extensibility of this class where these members can be replaced by [model.PointModel] in extensions,
@@ -40,16 +44,16 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///   ),
   /// ```
   LineBetweenPointOffsetsContainer({
-    this.fromPointOffset,
-    this.toPointOffset,
+    required this.fromPointOffset,
+    required this.toPointOffset,
     required this.linePaint,
     required super.chartViewModel,
     super.constraintsWeight,
   });
 
   /// Model contains the transformed, not-extrapolated values of the point where the line starts.
-  late final PointOffset? fromPointOffset;
-  late final PointOffset? toPointOffset;
+  final PointOffset fromPointOffset;
+  final PointOffset toPointOffset;
   final ui.Paint linePaint;
 
   /// Coordinates of the layed out pixel values.
@@ -90,16 +94,13 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   void layout() {
     buildAndReplaceChildren();
 
-    if (fromPointOffset == null) throw StateError('$runtimeType: fromPointOffset must not be null.');
-    if (toPointOffset == null) throw StateError('$runtimeType: toPointOffset must not be null.');
-
     // Code here takes care of the pixel positioning of the points, aka layout.
 
     // Affmap the pointOffsets to their pixel values using [affmapInContextOf].
     // The method  takes into account chart orientation, which may cause the x and y (input and output) values
     //   to flip (invert) during the affmap.
     // Passing [this.constraints] is correct here, see [layout] documentation.
-    _fromOffsetPixels = fromPointOffset!.affmapBetweenRanges(
+    _fromOffsetPixels = fromPointOffset.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
@@ -112,7 +113,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       isMoveInCrossDirectionToPixelRangeCenter: false,
       isSetBarPointRectInCrossDirectionToPixelRange: false,
     );
-    _toOffsetPixels = toPointOffset!.affmapBetweenRanges(
+    _toOffsetPixels = toPointOffset.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
