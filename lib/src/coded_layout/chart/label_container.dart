@@ -21,7 +21,7 @@ import '../../chart/view_model/label_model.dart' show AxisLabelInfo;
 /// in parent's coordinates.
 ///
 /// **This violates independence of container parents not needing their contained children.
-/// Instances of this class are used in container parent [InputAxisContainer] (which is OK),
+/// Instances of this class are used in container parent [HorizontalAxisContainer] (which is OK),
 /// but the parent is storing some of it's properties on children (which is not OK,
 /// effectively, this class uses it's children as sandboxes).**
 ///
@@ -36,7 +36,7 @@ import '../../chart/view_model/label_model.dart' show AxisLabelInfo;
 /// the [parentOffsetTick]s are:
 /// - If the parent is a [OutputAxisContainer], all positions are relative to the top of
 ///   the container of y labels
-/// - If parent is a [InputAxisContainer] all positions are relative to the left
+/// - If parent is a [HorizontalAxisContainer] all positions are relative to the left
 ///   of the container of x labels
 /// - If parent is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
@@ -74,7 +74,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// X or Y data value.
   ///
   /// In more detail, it is the numerical value of a label, transformed, then extrapolated to axis pixels length,
-  /// so its value is in pixels relative to the immediate container - the [OutputAxisContainer] or [InputAxisContainer]
+  /// so its value is in pixels relative to the immediate container - the [OutputAxisContainer] or [HorizontalAxisContainer]
   ///
   /// It's value is not affected by call to [applyParentOffset].
   /// It is calculated during parent's [OutputAxisContainer] [layout] method,
@@ -111,7 +111,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// is determined.
   ///
   /// Note: Invoked on BOTH [InputLabelContainerCL] and [OutputLabelContainerCL], but only relevant on [OutputLabelContainerCL].
-  ///       On [InputLabelContainerCL] it could be skipped, the layout code in [InputAxisContainerCL.layout]
+  ///       On [InputLabelContainerCL] it could be skipped, the layout code in [HorizontalAxisContainerCL.layout]
   ///       ```dart
   ///           inputLabelContainer.parentOffsetTick = xTickX;
   ///        ```
@@ -119,7 +119,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   @override
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
-    // so we can calculate this label pixel position IN THE InputAxisContainer / OutputAxisContainer
+    // so we can calculate this label pixel position IN THE HorizontalAxisContainer / OutputAxisContainer
     // and place it on [parentOffsetTick]
     var rangeDescriptor = outerChartAreaContainer.chartViewModel.outputRangeDescriptor;
 

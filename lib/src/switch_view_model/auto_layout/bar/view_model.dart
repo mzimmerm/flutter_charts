@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart' as logger;
 
 import '../../../chart/container/legend_container.dart';
-import '../../../chart/container/axis_and_grid_container.dart';
+import '../../../chart/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries
 import '../../../chart/view_model/view_model.dart';
@@ -37,9 +37,9 @@ class SwitchBarChartViewModel extends SwitchChartViewModel {
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
       legendContainer: LegendContainer(chartViewModel: this),
-      inputAxisContainer: TransposingAxisLabels.InputAxis(chartViewModel: this),
-      outputAxisContainerFirst: TransposingAxisLabels.OutputAxis(chartViewModel: this),
-      outputAxisContainer: TransposingAxisLabels.OutputAxis(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
+      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
       dataContainer: BarChartDataContainer(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

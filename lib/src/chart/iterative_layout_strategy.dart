@@ -141,12 +141,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
 
     // A recursive [layout] is needed after the above code did some changes to the
-    //   [InputAxisContainer _adjustableLabelsContainer]. The changes might have been decreased font,
+    //   [HorizontalAxisContainer _adjustableLabelsContainer]. The changes might have been decreased font,
     //   changed label tilt, or asking some labels not to be shown.
-    // The recursively called [layout] rebuilds all children of the [InputAxisContainer _adjustableLabelsContainer],
+    // The recursively called [layout] rebuilds all children of the [HorizontalAxisContainer _adjustableLabelsContainer],
     //   with the changed state above (font, tilt, or asking less labels to be shown).
-    // The rebuild must be the same build called on [InputAxisContainer] in [ChartRootContainer.layout].
-    // Because the _adjustableLabelsContainer is InputAxisContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
+    // The rebuild must be the same build called on [HorizontalAxisContainer] in [ChartRootContainer.layout].
+    // Because the _adjustableLabelsContainer is HorizontalAxisContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
     _adjustableLabelsContainer.layout();
 
 

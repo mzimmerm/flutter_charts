@@ -22,9 +22,30 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_charts.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_type/bar/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_type/bar/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_type/line/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_type/line/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/axislabels_axislines_gridlines_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/container_common.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/container_common.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/line_segment_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/model/data_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/model/data_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/bar/presenter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/bar/presenter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/bar/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/bar/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/line/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/chart_type/line/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,7 +224,6 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
-    "dart.analysis.tool.window.visible": "false",
     "io.flutter.reload.alreadyRun": "true",
     "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test",
     "project.structure.last.edited": "Project",
@@ -1628,7 +1648,7 @@
           <option name="timeStamp" value="3961" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/container/axis_and_grid_container.dart</url>
+          <url>file://$PROJECT_DIR$/lib/src/chart/container/axislabels_axislines_gridlines_container.dart</url>
           <line>496</line>
           <option name="timeStamp" value="3964" />
         </line-breakpoint>

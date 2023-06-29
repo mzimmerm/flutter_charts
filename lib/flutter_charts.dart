@@ -149,7 +149,7 @@ export 'src/chart/chart_type/bar/options.dart';
 
 export 'src/chart/chart_label_container.dart';
 export 'src/chart/view_model/view_model.dart';
-export 'src/chart/container/axis_and_grid_container.dart';
+export 'src/chart/container/axislabels_axislines_gridlines_container.dart';
 export 'src/chart/container/axis_corner_container.dart';
 export 'src/chart/container/container_common.dart';
 export 'src/chart/container/data_container.dart';

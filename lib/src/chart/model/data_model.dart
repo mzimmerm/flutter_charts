@@ -90,7 +90,7 @@ class ChartModel {
   ///
   /// Can be freehand Strings or numbers converted to Strings.
   /// If not null, a "manual" layout is used in the axis container where it is displayed -
-  ///   in the [OutputAxisContainer] or [InputAxisContainer].
+  ///   in the [VerticalAxisContainer] or [HorizontalAxisContainer].
   /// If null, a "auto" layout is used in the axis container where it is displayed.
   ///
   final List<String>? outputUserLabels;

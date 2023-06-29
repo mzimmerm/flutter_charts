@@ -15,16 +15,16 @@ import 'presenter.dart'; // OLD
 class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
   BarChartRootContainerCL({
     required LegendContainer legendContainer,
-    required InputAxisContainerCL      inputAxisContainer,
-    required OutputAxisContainerCL      outputAxisContainerFirst,
-    required OutputAxisContainerCL      outputAxisContainer,
+    required HorizontalAxisContainerCL      horizontalAxisContainer,
+    required OutputAxisContainerCL      verticalAxisContainerFirst,
+    required OutputAxisContainerCL      verticalAxisContainer,
     required DataContainerCL   dataContainer,
     required ChartViewModel  chartViewModel,
   }) : super(
     legendContainer: legendContainer,
-    inputAxisContainer: inputAxisContainer,
-    outputAxisContainerFirst: outputAxisContainerFirst,
-    outputAxisContainer: outputAxisContainer,
+    horizontalAxisContainer: horizontalAxisContainer,
+    verticalAxisContainerFirst: verticalAxisContainerFirst,
+    verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
     chartViewModel: chartViewModel,
   ) {

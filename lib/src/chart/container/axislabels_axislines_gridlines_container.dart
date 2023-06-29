@@ -164,7 +164,7 @@ mixin _ChildrenOfAxisMixin on TransposingAxisLabelsOrGridLines implements _AxisO
           chartViewModel: chartViewModel,
           label: labelInfo.formattedLabel,
           labelTiltMatrix: vector_math.Matrix2.identity(),
-          // No tilted labels in OutputAxisContainer
+          // No tilted labels in VerticalAxisContainer
           labelStyle: _labelStyle,
         )
     ];
@@ -358,7 +358,7 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines wi
     required this.directionWrapperAround,
   });
 
-  factory TransposingAxisLabels.OutputAxis({
+  factory TransposingAxisLabels.VerticalAxis({
     required ChartViewModel chartViewModel,
   }) {
     /* Removing the switch as in OutputGridLines does not work.
@@ -381,7 +381,7 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines wi
     }
   }
 
-  factory TransposingAxisLabels.InputAxis({
+  factory TransposingAxisLabels.HorizontalAxis({
     required ChartViewModel chartViewModel,
   }) {
     switch (chartViewModel.chartOrientation) {

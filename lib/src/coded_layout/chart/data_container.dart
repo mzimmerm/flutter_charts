@@ -80,7 +80,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Use this DataContainer layout dependency on [xTickXs] as guidelines for X labels
-    // in [InputAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
+    // in [HorizontalAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
@@ -263,7 +263,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     _horizontalGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartViewModel.chartOptions.outputAxisContainerOptions.isInputGridLinesShown) {
+    if (chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown) {
       _verticalGridLinesContainer.paint(canvas);
     }
   }

@@ -1,6 +1,6 @@
 // base libraries
 import '../../../container/root_container.dart';
-import '../../../container/axis_and_grid_container.dart';
+import '../../../container/axislabels_axislines_gridlines_container.dart';
 import '../../../container/data_container.dart';
 import '../../../container/legend_container.dart';
 import '../../../view_model/view_model.dart';
@@ -10,16 +10,16 @@ class BarChartRootContainer extends ChartRootContainer {
 
   BarChartRootContainer({
     required LegendContainer legendContainer,
-    required TransposingAxisLabelsOrGridLines inputAxisContainer,
-    required TransposingAxisLabelsOrGridLines outputAxisContainerFirst,
-    required TransposingAxisLabelsOrGridLines outputAxisContainer,
+    required TransposingAxisLabelsOrGridLines horizontalAxisContainer,
+    required TransposingAxisLabelsOrGridLines verticalAxisContainerFirst,
+    required TransposingAxisLabelsOrGridLines verticalAxisContainer,
     required DataContainer dataContainer,
     required ChartViewModel chartViewModel,
   }) : super(
           legendContainer: legendContainer,
-          inputAxisContainer: inputAxisContainer,
-          outputAxisContainerFirst: outputAxisContainerFirst,
-          outputAxisContainer: outputAxisContainer,
+          horizontalAxisContainer: horizontalAxisContainer,
+          verticalAxisContainerFirst: verticalAxisContainerFirst,
+          verticalAxisContainer: verticalAxisContainer,
           dataContainer: dataContainer,
           chartViewModel: chartViewModel,
         );

@@ -3,7 +3,7 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import '../../../chart/container/legend_container.dart';
-import '../../../chart/container/axis_and_grid_container.dart';
+import '../../../chart/container/axislabels_axislines_gridlines_container.dart';
 import '../../../chart/view_model/view_model.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -40,9 +40,9 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
       legendContainer: LegendContainer(chartViewModel: this),
-      inputAxisContainer: TransposingAxisLabels.InputAxis(chartViewModel: this),
-      outputAxisContainerFirst: TransposingAxisLabels.OutputAxis(chartViewModel: this),
-      outputAxisContainer: TransposingAxisLabels.OutputAxis(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
+      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
       dataContainer: LineChartDataContainer(chartViewModel: this),
       chartViewModel: chartViewModel,
     );

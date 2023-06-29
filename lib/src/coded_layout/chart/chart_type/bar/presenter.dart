@@ -30,8 +30,8 @@ class VerticalBarPointPresenter extends PointPresenter {
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    InputAxisContainerCL inputAxisContainerCL = chartViewModel.chartRootContainer.inputAxisContainer as InputAxisContainerCL;
-    double barWidth = inputAxisContainerCL.xGridStep *
+    HorizontalAxisContainerCL horizontalAxisContainerCL = chartViewModel.chartRootContainer.horizontalAxisContainer as HorizontalAxisContainerCL;
+    double barWidth = horizontalAxisContainerCL.xGridStep *
         chartViewModel.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
