@@ -611,7 +611,7 @@ abstract class PointContainer extends BasePointContainer {
   /// Intended to be invoked during [PointContainer.layout] of this [PointContainer] class or subclasses.
   ///
   /// Transforms (transposes and affmap-s) this [PointModel] to it's [PointOffset] position,
-  /// determined by its [PointModel.outputValue].
+  /// determined by its [PointModel.centerTickValue].
   ///
   /// Motivation and implementation:
   ///

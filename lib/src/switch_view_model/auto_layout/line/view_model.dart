@@ -7,8 +7,6 @@ import '../../../chart/container/axislabels_axislines_gridlines_container.dart';
 import '../../../chart/view_model/view_model.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-// import '../../../chart/line/container_delete.dart';
-// import '../../../chart/container/line/data_container.dart';
 import '../../../chart/chart_type/line/container/data_container.dart';
 
 import '../../../chart/chart_type/line/container/root_container.dart';
@@ -23,11 +21,13 @@ import '../../view_model.dart'; // NEW SWITCH
 class SwitchLineChartViewModel extends SwitchChartViewModel {
   SwitchLineChartViewModel({
     required ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
+    chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

@@ -20,11 +20,13 @@ import '../../view_model.dart'; // NEW SWITCH
 class SwitchBarChartViewModel extends SwitchChartViewModel {
   SwitchBarChartViewModel({
     required ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
+    chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

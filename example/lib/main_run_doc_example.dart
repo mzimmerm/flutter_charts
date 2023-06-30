@@ -53,6 +53,7 @@ Widget chartToRun() {
   );
   var lineChartViewModel = SwitchLineChartViewModel(
     chartModel: chartModel,
+    chartType: ChartType.lineChart,
     chartOrientation: ChartOrientation.column,
     chartStacking: ChartStacking.nonStacked,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

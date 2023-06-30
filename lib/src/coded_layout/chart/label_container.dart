@@ -105,7 +105,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
   /// Uses the [OutputAxisContainerCL.rangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor] to
-  /// affmap the [labelInfo] value [AxisLabelInfo.outputValue] and places the result on [parentOffsetTick].
+  /// affmap the [labelInfo] value [AxisLabelInfo.centerTickValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
@@ -124,7 +124,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     var rangeDescriptor = outerChartAreaContainer.chartViewModel.outputRangeDescriptor;
 
     parentOffsetTick = rangeDescriptor.affmapValueToPixels(
-      value: labelInfo.outputValue.toDouble(),
+      value: labelInfo.centerTickValue.toDouble(),
       axisPixelsMin: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
       axisPixelsMax: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
     );

@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'dart:math' as math show max;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
@@ -26,6 +27,14 @@ abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvide
   }) : super(
     chartViewModel: chartViewModel,
   );
+
+  // todo-00-last : throw exceptions on getter setter
+  @override
+  late final DataDependency dataDependency;
+
+  // todo-00-last : throw exceptions on getter setter
+  @override
+  late final TickPositionInLabel tickPositionInLabel;
 }
 
 /// Container of the Y axis labels.
@@ -472,4 +481,11 @@ class HorizontalAxisContainerCL
 
     return false;
   }
+  // todo-00-last : throw exceptions on getter setter
+  @override
+  late final DataDependency dataDependency;
+
+  // todo-00-last : throw exceptions on getter setter
+  @override
+  late final TickPositionInLabel tickPositionInLabel;
 }

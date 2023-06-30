@@ -3865,7 +3865,13 @@ class Aligner extends PositioningBoxLayouter {
 /// Each instance of this [ExternalTicksLayoutDescriptor] is owned by its client (and owner),
 /// an [ExternalTicksBoxLayouter], on which behalf it works.
 ///
-/// See [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutDescriptor], which is used to create instance of this class.
+/// See [DataRangeTicksAndLabelsDescriptor.asExternalTicksLayoutDescriptor],
+/// which is used to create an instance of this class.
+///
+/// Terminology: The term *tick* refers to a value at which a layouter - [ExternalTicksBoxLayouter] in this context -
+///              places a [BoxContainer] child during the [ExternalTicksBoxLayouter.layout]. Typically,
+///              the [ExternalTicksBoxLayouter] is given a set of equidistant values to which it's children
+///              are placed during layout.
 ///
 /// The main role of this class is provided by the method [_affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]

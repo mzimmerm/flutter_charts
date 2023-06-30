@@ -1084,6 +1084,7 @@ class ExampleWidgetCreator {
       case ChartType.lineChart:
         SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
           chartModel: chartModel,
+          chartType: chartType,
           // transpose column/row is set in env var CHART_ORIENTATION
           chartOrientation: chartOrientation,
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
@@ -1102,6 +1103,7 @@ class ExampleWidgetCreator {
       case ChartType.barChart:
         SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory(
           chartModel: chartModel,
+          chartType: chartType,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           chartLayouter: chartLayouter,

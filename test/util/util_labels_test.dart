@@ -70,57 +70,57 @@ void main() {
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
     List<AxisLabelInfo> labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].outputValue, 0.0);
-    expect(labelInfoList[1].outputValue, 100.0);
-    expect(labelInfoList[2].outputValue, 200.0);
-    expect(labelInfoList[3].outputValue, 300.0);
+    expect(labelInfoList[0].centerTickValue, 0.0);
+    expect(labelInfoList[1].centerTickValue, 100.0);
+    expect(labelInfoList[2].centerTickValue, 200.0);
+    expect(labelInfoList[3].centerTickValue, 300.0);
 
 
     dataRows = [[-1.0, -22.0, -333.0]];
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
     labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].outputValue, -300.0);
-    expect(labelInfoList[1].outputValue, -200.0);
-    expect(labelInfoList[2].outputValue, -100.0);
-    expect(labelInfoList[3].outputValue, 0.0);
+    expect(labelInfoList[0].centerTickValue, -300.0);
+    expect(labelInfoList[1].centerTickValue, -200.0);
+    expect(labelInfoList[2].centerTickValue, -100.0);
+    expect(labelInfoList[3].centerTickValue, 0.0);
 
     dataRows = [[22.0, 10.0, -333.0]];
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
     labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
-    expect(labelInfoList[0].outputValue, -300.0);
-    expect(labelInfoList[1].outputValue, -200.0);
-    expect(labelInfoList[2].outputValue, -100.0);
-    expect(labelInfoList[3].outputValue, 0.0);
-    expect(labelInfoList[4].outputValue, 100.0);
+    expect(labelInfoList[0].centerTickValue, -300.0);
+    expect(labelInfoList[1].centerTickValue, -200.0);
+    expect(labelInfoList[2].centerTickValue, -100.0);
+    expect(labelInfoList[3].centerTickValue, 0.0);
+    expect(labelInfoList[4].centerTickValue, 100.0);
 
     dataRows = [[-22.0, -10.0, 333.0]];
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
     labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
-    expect(labelInfoList[0].outputValue, -100.0);
-    expect(labelInfoList[1].outputValue, 0.0);
-    expect(labelInfoList[2].outputValue, 100.0);
-    expect(labelInfoList[3].outputValue, 200.0);
-    expect(labelInfoList[4].outputValue, 300.0);
+    expect(labelInfoList[0].centerTickValue, -100.0);
+    expect(labelInfoList[1].centerTickValue, 0.0);
+    expect(labelInfoList[2].centerTickValue, 100.0);
+    expect(labelInfoList[3].centerTickValue, 200.0);
+    expect(labelInfoList[4].centerTickValue, 300.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], legendNames);
     labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].outputValue, -1000.0);
-    expect(labelInfoList[1].outputValue, 0.0);
-    expect(labelInfoList[2].outputValue, 1000.0);
-    expect(labelInfoList[3].outputValue, 2000.0);
+    expect(labelInfoList[0].centerTickValue, -1000.0);
+    expect(labelInfoList[1].centerTickValue, 0.0);
+    expect(labelInfoList[2].centerTickValue, 1000.0);
+    expect(labelInfoList[3].centerTickValue, 2000.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
     rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
     labelInfoList = rangeDescriptor.labelInfoList;
     expect(labelInfoList.length, 3);
-    expect(labelInfoList[0].outputValue, -1000.0);
-    expect(labelInfoList[1].outputValue, 0.0);
-    expect(labelInfoList[2].outputValue, 1000.0);
+    expect(labelInfoList[0].centerTickValue, -1000.0);
+    expect(labelInfoList[1].centerTickValue, 0.0);
+    expect(labelInfoList[2].centerTickValue, 1000.0);
 
   });
 
@@ -133,6 +133,7 @@ DataRangeTicksAndLabelsDescriptor dataRangeRangeDescriptor(ChartOrientation char
     chartStacking: chartStacking,
     chartViewModel: MockChartViewModel(
       chartModel: mockChartModel,
+      chartType: ChartType.lineChart,
       chartOrientation: chartOrientation,
       chartStacking: ChartStacking.stacked,
     ),
@@ -146,10 +147,12 @@ DataRangeTicksAndLabelsDescriptor dataRangeRangeDescriptor(ChartOrientation char
 class MockChartViewModel extends ChartViewModel {
   MockChartViewModel({
     required ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
 }): super(
     chartModel: chartModel,
+    chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: ChartStacking.stacked,
 );
@@ -202,6 +205,7 @@ void rangeTestCore(
       chartStacking: ChartStacking.nonStacked,
       chartViewModel: MockChartViewModel(
         chartModel: chartModel,
+        chartType: ChartType.lineChart,
         chartOrientation: ChartOrientation.column,
         chartStacking: ChartStacking.stacked,
       ),
@@ -215,7 +219,7 @@ void rangeTestCore(
     expect(rangeDescriptor.labelInfoList.length, expectedLabels.length);
     for (int i = 0; i < rangeDescriptor.labelInfoList.length; i++) {
       expect(
-        rangeDescriptor.labelInfoList[i].outputValue,
+        rangeDescriptor.labelInfoList[i].centerTickValue,
         expectedLabels[i],
       );
     }

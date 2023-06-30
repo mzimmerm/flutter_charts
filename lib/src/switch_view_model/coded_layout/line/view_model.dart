@@ -19,11 +19,13 @@ import '../../view_model.dart' show directionWrapperAroundCL;
 class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
   SwitchLineChartViewModelCL({
     required ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           chartModel: chartModel,
+          chartType: chartType,
           chartOrientation: chartOrientation,
           chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,

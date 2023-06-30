@@ -33,11 +33,13 @@ List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingG
 abstract class SwitchChartViewModel extends ChartViewModel {
   SwitchChartViewModel ({
     required model.ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
+  chartType: chartType,
   chartOrientation: chartOrientation,
   chartStacking: chartStacking,
   inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -47,6 +49,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
   /// for vertical bar chart.
   factory SwitchChartViewModel.barChartViewModelFactory({
     required model.ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
@@ -57,6 +60,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchBarChartViewModelCL(
         chartModel: chartModel,
+        chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -64,6 +68,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     } else {
       return SwitchBarChartViewModel(
           chartModel: chartModel,
+          chartType: chartType,
           chartOrientation: chartOrientation,
           chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -75,6 +80,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
   /// for line chart.
   factory SwitchChartViewModel.lineChartViewModelFactory({
     required model.ChartModel chartModel,
+    required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
@@ -85,6 +91,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
       return SwitchLineChartViewModelCL(
         chartModel: chartModel,
+        chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -92,6 +99,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     } else {
       return SwitchLineChartViewModel(
         chartModel: chartModel,
+        chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,

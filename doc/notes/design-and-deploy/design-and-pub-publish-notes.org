@@ -2024,8 +2024,11 @@ Use it in one example:
 - [X] In ~DataContainer.buildAndReplaceChildren~, surround ~makeInnerContainerForBothBarsAreasAndInputAxisLine~ with ~TransposingStackLayouter~, which adds the ~TransposingGrid~ sibling to ~ContainerForBothBarsAreasAndInputAxisLine~
 - [X] Add ~TransposingGrid~ container, 
 - [X] Test with ~TransposingGrid~ is empty! *results should not change*
-- [ ] Add ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~ first empty, then add lines in the same positions asmiddle of labels . *study how to externally position the lines - use the same layouter*
-- [ ] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis: *
+- [X] Add ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~ first empty, then add lines in the same positions asmiddle of labels . *study how to externally position the lines - use the same layouter*
+- [X] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
+- [X] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
+- [X] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
+- [ ] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis*
   #+begin_src dart
     TransposingInputAxisContainer({
       required ChartViewModel chartViewModel,
@@ -2068,16 +2071,13 @@ Use it in one example:
     }
 
   #+end_src
-- [ ] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
-- [ ] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
-- [ ] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
+- [ ] ~For line chart, grid lines in the middle. For bar chart, grid lines around bars~
 - [ ] ~Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.~
 - [ ] ~In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine~
+- [ ] 
 - 
 - 
   
-*** ~Start work on dotted grid lines collecting requirements for StackingLayouter changes~
-*** ~Add (reuse or improve existing) StackingLayouter~
 
 ** TODO-NEXT ~Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
 
