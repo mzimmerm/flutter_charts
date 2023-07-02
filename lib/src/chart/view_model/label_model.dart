@@ -273,9 +273,7 @@ class DataRangeTicksAndLabelsDescriptor {
     // Return [ExternalTicksLayoutDescriptor] and provide ticks.
     // The ticks must be affmap-ed to pixels, once ticksPixelsRange is known.
     // See [ExternalTicksBoxLayouter].
-    // todo-00-done var tickValues = labelInfoList.map((labelInfo) => labelInfo.centerTickValue).toList(growable: false);
     List<double> tickValues;
-    // todo-00-progress 
     switch(tickPositionInLabel) {
       case TickPositionInLabel.min:
         tickValues =  labelInfoList.map((labelInfo) => labelInfo.leftBorderTickValue).toList(growable: false);
@@ -450,7 +448,6 @@ class DataRangeTicksAndLabelsDescriptor {
 
 }
 
-// todo-00-last-done : added
 /// Represents the position in label.
 ///
 /// This assumes labels mark positions on an ordered axis which has a norm. This allows for label size,
@@ -585,7 +582,6 @@ class _AxisLabelInfos {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
       AxisLabelInfo labelInfo = _labelInfoList[i];
-      // todo-00-progress : set left and right border
       _setRightAndLeftBorderOnLabelInfo(i, labelInfo, rangeDescriptor);
       // If labels were set by user in [userLabels], their formatted value [_formattedLabel]
       //   is set to the user String without formatting or mangling.

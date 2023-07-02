@@ -27,17 +27,6 @@ abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvide
   }) : super(
     chartViewModel: chartViewModel,
   );
-
-/*
-  // todo-00-last : throw exceptions on getter setter
-  @override
-  late DataDependency dataDependency;
-
-  // todo-00-last : throw exceptions on getter setter
-  @override
-  late TickPositionInLabel tickPositionInLabel;
-*/
-
 }
 
 /// Container of the Y axis labels.
@@ -217,15 +206,13 @@ class OutputAxisContainerCL
         : outputLabelContainerCLs.map((outputLabelContainer) => outputLabelContainer.layoutSize.height).reduce(math.max);
   }
 
-  // todo-00-last : throw exceptions on getter setter
+  // todo-00-last : throw exceptions on getters setters separately
   @override
   late DataDependency dataDependency;
 
-  // todo-00-last : throw exceptions on getter setter
   @override
   late TickPositionInLabel tickPositionInLabel;
 
-  // todo-00-last : throw exceptions on getter setter
   @override
   LabelStyle get labelStyle => throw UnimplementedError();
 }
@@ -496,15 +483,13 @@ class HorizontalAxisContainerCL
 
     return false;
   }
-  // todo-00-last : throw exceptions on getter setter
+  // todo-00-last : throw exceptions on getters setters separately
   @override
   late final DataDependency dataDependency;
 
-  // todo-00-last : throw exceptions on getter setter
   @override
   late final TickPositionInLabel tickPositionInLabel;
 
-  // todo-00-last : throw exceptions on getter setter
   @override
   LabelStyle get labelStyle => throw UnimplementedError();
 
