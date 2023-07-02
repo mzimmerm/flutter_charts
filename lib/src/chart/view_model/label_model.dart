@@ -264,24 +264,40 @@ class DataRangeTicksAndLabelsDescriptor {
   /// Creates an instance of [ExternalTicksLayoutDescriptor] from self.
   ///
   /// As this [DataRangeTicksAndLabelsDescriptor] holds on everything about relative (data ranged)
-  /// position of labels, it can be converted to a provider of these label positions
-  /// for layouts that use externally defined positions to layout their children.
+  /// position of labels, it can be converted to a provider of these label positions as tick values
+  /// for layouts that use externally defined positions to layout their children on the tick values.
+  ///
+  /// The tick values can be placed at the start, center, or end of the labels, depending on
+  /// the passed [externalTickAtPosition] value:
+  ///   - For value [ExternalTickAtPosition.childStart], each tick is at the start of each label
+  ///   - For value [ExternalTickAtPosition.childCenter], each tick is at the center of each label
+  ///   - For value [ExternalTickAtPosition.childEnd], each tick is at the end of each label.
+  ///
+  /// The passed [moveTickTo] moves the tick from the position determined
+  /// by the [externalTickAtPosition] value as follows:
+  ///   - For value [MoveTickTo.middlePreviousAndThis], each tick is moved to the center point between
+  ///     the previous tick and this tick (both previously determined by [externalTickAtPosition])
+  ///   - For value [MoveTickTo.stayAtThis], each tick remains as the position determined by [externalTickAtPosition]
+  ///   - For value [MoveTickTo.middleThisAndNext], each tick is is moved to the center point between
+  ///     this tick and the next tick (both previously determined by [externalTickAtPosition])
+  ///
+  ///
   ExternalTicksLayoutDescriptor asExternalTicksLayoutDescriptor({
     required ExternalTickAtPosition externalTickAtPosition,
-    TickPositionInLabel tickPositionInLabel = TickPositionInLabel.center,
+    MoveTickTo moveTickTo = MoveTickTo.stayAtThis,
   }) {
     // Return [ExternalTicksLayoutDescriptor] and provide ticks.
     // The ticks must be affmap-ed to pixels, once ticksPixelsRange is known.
     // See [ExternalTicksBoxLayouter].
     List<double> tickValues;
-    switch(tickPositionInLabel) {
-      case TickPositionInLabel.min:
+    switch(moveTickTo) {
+      case MoveTickTo.middlePreviousAndThis:
         tickValues =  labelInfoList.map((labelInfo) => labelInfo.leftBorderTickValue).toList(growable: false);
         break;
-      case TickPositionInLabel.center:
+      case MoveTickTo.stayAtThis:
         tickValues = labelInfoList.map((labelInfo) => labelInfo.centerTickValue).toList(growable: false);
         break;
-      case TickPositionInLabel.max:
+      case MoveTickTo.middleThisAndNext:
         tickValues =  labelInfoList.map((labelInfo) => labelInfo.rightBorderTickValue).toList(growable: false);
         break;
     }
@@ -452,10 +468,10 @@ class DataRangeTicksAndLabelsDescriptor {
 ///
 /// This assumes labels mark positions on an ordered axis which has a norm. This allows for label size,
 /// and calculating a point (tick) at a position between neighbouring labels.
-enum TickPositionInLabel {
-  min,
-  center,
-  max,
+enum MoveTickTo {
+  middlePreviousAndThis,
+  stayAtThis,
+  middleThisAndNext,
 }
 /// The [AxisLabelInfo] is a holder for one label,
 /// it's numeric values (raw, transformed, transformed and extrapolated)
@@ -519,7 +535,6 @@ class AxisLabelInfo {
   /// Constructs from value at the label, holding on the [outerRangeDescriptor],
   /// which provides data range corresponding to axis range.
   AxisLabelInfo({
-    // todo-000 : rename to labelTickValue; also rename _rawOutputValue to _rawLabelTickValue
     required this.centerTickValue,
     required DataRangeTicksAndLabelsDescriptor outerRangeDescriptor,
   })  :

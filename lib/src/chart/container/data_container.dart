@@ -98,8 +98,8 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
       // Pad DataContainer on top and bottom from options. Children are height and width sizers
       Padder(
         edgePadding: EdgePadding.withSides(
-          top: padGroup.heightPadTopOfYAndData(),
-          bottom: padGroup.heightPadBottomOfYAndData(),
+          top: padGroup.heightPadTop(),
+          bottom: padGroup.heightPadBottom(),
         ),
         child: HeightSizerLayouter(
           children: [

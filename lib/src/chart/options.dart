@@ -373,10 +373,10 @@ class LabelCommonOptions {
 ///   This is where instances of this class, the [ChartPaddingGroup] come in: They define
 ///   functions that yield common padding. The names of the functions suggest where such common padding should
 ///   be applied:
-///     - [heightPadBottomOfYAndData]
-///     - [heightPadTopOfYAndData]
-///     - [widthPadLeftOfXAndData]
-///     - [widthPadRightOfXAndData]
+///     - [heightPadBottom]
+///     - [heightPadTop]
+///     - [widthPadLeft]
+///     - [widthPadRight]
 ///
 /// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding
 /// to correctly lineup.
@@ -394,29 +394,28 @@ class ChartPaddingGroup {
 
   final ChartOptions fromChartOptions;
 
-  // todo-0100 : rename anything with X or Y appropriately (Vertical/Horizontal? Input/Output?)
-  double heightPadBottomOfYAndData() {
+  double heightPadBottom() {
     return math.max(
         fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,
         fromChartOptions.dataContainerOptions.dataBottomTickHeight,
     );
   }
 
-  double heightPadTopOfYAndData() {
+  double heightPadTop() {
     return math.max(
       fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,
       0.0, // No ticks on top of DataContainer - in the future there could be, if there is another X axis on top
     );
   }
 
-  double widthPadLeftOfXAndData() {
+  double widthPadLeft() {
     return math.max(
       0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
       fromChartOptions.dataContainerOptions.dataLeftTickWidth,
     );
   }
 
-  double widthPadRightOfXAndData() {
+  double widthPadRight() {
     return math.max(
       0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
       fromChartOptions.dataContainerOptions.dataRightTickWidth,

@@ -13,8 +13,6 @@ import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 import 'package:flutter_charts/src/chart/view_model/label_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 
-
-
 // this level libraries
 import 'container_common.dart' as container_common;
 import 'line_segment_container.dart';
@@ -130,10 +128,12 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 
 // -------------------------------------
 
-/// Mixin injects children (labels or grid lines)
-/// into the methods which build the ticked axis labels or grid lines containers;
-/// Those build method is one of:
-/// todo-0100-document
+/// Provides the single abstract method [_externallyTickedAxisLabelsOrGridLinesOnAxis] which
+/// should create children (labels or grid lines) that can be placed into
+/// the _build methods which build the ticked axis labels or grid lines containers.
+///
+/// The passed [chartViewModel] provides definition of chart type, orientation, and data ranges.
+///
 /// The passed [axisDataDependency] defines if the method builds the input or output;
 /// it is translated to [DataRangeTicksAndLabelsDescriptor] which is used to iterate the ticked
 /// labels or grid lines.
@@ -142,6 +142,10 @@ abstract class _ChildrenProviderMixin {
     required ChartViewModel chartViewModel,
     required DataDependency axisDataDependency,
   });
+}
+
+mixin _LabelStyleMixin {
+  LabelStyle get labelStyle;
 }
 
 mixin _AxisLabelsProviderMixin implements _ChildrenProviderMixin, _LabelStyleMixin {
@@ -162,33 +166,27 @@ mixin _AxisLabelsProviderMixin implements _ChildrenProviderMixin, _LabelStyleMix
           chartViewModel: chartViewModel,
           label: labelInfo.formattedLabel,
           labelTiltMatrix: vector_math.Matrix2.identity(),
-          // No tilted labels in VerticalAxisContainer
-          // todo-0100-done : labelStyle: _labelStyle,
           labelStyle: labelStyle,
         )
     ];
   }
 }
 
-mixin _LabelStyleMixin {
-  LabelStyle get labelStyle;
-}
 
-/// todo-0100-document
-///
-/// The implementation returns a list of [LineBetweenPointOffsetsContainer], each
-/// representing one grid line for input axis or output axis, as defined by the passed [axisDataDependency].
+/// The implementation returns a list of grid lines as [LineBetweenPointOffsetsContainer], each
+/// representing one grid line for input axis or output axis, as defined by arguments possed
+/// to [_externallyTickedAxisLabelsOrGridLinesOnAxis].
 ///
 /// See also [_ChildrenProviderMixin].
 mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
 
-  /// Implementation of [_ChildrenProviderMixin] mixin's method which injects children
-  /// into the build methods for grid lines.
+  /// Implementation of [_ChildrenProviderMixin] mixin's method which creates grid lines.
   ///
   /// The passed [axisDataDependency] describes the children (labels for axis, grid lines for grid)
   /// being build:
   ///   - for [axisDataDependency] equal to [DataDependency.inputData], children for input axis are built;
-  ///     that also implies that the [_inputRangeDescriptor] is used to 
+  ///     also, the line is between [ChartViewModel.outputRangeDescriptor] max and min.
+  ///   - equivalent for  [axisDataDependency] equal to [DataDependency.outputData],
   ///
   /// Important note:
   ///   This method also needs the cross-descriptor, obtained by [ChartViewModel.crossRangeDescriptorFor]
@@ -266,10 +264,17 @@ mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
 }
 
 // -------------------------------------
+/// Provides method [_buildTickedInputRangeRowOrOutputRangeColumn]
+/// which builds ticked container with labels (for axis) or grid lines (for grid).
+///
+/// Implements [_ChildrenProviderMixin], the common class-parent for [_AxisLabelsProviderMixin]
+/// and [_GridLinesProviderMixin].
 mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
 
-  /// todo-0100-document
-  /// Implementations should build a container with labels (for axis) or grid lines (for grid).
+  /// Builds ticked container with labels (for axis) or grid lines (for grid).
+  ///
+  /// The children are created by the concrete mixin implementation
+  /// of [_ChildrenProviderMixin._externallyTickedAxisLabelsOrGridLinesOnAxis].
   ///
   /// The container should be ticked by input or output range, depending on which range is rendered.
   ///
@@ -284,7 +289,7 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
   TransposingExternalTicks _buildTickedInputRangeRowOrOutputRangeColumn({
     required ChartViewModel chartViewModel,
     required DataDependency dataDependency,
-    required TickPositionInLabel tickPositionInLabel,
+    required MoveTickTo moveTickTo,
   }) {
 
     ChartOrientation chartOrientation = chartViewModel.chartOrientation;
@@ -295,7 +300,7 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
           chartOrientation: chartOrientation,
           mainAxisExternalTicksLayoutDescriptor: chartViewModel.inputRangeDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
-            tickPositionInLabel: tickPositionInLabel,
+            moveTickTo: moveTickTo,
           ),
           children: _externallyTickedAxisLabelsOrGridLinesOnAxis(chartViewModel: chartViewModel, axisDataDependency: dataDependency, ),
         );
@@ -304,7 +309,7 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
           chartOrientation: chartOrientation,
           mainAxisExternalTicksLayoutDescriptor: chartViewModel.outputRangeDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
-            tickPositionInLabel: tickPositionInLabel,
+            moveTickTo: moveTickTo,
           ),
           children: _externallyTickedAxisLabelsOrGridLinesOnAxis(chartViewModel: chartViewModel, axisDataDependency: dataDependency, ),
         );
@@ -314,12 +319,15 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
 
 // -------------------------------------
 
-/// Abstract baseclass for for axis labels container [TransposingAxisLabels]
+/// Abstract base class for for axis labels container [TransposingAxisLabels]
 /// and grid lines container [TransposingGridLines].
 ///
 /// To support the ability to transpose, both input and output range descriptors are needed,
-/// they are both available in the [ChartViewModel]; the appropriate range is selected
-/// given [dataDependency].
+/// they are both available in the [ChartViewModel] provided by the superclass.
+///
+/// The appropriate range is selected given [dataDependency].
+/// The [moveTickTo] is used to place grid lines around bars and labels on the bar chart,
+/// which in the center of labels on the line chart.
 ///
 abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAreaContainer {
   TransposingAxisLabelsOrGridLines({
@@ -336,9 +344,9 @@ abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAr
 
   /// Determines the position, on which label centers or grid lines are placed.
   ///
-  /// Bar charts on input range should be set to [TickPositionInLabel.max],
-  /// all other chart types and ranges should be set to [TickPositionInLabel.center].
-  late final TickPositionInLabel tickPositionInLabel;
+  /// Bar charts on input range should be set to [MoveTickTo.middleThisAndNext],
+  /// all other chart types and ranges should be set to [MoveTickTo.stayAtThis].
+  late final MoveTickTo moveTickTo;
 
   /// Padding common to grid lines container, labels container, as well as `DataContainer`.
   late final ChartPaddingGroup _padGroup;
@@ -348,8 +356,9 @@ abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAr
 /// Provides factory methods to create transposing input and output axis labels container,
 /// the [TransposingAxisLabels.VerticalAxis] and the [TransposingAxisLabels.HorizontalAxis].
 ///
-/// The mixin [_AxisLabelsProviderMixin] provides ability to create this container's children that become axis labels.
-/// The mixin [_LabelsOrGridContainerBuilderMixin] provides ability to build this container of
+/// The mixin [_LabelsOrGridContainerBuilderMixin] provides the ability to build this container of axis labels.
+/// The mixin [_AxisLabelsProviderMixin] provides the ability to create this container's children (which are placed
+/// to the above container).
 abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
     with _AxisLabelsProviderMixin, _LabelsOrGridContainerBuilderMixin
     implements _ChildrenProviderMixin, _LabelStyleMixin
@@ -367,7 +376,7 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
     );
 
     // Label centers are always placed at [_AxisLabelInfo.centerTickValue] - any ChartOrientation, both input and output
-    tickPositionInLabel = TickPositionInLabel.center;
+    moveTickTo = MoveTickTo.stayAtThis;
   }
 
   late final LabelStyle _labelStyle;
@@ -416,6 +425,12 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
     }
   }
 
+  /// Implementors should be a function which takes the list of containers passed in the first argument,
+  /// wrapped in a [Padder] with [Padder.edgePadding] sides created from the second argument's [ChartPaddingGroup]
+  /// height and width.
+  ///
+  /// The [Padder]'s single child must be a [HeightSizerLayouter] or a [WidthSizerLayouter], ensuring
+  /// the same sizer is used for both `DataContainer` and [TransposingAxisLabels] container
   List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround;
 
   static List<BoxContainer> _horizontalWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
@@ -431,8 +446,8 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
       // Row contains Column of labels and vertical LineSegment for Y axis
       Padder(
         edgePadding: EdgePadding.withSides(
-          top: padGroup.heightPadTopOfYAndData(),
-          bottom: padGroup.heightPadBottomOfYAndData(),
+          top: padGroup.heightPadTop(),
+          bottom: padGroup.heightPadBottom(),
         ),
         child: HeightSizerLayouter(
           children: children,
@@ -450,7 +465,7 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
         _buildTickedInputRangeRowOrOutputRangeColumn(
           chartViewModel: chartViewModel,
           dataDependency: dataDependency,
-          tickPositionInLabel: tickPositionInLabel, // TickPositionInLabel.center,
+          moveTickTo: moveTickTo, // MoveTickTo.center
         ),
       ],
       _padGroup,
@@ -461,8 +476,7 @@ abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
 
 }
 
-// todo-0100-document
-/// Abstract class common for containers of input and output grid lines.
+/// Abstract container common for containers of input and output grid lines.
 abstract class TransposingGridLines extends TransposingAxisLabelsOrGridLines
     with _GridLinesProviderMixin, _LabelsOrGridContainerBuilderMixin
     implements _ChildrenProviderMixin {
@@ -480,7 +494,7 @@ abstract class TransposingGridLines extends TransposingAxisLabelsOrGridLines
       _buildTickedInputRangeRowOrOutputRangeColumn(
         chartViewModel: chartViewModel,
         dataDependency: dataDependency,
-        tickPositionInLabel: tickPositionInLabel,
+        moveTickTo: moveTickTo, // MoveTickTo.middleThisAndNext for barChart input, MoveTickTo.center otherwise
       ),
     ];
 
@@ -527,11 +541,11 @@ class TransposingInputGridLines extends TransposingGridLines {
     // set data dependency to input
     dataDependency = DataDependency.inputData;
 
-    // grid lines are placed at [_AxisLabelInfo.max] on bar chart input grid lines
+    // grid lines are placed at around bars, between this and next bar
     if (chartViewModel.chartType == ChartType.barChart) {
-      tickPositionInLabel = TickPositionInLabel.max;
+      moveTickTo = MoveTickTo.middleThisAndNext;
     } else {
-      tickPositionInLabel = TickPositionInLabel.center;
+      moveTickTo = MoveTickTo.stayAtThis;
     }
   }
 
@@ -547,7 +561,7 @@ class TransposingOutputGridLines extends TransposingGridLines {
     dataDependency = DataDependency.outputData;
 
     // output grid lines are always at [_AxisLabelInfo.center] on any chart.
-    tickPositionInLabel = TickPositionInLabel.center;
+    moveTickTo = MoveTickTo.stayAtThis;
   }
 
 }

@@ -1909,7 +1909,7 @@ Notes or Later:
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
-** DONE 11. ~Line chart~ 2 days. Started May 20 (started day late) finished May 23
+** DONE 11. Line chart 2 days. Started May 20 (started day late) finished May 23
 
 - [X] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
 - [X] The above vs affmapValuesToPixels!!! compare them
@@ -1918,7 +1918,7 @@ Notes or Later:
 - [X] review use of covariant in code
 
 
-** DONE ~12. Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.~ 1/2 day - started May 24, finished May 24
+** DONE 12. Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel. 1/2 day - started May 24, finished May 24
 
 Not sure if to do this ... Need to think through the separation of View and ViewModel.
 
@@ -1927,7 +1927,7 @@ Not sure if to do this ... Need to think through the separation of View and View
 - [X] Search all data_container*dart for 'import.*model' regex - BUT USAGE OF 'view_model' is fine
 
 
-** DONE ~13. Create a test app for super fast testing~ 2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
+** DONE 13. Create a test app for super fast testing:  2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
 
 - [X] Create a test app that can:
   1. [X] run first chart in list
@@ -1959,7 +1959,7 @@ followed by
 NOW WORK TO CREATE AND VALIDATE!!
 
 
-** DONE ~14. Add  WrappingRow/Column layouter, similar to but simpler than Column or Row.~ 3 days. Should start May25, end May27
+** DONE 14. Add  WrappingRow/Column layouter, similar to but simpler than Column or Row. 3 days: Should start May25, end May27
 
 Use it in one example:
 
@@ -2016,10 +2016,10 @@ Use it in one example:
 
 
 
-** IN-PROGRESS-NOW ~15. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container~ 4 days. Should start May28, end June 1.
+** IN-PROGRESS-NOW 16. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container 4 days: Should start May28, end June 1.
 
 
-*** ~Think about, look at existing code, how Grid Lines should be added~
+*** Think about, look at existing code, how Grid Lines should be added
 
 - [X] In ~DataContainer.buildAndReplaceChildren~, surround ~makeInnerContainerForBothBarsAreasAndInputAxisLine~ with ~TransposingStackLayouter~, which adds the ~TransposingGrid~ sibling to ~ContainerForBothBarsAreasAndInputAxisLine~
 - [X] Add ~TransposingGrid~ container, 
@@ -2028,58 +2028,17 @@ Use it in one example:
 - [X] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
 - [X] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
 - [X] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
-- [ ] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis*
-  #+begin_src dart
-    TransposingInputAxisContainer({
-      required ChartViewModel chartViewModel,
-      required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
-    }) : super(
-            chartViewModel: chartViewModel,
-          ) {
-      List<BoxContainer> children = directionWrapperAround(
-        [
-          TransposingRoller.Column(
-            chartOrientation: chartViewModel.chartOrientation,
-            children: [
-              TransposingExternalTicks.Row(
-                chartOrientation: chartViewModel.chartOrientation,
-                // HERE , USE THE SAME TICKS FROM _INPUT_RANGE_DESCRIPTOR ALSO FOR THE GRID LINES IN HORIZONTAL DIRECTION
-                mainAxisExternalTicksLayoutDescriptor: _inputRangeDescriptor.asExternalTicksLayoutDescriptor(
-                  externalTickAtPosition: ExternalTickAtPosition.childCenter,
-                ),
-                children:  [
-                  // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-                  //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the  [ChartViewModel]  constructor,
-                  //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
-                  for (var labelInfo in _inputRangeDescriptor.labelInfoList)
-                    AxisLabelContainer(
-                      chartViewModel: chartViewModel,
-                      label: labelInfo.formattedLabel,
-                      labelTiltMatrix: vector_math.Matrix2.identity(),
-                      // No tilted labels in VerticalAxisContainer
-                      labelStyle: _labelStyle,
-                    )
-                ],
-              ),
-            ],
-          )
-        ],
-        _padGroup,
-      );
-
-      addChildren(children);
-    }
-
-  #+end_src
-- [ ] ~For line chart, grid lines in the middle. For bar chart, grid lines around bars~
+- [X] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis*
+- [ ] For line chart, grid lines in the middle. For bar chart, grid lines around bars
 - [ ] ~Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.~
 - [ ] ~In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine~
-- [ ] 
-- 
-- 
   
 
-** TODO-NEXT ~Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
+** TODO-NEXT ~17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
+
+*** Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
+
+*** Steps to change the example and test directory structure
 
 1. [ ] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
 2. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
@@ -2090,11 +2049,8 @@ Use it in one example:
    - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
    - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
 5. [ ] Equivalent of 4. for ~LegendItemContainer~
-6. [ ] 
-7. [ ] 
-8. [ ] 
 
-** IN-PROGRESS ~16. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
+** IN-PROGRESS ~18. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 
 Thoughts on descriptive format of such layout templates:
 
@@ -2103,7 +2059,9 @@ Thoughts on descriptive format of such layout templates:
 
 ** ~Milestone: 2 weeks: June 4~
 
-** LATER ~Follow linter rules: 1) in late final and 2) use package imports (no relative imports)~
+** TODO 19. Add Spacing to chart
+
+** LATER Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
 
 ~Cleanup places using public late final fields~
 
@@ -2112,9 +2070,7 @@ See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-withou
 ~use package imports (no relative imports)~
 
 See https://dart.dev/tools/linter-rules#always_use_package_imports 
-** Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
-
-** LATER 12. ~BACKUPs~
+** LATER ~BACKUPs~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
@@ -2127,17 +2083,13 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] review again, all uses of applyParentOffset, esp between positioning and BoxLayouter
 - [ ] should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
 - [ ] Rename boundingRect to envelopeRect
-- 
-
   
 
-** Add Spacing to chart
-
-** TODO 11. ~Containers to MORPHS~
+** TODO 20. ~Containers to MORPHS~
 
   - [ ] start doing Morph stuff: start with everything is a transform!
 
-** TODO-NEXT 11. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
+** TODO-NEXT 21. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
 
 
 - [ ] EVEN-LATER BoxContainer debuggability
@@ -2149,12 +2101,6 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] Address some relevant todo-01-last
 - [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 
-
-** LATER Example72 is different from previous version. Investigate and fix
-
-ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png
-
-is overflowing now, where before it was not. Investigate and fix if applicable.
 
 ** 10. IDEAS TO IMPLEMENT
 

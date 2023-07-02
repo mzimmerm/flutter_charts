@@ -3687,8 +3687,8 @@ class TransposingStackLayouter extends NonPositioningBoxLayouter {
 ///
 /// [Padder] behaves as follows:
 ///   - Decreases own constraint by [edgePadding and provides it do a child
-///   - When child returns it's [layoutSize], this layouter sets it's size as that of the child, surrounded with
-///     the [edgePadding].
+///   - When child returns it's [layoutSize], this layouter sets it's size as that of the child,
+///     increased by the surrounding [edgePadding] with and height.
 ///
 /// This governs implementation:
 ///   - [Padder] uses the default [BoxLayouter]'s [layout] except the

@@ -206,12 +206,15 @@ class OutputAxisContainerCL
         : outputLabelContainerCLs.map((outputLabelContainer) => outputLabelContainer.layoutSize.height).reduce(math.max);
   }
 
-  // todo-00-last : throw exceptions on getters setters separately
   @override
-  late DataDependency dataDependency;
+  DataDependency get dataDependency => throw UnimplementedError();
+  @override
+  set dataDependency(DataDependency dataDependency) => throw UnimplementedError();
 
   @override
-  late TickPositionInLabel tickPositionInLabel;
+  MoveTickTo get moveTickTo => throw UnimplementedError();
+  @override
+  set moveTickTo(MoveTickTo dataDependency) => throw UnimplementedError();
 
   @override
   LabelStyle get labelStyle => throw UnimplementedError();
@@ -483,14 +486,17 @@ class HorizontalAxisContainerCL
 
     return false;
   }
-  // todo-00-last : throw exceptions on getters setters separately
+  
   @override
-  late final DataDependency dataDependency;
+  DataDependency get dataDependency => throw UnimplementedError();
+  @override
+  set dataDependency(DataDependency dataDependency) => throw UnimplementedError();
 
   @override
-  late final TickPositionInLabel tickPositionInLabel;
+  MoveTickTo get moveTickTo => throw UnimplementedError();
+  @override
+  set moveTickTo(MoveTickTo dataDependency) => throw UnimplementedError();
 
   @override
   LabelStyle get labelStyle => throw UnimplementedError();
-
 }
