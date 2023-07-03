@@ -16,8 +16,8 @@
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 
-import '../../util/util_dart.dart' show enumName;
-import '../../util/extensions_dart.dart' show StringExtension, multiplyListElementsBy;
+import 'package:flutter_charts/src/util/util_dart.dart' show enumName;
+import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension, multiplyListElementsBy;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart'
     show ChartLayouter, ChartOrientation, ChartStacking, ChartType;
 

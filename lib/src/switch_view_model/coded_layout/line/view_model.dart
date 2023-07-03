@@ -1,18 +1,19 @@
 import 'package:logger/logger.dart' as logger;
 
 // base libraries
-import '../../../chart/view_model/view_model.dart';
-import '../../../chart/container/legend_container.dart';
-import '../../../coded_layout/chart/axis_container.dart';
-import '../../../coded_layout/chart/data_container.dart';
-import '../../../chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
 
-import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-import '../../../coded_layout/chart/chart_type/line/root_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_container.dart';
 
-import '../../../morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+// todo-00-last : start here
 import '../../view_model_cl.dart'; // OLD
 import '../../view_model.dart' show directionWrapperAroundCL;
 

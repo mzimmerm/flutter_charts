@@ -1,18 +1,18 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../../../chart/container/legend_container.dart';
-import '../../../chart/container/axislabels_axislines_gridlines_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries
-import '../../../chart/view_model/view_model.dart';
-import '../../../morphic/container/chart_support/chart_style.dart';
-import '../../../chart/chart_type/bar/container/root_container.dart';
-import '../../../chart/model/data_model.dart';
-import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../../../chart/chart_type/bar/container/data_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/chart/chart_type/bar/container/root_container.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/chart_type/bar/container/data_container.dart';
 
 // this level: switch/auto_layout/bar
-import '../../view_model.dart'; // NEW SWITCH
+import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
 
 /// Concrete [ChartViewModel] for [BarChart].
 ///

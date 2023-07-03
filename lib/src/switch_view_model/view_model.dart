@@ -1,17 +1,17 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../chart/view_model/view_model.dart'; // NEW VIEW MODEL BASE
+import 'package:flutter_charts/src/chart/view_model/view_model.dart'; // NEW VIEW MODEL BASE
 
-import '../morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'auto_layout/line/view_model.dart'; // NEW VIEW MODEL LINE
 import 'auto_layout/bar/view_model.dart'; // NEW VIEW MODEL BAR
 import 'coded_layout/line/view_model.dart'; // OLD VIEW MODEL LINE
 import 'coded_layout/bar/view_model.dart'; // OLD VIEW MODEL BAR
 
-import '../chart/model/data_model.dart' as model;
-import '../chart/iterative_layout_strategy.dart' as strategy;
-import '../morphic/container/container_layouter_base.dart' show BoxContainer;
-import '../chart/options.dart' show ChartPaddingGroup;
+import 'package:flutter_charts/src/chart/model/data_model.dart' as model;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer;
+import 'package:flutter_charts/src/chart/options.dart' show ChartPaddingGroup;
 
 List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in CL');
 

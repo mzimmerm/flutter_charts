@@ -1,4 +1,6 @@
-import 'chart_support/chart_style.dart';
+
+// this level
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
 /// Library defines enums which belong to Flutter-dependent [container_layouter_base.dart]
 /// but packaged here for testability in dart testing.

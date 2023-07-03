@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
 
-// import '../../../lib/src/util/util_dart.dart';
+// import 'package:flutter_charts/src/util/util_dart.dart';
 
-import '../../../lib/src/util/vector/vector_2d.dart';
-import '../../../lib/src/util/vector/matrix_2d.dart';
-import '../../../lib/src/util/vector/function_matrix_2d.dart';
+import 'package:flutter_charts/src/util/vector/vector_2d.dart';
+import 'package:flutter_charts/src/util/vector/matrix_2d.dart';
+import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart';
 
 void main() {
   group('double matrices and vectors', () {

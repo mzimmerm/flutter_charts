@@ -1,5 +1,6 @@
 
-import 'chart_support/chart_style.dart';
+// this level
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
 /// Edge padding for the [Padder] layouter.
 ///

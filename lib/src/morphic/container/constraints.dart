@@ -2,12 +2,14 @@ import 'dart:ui' show Offset, Rect, Size;
 import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
 
-import 'container_edge_padding.dart';
-import 'morphic_dart_enums.dart';
-import '../../util/extensions_flutter.dart';
-import '../../util/util_dart.dart' show epsilon;
-import 'layouter_one_dimensional.dart';
-import 'container_layouter_base.dart' show BoxContainer;
+// this level
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer;
+
+import 'package:flutter_charts/src/util/util_dart.dart' show epsilon;
+import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
 class ContainerConstraints {}
 

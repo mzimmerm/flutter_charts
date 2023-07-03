@@ -1,13 +1,15 @@
 import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
 
+// This level
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common;
 
-import 'container_common.dart' as container_common;
-import '../../morphic/ui2d/point.dart';
-import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../../morphic/container/chart_support/chart_style.dart' as chart_orientation;
-import '../model/data_model.dart' as model;
-
+import 'package:flutter_charts/src/chart/model/data_model.dart' as model;
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
+
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' as chart_orientation;
+
 
 
 /// Leaf container lays out and draws a line segment between [fromPointOffset] and [toPointOffset] using [linePaint].

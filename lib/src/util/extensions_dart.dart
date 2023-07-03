@@ -1,6 +1,6 @@
 import 'dart:math' as math show min, max;
 
-import '../morphic/container/morphic_dart_enums.dart' show Sign;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
 import 'util_dart.dart';
 
 /// Extensions on the [String] class.

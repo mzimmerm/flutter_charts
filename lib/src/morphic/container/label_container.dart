@@ -3,10 +3,10 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
-// this level or equivalent
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
-import '../../util/geometry.dart' as geometry;
-// import '../util/util_dart.dart' as util_dart;
+// this level
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
+
+import 'package:flutter_charts/src/util/geometry.dart' as geometry;
 
 /// Mixin allows [ChartLabelContainer] extend [ChartAreaContainer]
 /// and at the same time allows (future) not-chart specific `LabelContainer` labels.

@@ -6,8 +6,8 @@ import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
 import 'package:flutter_charts/src/util/util_dart.dart' show epsilon, isCloserThanEpsilon;
 
-import '../morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
-import '../morphic/container/morphic_dart_enums.dart' show LayoutAxis;
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show LayoutAxis;
 
 extension SizeExtension on ui.Size {
 

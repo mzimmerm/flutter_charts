@@ -1,16 +1,18 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-// this level base libraries or equivalent
-import 'container_common.dart' as container_common show ChartAreaContainer;
-import '../../morphic/container/label_container.dart' as label_container;
-import '../chart_label_container.dart' as chart_label_container;
-import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
-import '../../morphic/container/container_alignment.dart' as container_alignment;
-import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_model/view_model.dart' as view_model;
-import '../options.dart' as chart_options;
-import '../../morphic/container/layouter_one_dimensional.dart';
+// this level
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
+
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/options.dart' as chart_options;
+import 'package:flutter_charts/src/chart/chart_label_container.dart' as chart_label_container;
+
+import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
+import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///

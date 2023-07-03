@@ -5,11 +5,11 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 import 'package:logger/logger.dart' as logger;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel;
 
-import 'painter.dart' as painter;
+import 'package:flutter_charts/src/chart/painter.dart' as painter;
 
 // doc-only
-import 'model/data_model.dart' as doc_model;
-import 'container/root_container.dart' as doc_root_container;
+import 'package:flutter_charts/src/chart/model/data_model.dart' as doc_model;
+import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart' as doc_root_container;
 
 
 /// Abstract base class of Flutter Charts.

@@ -6,9 +6,9 @@ import 'package:logger/logger.dart' as logger;
 import 'package:flutter/material.dart' as material show Colors;
 
 // this level or equivalent
-import '../options.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 
-import '../../util/util_dart.dart';
+import 'package:flutter_charts/src/util/util_dart.dart';
 
 
 /// Immutable data viewed in chart.

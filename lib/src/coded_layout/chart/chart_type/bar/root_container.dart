@@ -1,11 +1,11 @@
 // base libraries
-import '../../container.dart';
-import '../../axis_container.dart';
-import '../../data_container.dart';
-import '../../../../switch_view_model/view_model_cl.dart';
-import '../../../../chart/container/legend_container.dart';
-import '../../../../chart/container/root_container.dart';
-import '../../../../chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/coded_layout/chart/container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart';
 
 // this level
 import 'presenter.dart'; // OLD

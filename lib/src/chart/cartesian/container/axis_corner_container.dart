@@ -1,13 +1,15 @@
 import 'dart:ui' as ui show Rect, Canvas, Paint;
 import 'package:flutter/material.dart' as material show Colors;
 
+// this level
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common;
+
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+
 // base libraries
-import '../../morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 
-import '../view_model/view_model.dart' as view_model;
 
-// this level libraries
-import '../container/container_common.dart' as container_common;
 
 class AxisCornerContainer extends container_common.ChartAreaContainer {
   AxisCornerContainer({

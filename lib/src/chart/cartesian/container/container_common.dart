@@ -1,8 +1,8 @@
-// this level base libraries or equivalent
-import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_model/view_model.dart' as view_model;
-import '../../morphic/container/container_key.dart';
-import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
+import 'package:flutter_charts/src/morphic/container/container_key.dart';
 
 /// Base class which manages, lays out, offsets, and paints
 /// all [container_base.BoxContainer] derived classes used on charts.

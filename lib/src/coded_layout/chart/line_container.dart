@@ -2,9 +2,9 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 // this level
 
-import '../../morphic/container/container_layouter_base.dart' show LayoutableBox;
-import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import '../../chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show LayoutableBox;
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.

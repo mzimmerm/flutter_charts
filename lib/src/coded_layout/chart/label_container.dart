@@ -1,12 +1,13 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
-import 'container.dart' show PixelRangeProvider;
-import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import '../../morphic/container/label_container.dart';
-import '../../chart/chart_label_container.dart';
-import '../../chart/view_model/view_model.dart' as view_model;
-import '../../chart/view_model/label_model.dart' show AxisLabelInfo;
+import 'package:flutter_charts/src/coded_layout/chart/container.dart' show PixelRangeProvider;
+
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
+import 'package:flutter_charts/src/morphic/container/label_container.dart';
+import 'package:flutter_charts/src/chart/chart_label_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/view_model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:

@@ -4,11 +4,10 @@ import 'package:flutter/widgets.dart' as widgets; // note: external package
 import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
-import 'chart.dart';
+import 'package:flutter_charts/src/chart/chart.dart';
 
 // For comments
-import 'view_model/view_model.dart';
-
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 /// A not-extended implementation of the chart painter; it's core role is
 /// to create, layout, and paint the [FlutterChart] instances (extensions of [CustomPaint]).

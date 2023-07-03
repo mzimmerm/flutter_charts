@@ -1,34 +1,32 @@
 import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Canvas, Size, Color;
+import 'package:logger/logger.dart' as logger;
 import 'package:flutter/cupertino.dart' show immutable;
+// import 'dart:developer' as dart_developer;
+
+// this level
+import 'package:flutter_charts/src/chart/view_model/label_model.dart' as util_labels show DataRangeTicksAndLabelsDescriptor, extendToOrigin;
 import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+
+import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
 
 // morphic
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
 
+import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/chart/chart.dart';
-import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
-
-import '../painter.dart';
-import 'package:logger/logger.dart' as logger;
-
-// import 'dart:developer' as dart_developer;
-
-import '../../morphic/container/chart_support/chart_style.dart';
-import '../../morphic/container/morphic_dart_enums.dart';
-import '../../morphic/container/constraints.dart' as constraints show BoxContainerConstraints;
-
-// this level or equivalent
-import '../model/data_model.dart' as model show ChartModel, LegendItem;
-import '../options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
-import '../container/data_container.dart' as data_container show DataContainer, BasePointContainer;
-import '../container/container_common.dart' as container_common;
-import '../container/root_container.dart' as root_container show ChartRootContainer;
-import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
-import 'label_model.dart' as util_labels show DataRangeTicksAndLabelsDescriptor, extendToOrigin;
-import '../../util/util_dart.dart' as util_dart show Interval, assertDoubleResultsSame;
-import '../../util/extensions_dart.dart';
+import 'package:flutter_charts/src/chart/options.dart' as options show ChartOptions, outputValueToLabel, inputValueToLabel;
+import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart' as data_container show DataContainer, BasePointContainer;
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common;
+import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart' as root_container show ChartRootContainer;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/model/data_model.dart' as model show ChartModel, LegendItem;
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show Interval, assertDoubleResultsSame;
+import 'package:flutter_charts/src/util/extensions_dart.dart';
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].

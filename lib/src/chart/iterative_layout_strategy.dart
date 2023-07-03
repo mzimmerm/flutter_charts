@@ -2,9 +2,9 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
 // this level or equivalent
-import 'container/container_common.dart';
-import 'options.dart' show ChartOptions;
-import '../morphic/container/constraints.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
+import 'package:flutter_charts/src/morphic/container/constraints.dart';
 
 
 enum LabelFitMethod {

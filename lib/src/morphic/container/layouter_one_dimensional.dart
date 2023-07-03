@@ -1,9 +1,10 @@
 import 'dart:math' as math show max;
 
-// this level or equivalent
-import 'container_layouter_base.dart';
-import 'morphic_dart_enums.dart' show ExternalTickAtPosition;
-import '../../util/util_dart.dart' as util_dart show LineSegment, Interval;
+// this level
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show ExternalTickAtPosition;
+
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
 /// (imagined as ordered line segments) on a line.

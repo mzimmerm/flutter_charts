@@ -3,14 +3,14 @@
 
 // this level or equivalent
 
-import '../coded_layout/chart/container.dart' as container; // OLD CONTAINER
+import 'package:flutter_charts/src/coded_layout/chart/container.dart' as container; // OLD CONTAINER
 import 'view_model.dart'; // NEW SWITCH
-import '../chart/view_model/view_model.dart'; // NEW
-import '../chart/model/data_model.dart' as model;
-import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart'; // NEW
+import 'package:flutter_charts/src/chart/model/data_model.dart' as model;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-import '../coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
+import 'package:flutter_charts/src/coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
 
 abstract class SwitchChartViewModelCL extends SwitchChartViewModel {
 

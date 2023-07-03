@@ -1,5 +1,9 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
+// this level
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common;
+import 'package:flutter_charts/src/chart/cartesian/container/line_segment_container.dart';
+
 // base libraries
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
@@ -12,10 +16,6 @@ import 'package:flutter_charts/src/chart/chart_label_container.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 import 'package:flutter_charts/src/chart/view_model/label_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
-
-// this level libraries
-import 'container_common.dart' as container_common;
-import 'line_segment_container.dart';
 
 /// Container for line showing a horizontal or vertical axis.
 ///

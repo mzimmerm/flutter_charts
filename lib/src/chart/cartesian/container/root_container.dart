@@ -1,15 +1,17 @@
 import 'package:logger/logger.dart' as logger;
 
-import 'container_common.dart';
-import 'legend_container.dart';
-import 'axislabels_axislines_gridlines_container.dart';
-import 'data_container.dart';
-import '../../morphic/container/container_layouter_base.dart';
-import '../container/axis_corner_container.dart';
-import '../view_model/view_model.dart';
+// This level
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/axis_corner_container.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 // comments
-import '../painter.dart';
+import 'package:flutter_charts/src/chart/painter.dart';
 
 /// The root [BoxContainer] of the whole chart.
 ///

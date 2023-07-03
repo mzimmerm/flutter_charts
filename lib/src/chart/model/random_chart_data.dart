@@ -1,7 +1,7 @@
 import 'dart:math' as math show Random;
 
-import '../options.dart';
-import 'data_model.dart';
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
 
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.

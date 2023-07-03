@@ -3,19 +3,20 @@ import 'dart:ui' as ui show Size, Offset, Canvas;
 // this level or equivalent
 // import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
 
-import 'axis_container.dart';
-import 'container.dart';
-import '../../chart/container/container_common.dart';
-import '../../chart/container/data_container.dart';
-import '../../chart/view_model/view_model.dart';
-import '../../morphic/container/container_layouter_base.dart'
+import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/line_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
+
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
-import 'line_container.dart';
-import 'presenter.dart';
-import '../../chart/options.dart';
-import '../../morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
-import '../../morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 
 import '../../switch_view_model/view_model_cl.dart';
 

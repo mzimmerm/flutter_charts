@@ -19,8 +19,8 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 
 
 // this level chart
-import 'package:flutter_charts/src/chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import 'package:flutter_charts/src/chart/container/axislabels_axislines_gridlines_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // up and down levels
 import 'package:flutter_charts/src/chart/options.dart';

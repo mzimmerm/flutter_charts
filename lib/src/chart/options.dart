@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 
 // extension libraries
-import 'container/container_common.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'chart_type/line/options.dart';
 import 'chart_type/bar/options.dart';
 

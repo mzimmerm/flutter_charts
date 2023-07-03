@@ -1,4 +1,4 @@
-import '../morphic_dart_enums.dart' show LayoutAxis, DataDependency;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show LayoutAxis, DataDependency;
 
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 

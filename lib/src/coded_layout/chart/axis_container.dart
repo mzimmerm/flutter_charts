@@ -1,24 +1,25 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'dart:math' as math show max;
-import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
-// this level or equivalent
-import 'container.dart';
-import 'data_container.dart';
-import 'label_container.dart';
-import '../../chart/container/container_common.dart';
-import '../../chart/container/legend_container.dart';
-import '../../chart/container/axislabels_axislines_gridlines_container.dart';
-import '../../morphic/container/label_container.dart';
-import '../../chart/view_model/view_model.dart';
-import '../../morphic/container/container_layouter_base.dart'
+// this level
+import 'package:flutter_charts/src/coded_layout/chart/container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/label_container.dart';
+
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+import 'package:flutter_charts/src/morphic/container/label_container.dart';
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
     show LayoutableBox, BoxContainer;
-import '../../chart/options.dart';
-import '../../util/util_dart.dart';
-import '../../chart/view_model/label_model.dart';
-import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/util/util_dart.dart';
+import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+import 'package:flutter_charts/src/morphic/container/constraints.dart' show BoxContainerConstraints;
 
 /// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [OutputAxisContainerCL].
 abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Size, Offset;
 import 'dart:math' as math show Rectangle;
 
-import '../../morphic/container/constraints.dart' show ContainerConstraints;
+import 'package:flutter_charts/src/morphic/container/constraints.dart' show ContainerConstraints;
 
 // todo-05: Container core rules: 
 //           1) I do not expose position, offset, or layoutSize.

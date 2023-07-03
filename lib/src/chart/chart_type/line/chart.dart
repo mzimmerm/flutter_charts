@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart' as widgets;
 
 // base libraries
-import '../../chart.dart';
-import '../../painter.dart' show FlutterChartPainter;
-import '../../view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/chart.dart';
+import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
+import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel;
 
 /// Provides paint for the line chart.
 ///

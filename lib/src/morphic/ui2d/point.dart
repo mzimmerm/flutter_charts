@@ -13,10 +13,10 @@ import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
 import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart'
     show DoubleToDoubleFunction, Functional, FunctionalMatrix2D;
 
-import '../container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
 // Docs only, not used in code.
-import '../../chart/container/data_container.dart' as doc_data_container;
+import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart' as doc_data_container;
 
 /// Extension of [Offset] which adds ability to affmap to a new [PointOffset] instance
 /// created from it's instance data value in it's value range to the pixel position in the pixel ranges.

@@ -1977,49 +1977,8 @@ Use it in one example:
 
 
 
-** IN-PROGRESS ~15. RUNNING ISSUES and TODOs~
+** DONE 16. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container 4 days: Should start May28, end June 1.
 
-*** Running Issues
-
-- [X] IN-PROGRESS : Fix issue: After WrappingBoxLayouter this issue:
-  - There is a println warning on ex800
-    - Log.Warning: HeightSizerLayouter: layoutSize calculated is Size(309.4, 395.4) exceeds, in width, the constraint width=395.42857142857144
-      - Happens in BarChartDataContainer->Padder->HeightSizerLayouter
-      - superLayoutSize=(309,395)
-      - length=395
-  - is there same println warning on other examples as on ex800?
-  - NOT on Ex31
-  - NOT on Ex72 (this is the overflow example, but still not that warning!)
-  - NOT on Ex75
-  - [X] Fix this - *The core issue was an epsilon difference, fixed that. Also fixed the error text which was misleading*
-    
-- [ ] At some point during running a test, I got this error (does not repeat, but there are also hangups during test startup sometimes):
-  - VMServiceFlutterDriver: Flutter Driver extension is taking a long time to become available. Ensure your test app (often "lib/main.dart") imports "package:flutter_driver/driver_extension.dart" and calls enableFlutterDriverExtension() as the first call in main().
-  - [ ] Add the above action and test
-  -
-
-
-*** Running TODOs
-
-- [ ] Implement ability to hide Container for layout and painting, or just painting
-  - [ ] Add ContainerHiding class that controls every BoxContainer layout and paind
-    - maybe this is enum
-    - isLayoutOnly
-    - isPainted
-    - if first false, second must be false
-    - layoutNoPaint
-    - noLayoutNoPaint
-    - [ ] Think about places where and how to use it. Look at current code
-    - 
-- 
-
-
-
-
-** IN-PROGRESS-NOW 16. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container 4 days: Should start May28, end June 1.
-
-
-*** Think about, look at existing code, how Grid Lines should be added
 
 - [X] In ~DataContainer.buildAndReplaceChildren~, surround ~makeInnerContainerForBothBarsAreasAndInputAxisLine~ with ~TransposingStackLayouter~, which adds the ~TransposingGrid~ sibling to ~ContainerForBothBarsAreasAndInputAxisLine~
 - [X] Add ~TransposingGrid~ container, 
@@ -2029,9 +1988,7 @@ Use it in one example:
 - [X] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
 - [X] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
 - [X] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis*
-- [ ] For line chart, grid lines in the middle. For bar chart, grid lines around bars
-- [ ] ~Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.~
-- [ ] ~In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine~
+- [X] For line chart, grid lines in the middle. For bar chart, grid lines around bars
   
 
 ** TODO-NEXT ~17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
@@ -2042,13 +1999,15 @@ Use it in one example:
 
 1. [ ] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
 2. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
-3. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
+3. [ ] Change all run configurations to point to the above
+4. [ ] 
+5. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
    - [ ] Under all such places, create directory ~alternative~; there, create files with same name and classes
-4. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
+6. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
    - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
    - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
    - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
-5. [ ] Equivalent of 4. for ~LegendItemContainer~
+7. [ ] Equivalent of 4. for ~LegendItemContainer~
 
 ** IN-PROGRESS ~18. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 
@@ -2060,6 +2019,31 @@ Thoughts on descriptive format of such layout templates:
 ** ~Milestone: 2 weeks: June 4~
 
 ** TODO 19. Add Spacing to chart
+
+** IN-PROGRESS ~20. RUNNING ISSUES and SHORT TODOs~
+
+*** Running TODOs
+
+- [ ] Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.
+- [ ] In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine
+- [ ] Implement ability to hide Container for layout and painting, or just painting
+  - [ ] Add ContainerHiding class that controls every BoxContainer layout and paint
+    - maybe this is enum
+    - isLayoutOnly
+    - isPainted
+    - if first false, second must be false
+    - layoutNoPaint
+    - noLayoutNoPaint
+    - [ ] Think about places where and how to use it. Look at current code
+
+
+*** Running Issues
+    
+- [ ] Canot duplicate : At some point during running a test, I got this error (does not repeat, but there are also hangups during test startup sometimes):
+  - VMServiceFlutterDriver: Flutter Driver extension is taking a long time to become available. Ensure your test app (often "lib/main.dart") imports "package:flutter_driver/driver_extension.dart" and calls enableFlutterDriverExtension() as the first call in main().
+  - [ ] Add the above action and test
+  
+
 
 ** LATER Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
 
@@ -2076,7 +2060,7 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
   2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
   3. 
-
+** TODO ~SHORT TODOs~
 
 ** TODO FUTURE WORK
 - [ ] review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.

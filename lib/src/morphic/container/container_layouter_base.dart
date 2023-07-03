@@ -2,26 +2,30 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
-import 'package:flutter_charts/flutter_charts.dart';
+// todo-00-done import 'package:flutter_charts/flutter_charts.dart';
 
-// this level or equivalent
-import 'morphic_dart_enums.dart' show LayoutAxis, ExternalTickAtPosition;
-import 'container_edge_padding.dart' show EdgePadding;
-import 'layouter_one_dimensional.dart'
+// this level
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show LayoutAxis, ExternalTickAtPosition;
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' show EdgePadding;
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart'
     show Align, Packing, LengthsPositionerProperties,
     LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivideMethod;
-import 'container_alignment.dart' show Alignment, AlignmentTransform;
-import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import 'chart_support/chart_style.dart' show ChartOrientation;
-import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import '../../util/util_dart.dart' as util_dart
+import 'package:flutter_charts/src/morphic/container/container_alignment.dart' show Alignment, AlignmentTransform;
+import 'package:flutter_charts/src/morphic/container/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
+
+import 'package:flutter_charts/src/util/util_dart.dart' show epsilon;
+
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
+
+import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension, RectExtension;
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsAffineMap1D,
     transposeRowsToColumns, assertDoubleResultsSame;
-import '../../util/util_flutter.dart' as util_flutter
+import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter
     show boundingRect, assertSizeResultsSame;
-import '../../util/collection.dart' as custom_collection
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
-import '../../util/extensions_dart.dart';
+import 'package:flutter_charts/src/util/extensions_dart.dart';
 import 'container_key.dart'
     show ContainerKey, Keyed, UniqueKeyedObjectsManager;
 

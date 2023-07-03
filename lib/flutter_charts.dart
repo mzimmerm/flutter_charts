@@ -36,10 +36,10 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///       ```dart
 ///          // Note: Below, we have to ascend on the 'src' level as in the first line. 
 ///                   We can ascend above 'src', but that is not needed. So use the first form  
-///          import '../../chart/root_container.dart'; // relative path
-///          import '../../../src/chart/root_container.dart'; // relative path
+///          import 'package:flutter_charts/src/chart/root_container.dart'; // relative path
+///          import 'package:flutter_charts/src/chart/root_container.dart'; // relative path
 ///          // Note: THE ABOVE IS PROBABLY THE PREFERRED FORM AS IT MAKES HIERARCHY CLEAR
-///          import 'src/chart/util/example_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
+///          import 'package:flutter_charts/src/chart/util/example_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
 ///       ```
 ///     3. Or using an ABSOLUTE PATH SCHEME, WHICH STARTS WITH THE PACKAGE NAME, AND PROVIDES FULL PATH
 ///        TO EXPORTED OR NOT-EXPORTED LIBRARY, for example
@@ -149,12 +149,12 @@ export 'src/chart/chart_type/bar/options.dart';
 
 export 'src/chart/chart_label_container.dart';
 export 'src/chart/view_model/view_model.dart';
-export 'src/chart/container/axislabels_axislines_gridlines_container.dart';
-export 'src/chart/container/axis_corner_container.dart';
-export 'src/chart/container/container_common.dart';
-export 'src/chart/container/data_container.dart';
-export 'src/chart/container/line_segment_container.dart';
-export 'src/chart/container/root_container.dart';
+export 'src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+export 'src/chart/cartesian/container/axis_corner_container.dart';
+export 'src/chart/cartesian/container/container_common.dart';
+export 'src/chart/cartesian/container/data_container.dart';
+export 'src/chart/cartesian/container/line_segment_container.dart';
+export 'src/chart/cartesian/container/root_container.dart';
 export 'src/chart/model/data_model.dart';
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';

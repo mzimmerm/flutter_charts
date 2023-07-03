@@ -1,6 +1,6 @@
 import 'package:test/test.dart'; // Dart test package
 
-import '../../lib/src/util/util_dart.dart';
+import 'package:flutter_charts/src/util/util_dart.dart';
 
 void main() {
   test('AffineRangedMap1D.apply - from generated data', () {

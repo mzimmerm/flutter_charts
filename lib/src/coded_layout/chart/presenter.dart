@@ -1,10 +1,10 @@
 // import 'dart:ui' as ui show Paint, PaintingStyle;
 
 // this level or equivalent
-import 'container.dart';
-import '../../chart/view_model/view_model.dart';
-// import '../../chart/options.dart';
-import '../../util/collection.dart' as custom_collection show CustomList;
+import 'package:flutter_charts/src/coded_layout/chart/container.dart';
+
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
 
 /// The visual element representing one data value on the chart.
 ///

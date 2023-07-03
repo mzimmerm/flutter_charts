@@ -1,17 +1,19 @@
 import 'dart:math' as math show min, max, pow;
 
+// This level
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-import '../../morphic/container/morphic_dart_enums.dart';
-import '../../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutDescriptor, ExternalTicksBoxLayouter;
-import '../../morphic/container/layouter_one_dimensional.dart'
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ExternalTicksLayoutDescriptor, ExternalTicksBoxLayouter;
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart'
     show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
-import '../model/data_model.dart';
-import '../options.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 
-import '../../util/util_dart.dart' as util_dart;
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 
-import 'view_model.dart';
 
 /// Generates, describes, and manages the data range of values shown on chart, as well as label values,
 /// and the tick values shown.
