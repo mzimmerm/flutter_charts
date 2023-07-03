@@ -3,9 +3,11 @@
 import 'dart:math' as math;
 import 'dart:ui' show Rect, Size, Offset;
 
-import 'package:flutter_charts/src/morphic/ui2d/point.dart';
+// this level
+import 'package:flutter_charts/src/util/util_dart.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart';
-import 'util_dart.dart';
+
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
 
 

@@ -1,7 +1,9 @@
 import 'dart:math' as math show min, max;
 
+// this level
+import 'package:flutter_charts/src/util/util_dart.dart';
+
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
-import 'util_dart.dart';
 
 /// Extensions on the [String] class.
 ///

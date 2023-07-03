@@ -14,8 +14,8 @@ import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_conta
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 // todo-00-last : start here
-import '../../view_model_cl.dart'; // OLD
-import '../../view_model.dart' show directionWrapperAroundCL;
+import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
+import 'package:flutter_charts/src/switch_view_model/view_model.dart' show directionWrapperAroundCL;
 
 class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
   SwitchLineChartViewModelCL({

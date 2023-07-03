@@ -1,10 +1,10 @@
 // import 'package:logger/logger.dart' as logger;
 // import 'dart:developer' as dart_developer;
 
-// this level or equivalent
+// this level
+import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
 
 import 'package:flutter_charts/src/coded_layout/chart/container.dart' as container; // OLD CONTAINER
-import 'view_model.dart'; // NEW SWITCH
 import 'package:flutter_charts/src/chart/view_model/view_model.dart'; // NEW
 import 'package:flutter_charts/src/chart/model/data_model.dart' as model;
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
