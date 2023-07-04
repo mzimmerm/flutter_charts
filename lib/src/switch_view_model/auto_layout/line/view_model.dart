@@ -7,9 +7,9 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/data_container.dart';
 
-import 'package:flutter_charts/src/chart/chart_type/line/container/root_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/root_container.dart';
 
 // this level: switch/auto_layout/bar
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';

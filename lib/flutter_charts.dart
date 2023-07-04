@@ -142,31 +142,26 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///     except in `ChartModel.dataRows` which contains raw data.
 ///
 
-export 'src/chart/chart_type/line/chart.dart';
-export 'src/chart/chart_type/line/options.dart';
-export 'src/chart/chart_type/bar/chart.dart';
-export 'src/chart/chart_type/bar/options.dart';
-
-export 'src/chart/chart_label_container.dart';
-export 'src/chart/view_model/view_model.dart';
-export 'src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
-export 'src/chart/cartesian/container/axis_corner_container.dart';
-export 'src/chart/cartesian/container/container_common.dart';
-export 'src/chart/cartesian/container/data_container.dart';
-export 'src/chart/cartesian/container/line_segment_container.dart';
-export 'src/chart/cartesian/container/root_container.dart';
-export 'src/chart/model/data_model.dart';
-export 'src/chart/iterative_layout_strategy.dart';
-export 'src/chart/options.dart';
-
-export 'src/chart/model/random_chart_data.dart';
-export 'src/util/util_dart.dart';
-export 'src/util/util_flutter.dart';
-export 'src/chart/view_model/label_model.dart';
-
-// export 'src/coded_layout/chart/data_model.dart';
-export 'src/coded_layout/chart/container.dart';
-export 'src/coded_layout/chart/chart_type/line/root_container.dart';
-export 'src/coded_layout/chart/chart_type/bar/root_container.dart';
-
-export 'src/switch_view_model/auto_layout/line/view_model.dart';
+export 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
+export 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
+export 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
+export 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
+export 'package:flutter_charts/src/chart/chart_label_container.dart';
+export 'package:flutter_charts/src/chart/view_model/view_model.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/axis_corner_container.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/line_segment_container.dart';
+export 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
+export 'package:flutter_charts/src/chart/model/data_model.dart';
+export 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
+export 'package:flutter_charts/src/chart/options.dart';
+export 'package:flutter_charts/src/chart/model/random_chart_data.dart';
+export 'package:flutter_charts/src/util/util_dart.dart';
+export 'package:flutter_charts/src/util/util_flutter.dart';
+export 'package:flutter_charts/src/chart/view_model/label_model.dart';
+export 'package:flutter_charts/src/coded_layout/chart/container.dart';
+export 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_container.dart';
+export 'package:flutter_charts/src/coded_layout/chart/chart_type/bar/root_container.dart';
+export 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';

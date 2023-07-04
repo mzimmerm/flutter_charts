@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart' show immutable;
 
 // extension libraries
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
-import 'chart_type/line/options.dart';
-import 'chart_type/bar/options.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
 
 
 /// Options for chart allow to configure certain sizes, colors, and layout.

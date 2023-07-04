@@ -15,7 +15,6 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/switch_view_model/view_model.dart';
-// import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.

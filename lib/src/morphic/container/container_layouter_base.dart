@@ -724,6 +724,11 @@ abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
   }
 }
 
+/// Layouter implementation of [FromConstraintsSizerLayouter] which uses the full width of [constraints],
+/// and sets the the [length] member to the same full width.
+///
+/// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
+/// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.sizerHeight] member.
 class WidthSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
@@ -747,8 +752,8 @@ class WidthSizerLayouter extends TransposingSizerLayouter {
   }
 }
 
-/// Concrete [FromConstraintsSizerLayouter] allows to use up
-/// full height component of [constraints], and set the height on the [length] member.
+/// Layouter implementation of [FromConstraintsSizerLayouter] which uses the full height of [constraints],
+/// and sets the [length] member to the same full height.
 ///
 /// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
 /// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.sizerHeight] member.

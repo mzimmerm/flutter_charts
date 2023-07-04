@@ -10,9 +10,9 @@ class BarChartRootContainer extends ChartRootContainer {
 
   BarChartRootContainer({
     required LegendContainer legendContainer,
-    required TransposingAxisLabelsOrGridLines horizontalAxisContainer,
-    required TransposingAxisLabelsOrGridLines verticalAxisContainerFirst,
-    required TransposingAxisLabelsOrGridLines verticalAxisContainer,
+    required TransposingAxisLabels horizontalAxisContainer,
+    required TransposingAxisLabels verticalAxisContainerFirst,
+    required TransposingAxisLabels verticalAxisContainer,
     required DataContainer dataContainer,
     required ChartViewModel chartViewModel,
   }) : super(

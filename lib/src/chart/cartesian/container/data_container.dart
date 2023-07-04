@@ -11,8 +11,8 @@
 
 import 'dart:ui' as ui show Canvas, Size;
 
-import 'package:flutter_charts/src/chart/chart_type/bar/container/data_container.dart';
-import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/data_container.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
 
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;

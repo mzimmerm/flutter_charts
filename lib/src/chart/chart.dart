@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:flutter_charts/src/chart/chart_type/bar/container/root_container.dart';
-import 'package:flutter_charts/src/chart/chart_type/line/container/root_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/root_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/root_container.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:logger/logger.dart' as logger;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel;
