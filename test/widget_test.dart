@@ -23,10 +23,10 @@ void main() {
       expect(find.text('vvvvvvvv:'), findsOneWidget);
 
       // Finds the floating action button to tap on.
-      final Finder fab = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
+      final Finder floatingButton = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
 
       // Emulate a tap on the floating action button.
-      await tester.tap(fab);
+      await tester.tap(floatingButton);
 
       // Trigger a frame.
       await tester.pumpAndSettle();

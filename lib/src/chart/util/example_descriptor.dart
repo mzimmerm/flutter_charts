@@ -636,7 +636,7 @@ class ExampleMainAndTestSupport {
   // static const String floatingButtonTooltipOnLastExample = 'On Last Example';
   static const String floatingButtonTooltipMoveToNextExample = 'Move to Next Example';
 
-  /*
+  /* KEEP
   String get floatingButtonTooltip({required ExampleRunState exampleRunState,}) {
     String floatingButtonTooltip = 'Initial';
     if (exampleRunState.isConfiguredForMultiExample) {

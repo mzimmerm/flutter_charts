@@ -107,7 +107,6 @@ class LegendContainer extends container_common.ChartAreaContainer {
           label: chartViewModel.getLegendItemAt(index).name,
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
-          // todo-00-done : options: options,
         ),
     ];
   }
@@ -155,8 +154,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
 
-  // todo-00-done : final chart_options.ChartOptions _options;
-
   final label_container.LabelStyle _labelStyle;
   final String _label;
 
@@ -165,7 +162,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
     required String label,
     required label_container.LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
-    // todo-00-done : required chart_options.ChartOptions options,
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
   })  :
         // We want to only create as much as we can in layout for clarity,
@@ -173,8 +169,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
         _label = label,
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
-  // todo-00-done : _options = options,
-        // todo-00-next : remove this, use from chartViewModel
         super(
           chartViewModel: chartViewModel,
         ) {
@@ -194,7 +188,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
     container_base.BoxContainer layoutChild;
     // Default, unless changed in case branches: children = [itemInd, label], no pad or align in children
     var children = makeItemIndAndLabel();
-    // todo-00-done : switch (_options.legendOptions.legendAndItemLayoutEnum) {
     switch (chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
         // LegendOptions default: children created as [LegendItem]s in row which is start tight
@@ -211,7 +204,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
         break;
       default:
         throw StateError(
-          // todo-00-done : '_makeChildrenOfLegendItemContainer: Invalid option: ${_options.legendOptions.legendAndItemLayoutEnum}');
             '_makeChildrenOfLegendItemContainer: Invalid option: ${chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum}');
     }
     return [layoutChild];
@@ -226,7 +218,6 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
     var indRect = LegendIndicatorRectContainer(
       chartViewModel: chartViewModel,
       indicatorPaint: _indicatorPaint,
-      // todo-00-done : options: _options, // todo-00-next : remove this, use from chartViewModel
     );
     var label = chart_label_container.ChartLabelContainer(
       chartViewModel: chartViewModel,
@@ -253,12 +244,9 @@ class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
   LegendIndicatorRectContainer({
     required view_model.ChartViewModel chartViewModel,
     required ui.Paint indicatorPaint,
-    // todo-00-done : required chart_options.ChartOptions options,
   })  : _indicatorPaint = indicatorPaint,
         // Create the indicator square, later offset in applyParentOffset
         _indicatorSize = ui.Size(
-          // todo-00-done : options.legendOptions.legendColorIndicatorWidth,
-          // todo-00-done : options.legendOptions.legendColorIndicatorWidth,
           chartViewModel.chartOptions.legendOptions.legendColorIndicatorWidth,
           chartViewModel.chartOptions.legendOptions.legendColorIndicatorWidth,
         ),

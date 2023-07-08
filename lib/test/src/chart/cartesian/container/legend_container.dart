@@ -122,7 +122,6 @@ class LegendContainer extends chart_legend.LegendContainer {
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
             ..color = chartViewModel.getLegendItemAt(index).color),
-          // todo-00-done : options: options,
         ),
     ];
   }
@@ -136,7 +135,6 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
     required super.label,
     required super.labelStyle,
     required super.indicatorPaint,
-    // todo-00-done : required super.options,  // todo-00-next : remove this, use from chartViewModel
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
   });
 
@@ -243,7 +241,6 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
     var indRect = indRectAndLabel[0];
     var label = indRectAndLabel[1];
 
-    // todo-014 : why is else between two different bools????
     if (doPadIndAndLabel) {
       container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
         start: 3,

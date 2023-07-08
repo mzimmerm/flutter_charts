@@ -170,7 +170,7 @@ void main() {
       //   not on the device.
 
       // 1. Find the floating action button to tap on.
-      final Finder fab = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
+      final Finder floatingButton = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
 
       // Emulate a tap on the floating action button.
       // Important: This ensures the app moves to build and display the next example, having taken
@@ -179,7 +179,7 @@ void main() {
       //            to capture the screenshot using the correct corresponding name.
       //            This whole thing assumes that both this main(), and main() in examples/lib/src/main.dart
       //            obtain and process the same  [extractExamplesDescriptorsFromDartDefine]!
-      await tester.tap(fab);
+      await tester.tap(floatingButton);
 
       // Trigger a frame again after a tap. This seems to workaround the target artifact on second screenshot.
       await tester.pumpAndSettle();
