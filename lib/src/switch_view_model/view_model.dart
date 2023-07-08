@@ -14,6 +14,11 @@ import 'package:flutter_charts/src/chart/view_model/view_model.dart'; // NEW VIE
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
 import 'package:flutter_charts/src/chart/options.dart' show ChartPaddingGroup;
 
+
+import 'package:flutter_charts/test/src/switch_view_model/coded_layout/bar/view_model.dart' as testing_bar_view_model;
+import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
+
+
 List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in CL');
 
 /// Classes (the only classes) that know about both new auto layout and old coded_layout
@@ -37,6 +42,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
+    required this.liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
@@ -46,6 +52,10 @@ abstract class SwitchChartViewModel extends ChartViewModel {
   inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
+  /// Temporary allows to instantiate live or testing components
+  ///
+  final LiveOrTesting liveOrTesting;
+
   /// Factory switch returns instances of auto-layout or coded_layout versions of view model
   /// for vertical bar chart.
   factory SwitchChartViewModel.barChartViewModelFactory({
@@ -53,6 +63,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
+    required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -64,16 +75,30 @@ abstract class SwitchChartViewModel extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
+        liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
-      return SwitchBarChartViewModel(
-          chartModel: chartModel,
-          chartType: chartType,
-          chartOrientation: chartOrientation,
-          chartStacking: chartStacking,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-      );
+      switch (liveOrTesting) {
+        case LiveOrTesting.live:
+          return SwitchBarChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            liveOrTesting: LiveOrTesting.live,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        case LiveOrTesting.testing:
+          return testing_bar_view_model.SwitchBarChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            liveOrTesting: LiveOrTesting.testing,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+      }
     }
   }
 
@@ -84,6 +109,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
+    required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -95,16 +121,30 @@ abstract class SwitchChartViewModel extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
+        liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
-      return SwitchLineChartViewModel(
-        chartModel: chartModel,
-        chartType: chartType,
-        chartOrientation: chartOrientation,
-        chartStacking: chartStacking,
-        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-      );
+      switch (liveOrTesting) {
+        case LiveOrTesting.live:
+          return SwitchLineChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            liveOrTesting: LiveOrTesting.live,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        case LiveOrTesting.testing:
+          return testing_line_view_model.SwitchLineChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            liveOrTesting: LiveOrTesting.testing,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+      }
     }
   }
 

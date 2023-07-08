@@ -1,0 +1,18 @@
+This directory
+
+~flutter_charts/test/src~
+
+has subdirectory structure equivalent to
+
+~flutter_charts/lib/src~
+
+and contains classes used only in tests, but are not test classes.
+
+Most it's classes are testing extensions of base classes; those testing extensions are used in tests and integration tests.
+
+Note:
+
+The subdirectory ~flutter_charts/test/src/example~ is not equivalently placed; it contains the main example used in tests.
+
+The intent of this ~example~ subdirectory is to hold a ~main.dart~ used in tests and integration tests,
+while the ~flutter_charts/example~ is used to be published on *pub*.

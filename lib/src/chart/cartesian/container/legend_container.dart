@@ -9,8 +9,6 @@ import 'package:flutter_charts/src/chart/options.dart' as chart_options;
 import 'package:flutter_charts/src/chart/chart_label_container.dart' as chart_label_container;
 
 import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
-import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
-import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 
@@ -40,8 +38,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
   }) : super(
     chartViewModel: chartViewModel,
   ) {
-    // Create children and attach to self
-    addChildren(_createChildrenOfLegendContainer());
+    // Create children and attach to self: moved to buildAndReplaceChildren : addChildren(_createChildrenOfLegendContainer());
 
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
@@ -51,94 +48,52 @@ class LegendContainer extends container_common.ChartAreaContainer {
     }
   }
 
-  /// Builds the legend container contents below self,
-  /// a child [container_base.Row] or [container_base.Column],
-  /// which contains a list of [LegendItemContainer]s,
-  /// created separately in [_legendItems].
+  /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
+  ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
+  ///   - the [chart_label_container.ChartLabelContainer] which describes the series.
+  ///
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewModel.chartOptions;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
-    label_container.LabelStyle labelStyle = label_container.LabelStyle(
-      textStyle: options.labelCommonOptions.labelTextStyle,
-      textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
-      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-    );
+    label_container.LabelStyle labelStyle = defaultLabelStyle(options);
 
-    container_base.BoxContainer childLayout;
+    container_base.BoxContainer legendSingleChildLayouter;
+
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
-    var children = _legendItems(chartViewModel, labelStyle, options);
+    var children = _makeLegendItemContainers(chartViewModel, labelStyle, options);
+
     switch (options.legendOptions.legendAndItemLayoutEnum) {
-      case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
-        childLayout = container_base.Column(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.loose,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
-        // legend items in column
-        childLayout = container_base.Column(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          crossAxisAlign: Align.start,         // override to left-justify
-          crossAxisPacking: Packing.matrjoska, // default
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
-        childLayout = container_base.Row(
-          mainAxisAlign: Align.center,
-          mainAxisPacking: Packing.loose,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
+      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
         // LegendOptions default: children created as [LegendItem]s in row which is start tight
-        childLayout = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        // wrap second item to [container_base.Greedy] to test container_base.Greedy layout
-        children[1] = container_base.Greedy(child: children[1]);
-        childLayout = container_base.Row(
-          // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside container_base.Greedy
-          //       remains start + tight. That make sense, as container_base.Greedy is not-positioning.
-          //       If we wanted to center the LegendItem inside of container_base.Greedy, wrap the inside into Center.
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
-        // [children] were created as padded [LegendItem]s in `children = _itemIndAndLabel(doPadIndAndLabel: true)`
-        childLayout = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
-        // [children] were created as aligned LegendItems in `children = _itemIndAndLabel(doAlignIndAndLabel: true`
-        childLayout = container_base.Row(
+        legendSingleChildLayouter = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
           children: children,
         );
         break;
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
-        childLayout = container_base.WrappingRow(
+        legendSingleChildLayouter = container_base.WrappingRow(
           children: children,
         );
+        break;
+      default:
+        throw StateError(
+            '_createChildrenOfLegendContainer: Invalid option: ${options.legendOptions.legendAndItemLayoutEnum}');
     }
-    return [childLayout];
+    return [legendSingleChildLayouter];
   }
 
-  List<container_base.BoxContainer> _legendItems(
+  /// Builds the legend container contents below self,
+  /// a child [container_base.Row] or [container_base.Column],
+  /// which contains a list of [LegendItemContainer]s,
+  /// created separately in [_makeLegendItemContainers].
+  @override
+  void buildAndReplaceChildren() {
+    replaceChildrenWith(_createChildrenOfLegendContainer());
+  }
+
+  List<container_base.BoxContainer> _makeLegendItemContainers(
       view_model.ChartViewModel chartViewModel,
       label_container.LabelStyle labelStyle,
       chart_options.ChartOptions options,
@@ -155,6 +110,17 @@ class LegendContainer extends container_common.ChartAreaContainer {
           options: options,
         ),
     ];
+  }
+
+  label_container.LabelStyle defaultLabelStyle(chart_options.ChartOptions options) {
+    // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
+    label_container.LabelStyle labelStyle = label_container.LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+    return labelStyle;
   }
 
   /// Lays out the legend area.
@@ -209,54 +175,29 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
         _label = label,
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
-        _options = options,
+        _options = options, // todo-00-next : remove this, use from chartViewModel
         super(
           chartViewModel: chartViewModel,
       ) {
-    // Create children and attach to self
-    addChildren(_createChildrenOfLegendItemContainer());
+    // Create children and attach to self : moved to addAndReplaceChildren : addChildren(_makeChildrenOfLegendItemContainer());
   }
 
+  @override
+  void buildAndReplaceChildren() {
+    replaceChildrenWith(_makeChildrenOfLegendItemContainer());
+    // buildAndReplaceChildrenDefault();
+  }
 
-  /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
-  ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
-  ///   - the [chart_label_container.ChartLabelContainer] which describes the series.
-  ///
-  List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
+  List<container_base.BoxContainer> _makeChildrenOfLegendItemContainer() {
 
     // Pull out the creation, remember on this object as member _label,
     // set _labelMaxWidth on it in layout.
 
     container_base.BoxContainer layoutChild;
     // Default, unless changed in case branches: children = [itemInd, label], no pad or align in children
-    var children = _itemIndAndLabel();
+    var children = makeItemIndAndLabel();
     switch (_options.legendOptions.legendAndItemLayoutEnum) {
-      // **NO** This forcing has been removed, keep historical note:
-      //   **IFF* the layouter is the topmost Row or Column (Legend starts with Column or Row),
-      //        the passed Packing and Align values are used.
-      //   **ELSE* the values are irrelevant, will be replaced with Align.start, Packing.tight.
-      case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.loose,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.end,
-          mainAxisPacking: Packing.loose,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
+      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
         // LegendOptions default: children created as [LegendItem]s in row which is start tight
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
@@ -264,38 +205,14 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
           children: children,
         );
         break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
-        // create padded children
-        children = _itemIndAndLabel(doPadIndAndLabel: true);
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
-        // create aligned children
-        children = _itemIndAndLabel(doAlignIndAndLabel: true);
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
-        layoutChild = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
+        layoutChild = container_base.WrappingRow(
           children: children,
         );
         break;
+      default:
+        throw StateError(
+            '_makeChildrenOfLegendItemContainer: Invalid option: ${_options.legendOptions.legendAndItemLayoutEnum}');
     }
     return [layoutChild];
   }
@@ -303,14 +220,14 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].
-  List<container_base.BoxContainer> _itemIndAndLabel({
+  List<container_base.BoxContainer> makeItemIndAndLabel({
     bool doPadIndAndLabel = false,
     bool doAlignIndAndLabel = false,
   }) {
     var indRect = LegendIndicatorRectContainer(
       chartViewModel: chartViewModel,
       indicatorPaint: _indicatorPaint,
-      options: _options,
+      options: _options, // todo-00-next : remove this, use from chartViewModel
     );
     var label = chart_label_container.ChartLabelContainer(
       chartViewModel: chartViewModel,
@@ -318,6 +235,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
+/* todo-00-done : moved to test extension
     // todo-014 : why is else between two different bools????
     if (doPadIndAndLabel) {
       container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
@@ -357,17 +275,14 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
       ];
 
     } else {
+*/
       return [
         indRect,
         label,
       ];
-    }
+// todo-00-done    }
   }
 
-  @override
-  void buildAndReplaceChildren() {
-    buildAndReplaceChildrenDefault();
-  }
 }
 
 /// Represents the series color indicator square in the legend.

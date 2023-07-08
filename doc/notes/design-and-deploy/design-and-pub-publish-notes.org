@@ -1991,23 +1991,24 @@ Use it in one example:
 - [X] For line chart, grid lines in the middle. For bar chart, grid lines around bars
   
 
-** TODO-NEXT ~17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
+** IN-PROGRESS-NOW ~17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to test/lib/src/test_main.dart; create standard and alternative layouts~
 
 *** Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
 
 *** Steps to change the example and test directory structure
 
-1. [ ] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
-2. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
-3. [ ] Change all run configurations to point to the above
-4. [ ] 
-5. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
+1. [ ] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
+2. [ ] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
+3. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
+4. [ ] Change all run configurations to point to the above
+5. [ ] 
+6. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
    - [ ] Under all such places, create directory ~alternative~; there, create files with same name and classes
-6. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
+7. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
    - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
    - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
    - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
-7. [ ] Equivalent of 4. for ~LegendItemContainer~
+8. [ ] Equivalent of 4. for ~LegendItemContainer~
 
 ** IN-PROGRESS ~18. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 

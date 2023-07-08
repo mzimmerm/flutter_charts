@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
+import 'package:flutter_charts/src/morphic/util/extensible_enum.dart';
 
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
@@ -131,7 +132,7 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
-    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight,
+    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
   });
 }
 
@@ -428,13 +429,10 @@ enum DataRowsPaintingOrder {
   lastToFirst,
 }
 
-enum LegendAndItemLayoutEnum {
-  legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartTightItemIsRowStartTight
-  legendIsColumnStartTightItemIsRowStartTight, // legend items in column
-  legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'tight' , so noop
-  legendIsRowStartTightItemIsRowStartTight, // LegendOptions default: children created as [LegendItem]s in row which is start tight
-  legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped
-  legendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
-  legendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
-  legendIsWrappingRowItemIsRowStartTight, // legend items wrap in row
+class LegendAndItemLayoutEnum extends BaseExtensibleEnum {
+
+  const LegendAndItemLayoutEnum(super.i);
+
+  static const legendIsRowStartTightItemIsRowStartTightDefault = LegendAndItemLayoutEnum(1); // LegendOptions default: children created as [LegendItem]s in row which is start tight
+  static const legendIsWrappingRowItemIsRowStartTight = LegendAndItemLayoutEnum(2); // legend items wrap in row
 }

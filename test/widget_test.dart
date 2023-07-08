@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../example/lib/main.dart' as app;
+import 'package:flutter_charts/test/src/example/main.dart' as app;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleMainAndTestSupport;
 
 /// Flutter widget tests for the example app in '../example/lib/main.dart'.

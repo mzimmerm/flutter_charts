@@ -1,10 +1,11 @@
 import 'package:logger/logger.dart' as logger;
 
-
 // base libraries
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart' as line_chart_view_model;
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/data_container.dart';
@@ -13,12 +14,11 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/roo
 
 // this level: switch/auto_layout/bar
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
 
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
-class SwitchLineChartViewModel extends SwitchChartViewModel {
+class SwitchLineChartViewModel extends line_chart_view_model.SwitchLineChartViewModel {
   SwitchLineChartViewModel({
     required ChartModel chartModel,
     required ChartType chartType,
@@ -42,7 +42,7 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: LegendContainer(chartViewModel: this),
+      legendContainer: testing_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
       verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
@@ -51,6 +51,7 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
     );
   }
 
+/* todo-00-done
   /// Implements [ChartBehavior] mixin abstract method.
   ///
   /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
@@ -63,4 +64,5 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
   /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
   bool get extendAxisToOrigin => chartOptions.dataContainerOptions.extendAxisToOriginRequested;
+*/
 }

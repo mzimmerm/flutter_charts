@@ -19,12 +19,14 @@ abstract class SwitchChartViewModelCL extends SwitchChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
+    required LiveOrTesting liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
+    liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 

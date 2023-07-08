@@ -11,7 +11,13 @@ import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
-import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
+import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/test/src/chart/options.dart' as test_options show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/switch_view_model/view_model.dart';
@@ -552,7 +558,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+                  test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
         chartModel = RandomChartModel.generated(
           chartOptions: chartOptions,
@@ -893,7 +899,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
+              legendAndItemLayoutEnum: test_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
         );
 
         chartModel = ChartModel(
@@ -907,7 +913,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
+              legendAndItemLayoutEnum: test_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
         chartModel = ChartModel(
@@ -921,7 +927,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
+              legendAndItemLayoutEnum: test_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
         );
 
         chartModel = ChartModel(
@@ -935,7 +941,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight),
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault),
         );
 
         chartModel = ChartModel(
@@ -949,7 +955,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
+              legendAndItemLayoutEnum: test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
         chartModel = ChartModel(
@@ -964,7 +970,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+              test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
 
         chartModel = ChartModel(
@@ -979,7 +985,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
+              test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
 
         chartModel = ChartModel(
@@ -997,12 +1003,14 @@ class ExampleWidgetCreator {
               LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
         );
 
+        /*  todo-00-done : KEEP not sure why this was here?
         chartModel = ChartModel(
           dataRows: animalsDefaultData,
           inputUserLabels: animalsXUserLabels,
           legendNames: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
+        */
 
         chartModel = ChartModel(
           dataRows: const [
@@ -1080,6 +1088,7 @@ class ExampleWidgetCreator {
     Widget chartToRun;
 
     switch (chartType) {
+      // todo-00-last-last : start here
       case ChartType.lineChart:
         SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
           chartModel: chartModel,
@@ -1089,6 +1098,7 @@ class ExampleWidgetCreator {
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
           chartLayouter: chartLayouter,
+          liveOrTesting: LiveOrTesting.testing,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -1106,6 +1116,7 @@ class ExampleWidgetCreator {
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           chartLayouter: chartLayouter,
+          liveOrTesting: LiveOrTesting.testing,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

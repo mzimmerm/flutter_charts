@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart' show IntegrationTestWidgetsFlutterBinding;
 
-import '../test/test_util.dart';
+import '../lib/test/src/util/test_util.dart';
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
-import '../example/lib/main.dart' as app;
+import 'package:flutter_charts/test/src/example/main.dart' as app;
 
 /// Flutter integration test takes screenshots as files from the running app '../example/lib/main.dart'
 /// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',

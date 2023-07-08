@@ -198,3 +198,10 @@ enum Diagonal {
   leftToRightUp,
 }
 
+/// Temporary marker allows to create chart from testing components
+/// (those in `top/test/src`) vs live components.
+///
+enum LiveOrTesting {
+  live,
+  testing,
+}

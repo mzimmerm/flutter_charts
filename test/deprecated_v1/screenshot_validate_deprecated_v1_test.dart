@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 
-import '../test_util.dart';
+import '../../lib/test/src/util/test_util.dart';
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor;

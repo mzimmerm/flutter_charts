@@ -1,11 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'package:flutter_charts/flutter_charts.dart';
+// import 'dart:io' as io show exit;
+// import 'dart:ui' as ui show Color;
+import 'package:logger/logger.dart';
+
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
+
+// import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
+// import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
+import 'package:flutter_charts/src/chart/painter.dart';
+
+// import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
+// import 'package:flutter_charts/src/chart/chart_label_container.dart';
+// import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/axis_corner_container.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/line_segment_container.dart';
+// import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
+
+// import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
+import 'package:flutter_charts/src/chart/options.dart';
+
+// import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
+// import 'package:flutter_charts/src/util/util_dart.dart';
+// import 'package:flutter_charts/src/util/util_flutter.dart';
+// import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+// import 'package:flutter_charts/src/coded_layout/chart/container.dart';
+// import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_container.dart';
+// import 'package:flutter_charts/src/coded_layout/chart/chart_type/bar/root_container.dart';
+// import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
-import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
-    show ExampleMainAndTestSupport;
+// KEEP : in lib, import from test must be relative :
+//  import '../../test/src/chart/options.dart' as test_options show LegendAndItemLayoutEnum;
 
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
@@ -17,6 +50,14 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 /// but it's [chartToRun] allows to run multiple examples.
 ///
 void main() {
+  // Set logging level. There should be some kind of configuration for this.
+  Logger.level = Level.warning;
+
+  // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with
+  // installing the fonts in pubspec.yaml.
+  // But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
+  GoogleFonts.config.allowRuntimeFetching = false;
+
   runApp(const ExampleApp());
 }
 
@@ -29,51 +70,114 @@ void main() {
 ///   ex10RandomData_lineChart
 /// ```
 Widget chartToRun() {
-  LabelLayoutStrategy? inputLabelLayoutStrategy;
+  // Example requested to run
+  ChartType chartType = ChartType.lineChart;
+  ChartOrientation chartOrientation = ChartOrientation.column;
+  ChartStacking chartStacking = ChartStacking.nonStacked;
+
+  // Declare chartModel; the data object will be different in every examples.
   ChartModel chartModel;
-  ChartOptions chartOptions = const ChartOptions();
-  // Set option which will ask to start Y axis at data minimum.
-  // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
-  chartOptions = const ChartOptions(
-    dataContainerOptions: DataContainerOptions(
-      extendAxisToOriginRequested: false, // should have no effect on Stacked charts!
-    ),
+
+  // Create chartOptions defaults here, so we do not repeat it in every example section,
+  //   unless specific examples need to override this chartOptions default.
+  ChartOptions chartOptions = const ChartOptions(
+           legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+              LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
+
   );
+
+  // Using a null inputLabelLayoutStrategy.
+  // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+  //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
+  // If inputLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
+  //   a DefaultIterativeLabelLayoutStrategy.
+  // LabelLayoutStrategy? inputLabelLayoutStrategy;
+
+ //  chartOptions = const ChartOptions();
+
   chartModel = ChartModel(
     dataRows: const [
-      [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
-      [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
+      [61.9, 69.8, 73.1, 78.3, 82.2, 83.1],
+      [39.0, 42.5, 45.4, 53.7, 58.8, 67.4],
+      [37.9, 44.0, 50.6, 56.5, 56.9, 59.2],
+      [21.3, 26.0, 30.5, 37.6, 40.8, 47.4],
+      [25.0, 40.6, 42.4, 50.0, 49.4, 41.9],
+      [27.2, 34.8, 29.5, 35.5, 38.6, 38.2],
+      [16.0, 19.9, 18.4, 22.2, 22.4, 19.2],
+      [06.7, 08.8, 11.0, 14.0, 15.0, 17.0],
+      [07.4, 08.3, 09.1, 09.8, 10.2, 11.4],
+      [09.9, 11.2, 09.4, 10.2, 10.2, 10.7],
+      [05.8, 06.3, 07.4, 08.3, 08.8, 10.3],
+      [03.0, 03.5, 03.9, 04.9, 05.4, 05.4],
     ],
-    inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    inputUserLabels: const ['1920', '1940', '1960', '1980', '2000', '2020'],
     legendNames: const [
-      'Off zero 1',
-      'Off zero 2',
+      'Germany',
+      'France',
+      'Italy',
+      'Spain',
+      'Ukraine',
+      'Poland',
+      'Romania',
+      'Netherlands',
+      'Belgium',
+      'Czechia',
+      'Sweden',
+      'Slovakia',
+    ],
+    legendColors: const [
+      Colors.black,
+      Colors.blue,
+      Colors.cyan,
+      Colors.brown,
+      Colors.yellow,
+      Colors.red,
+      Colors.lightGreen,
+      Colors.deepPurple,
+      Colors.black12,
+      Colors.black26,
+      Colors.black38,
+      Colors.black45,
     ],
     chartOptions: chartOptions,
   );
-  var lineChartViewModel = SwitchLineChartViewModel(
+
+  // LineChart or BarChart depending on what is set in environment.
+  Widget chartToRun;
+
+  // Uses newChartLayouter
+  SwitchChartViewModel lineChartViewModel = SwitchLineChartViewModel(
     chartModel: chartModel,
-    chartType: ChartType.lineChart,
-    chartOrientation: ChartOrientation.column,
-    chartStacking: ChartStacking.nonStacked,
-    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+    chartType: chartType,
+    chartOrientation: chartOrientation,
+    liveOrTesting: LiveOrTesting.live,
+    chartStacking: chartStacking,
+    // todo-00-done : inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
-  var lineChart = LineChart(
+  LineChart lineChart = LineChart(
+    // [lineChartViewModel] makes instance of [LineChartRootContainer]
     chartViewModel: lineChartViewModel,
     flutterChartPainter: FlutterChartPainter(),
   );
-  return lineChart;
+  chartToRun = lineChart;
+
+  // Returns the configured LineChart or BarChart that will be added to the [_ExampleHomePageState],
+  //   depending on the chart type requested by [requestedExampleToRun]
+  return chartToRun;
 }
 
 class ExampleApp extends StatelessWidget {
-  const ExampleApp({Key? key}) : super(key: key);
+  const ExampleApp({
+    Key? key,
+  }) : super(key: key);
 
   /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Charts Demo',
+      title: 'Charts Demo Title',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -86,7 +190,10 @@ class ExampleApp extends StatelessWidget {
 }
 
 class ExampleHomePage extends StatefulWidget {
-  const ExampleHomePage({Key? key, required this.title}) : super(key: key);
+  const ExampleHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
   final String title;
 
   @override
@@ -140,7 +247,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _chartStateChanger,
-        tooltip: ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample,
+        tooltip: 'Next set of data',
         child: const Icon(Icons.add),
       ),
     );
