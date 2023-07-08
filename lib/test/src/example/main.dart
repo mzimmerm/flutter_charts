@@ -66,7 +66,7 @@ void main() {
 
   // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
   List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
-    message: 'From example/lib/src/main.dart',
+    message: 'From lib/test/src/example/main.dart',
   );
 
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.

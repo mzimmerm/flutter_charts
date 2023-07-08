@@ -1997,12 +1997,11 @@ Use it in one example:
 
 *** Steps to change the example and test directory structure
 
-1. [ ] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
+1. [X] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
 2. [X] Move  example/lib/src/main.dart to ~test/lib/src/test_main.dart~
 3. [X] Use the above in test and integration_test instead of example/lib/src/main.dart
-4. [ ] Change all run configurations to point to the above
+4. [X] Change all run configurations to point to the above
 5. [ ] In ~lib/src/chart~, find LegendContainer, InputAxisContainer, OutputAxisContainer; move to their own files. 
-   - [ ] Under all such places, create directory ~alternative~; there, create files with same name and classes
 6. [ ] ~LegendContainer~: In ~test/lib/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
    - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
    - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart

@@ -6,7 +6,7 @@ import '../lib/test/src/util/test_util.dart';
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
 import 'package:flutter_charts/test/src/example/main.dart' as app;
 
-/// Flutter integration test takes screenshots as files from the running app '../example/lib/main.dart'
+/// Flutter integration test takes screenshots as files from the running app 'lib/test/src/example/lib/main.dart'
 /// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
 /// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
 ///

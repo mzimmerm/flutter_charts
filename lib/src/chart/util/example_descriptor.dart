@@ -239,6 +239,14 @@ class ExampleDescriptor {
   ///
   /// The list must be pushed via `--dart-define` for example,
   /// `--dart-define=EXAMPLES_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter ex75_barChart_row_nonStacked_newAutoLayouter'`
+  /// as port of test such as `screenshot_create_test.dart` invoked as
+  ///
+  ///   ```shell
+  ///     flutter drive \
+  ///       --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' \
+  ///       --driver=test_driver/integration_test.dart  \
+  ///       --target=integration_test/screenshot_create_test.dart
+  ///   ```
   ///
   static List<ExampleDescriptor> extractExamplesDescriptorsFromDartDefine({String? message}) {
     String env = const String.fromEnvironment('EXAMPLES_DESCRIPTORS', defaultValue: '');
@@ -279,7 +287,8 @@ class ExampleDescriptor {
     const String chartStackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
     ChartStacking chartStacking = chartStackingStr.asEnum(ChartStacking.values);
 
-    String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter')
+    // todo-00-done : KEEP FOR NOW : String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter')
+    String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'newAutoLayouter')
         .replaceFirst('ChartLayouter.', '');
     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 

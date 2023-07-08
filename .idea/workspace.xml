@@ -22,11 +22,10 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +237,7 @@
       <recent name="$PROJECT_DIR$/test/src/example" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter Test.tests in widget_test.dart">
+  <component name="RunManager" selected="Flutter.main.dart ex31 - new - explicit x, y, some negative, similar to RandomData">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -442,6 +441,7 @@
     <configuration name="tests in widget_test.dart" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testFile" value="$PROJECT_DIR$/test/widget_test.dart" />
       <option name="useRegexp" value="false" />
+      <option name="additionalArgs" value="" />
       <method v="2" />
     </configuration>
     <configuration name="Test driver test" type="ShConfigurationType">
@@ -1429,11 +1429,6 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
-          <line>1173</line>
-          <option name="timeStamp" value="3815" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
           <line>304</line>
           <option name="timeStamp" value="3817" />
         </line-breakpoint>
@@ -1454,7 +1449,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>418</line>
+          <line>427</line>
           <option name="timeStamp" value="3840" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1699,28 +1694,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>251</line>
+          <line>259</line>
           <option name="timeStamp" value="4011" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>512</line>
+          <line>521</line>
           <option name="timeStamp" value="4012" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>283</line>
+          <line>292</line>
           <option name="timeStamp" value="4013" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>266</line>
+          <line>274</line>
           <option name="timeStamp" value="4014" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
           <line>134</line>
           <option name="timeStamp" value="4016" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>122</line>
+          <option name="timeStamp" value="4017" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>123</line>
+          <option name="timeStamp" value="4018" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>290</line>
+          <option name="timeStamp" value="4019" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
