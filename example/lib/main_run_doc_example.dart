@@ -153,7 +153,6 @@ Widget chartToRun() {
     chartOrientation: chartOrientation,
     liveOrTesting: LiveOrTesting.live,
     chartStacking: chartStacking,
-    // todo-00-done : inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   LineChart lineChart = LineChart(

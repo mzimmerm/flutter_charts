@@ -122,7 +122,7 @@ class LegendContainer extends chart_legend.LegendContainer {
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
             ..color = chartViewModel.getLegendItemAt(index).color),
-          options: options,
+          // todo-00-done : options: options,
         ),
     ];
   }
@@ -136,7 +136,7 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
     required super.label,
     required super.labelStyle,
     required super.indicatorPaint,
-    required super.options,  // todo-00-next : remove this, use from chartViewModel
+    // todo-00-done : required super.options,  // todo-00-next : remove this, use from chartViewModel
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
   });
 
@@ -154,7 +154,6 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
     container_base.BoxContainer layoutChild;
     // Default, unless changed in case branches: children = [itemInd, label], no pad or align in children
     var children = makeItemIndAndLabel();
-    // todo-00-done : switch (_options.legendOptions.legendAndItemLayoutEnum) {
     switch (chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum) {
     // **NO** This forcing has been removed, keep historical note:
     //   **IFF* the layouter is the topmost Row or Column (Legend starts with Column or Row),

@@ -22,25 +22,17 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main_run_doc_example.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model_cl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model_cl.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/util/test_util.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -1621,11 +1613,6 @@
           <option name="timeStamp" value="3968" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
-          <line>63</line>
-          <option name="timeStamp" value="3969" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
           <line>15</line>
           <option name="timeStamp" value="3970" />
@@ -1642,12 +1629,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
-          <line>1092</line>
+          <line>1082</line>
           <option name="timeStamp" value="3975" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
-          <line>1112</line>
+          <line>1102</line>
           <option name="timeStamp" value="3976" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1686,59 +1673,44 @@
           <option name="timeStamp" value="3983" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
-          <line>80</line>
-          <option name="timeStamp" value="3984" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
-          <line>1104</line>
+          <line>1094</line>
           <option name="timeStamp" value="3985" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart</url>
-          <line>43</line>
+          <line>42</line>
           <option name="timeStamp" value="3986" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart</url>
-          <line>42</line>
+          <line>41</line>
           <option name="timeStamp" value="3987" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/bar/view_model.dart</url>
-          <line>42</line>
+          <line>38</line>
           <option name="timeStamp" value="3988" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/line/view_model.dart</url>
-          <line>44</line>
+          <line>43</line>
           <option name="timeStamp" value="3989" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart</url>
-          <line>43</line>
+          <line>42</line>
           <option name="timeStamp" value="3990" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart</url>
-          <line>44</line>
+          <line>43</line>
           <option name="timeStamp" value="3991" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart</url>
           <line>16</line>
           <option name="timeStamp" value="3992" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
-          <line>55</line>
-          <option name="timeStamp" value="3994" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
-          <line>65</line>
-          <option name="timeStamp" value="3996" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/options.dart</url>
@@ -1752,13 +1724,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/chart/options.dart</url>
-          <line>11</line>
+          <line>10</line>
           <option name="timeStamp" value="3999" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
-          <line>213</line>
-          <option name="timeStamp" value="4008" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart</url>

@@ -12,9 +12,6 @@ import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data_container.dart';
 
-// this level: switch/auto_layout/bar
-// todo-00-done : import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
-
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
@@ -37,7 +34,6 @@ class SwitchBarChartViewModel extends bar_chart_view_model.SwitchBarChartViewMod
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  // todo-00-last-last : start here
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
       legendContainer: testing_legend_container.LegendContainer(chartViewModel: this),
@@ -49,12 +45,4 @@ class SwitchBarChartViewModel extends bar_chart_view_model.SwitchBarChartViewMod
     );
   }
 
-/* todo-00-done
-  /// Implements [ChartBehavior] mixin abstract method.
-  ///
-  /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
-  ///
-  @override
-  bool get extendAxisToOrigin => true;
-*/
 }

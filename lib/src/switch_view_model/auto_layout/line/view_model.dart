@@ -38,7 +38,6 @@ class SwitchLineChartViewModel extends SwitchChartViewModel {
   }
 
   /// Concrete implementation returns the root for vertical bar chart.
-  // todo-00-last-last : start here
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(

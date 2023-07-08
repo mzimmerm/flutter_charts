@@ -2,7 +2,6 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-// todo-00-done : import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';

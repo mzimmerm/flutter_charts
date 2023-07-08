@@ -1003,15 +1003,6 @@ class ExampleWidgetCreator {
               LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
         );
 
-        /*  todo-00-done : KEEP not sure why this was here?
-        chartModel = ChartModel(
-          dataRows: animalsDefaultData,
-          inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        */
-
         chartModel = ChartModel(
           dataRows: const [
             [61.9, 69.8, 73.1, 78.3, 82.2, 83.1],
@@ -1088,7 +1079,6 @@ class ExampleWidgetCreator {
     Widget chartToRun;
 
     switch (chartType) {
-      // todo-00-last-last : start here
       case ChartType.lineChart:
         SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
           chartModel: chartModel,
