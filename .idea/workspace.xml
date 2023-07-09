@@ -23,9 +23,9 @@
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,29 +198,29 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "io.flutter.reload.alreadyRun": "true",
-    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/switch_view_model/coded_layout",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.1477105",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "settings.editor.splitter.proportion": "0.26795283",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/switch_view_model/coded_layout&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.26795283&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Dart"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Dart&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/switch_view_model/coded_layout" />
@@ -230,14 +230,14 @@
       <recent name="$PROJECT_DIR$/integration_test" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/example" />
       <recent name="$PROJECT_DIR$/lib/test/src/util" />
       <recent name="$PROJECT_DIR$/lib/test" />
       <recent name="$PROJECT_DIR$/test/src" />
       <recent name="$PROJECT_DIR$/test/switch_view_model" />
-      <recent name="$PROJECT_DIR$/test/src/example" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex31 - new - explicit x, y, some negative, similar to RandomData">
+  <component name="RunManager" selected="Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -271,6 +271,11 @@
     <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref " type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Z main_run_doc_example in TOP/example/main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_nonStacked_newAutoLayouter'" />
+      <option name="filePath" value="$PROJECT_DIR$/example/main_run_doc_example.dart" />
       <method v="2" />
     </configuration>
     <configuration name="examples-descriptor as Flutter" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -404,7 +409,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/example/lib/main_run_doc_example.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/example/main_run_doc_example.dart" />
       <method v="2" />
     </configuration>
     <configuration name="TODO: MOVE TO FLUTTER AS DRIVE TEST FLUTTER DRIVE FROM : integration_test/screenshot_create_test.dart for Ex34" type="FlutterTestConfigType" factoryName="Flutter Test">
@@ -545,6 +550,7 @@
       <item itemvalue="Flutter.main.dart ex60 Labels iter 4 (shows 2 labels)" />
       <item itemvalue="Flutter.main.dart ex800 12EUCountriesPopulation" />
       <item itemvalue="Flutter.main.dart ex900 error all 0 data" />
+      <item itemvalue="Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart" />
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref " />
       <item itemvalue="Flutter.main_run_doc_example.dart" />
       <item itemvalue="Flutter Test.integration_test/screenshot_create_test.dart for Ex34" />

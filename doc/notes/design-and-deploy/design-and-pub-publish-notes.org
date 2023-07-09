@@ -2008,7 +2008,7 @@ Use it in one example:
    - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
 7. [ ] Equivalent of 4. for ~LegendItemContainer~
 
-** IN-PROGRESS ~18. Figure out how to create and keep some basic layout templates - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
+** IN-PROGRESS ~18. Figure out how to create, name, and keep some basic layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 
 Thoughts on descriptive format of such layout templates:
 
@@ -2059,7 +2059,6 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
   2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
   3. 
-** TODO ~SHORT TODOs~
 
 ** TODO FUTURE WORK
 - [ ] review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.

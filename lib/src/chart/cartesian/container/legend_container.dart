@@ -187,7 +187,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
 
     container_base.BoxContainer layoutChild;
     // Default, unless changed in case branches: children = [itemInd, label], no pad or align in children
-    var children = makeItemIndAndLabel();
+    var children = makeItemIndAndLabelBase();
     switch (chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
         // LegendOptions default: children created as [LegendItem]s in row which is start tight
@@ -211,10 +211,16 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].
-  List<container_base.BoxContainer> makeItemIndAndLabel({
+  ///
+  /// Publicly visible only to allow test extensions.
+  List<container_base.BoxContainer> makeItemIndAndLabelBase(
+/* todo-00-done
+  {
     bool doPadIndAndLabel = false,
     bool doAlignIndAndLabel = false,
-  }) {
+  }
+ */
+  ) {
     var indRect = LegendIndicatorRectContainer(
       chartViewModel: chartViewModel,
       indicatorPaint: _indicatorPaint,

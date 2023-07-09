@@ -226,17 +226,20 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
   }
 
 
-  /// Overriden from parent which returns a item indication and label
-  /// in a 2-member list, this override constructs the list with the legend indicator and legend label,
-  /// which caller wraps in [RowLayout].
-  @override
+  /// Returns a  a 2-member list with item indicator and label which caller wraps typically in a [container_base.Row]
+  /// or a [container_base.Column]
+  ///
+  /// Invokes super to get the containers, then pads or wraps them
+  /// according to passed [doPadIndAndLabel] and [doAlignIndAndLabel].
   List<container_base.BoxContainer> makeItemIndAndLabel({
     bool doPadIndAndLabel = false,
     bool doAlignIndAndLabel = false,
   }) {
-    List indRectAndLabel = super.makeItemIndAndLabel(
+    List indRectAndLabel = super.makeItemIndAndLabelBase(
+/* todo-00-done
       doPadIndAndLabel: doPadIndAndLabel,
       doAlignIndAndLabel: doAlignIndAndLabel,
+*/
     );
     var indRect = indRectAndLabel[0];
     var label = indRectAndLabel[1];

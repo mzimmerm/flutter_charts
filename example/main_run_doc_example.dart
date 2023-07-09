@@ -1,44 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-// import 'dart:io' as io show exit;
-// import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
-
-// import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
-// import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
-
-// import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
-// import 'package:flutter_charts/src/chart/chart_label_container.dart';
-// import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/axis_corner_container.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/line_segment_container.dart';
-// import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/switch_view_model/view_model.dart';
 import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
-
-// import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
 import 'package:flutter_charts/src/chart/options.dart';
-
-// import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
-// import 'package:flutter_charts/src/util/util_dart.dart';
-// import 'package:flutter_charts/src/util/util_flutter.dart';
-// import 'package:flutter_charts/src/chart/view_model/label_model.dart';
-// import 'package:flutter_charts/src/coded_layout/chart/container.dart';
-// import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_container.dart';
-// import 'package:flutter_charts/src/coded_layout/chart/chart_type/bar/root_container.dart';
-// import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-
-// KEEP : in lib, import from test must be relative :
-//  import '../../test/src/chart/options.dart' as test_options show LegendAndItemLayoutEnum;
 
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
