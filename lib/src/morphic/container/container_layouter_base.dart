@@ -1521,6 +1521,74 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
   }
 }
 
+///////////////////////////////
+// todo-00-next
+//  - rename old images to OLD, and code to create and check for images with that name
+//  - rerun tests
+//  - add class ParentOrderedSkip
+//    - bool isSkipLayout
+//    - bool isSkipPaint
+//    - private generative constructor
+//    - const static skipPaint
+//    - const static skipLayoutAndPaint
+//    - const static skipNone
+//    -
+//  - on BoxContainer, add member parentOrderedSkip,
+//    - (also search for it first), default to skipNone
+//    - not final, we want to be able layout code to force skip if needed
+//  - review options related to skipping
+//    - add 6 options for skipping - default skipNone
+//      - input labels
+//      - input axis
+//      - output labels
+//      - output axis
+//      - input grid
+//      - output grid
+//    - test things work unchanged
+//  - for each OLD 35 test (testing skip), add same NEW test and make sure they work well
+//  - remove the OLD 35 test which is testing skip
+//  - move the images for OLD 35 skip testing to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 10 test (random data), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 10 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 7* test (testing layouters on legend layout), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 7* to OLD-LAYOUTER directory
+// next
+//  - convert ex900 to new, ensure result satisfactory
+//  - move the images for OLD 900 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 52 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 52 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 52 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 32 test (start y above 0), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 32 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 33 test (start y below 0 with y all negative), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 33 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 34 test (different font), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 34 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 40 test (ordinal labels), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 40 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 50 test (stocks with positive/negative values), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 50 to OLD-LAYOUTER directory
+// next
+//  - each OLD ex 6* test (tilted labels), convert to NEW, and ensure result is satisfactory
+//  - move the images for OLD 6* to OLD-LAYOUTER directory
+
+/////
+// Find a way to still run OLD layout, while removing the SWITCH, and keep SOME old layout tests.
+///////////////////////////////
+
 // ---------- Positioning and not-positioning layouters, rolling positioning layouters, Row and Column, Greedy ---------
 
 /// Abstract layouter which is allowed to offset it's children with non zero offset.

@@ -213,14 +213,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
   /// in [RowLayout].
   ///
   /// Publicly visible only to allow test extensions.
-  List<container_base.BoxContainer> makeItemIndAndLabelBase(
-/* todo-00-done
-  {
-    bool doPadIndAndLabel = false,
-    bool doAlignIndAndLabel = false,
-  }
- */
-  ) {
+  List<container_base.BoxContainer> makeItemIndAndLabelBase() {
     var indRect = LegendIndicatorRectContainer(
       chartViewModel: chartViewModel,
       indicatorPaint: _indicatorPaint,

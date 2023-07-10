@@ -235,12 +235,7 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
     bool doPadIndAndLabel = false,
     bool doAlignIndAndLabel = false,
   }) {
-    List indRectAndLabel = super.makeItemIndAndLabelBase(
-/* todo-00-done
-      doPadIndAndLabel: doPadIndAndLabel,
-      doAlignIndAndLabel: doAlignIndAndLabel,
-*/
-    );
+    List indRectAndLabel = super.makeItemIndAndLabelBase();
     var indRect = indRectAndLabel[0];
     var label = indRectAndLabel[1];
 

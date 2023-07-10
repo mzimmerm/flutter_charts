@@ -287,7 +287,6 @@ class ExampleDescriptor {
     const String chartStackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
     ChartStacking chartStacking = chartStackingStr.asEnum(ChartStacking.values);
 
-    // todo-00-done : KEEP FOR NOW : String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter')
     String chartLayouterStr = const String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'newAutoLayouter')
         .replaceFirst('ChartLayouter.', '');
     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
