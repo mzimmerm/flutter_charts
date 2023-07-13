@@ -35,6 +35,7 @@ class ScreenshotPaths {
   String _screenshotFileName(
       ExampleDescriptor exampleDescriptor,
       ) {
+    /* todo-00-done
     ChartLayouter chartLayouter = exampleDescriptor.chartLayouter;
     String newLayoutSuffix = '';
     if (!(chartLayouter == ChartLayouter.oldManualLayouter)) {
@@ -43,6 +44,23 @@ class ScreenshotPaths {
     }
 
     return '${enumName(exampleDescriptor.exampleEnum)}_${enumName(exampleDescriptor.chartType)}$newLayoutSuffix.png';
+    */
+    String version;
+    switch (exampleDescriptor.chartLayouter) {
+      case ChartLayouter.newAutoLayouter:
+        version = 'NEW';
+        break;
+      case ChartLayouter.oldManualLayouter:
+        version = 'OLD';
+        break;
+    }
+    // return '${enumName(exampleDescriptor.exampleEnum)}_${enumName(exampleDescriptor.chartType)}$newLayoutSuffix.png';
+    return '${enumName(exampleDescriptor.exampleEnum)}'
+        '_${exampleDescriptor.chartType.name}'
+        '_${exampleDescriptor.chartOrientation.name}'
+        '_${exampleDescriptor.chartStacking.name}'
+        '_${exampleDescriptor.chartLayouter.name}'
+        '.png';
   }
 
   /// The name of the directory where screenshots are placed.

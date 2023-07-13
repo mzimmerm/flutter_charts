@@ -21,12 +21,55 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/flutter_charts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/flutter_charts.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex10RandomData_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex35AnimalsBySeasonNoLabelsShown_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex35AnimalsBySeasonNoLabelsShown_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration1_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration2_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration3_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration4_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex900ErrorFixUserDataAllZero_lineChart.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/util/test_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/util/test_util.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
