@@ -27,7 +27,16 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
-/// A sample app which shows usage of this library `flutter_charts` in an application.
+/// An example app which demonstrates this library `flutter_charts` for testing.
+///
+/// The app is configurable to run either a single chart, or multiple charts;
+/// the floating button for multi-chart configuration steps through the charts in order.
+///
+/// Note: There is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
+///       which is intended to run only one example. This example app exists to:
+///   - a) satisfy the flutter and dart conventions for presence of example app in a library
+///   - b) be edited by a program which pastes sample chart code from README.md and appends
+///        its result to README.md..
 ///
 /// The application is very simple, it has:
 ///
@@ -43,16 +52,13 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 ///     changes the example to tne next example from the list, which causes Flutter
 ///     to run the [ExampleHomePageState.build] on the next example from the list.
 ///
-/// The state is encapsulated in class [ExampleRunState].
+/// The state is encapsulated in the class [ExampleRunState].
 ///
 /// The example chart that runs is determined in two ways :
 ///
 ///   - The old method using `--dart-define` command line argument named 'EXAMPLE_TO_RUN' picked up in
 ///     a global function [ExampleDescriptor.requestedExampleToRun], used in [ExampleWidgetCreator.createRequestedChart].
 ///   - The new method using arguments [examplesDescriptors] passed to [main].
-///
-/// Note that there is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
-/// which is intended to run only one sample, pasted from README.md.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
 /// be imported using the "package:" scheme, e.g.

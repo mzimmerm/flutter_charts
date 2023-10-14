@@ -44,6 +44,11 @@ integration_test/screenshots_tested/
 #   Also, there is a .idea/.gitignore, so check that file if workspace.xml is not excluded.
 # .idea/
 
+# 2023-09-15 : IntelliJ : consider ignoring
+#  .idea/libraries/Dart_Packages.xml
+#  .idea/misc.xml
+#  .idea/workspace.xml
+
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
