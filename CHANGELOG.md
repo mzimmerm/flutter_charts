@@ -1,3 +1,15 @@
+# Version 0.5.2 (2023-10-15)
+
+## Dependencies changes
+
+To address issue #45 reported by Roar Gronmo https://github.com/mzimmerm/flutter_charts/issues/43, and also to address Flutter newer versions, updated the non-dev dependencies in pubspec.yaml as follows:
+
+  sdk: '>=2.15.0 <3.0.0' to   sdk: '>=2.15.0 <4.0.0'
+  google_fonts: ^4.0.3   to   google_fonts:
+  logger: ^1.1.0         to   logger:
+  
+
+
 # Version 0.5.1 (2023-02-20)
 
 ## Functional improvements
