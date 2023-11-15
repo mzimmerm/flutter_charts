@@ -1,10 +1,13 @@
 # mz vvv
 # misc local ides
-.emacs.d/
-.emacs.d-psession/
-.emacs.d-desktop/
-.projectile
-.gnupg
+/.emacs.d/
+/.emacs.d-psession/
+/.emacs.d-desktop/
+/.emacs.desktop
+/.emacs.desktop.lock
+/.project.el
+/.projectile
+/.gnupg/
 
 # contents of the following folders is ignored via the special .gitignore in the folders
 #  - integration_test/screenshots_tested/
