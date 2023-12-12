@@ -2,7 +2,5 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <type id="android" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_19" project-jdk-name="Android API 33, extension level 3 Platform" project-jdk-type="Android SDK">
-    <output url="file://$USER_HOME$/tmp/iiui-project-compiler-output" />
-  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Android API 34, extension level 7 Platform" project-jdk-type="Android SDK" />
 </project>

@@ -17,7 +17,10 @@ homepage: https://github.com/mzimmerm/flutter_charts/
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.5.1
+# Example: version: 2.0.0+8
+#   means : versionName=2.0.0, versionCode=8
+#   processed this way : top/android/local.properties is generated with the above variables, then used in build.gradle
+version: 0.5.2+8
 
 # Without the "environment" section, we get message on
 #   `flutter packages pub publish`:

@@ -21,9 +21,10 @@
       <sourceFolder url="file://$MODULE_DIR$/app/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
     </content>
-    <orderEntry type="jdk" jdkName="11" jdkType="JavaSDK" />
+    <!-- mz 2023 changed to 34 then removed: orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" /-->
+    <!-- orderEntry type="jdk" jdkName="Android API 34 Platform" jdkType="Android SDK" /-->
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Flutter for Android" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="flutter" level="application" />
   </component>
 </module>

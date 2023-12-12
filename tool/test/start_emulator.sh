@@ -4,7 +4,6 @@
 
   # This is the AVD emulator we request to exist
   emulator_used="Nexus_6_API_33"
-  # old: emulator_used="Nexus_6_API_29_2"
 
   echo Check if emulator exists
   if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
