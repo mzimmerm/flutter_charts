@@ -23,8 +23,10 @@ INTERNAL-GITIGNORE/
 # android
 # ios
 
-# ignore screenshots_tested/ directory, as screenshots are volatile and change often
+# Ignore screenshots_tested/ directory, as screenshots are volatile and change often. Also ignore screenshots_expected_server/ and screenshots_expected_laptop/. Those maintain specific versions.
 integration_test/screenshots_tested/
+integration_test/screenshots_expected_laptop/
+integration_test/screenshots_expected_server/
 # mz ^^^
 
 
