@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Bash with clean: Run all tests of all examples:
-#   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+#   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/deprecated_run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
 
 # Eshell with clean: Run all tests of all examples:
-#   setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+#   setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/deprecated_run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
 
 # No clean: Run one example:
-# tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues
+# tool/test/deprecated_v1/deprecated_run_all_tests.sh ex31SomeNegativeValues
 
 set -o errexit
 
@@ -26,4 +26,4 @@ tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh fir
 tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun
 
 # Run tests using the new layouter
-tool/test/deprecated_v1/run_core_new_integration_tests.sh
+tool/test/deprecated_v1/run_deprecated_core_integration_tests.sh

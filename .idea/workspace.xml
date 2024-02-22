@@ -21,9 +21,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/frequent_commands_deprecated.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_frequent_commands.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_all_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_core_new_integration_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_core_integration_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_new_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_representative_mini_tests.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_representative_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_representative_tests.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_start_emulator_and_generate_example_descriptor.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

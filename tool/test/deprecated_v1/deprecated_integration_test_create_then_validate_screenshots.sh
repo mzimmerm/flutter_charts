@@ -9,7 +9,7 @@
 #     - If $1 is set, it is assumed to be an example id from 'ExampleEnum', and the single example is executed
 #     - Else, all examples from  'ExampleEnum' are executed
 #   - This script runs in 2 steps
-#     1. Sources a program-generating script 'start_emulator_and_generate_example_descriptor.sh'
+#     1. Sources a program-generating script 'deprecated_start_emulator_and_generate_example_descriptor.sh'
 #        which creates one or more scripts stored in 'tests/tmp/example_descriptor_generated_program_RANDOM.sh'
 #        (calling each of these scripts tmp-script-program).
 #        - Each tmp-script-program:

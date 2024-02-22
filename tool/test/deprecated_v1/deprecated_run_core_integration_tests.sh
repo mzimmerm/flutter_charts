@@ -24,10 +24,10 @@ CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked  
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  barChart
 
 # ex75 - only positives : lineChart, only nonStacked
-# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 
-# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  lineChart
 
 # ------------------------------------------
@@ -39,9 +39,9 @@ CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked  
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         barChart
 
 # ex31 - positives and negatives - lineChart, only nonStacked
-# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 
-# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
+# CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 CHART_LAYOUTER=newAutoLayouter CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         lineChart
 
