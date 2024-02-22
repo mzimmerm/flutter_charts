@@ -124,7 +124,7 @@
         <entry key="flutter_lints">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-2.0.3/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-3.0.1/lib" />
             </list>
           </value>
         </entry>
@@ -159,7 +159,7 @@
         <entry key="google_fonts">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/google_fonts-4.0.5/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/google_fonts-6.1.0/lib" />
             </list>
           </value>
         </entry>
@@ -229,14 +229,14 @@
         <entry key="lints">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/lints-2.1.1/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/lints-3.0.0/lib" />
             </list>
           </value>
         </entry>
         <entry key="logger">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/logger-1.4.0/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/logger-2.0.2+1/lib" />
             </list>
           </value>
         </entry>
@@ -594,10 +594,10 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fake_async-1.3.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/ffi-2.1.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-2.0.3/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-3.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/frontend_server_client-3.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/glob-2.1.2/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_fonts-4.0.5/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_fonts-6.1.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http-1.2.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_multi_server-3.2.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_parser-4.0.2/lib" />
@@ -606,8 +606,8 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker-10.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-2.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_testing-2.0.1/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/lints-2.1.1/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logger-1.4.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/lints-3.0.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logger-2.0.2+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logging-1.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.16+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/material_color_utilities-0.8.0/lib" />
