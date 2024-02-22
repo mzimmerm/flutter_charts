@@ -26,12 +26,12 @@ version: 0.5.2+8
 #   `flutter packages pub publish`:
 # Make sure your SDK constraint excludes old versions:
 
-# 2021-121-10 : Flutter channel stable has : Flutter 2.8.0, Dart 2.15.0
-#               sdk means Dart sdk version.
-#               opt in to dart null safety - sdk >=2.12.0
+# 2021-12-10 : Flutter channel stable has: Flutter 2.8.0, Dart 2.15.0
+# 2024-02-22 : Flutter channel stable has: Flutter 3.19.1, Dart 3.3.0
+# sdk means Dart sdk version.
 environment:
-  sdk: '>=2.17.0 <3.0.0'
-  # todo-00-last-last-done : enabling enhanced enums : sdk: '>=2.15.0 <3.0.0'
+  sdk: '>=2.17.0 <4.0.0'
+  # todo-00-last-last-done : sdk: '>=2.17.0 <3.0.0'
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on GitHub or local server.

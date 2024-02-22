@@ -23,7 +23,8 @@ set -o errexit
 # Run Dart tests (still as 'flutter test') and Flutter widget tests 'flutter test'
 tool/test/run_core_dart_and_flutter_widget_tests.sh
 
-# Run screenshot compare tests
+# Run on-device-driven    'flutter drive' integration test 'screenshot_create_test.dart',
+# followed by on-computer 'flutter test'  unit test        'screenshot_validate_test.dart'.
 tool/test/run_screenshots_compare_integration_test.sh "$@"
 
 

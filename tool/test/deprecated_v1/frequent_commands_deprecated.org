@@ -1,0 +1,34 @@
+* A list of DEPRECATED frequent commands in this project.
+
+flutter drive \
+  --dart-define=EXAMPLE_TO_RUN=ex31SomeNegativeValues \
+  --dart-define=CHART_TYPE=lineChart \
+  --driver=test_driver/integration_test.dart \
+  --target=integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart
+
+# Test screenshot for equality - only needs unit test 'flutter test' (unit = unit OR integration non-drive test)
+flutter test  \
+  --dart-define=EXAMPLE_TO_RUN=ex31SomeNegativeValues \
+  --dart-define=CHART_TYPE=barChart \
+  test/deprecated_v1/screenshot_validate_deprecated_v1_test.dart
+
+# No clean: Run mini set of flutter integration tests in bash using:
+d1=$(date +%s); tool/test/deprecated_v1/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+
+# No clean: Run mini set of flutter integration tests in eshell using:
+setq d1 (string-to-number (format-time-string "%s")); tool/test/deprecated_v1/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
+# Bash with clean: Run all tests of all examples:
+d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+
+# Eshell with clean: Run all tests of all examples:
+setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
+# No clean: Run one example test + it's screenshot sameness:
+tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh "firstRun" ex31SomeNegativeValues
+# No clean: Run one example test + it's screenshot sameness:
+tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues
+
+# Run all deprecated tests
+tool/test/deprecated_v1/run_all_tests.sh
+

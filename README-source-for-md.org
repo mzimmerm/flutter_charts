@@ -72,7 +72,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
         # Read examples descriptor file and pull out example enum names and chart types
         #   which are supported in tests. All those examples are guaranteed to be run in example/lib/main.dart,
         #   and also screenshot-generated and tested for sameness with expected screenshots
-        #   in integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart and test/deprecated_v1/screenshot_create_deprecated_v1_test.dart.
+        #   in integration_test/screenshot_create_test.dart and test/screenshot_create_test.dart.
         while read enumLine; do
             if [[ $enumLine =~ "const Tuple2" ]]; then
 
@@ -149,7 +149,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
                 if [[ $codeLine =~ "case ExampleEnum.${exampleEnum}:" ]]; then
                     printOn=1
                 fi
-            done < example/lib/main.dart
+            done < example/main_run_doc_example.dart
 
             # Finish code
             if [[ $chartType = "lineChart" ]]; then
@@ -1315,23 +1315,23 @@ To install (clone) the ~flutter_charts~ project from Github to your local system
 
 This section assumes you installed the flutter_charts project as a local clone from Github, as described in [[*Running the examples included in flutter_charts]]
 
-There is an example application in flutter_charts: ~example/lib/main.dart~. It shows how the Flutter Charts library can be included in a Flutter application.
+There is an example application in flutter_charts: ~example/main_run_doc_example.dart~. It shows how the Flutter Charts library can be included in a Flutter application.
 
 To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
 - Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [[*Installing the flutter_charts project as a local clone from Github]] section.
 - ~cd $HOME/dev/flutter_charts-master/~  
 - Paste any of the lines below to the command line.
-  - To run one example (actually two, first line chart, next vertical bar chart), run:
+  - To run the example in examples/main_run_doc_example.sh:
     #+begin_src bash
-      tool/demo/run_all_examples.sh ex10RandomData
+      tool/demo/run_example.sh
     #+end_src
-    (press q in the terminal to quit the current example and run next)
-  - To run all examples 
+    or the equivalent
     #+begin_src bash
-      tool/demo/run_all_examples.sh
+      flutter run examples/main_run_doc_example.sh
     #+end_src
-    (press q in the terminal to quit the current example and run next)
+
+    (press q in the terminal to quit the current example)
 
 Sample screenshot from running the example app
 
@@ -1390,21 +1390,25 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 
 * Testing
 
-To run all unit tests with one integration test
+To run all unit tests followed by one screenshot-comparing integration test
 
-~tool/test/deprecated_v1/run_all_tests.sh ex31SomeNegativeValues~
+~tool/test/run_all_tests.sh ex31SomeNegativeValues~
 
-To run all unit tests with all integration tests
+To run all unit tests with all screenshot-comparing integration tests
 
-~tool/test/deprecated_v1/run_all_tests.sh~
+~tool/test/run_all_tests.sh allSupported~
 
-To run one integration test
+To run all unit tests with a minimum screenshot-comparing integration tests
 
-~tool/test/deprecated_v1/integration_test_validate_screenshots.sh ex31SomeNegativeValues~
+~tool/test/run_all_tests.sh minimumNew~
+
+To run one screenshot-comparing integration test without unit tests
+
+~tool/test/run_screenshots_compare_integration_test.sh ex31SomeNegativeValues~
 
 In all above, you can add cleanup and timing as follows:
 
-~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
+~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
 
 
 * TODO Todos
@@ -1417,7 +1421,8 @@ In all above, you can add cleanup and timing as follows:
 
 Before a new release, perform these steps:
 
-1. Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin_src section. If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example/lib/main.dart~. The ~example/lib/main.dart~ is also used to generate images gallery with links to code in this README file on top.
+1. Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin_src section.
+  The code in ~example/main_run_doc_example.dart~ runs the chart example within; it is also used to generate images gallery with links to code in this README file on top.
 
   Convert expected screenshots to readme_images, while converting to 2 versions, one with width=150, one with 300  
   #+begin_src bash :results output silent :eval no-export

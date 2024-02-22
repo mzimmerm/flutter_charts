@@ -6,10 +6,8 @@
 
 ** Eshell
 
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_representative_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-  
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh allSupported; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
 * TODO Bugs and issues - flutter_charts
 ** TODO The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
  
@@ -57,9 +55,9 @@ To upgrade decimal to latest version, so that pub.dev does not complain about "t
 
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
-** Test ~tool/test/deprecated_v1/run_all_tests.sh~ - details below
+** Test ~tool/test/run_all_tests.sh~ - details below
 
-Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
+Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
 
 ** Ensure pub-required files exist: Check the following files exist
 
@@ -67,7 +65,7 @@ Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/t
 *** CHANGELOG.md - pub needs the file to show Changelog tab
 *** example dir  - pub needs this dir to show Example tab to show.
 
-this tab appears if the project has the ~example/lib/main.dart~ file.
+this tab appears if the project has the ~example/main_run_doc_example.dart~ file.
 *** pubspec.yaml - pub needs this to show Installing tab
 ** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
 ** *CHANGELOG.md*: - Add section for new version and description of changes.
@@ -117,7 +115,7 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
 First install dartdoc latest compatible with SDK:
 
 ~flutter pub global activate dartdoc~
-** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/deprecated_v1/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
+** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
 ** ~git add .; git commit; git push~
 ** ~git checkout master; git fetch; git pull; git merge flutter_charts_v2~
 ** ~git push origin master~
@@ -920,11 +918,11 @@ This section We describe running Flutter Charts in development mode on your devi
 
    #+BEGIN_SRC sh
    cd DIRECTORY_OF_CHOICE/flutter_charts 
-   flutter run example/lib/main.dart
+   flutter run example/main_run_doc_example.dart
    #+END_SRC
 
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
-  - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
+  - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/main_run_doc_example.dart~ in the run button).
                       
 * NOTE Allowed todos
 

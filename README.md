@@ -1163,23 +1163,16 @@ To install (clone) the `flutter_charts` project from Github to your local system
 
 This section assumes you installed the flutter\_charts project as a local clone from Github, as described in [4](#org0430cd4)
 
-There is an example application in flutter\_charts: `example/lib/main.dart`. It shows how the Flutter Charts library can be included in a Flutter application.
+There is an example application in flutter\_charts: `example/main_run_doc_example.dart`. It shows how the Flutter Charts library can be included in a Flutter application.
 
 To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
 -   Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [3.2](#org03fe7ad) section.
 -   `cd $HOME/dev/flutter_charts-master/`
 -   Paste any of the lines below to the command line.
-    -   To run one example (actually two, first line chart, next vertical bar chart), run:
-        
-            tool/demo/run_all_examples.sh ex10RandomData
-        
-        (press q in the terminal to quit the current example and run next)
-    -   To run all examples 
-        
-            tool/demo/run_all_examples.sh
-        
-        (press q in the terminal to quit the current example and run next)
+    -   To run the example chart in examples/main_run_doc_example.dart:
+            tool/demo/run_example.sh
+
 
 Sample screenshot from running the example app
 
@@ -1269,7 +1262,7 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 
 Before a new release, perform these steps:
 
-1.  Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin\_src section. If the test `tool/demo/run_all_examples.sh` succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in `example/lib/main.dart`. The `example/lib/main.dart` is also used to generate images gallery with links to code in this README file on top.
+1.  Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin\_src section. The `tool/demo/run_example.sh` runs the chart example within; it is also used to generate images gallery with links to code in this README file on top.
     
     Convert expected screenshots to readme\_images, while converting to 2 versions, one with width=150, one with 300  
     

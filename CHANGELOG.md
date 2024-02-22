@@ -85,11 +85,11 @@ There are API changes in this release. Below may or may not be a full list
     - If the container was passed before, it needs to be removed. 
     - The container is stored on the BarChartPainter and used from there.
     - A similar situation for the LineChart.
-2. `ChartOptions`, `LineOptions`, `BarChartOptions` API changes. The constructors of all the options classes have changed. `ChartOptions` were split to `IterativeLayoutOptions`, `LegendOptions`, `XContainerOptions`, `YContainerOptions`, `DataContainerOptions`, and `LabelCommonOptions`. Please check the code in `example/lib/main.dart` which contains examples of how to create instances of those classes.
+2. `ChartOptions`, `LineOptions`, `BarChartOptions` API changes. The constructors of all the options classes have changed. `ChartOptions` were split to `IterativeLayoutOptions`, `LegendOptions`, `XContainerOptions`, `YContainerOptions`, `DataContainerOptions`, and `LabelCommonOptions`. Please check the code in `example/main_run_doc_example.dart` which contains examples of how to create instances of those classes.
 
 ## Functional improvements
 
-1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
+1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example/main_run_doc_example.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
     ```dart
       ChartOptions chartOptions = BarChartOptions.noLabels();
     ```
@@ -116,7 +116,7 @@ There are API changes in this release. Below may or may not be a full list
 
 All tests can be run using
 ```shell
-tool/test/deprecated_v1/run_all_tests.sh
+tool/test/run_all_tests.sh
 ```
 ## Large amount of refactoring.
 
@@ -156,7 +156,7 @@ each performing a specific code to achieve labels fit, such as:
 
 The term "iterative" in  "iteratively auto layout" refers to the fact the  `LabelLayoutStrategy` repeates the layout steps multiple times, until a good fit is achieved.
 
-The  `LabelLayoutStrategy` and extensions, including the default `DefaultIterativeLabelLayoutStrategy`, are members of containers which implement the `AdjustableContent`, or extend the abstract `AdjustableContentChartAreaContainer`. The term "adjustable content" here refers to ability to adjust sizes of child components, or even remove child components which would overlap in default conditions (sizes, and mumbers). See usages of `_xContainerLabelLayoutStrategy` in the sample app `example/lib/main.dart` for an example how to use custom `LabelLayoutStrategy` extensions. In practice, `AdjustableContent` is only used for multiple potentially overlaping labels. This knowledge is not necessary for most users who are merely using the default (not built in) iterative auto layout provided by the  `AdjustableContentChartAreaContainer`.
+The  `LabelLayoutStrategy` and extensions, including the default `DefaultIterativeLabelLayoutStrategy`, are members of containers which implement the `AdjustableContent`, or extend the abstract `AdjustableContentChartAreaContainer`. The term "adjustable content" here refers to ability to adjust sizes of child components, or even remove child components which would overlap in default conditions (sizes, and mumbers). See usages of `_xContainerLabelLayoutStrategy` in the sample app `example/main_run_doc_example.dart` for an example how to use custom `LabelLayoutStrategy` extensions. In practice, `AdjustableContent` is only used for multiple potentially overlaping labels. This knowledge is not necessary for most users who are merely using the default (not built in) iterative auto layout provided by the  `AdjustableContentChartAreaContainer`.
 
 To learn more about the new auto layout process, see the [README.md](README.md) section "Illustration of the new "iterative auto layout" feature".
 
