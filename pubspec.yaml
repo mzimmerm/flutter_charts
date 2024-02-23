@@ -96,8 +96,8 @@ flutter:
   # Self-host google fonts as assets require this section.
   # Using Google Fonts as assets requires the client download ("install") the font files stated in assets, 
   # google_fonts/Comforter-Regular.ttf in the font we chose.
-  # Installing the fonts is needed in conjunction with setting `GoogleFonts.config.allowRuntimeFetching = false;`
-  # in main.dart.
+  # Installing the fonts is needed in conjunction with setting 
+  # `GoogleFonts.config.allowRuntimeFetching = false;` in test_main.dart.
   # These 2 items (installing fonts and setting the configuration), are needed ONLY in integration tests. 
   # App works without those 2 additions.
   # However, be aware that the default `GoogleFonts.config.allowRuntimeFetching = true;`

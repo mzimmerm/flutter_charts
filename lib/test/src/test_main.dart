@@ -27,12 +27,12 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
-/// An example app which demonstrates this library `flutter_charts` for testing.
+/// Test app for use in tests and integration tests in `flutter_charts`.
 ///
 /// The app is configurable to run either a single chart, or multiple charts;
 /// the floating button for multi-chart configuration steps through the charts in order.
 ///
-/// Note: There is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
+/// Note: There is another example app [main_run_doc_example.dart](example/main_run_doc_example.dart),
 ///       which is intended to run only one example. This example app exists to:
 ///   - a) satisfy the flutter and dart conventions for presence of example app in a library
 ///   - b) be edited by a program which pastes sample chart code from README.md and appends
@@ -41,10 +41,10 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 /// The application is very simple, it has:
 ///
 ///   - several labels and text fields surrounding a sample chart created by this library.
-///   - a floating button with a +
+///   - a floating button with a plus (+) sign and a tooltip.
 ///
 /// The application can be configured through either arguments to [main] or `--dart-define`
-/// to run either a single example, or multiple examples.
+/// to run either a single example, or multiple examples during the same test.
 ///
 ///   - When configured to run a single example, clicking the floating button causes [setState] to run a no-op branch,
 ///     which causes Flutter to re-run the [ExampleHomePageState.build] using the same example.
@@ -72,7 +72,7 @@ void main() {
 
   // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
   List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
-    message: 'From lib/test/src/example/main.dart',
+    message: 'From lib/test/src/test_main.dart',
   );
 
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
@@ -104,7 +104,7 @@ void main() {
   //
   //  So, eventually, the loading of binding.dart, and it's runApp() function
   //  in ExampleApp is achieved this way:
-  //    1) This file (example/lib/main.dart) has
+  //    1) This file 'lib/test/src/test_main.dart' has
   //        - import 'package:flutter/material.dart' (references PROJ/packages/flutter/lib/material.dart)
   //    2) material.dart has
   //        - export 'widgets.dart'; (references same dir        PROJ/packages/flutter/lib/widgets.dart)
@@ -470,7 +470,7 @@ class MyLabelCommonOptions extends LabelCommonOptions {
 /// The enabler of widget changes in the main test app by the code in [ExampleWidgetCreator].
 /// 
 /// This enables support for each example ability to manipulate it's environment
-/// (by environment we mean the widgets in main.dart outside the chart).
+/// (by environment we mean the widgets in test_main.dart outside the chart).
 /// 
 /// Some examples need to change widgets of the main test app that are not part of the Chart.
 /// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
@@ -513,7 +513,7 @@ class ExampleWidgetCreator {
     'Winter',
   ];
 
-  /// Support for each example manipulate it's environment - the widgets in main.dart outside the chart.
+  /// Support for each example manipulate it's environment - the widgets in test_main.dart outside the chart.
   ///
   /// [exampleSideEffects] contain simple text strings such as '>>' and '<<', which are when running examples,
   /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.
@@ -525,7 +525,7 @@ class ExampleWidgetCreator {
   /// Example assumes Android emulator is running or an Android/iOS device is connected:
   /// - Running:
   ///   ```sh
-  ///     flutter run example/lib/main.dart \
+  ///     flutter run lib/test/src/test_main.dart \
   ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
   ///       --dart-define=CHART_TYPE=lineChart
   ///   ```

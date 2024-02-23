@@ -3,7 +3,7 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleDescriptor;
 import 'package:flutter_charts/test/src/util/test_util.dart';
-import 'package:flutter_charts/test/src/example/main.dart' as app;
+import 'package:flutter_charts/test/src/test_main.dart' as app;
 
 /// @Deprecated, see 'integration_test/screenshot_create_test_new.dart'.
 ///

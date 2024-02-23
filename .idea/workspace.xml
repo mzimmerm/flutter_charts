@@ -21,16 +21,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/example/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/frequent_commands_deprecated.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_frequent_commands.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/integration_test_create_then_validate_screenshots.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_all_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_core_new_integration_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_core_integration_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_new_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_representative_mini_tests.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/run_representative_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_run_representative_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/start_emulator_and_generate_example_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_start_emulator_and_generate_example_descriptor.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README-source-for-md.org" beforeDir="false" afterPath="$PROJECT_DIR$/README-source-for-md.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_charts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_charts.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/example/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/deprecated_v1/deprecated_integration_test_create_then_validate_screenshots.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,14 +241,14 @@
       <recent name="$PROJECT_DIR$/example/lib" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/test/src/" />
       <recent name="$PROJECT_DIR$/example" />
       <recent name="$PROJECT_DIR$/lib/test/src/util" />
       <recent name="$PROJECT_DIR$/lib/test" />
       <recent name="$PROJECT_DIR$/test/src" />
-      <recent name="$PROJECT_DIR$/test/switch_view_model" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex10">
+  <component name="RunManager" selected="Flutter.main.dart ex72">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -278,7 +281,7 @@
     </configuration>
     <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref " type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="Z main_run_doc_example in TOP/example/main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -293,122 +296,122 @@
     </configuration>
     <configuration name="main.dart absoluteMinimumNew" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex10" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex30_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_*_*_*_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex32 - explicit x, y, all Y positive, axis starts above zero" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex33 - explicit x, y, Y negative, axis ends below zero" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex33_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex34 Custom Font" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex34_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex35 - no labels" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex35_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex40_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex50" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex50_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex52 logarithmic" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex52_lineChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 1" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 2 (tilted)" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 3 (shows 3 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 4 (shows 2 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex70" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex70_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex71" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex71_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex72" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex72_barChart_column_stacked_oldManualLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex73" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex73_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex74" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex74_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex75 new" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex75_barChart_column_nonStacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex76" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex76_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex800 12EUCountriesPopulation" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex800_*_*_*_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex900 error all 0 data" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex90_barChart_column_stacked_newAutoLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/example/main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter" temporary="true" nameIsGenerated="true">
@@ -1074,7 +1077,7 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>831</line>
           <option name="timeStamp" value="2061" />
         </line-breakpoint>
@@ -1094,12 +1097,12 @@
           <option name="timeStamp" value="2757" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>568</line>
           <option name="timeStamp" value="2898" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>602</line>
           <option name="timeStamp" value="2936" />
         </line-breakpoint>
@@ -1139,7 +1142,7 @@
           <option name="timeStamp" value="3387" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>496</line>
           <option name="timeStamp" value="3443" />
         </line-breakpoint>
@@ -1149,7 +1152,7 @@
           <option name="timeStamp" value="3448" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>519</line>
           <option name="timeStamp" value="3467" />
         </line-breakpoint>
@@ -1269,7 +1272,7 @@
           <option name="timeStamp" value="3671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>198</line>
           <option name="timeStamp" value="3676" />
         </line-breakpoint>
@@ -1314,37 +1317,37 @@
           <option name="timeStamp" value="3797" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>70</line>
           <option name="timeStamp" value="3802" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>129</line>
           <option name="timeStamp" value="3808" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1172</line>
           <option name="timeStamp" value="3813" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1175</line>
           <option name="timeStamp" value="3814" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>310</line>
           <option name="timeStamp" value="3817" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>426</line>
+          <line>427</line>
           <option name="timeStamp" value="3840" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1004</line>
           <option name="timeStamp" value="3850" />
         </line-breakpoint>
@@ -1429,12 +1432,12 @@
           <option name="timeStamp" value="3967" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1088</line>
           <option name="timeStamp" value="3975" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1108</line>
           <option name="timeStamp" value="3976" />
         </line-breakpoint>
@@ -1474,7 +1477,7 @@
           <option name="timeStamp" value="3983" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/test/src/example/main.dart</url>
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
           <line>1100</line>
           <option name="timeStamp" value="3985" />
         </line-breakpoint>
@@ -1540,22 +1543,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>520</line>
+          <line>521</line>
           <option name="timeStamp" value="4012" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>291</line>
+          <line>292</line>
           <option name="timeStamp" value="4013" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>274</line>
+          <line>275</line>
           <option name="timeStamp" value="4014" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>289</line>
+          <line>290</line>
           <option name="timeStamp" value="4019" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1575,7 +1578,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>344</line>
+          <line>345</line>
           <option name="timeStamp" value="4023" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">

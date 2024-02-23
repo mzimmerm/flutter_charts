@@ -32,14 +32,13 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///               Both appear to be able to import relative, crossing the 'lib' boundary,
 ///               but THEN FLUTTER THINGS THOSE ARE DIFFERENT LIBRARIES!
 ///     2. Or using a RELATIVE PATH SCHEME, for example from a .dart file located 
-///        in flutter_charts/(lib)/src/chart/bar, CAN REACH EXPORTED OR NOT-EXPORTED LIBRARY
+///        in
+///            'flutter_charts/(lib)/src/chart/bar',
+///          CAN REACH EXPORTED OR NOT-EXPORTED LIBRARY
+///            'flutter_charts/(lib)/src/chart/util/example_descriptor.dart'
+///          as
 ///       ```dart
-///          // Note: Below, we have to ascend on the 'src' level as in the first line. 
-///                   We can ascend above 'src', but that is not needed. So use the first form  
-///          import 'package:flutter_charts/src/chart/root_container.dart'; // relative path
-///          import 'package:flutter_charts/src/chart/root_container.dart'; // relative path
-///          // Note: THE ABOVE IS PROBABLY THE PREFERRED FORM AS IT MAKES HIERARCHY CLEAR
-///          import 'package:flutter_charts/src/chart/util/example_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
+///          import '../util/example_descriptor.dart'; // from 'flutter_charts/(lib)/src/chart/bar'
 ///       ```
 ///     3. Or using an ABSOLUTE PATH SCHEME, WHICH STARTS WITH THE PACKAGE NAME, AND PROVIDES FULL PATH
 ///        TO EXPORTED OR NOT-EXPORTED LIBRARY, for example

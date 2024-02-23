@@ -1,6 +1,6 @@
 /// Library for a tool that helps generate programs that run chart examples and tests.
 ///
-/// Library with has a main.dart which generates a shell script that allow
+/// Library with has a test_main.dart which generates a shell script that allow
 /// to run commands such as `flutter run` or `flutter drive`
 /// on all examples defined in [ExampleEnum].
 ///
@@ -91,7 +91,7 @@ enum ExampleEnum {
 /// Describes and generates properties of one example or a list of pre-configured chart examples.
 ///
 /// The pre-configured chart examples can be used in several places:
-///   - Run in the example app in `example/lib/src/main.dart`
+///   - Run in the example app in `example/lib/src/test_main.dart`
 ///   - Be integration tested for sameness of results (generated screenshots)
 ///     in `integration_test/screenshot_create_test.dart` and  `test/screenshot_validate_test.dart`.
 ///
@@ -260,7 +260,8 @@ class ExampleDescriptor {
     return ExampleDescriptor.parseEnhancedDescriptors(descriptorsStrings);
   }
 
-  /// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
+  /// Returns the enum of the chart example to run *in widget tests, integration tests,
+  /// or 'lib/test/src/test_main.dart'.
   ///
   /// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
   ///   passed to the main program by `--dart-define` options.
@@ -576,7 +577,7 @@ class ExampleDescriptor {
               '--dart-define=CHART_ORIENTATION=${enumName(exampleDescriptor.chartOrientation)} '
               '--dart-define=CHART_STACKING=${enumName(exampleDescriptor.chartStacking)} '
               '--dart-define=CHART_LAYOUTER=${enumName(chartLayouter)} '
-              '\$2' // ' example/lib/main.dart'
+              '\$2' // 'lib/test/src/test_main.dart'
       );
     }
   }
@@ -631,7 +632,7 @@ enum _GroupDescriptor {
   
 }
 
-/// Encapsulates information needed to run `example/lib/src/main.dart` which are also
+/// Encapsulates information needed to run `example/lib/src/test_main.dart` which are also
 /// needed in tests.
 ///
 /// The commonality of need in 2 places is the reason for placing outside the `example/lib` tree.

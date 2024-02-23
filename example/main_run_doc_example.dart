@@ -16,7 +16,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 /// Intended as a simple app that runs example code from README.md,
 /// by replacing the contents of [chartToRun] with example code pasted from README.md.
 ///
-/// Note that there is another example app [main.dart](./main.dart) which is similar,
+/// Note that there is another example app 'test_main.dart' in 'lib/test/src/test_main.dart' which is similar,
 /// but it's [chartToRun] allows to run multiple examples.
 ///
 void main() {

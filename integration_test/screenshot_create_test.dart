@@ -4,9 +4,9 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 import '../lib/test/src/util/test_util.dart';
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
-import 'package:flutter_charts/test/src/example/main.dart' as app;
+import 'package:flutter_charts/test/src/test_main.dart' as app;
 
-/// Flutter integration test takes screenshots as files from the running app 'lib/test/src/example/lib/main.dart'
+/// Flutter integration test takes screenshots as files from the running app 'lib/test/src/test_main.dart'
 /// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
 /// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
 ///
@@ -33,7 +33,7 @@ import 'package:flutter_charts/test/src/example/main.dart' as app;
 ///   - Both main programs can reach to each other and communicate bath ways.
 ///
 /// Integration test steps:
-///   - This `--target` installs and runs 'main' of the example app in '../example/lib/main.dart' on the device,
+///   - This `--target` installs and runs 'main' of the example app in 'lib/test/src/test_main.dart' on the device,
 ///   - This '--target' extracts the set of examples to run and take screenshots from by
 ///       invoking [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine] in this code
 ///       ```dart
@@ -177,7 +177,7 @@ void main() {
       //            the screenshot two steps above.
       //            The loop that runs here ensures it moves to the next example as well,
       //            to capture the screenshot using the correct corresponding name.
-      //            This whole thing assumes that both this main(), and main() in examples/lib/src/main.dart
+      //            This whole thing assumes that both this main(), and main() in examples/lib/src/test_main.dart
       //            obtain and process the same  [extractExamplesDescriptorsFromDartDefine]!
       await tester.tap(floatingButton);
 

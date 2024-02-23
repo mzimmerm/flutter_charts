@@ -19,7 +19,7 @@
 # Private notes, todos, readme
 INTERNAL-GITIGNORE/
 
-#  Most of android and ios dirs are needed to run the example/lib/main.dart sample app (on android, not sure about Ios)
+#  Most of android and ios dirs are needed to run the example/main_run_doc_example.dart sample app (on android, not sure about Ios)
 # android
 # ios
 

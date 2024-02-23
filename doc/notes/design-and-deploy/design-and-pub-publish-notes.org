@@ -1996,14 +1996,19 @@ Use it in one example:
 *** IN-PROGRESS Steps to change the example and test directory structure
 
 1. [X] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
-2. [X] Move  example/lib/src/main.dart to ~lib/test/src/test_main.dart~
-3. [X] Use the above in test and integration_test instead of example/lib/src/main.dart
-4. [X] Change all run configurations to point to the above 
-6. [ ] ~LegendContainer~: In ~lib/test/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
-   - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
-   - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
-   - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
-7. [ ] Equivalent of 4. for ~LegendItemContainer~
+2. [X] Move example/lib/src/main.dart to ~lib/test/src/example/test_main.dart~
+3. [X] Move ~test/src/example/test_main.dart~ to ~test/src/test_main.dart~ 
+4. [X] Look for ~example/lib/main.dart~ AND ~example/lib/test_main.dart~ and change to ~test/src/test_main.dart~ (in comments to  ~lib/test/src/test_main.dart~)
+5. [X] Look for ~test_main.dart~ in comments and see if they are correct.
+6. [ ] Use the above in test and integration_test instead of example/lib/src/main.dart
+7. [X] Change all run configurations to point to the above 
+8. [ ] Move example/lib/src/main.dart to lib/test/src/test_main.dart
+9. [ ] Repeat item 1.
+10. [ ] ~LegendContainer~: In ~lib/test/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
+    - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
+    - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
+    - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
+11. [ ] Equivalent of 4. for ~LegendItemContainer~
 
 
 
