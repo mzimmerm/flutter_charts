@@ -28,17 +28,18 @@ version: 0.5.2+8
 
 # 2021-12-10 : Flutter channel stable has: Flutter 2.8.0, Dart 2.15.0
 # 2024-02-22 : Flutter channel stable has: Flutter 3.19.1, Dart 3.3.0
+# 2024-08-20 : Flutter channel stable has: Flutter 3.24.0, Dart 3.5.0, DevTools 2.37.2
 # sdk means Dart sdk version.
 environment:
   sdk: '>=2.17.0 <4.0.0'
-  # todo-00-last-last-done : sdk: '>=2.17.0 <3.0.0'
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on GitHub or local server.
 dependencies:
   flutter:
     sdk:  flutter
-  decimal: ^2.3.3
+  # todo-00-done-2024: decimal: ^2.3.3
+  decimal: ^3.0.0
   vector_math: ^2.1.4
   tuple: ^2.0.2
   # 2022-02-05 : Fix issue *Error: No named parameter with the name 'displayLarge'.* google_fonts: ^2.2.0
@@ -78,8 +79,10 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.1
-  lints: ^3.0.0 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
+  # todo-00-done-2024: flutter_lints: ^3.0.1
+  # todo-00-done-2024: lints: ^3.0.0 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
+  flutter_lints: ^4.0.0
+  lints: ^4.0.0 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
   # 2022-10-10 removed as flutter pub upgrade fails:: analyzer: ^2.8.0
 
 # For information on the generic Dart part of this file, see the
