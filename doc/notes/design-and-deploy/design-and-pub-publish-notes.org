@@ -117,7 +117,7 @@ First install dartdoc latest compatible with SDK:
 ~flutter pub global activate dartdoc~
 ** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
 ** ~git add .; git commit; git push~
-** ~git checkout master; git fetch; git pull; git merge flutter_charts_v2~
+** ~git checkout master; git fetch; git pull; git merge flutter_charts~
 ** ~git push origin master~
 ** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path to http
 ** ~flutter pub publish --dry-run~
@@ -2017,7 +2017,7 @@ ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png
 ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png
 
 #+begin_src bash :results raw
-  cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_expected/
+  cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_expected/
 
   # files='ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png   ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png   ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_lineChart.png'
 
@@ -2211,8 +2211,8 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 ** LATER ~BACKUPs~
 
 - [ ] Exclude from backups:
-  1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
-  2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
+  1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested # do it for flutter_charts*
+  2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/test/tmp (may already be, see above)
   3. 
 
 ** TODO FUTURE WORK
