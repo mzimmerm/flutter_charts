@@ -15,7 +15,7 @@ tool/test/run_all_tests.sh ex31_barChart_column_nonStacked_newAutoLayouter
 # Create screenshot - needs 'flutter drive' and --driver=integration_test.dart
 #+begin_src: sh
   # emulator required
-  flutter emulator --launch "Nexus_6_API_33"
+  flutter emulator --launch "Nexus_6_API_35"
 
   # Run allSupported tests
   flutter drive \
@@ -28,7 +28,7 @@ tool/test/run_all_tests.sh ex31_barChart_column_nonStacked_newAutoLayouter
 ** Misc
 
 # Launch the emulator
-flutter emulator --launch "Nexus_6_API_33"
+flutter emulator --launch "Nexus_6_API_35"
 
 # Create app template
 flutter create --template=app flutter_charts_app

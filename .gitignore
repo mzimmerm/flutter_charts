@@ -1,5 +1,5 @@
 # mz vvv
-# misc local ides
+# Ignore misc local ides, also .gnupg which is secret.
 .emacs.d/
 .emacs.d-psession/
 .emacs.d-desktop/
@@ -9,15 +9,20 @@
 .projectile
 .gnupg/
 
-# contents of the following folders is ignored via the special .gitignore in the folders
+# Note: contents of the following folders is ignored via the special .gitignore in the folders.
 #  - integration_test/screenshots_tested/
 #  - test/tmp
 
-# Emacs, maybe other edit lock files
+# Ignore Emacs, maybe other editors lock files, they are named starting with #.
 .\#*
 
 # Private notes, todos, readme
 INTERNAL-GITIGNORE/
+
+# Ignore my backup files of no interest.
+*mzchanged*
+*mzdel*
+
 
 #  Most of android and ios dirs are needed to run the example/main_run_doc_example.dart sample app (on android, not sure about Ios)
 # android
@@ -53,6 +58,9 @@ integration_test/screenshots_expected_server/
 #  .idea/libraries/Dart_Packages.xml
 #  .idea/misc.xml
 #  .idea/workspace.xml
+
+# gitignore-added-2025-01-01: Caches that idea keeps in android directory. 
+android/.idea/caches/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line

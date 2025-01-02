@@ -38,13 +38,13 @@ environment:
 dependencies:
   flutter:
     sdk:  flutter
-  # todo-00-done-2024: decimal: ^2.3.3
-  decimal: ^3.0.0
+  # todo-00-done-2025-01-01: decimal: ^3.0.0
+  decimal: ^3.1.0
   vector_math: ^2.1.4
   tuple: ^2.0.2
-  # 2022-02-05 : Fix issue *Error: No named parameter with the name 'displayLarge'.* google_fonts: ^2.2.0
   google_fonts: ^6.1.0
-  logger: ^2.0.2+1
+  # todo-00-done-2025-01-01: logger: ^2.0.2+1
+  logger: ^2.5.0
 
 # Example of dependency on another project: local, GitHub, locally hosted on own pub server on 8080,
 #
@@ -79,10 +79,10 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  # todo-00-done-2024: flutter_lints: ^3.0.1
-  # todo-00-done-2024: lints: ^3.0.0 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
-  flutter_lints: ^4.0.0
-  lints: ^4.0.0 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
+  # todo-00-done-2025-01-01:   flutter_lints: ^4.0.0
+  # todo-00-done-2025-01-01:   lints: ^4.0.0
+  flutter_lints: ^5.0.0
+  lints: ^5.1.1 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
   # 2022-10-10 removed as flutter pub upgrade fails:: analyzer: ^2.8.0
 
 # For information on the generic Dart part of this file, see the

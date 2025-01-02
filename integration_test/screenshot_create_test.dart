@@ -66,7 +66,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as app;
 ///    etc in individual `--dart-define` strings.
 ///    ```shell
 ///         cd dev/my-projects-source/public-on-github/flutter_charts
-///         flutter emulator --launch "Nexus_6_API_33"
+///         flutter emulator --launch "Nexus_6_API_35"
 ///         sleep 20
 ///         flutter clean
 ///         flutter pub upgrade

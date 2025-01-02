@@ -25,15 +25,24 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.flutter_charts"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+
+    // vvv mzchanged commented out and hard-fixed added based on android studio suggestion
+    ndkVersion = "27.0.12077973"
+    // ndkVersion = "25.1.8937393"
+    // ndkVersion flutter.ndkVersion
+    // ^^^
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // mzchanged 2025-01-01: sourceCompatibility JavaVersion.VERSION_1_8
+        // mzchanged 2025-01-01: targetCompatibility JavaVersion.VERSION_1_8
+        // mznote 2025-01-01: 18 is last supported when running "tool/test/run_all_tests.sh allSupported".
+        sourceCompatibility JavaVersion.VERSION_18
+        targetCompatibility JavaVersion.VERSION_18
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        // mzchanged 2025-01-01: jvmTarget = '1.8'
+        jvmTarget = '18'
     }
 
     sourceSets {
