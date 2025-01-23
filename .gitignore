@@ -59,7 +59,8 @@ integration_test/screenshots_expected_server/
 #  .idea/misc.xml
 #  .idea/workspace.xml
 
-# gitignore-added-2025-01-01: Caches that idea keeps in android directory. 
+# gitignore-added-2025-01-01: Caches that idea keeps. 
+.idea/caches/
 android/.idea/caches/
 
 # The .vscode folder contains launch configuration and tasks you configure in
