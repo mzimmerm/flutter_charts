@@ -97,5 +97,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/.cxx/Debug
 
-
+# Platforms related: Do not track desktop and web dirs for now
+linux/
+windows/
+macos/
+web/
