@@ -635,7 +635,8 @@ enum _GroupDescriptor {
 /// Encapsulates information needed to run `lib/test/src/test_main.dart` which are also
 /// needed in tests.
 ///
-/// The commonality of need in 2 places is the reason for placing outside the `example/lib` tree.
+/// The commonality of need in 2 places is the reason for placing outside
+/// the `lib/test` tree.
 ///
 class ExampleMainAndTestSupport {
 
