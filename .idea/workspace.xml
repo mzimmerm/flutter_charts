@@ -21,10 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/.metadata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,6 +208,8 @@
     &quot;Flutter.main.dart absoluteMinimumNew.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex10.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex30 - explicit y numbers, all small positives.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex71.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main_run_doc_example.dart.executor&quot;: &quot;Run&quot;,
     &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -255,7 +256,49 @@
       <recent name="$PROJECT_DIR$/test/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart absoluteMinimumNew">
+  <component name="RunManager" selected="Flutter.main.dart ex10">
+    <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -284,6 +327,11 @@
       <option name="arguments" value="ex31SomeNegativeValues barChart &quot;&quot; &quot;&quot; &quot;&quot;" />
       <option name="filePath" value="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref  (1)" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref " type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -533,11 +581,13 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Android App.Unnamed" />
       <item itemvalue="Dart Command Line App.AAA" />
       <item itemvalue="Dart Command Line App.Flutter-Driver-DOES-NOT-WORK" />
       <item itemvalue="Dart Command Line App.examples_descriptor" />
       <item itemvalue="Dart Command Line App.examples_descriptor_less_args" />
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref " />
+      <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref  (1)" />
       <item itemvalue="Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart" />
       <item itemvalue="Flutter.examples-descriptor as Flutter" />
       <item itemvalue="Flutter.main.dart" />
@@ -577,6 +627,11 @@
       <item itemvalue="Shell Script.run_core_new_integration_tests.sh" />
       <item itemvalue="Shell Script.run_one_create_then_validate_screenshot_test.sh" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Flutter.main_run_doc_example.dart" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="StructureViewFactory">
