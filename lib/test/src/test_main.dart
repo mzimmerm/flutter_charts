@@ -470,7 +470,7 @@ class MyLabelCommonOptions extends LabelCommonOptions {
 /// The enabler of widget changes in the main test app by the code in [ExampleWidgetCreator].
 /// 
 /// This enables support for each example ability to manipulate it's environment
-/// (by environment we mean the widgets in test_main.dart outside the chart).
+/// (by environment we mean the widgets in 'test_main.dart' outside the chart).
 /// 
 /// Some examples need to change widgets of the main test app that are not part of the Chart.
 /// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
@@ -513,7 +513,8 @@ class ExampleWidgetCreator {
     'Winter',
   ];
 
-  /// Support for each example manipulate it's environment - the widgets in test_main.dart outside the chart.
+  /// Support for each example manipulate it's environment - the widgets in
+  /// 'test_main.dart' outside the chart.
   ///
   /// [exampleSideEffects] contain simple text strings such as '>>' and '<<', which are when running examples,
   /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.

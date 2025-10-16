@@ -177,7 +177,7 @@ void main() {
       //            the screenshot two steps above.
       //            The loop that runs here ensures it moves to the next example as well,
       //            to capture the screenshot using the correct corresponding name.
-      //            This whole thing assumes that both this main(), and main() in examples/lib/src/test_main.dart
+      //            This whole thing assumes that both this main(), and main() in 'lib/test/src/test_main.dart'
       //            obtain and process the same  [extractExamplesDescriptorsFromDartDefine]!
       await tester.tap(floatingButton);
 

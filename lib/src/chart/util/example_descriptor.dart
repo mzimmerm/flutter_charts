@@ -91,7 +91,7 @@ enum ExampleEnum {
 /// Describes and generates properties of one example or a list of pre-configured chart examples.
 ///
 /// The pre-configured chart examples can be used in several places:
-///   - Run in the example app in `example/lib/src/test_main.dart`
+///   - Run in the example app in `lib/test/src/test_main.dart`
 ///   - Be integration tested for sameness of results (generated screenshots)
 ///     in `integration_test/screenshot_create_test.dart` and  `test/screenshot_validate_test.dart`.
 ///
@@ -632,7 +632,7 @@ enum _GroupDescriptor {
   
 }
 
-/// Encapsulates information needed to run `example/lib/src/test_main.dart` which are also
+/// Encapsulates information needed to run `lib/test/src/test_main.dart` which are also
 /// needed in tests.
 ///
 /// The commonality of need in 2 places is the reason for placing outside the `example/lib` tree.
