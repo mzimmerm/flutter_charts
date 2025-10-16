@@ -439,6 +439,9 @@ class ExampleHomePageState extends State<ExampleHomePage> {
         tooltip: floatingButtonTooltip,
         child: const Icon(Icons.add),
       ),
+      // Ensures the FAB is top-right aligned
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
     );
   }
 }
