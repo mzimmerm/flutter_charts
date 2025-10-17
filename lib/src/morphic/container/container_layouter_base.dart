@@ -1659,8 +1659,9 @@ abstract class PositioningBoxLayouter extends PositioningBoxContainer {
   /// is true.
   ///
   /// Layouters need to process correctly a situation with no children present,
-  /// by creating in layout methods such as [_layout_Post_NotLeaf_SetSize_FromPositionedChildren],
-  /// an origin-based point-size rectangle `positionedChildrenOuterRect` - which is the source for the [layoutSize].
+  /// by creating (in layout methods such as [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]),
+  /// an origin-based point-size rectangle `positionedChildrenOuterRect`
+  /// - which is the source for the [layoutSize].
   @override
   bool get isLeaf => false;
 }

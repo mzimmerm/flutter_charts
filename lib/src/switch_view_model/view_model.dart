@@ -21,8 +21,8 @@ import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view
 
 List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in CL');
 
-/// Classes (the only classes) that know about both new auto layout and old coded_layout
-/// classes.
+/// This class [SwitchChartViewModel] is the only class that knows about (depend on)
+/// both the new auto layout and the old coded_layout classes.
 ///
 /// The abstract view model has factory constructors that return the old coded_layout or the
 /// new auto-layout instances for bar chart view model or line chart view model,

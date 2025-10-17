@@ -1,5 +1,52 @@
 #+OPTIONS: toc:3
-#+TODO: TODO TODO-NEXT IN-PROGRESS IN-PROGRESS-NOW LATER EVEN-LATER HOLD DONE-THIS-ITERATION DONE NOTE
+#+TODO: TODO TODO-NOW TODO-NEXT IN-PROGRESS IN-PROGRESS-NOW LATER LATER-BUT-REVIEW-NEXT EVEN-LATER HOLD DONE-THIS-ITERATION DONE NOTE NOTE-RUNNING
+
+
+* TODO-NOW Go over this first if not empty
+
+* NOTE-RUNNING Current versions of software
+
+
+** For flutter_charts project 2025-10-17
+
+*** Gradle: 2025-10-17: 8.11
+
+mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts> ./android/gradlew --version
+
+------------------------------------------------------------
+Gradle 8.11
+------------------------------------------------------------
+
+Build time:    2024-11-11 13:58:01 UTC
+Revision:      b2ef976169a05b3c76d04f0fa76a940859f96fa4
+
+Kotlin:        2.0.20
+Groovy:        3.0.22
+Ant:           Apache Ant(TM) version 1.10.14 compiled on August 16 2023
+Launcher JVM:  1.8.0_462 (IcedTea 25.462-b08)
+Daemon JVM:    /usr/lib64/jvm/java-1.8.0-openjdk-1.8.0/jre (no JDK specified, using current Java home)
+OS:            Linux 6.17.1-1.0.4.sr20251001-default amd64
+
+
+
+*** AGP (Android Gradle plugin): 2025-10-17: 8.7.3
+
+AGP version is the string 8.7.3 in ~flutter_charts/android/gradle.properties~. NOTE that this section is for project settings defined by Kotlin DSL which I now use throughout (NOT groovy DSL)
+
+#+begin_src java
+
+  plugins {
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    id 'com.android.application' version '8.7.3' apply false
+    // id 'com.android.library' version '8.7.3' apply false
+    id 'org.jetbrains.kotlin.android' version '2.2.10' apply false
+}
+
+#+end_src
+
+*** Java: 2025-10-17: 21 (jbr-21)
+
+Go to project structure - SDK - java: jbr-21
 
 
 * NOTE Commands to run tests
@@ -7,6 +54,7 @@
 ** Eshell
 
 - setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh allSupported; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
 
 * TODO Bugs and issues - flutter_charts
 ** TODO The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
@@ -238,7 +286,7 @@ reason is, yLabels have 2 modes:
           // There are not that many, because pMin <= pMax and pDiff <= pMax.
           /* keep
           if (false && powerDiff < powerMin) {
-          // todo-00-github-issue-31 : Allow start Y axis from non-zero
+          //  Allow start Y axis from non-zero
           // todo 1 - enable conditions where y=0 axis is not needed to show,
           //          to allow for details, mainly for lots of values.
           //          Make an option for this. Add to tests.
@@ -443,8 +491,6 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] push
   - [X] remove UNUSED methods
   - [X] remove or rename obsolete comments
-  - [X] Address todo-00-later-document 
-  - [X] Address todo-00-later-not-used
   - [X] Make YScaler members and methods private
   - [X] Remove YScaler member dataYsEnvelop
 **** DONE Refactor ChartOptions so the same class applies for both LineChart and BarChart
@@ -990,11 +1036,6 @@ Also:
 ****** TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
 **** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
 **** TODO ~Finish moving ChartOptions entirely to ChartData
-*** EVEN-LATER Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00 there
-*** EVEN-LATER If line chart, add option that allows to start on non-zero
-    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-    - test  on values like 10,000 - 11,000.
-    -
 *** EVEN-LATER Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
 This needs entity model change:
 - current ChartData and ChartOptions are kept on ChartRootContainer
@@ -1031,32 +1072,65 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 **** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
 
 *** EVEN-LATER Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-** NOTE 1. Containers and Container-like classes overview
+** NOTE 1. Documentation: Containers and Container-like classes overview
 
-- ~ChartContainer~
-  - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
-  - ~LegendContainer~ extends ChartAreaContainer 
-    - has List<LegendItemContainer> _legendItemContainers  // is container, checked all the way down
-  - ~YContainer~
-    - has List<AxisLabelContainer> _yLabelContainers; // is container, checked all the way down
-  - ~XContainer~ 
-    - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
-  - ~GridLinesContainer~ todo-00
-  - ~DataContainer~
-    - has ~GridLinesContainer~ _xGridLinesContainer; // is container, checked all the way down
-    - has ~GridLinesContainer~ _yGridLinesContainer; // is container, checked all the way down
-    - has ~PresentersColumns~ presentersColumns (is List<PresentersColumn>; // NOT a container
-      - ~PresentersColumns~ // NOT a container
-        - During constructions, calls self(CustomList).add(PresentersColumn)
-      - ~PresentersColumn~  //  NOT a container 
-        - ~List<Presenter> presenters;~
-        - During construction, calls ~_createPresentersInColumn~
-          - accepts:
-            - ~PointsColumn~ // END. NOT a container
-              - has ~List<StackableValuePoint> points;~
-            - OR
-            - ~List<StackableValuePoint> fromPoints,~
-          - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
+todo-01: clarify documentation of layouter vs container
+
+generally:
+
+- Layouter extends Container
+- Layouter is a Container and nothing more (so maybe Layouters should be removed)
+- Layouter sets ~isLeaf~ to false to express it should have children.
+
+
+*** Auto-Layout
+
+**** BoxContainer and extensions
+
+- ~BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager~
+  - members or set from constructor
+    - ~key~ (implement Keyed)
+    - ~children~ (to set BoxContainerHierarchy.__children)
+    - ~constraintsWeight~
+    - ~sandbox~
+    
+  - extended by ~PositioningBoxContainer extends BoxContainer~
+    - allowed to position children; to achieve that, is passed required ~constraintsWeight~ which is used to position children
+  - extended by ~PositioningBoxLayouter extends PositioningBoxContainer~
+    - ONLY sets ~isLeaf~ to false
+      
+  - extended by ~NonPositioningBoxLayouter extends BoxContainer~
+    - sets ~isLeaf~ to false
+
+    - Overrides ~layout_Post_NotLeaf_PositionChildren~ which does NOT change children positions
+
+    - Overrides ~_layout_Post_NotLeaf_OffsetChildren~ with no-op so chidren positions are  NOT changed
+
+
+
+
+
+todo-01 document further extensions: ANYTHINGContainer, concentrate on DataContainer
+
+*** COMMENT Coded Layout
+
+- ~ChartRootContainerCL~
+  - extended by ~BarChartRootContainerCL~ and ~LineChartRootContainerCL~ extends ~ChartRootContainerCL~ implements ~ChartRootContainer~
+  - members
+    #+begin_src java
+      @override
+      late LegendContainer legendContainer;
+      @override
+      late HorizontalAxisContainerCL horizontalAxisContainer;
+      @override
+      late OutputAxisContainerCL verticalAxisContainer;
+      @override
+      late OutputAxisContainerCL verticalAxisContainerFirst;
+      @override
+      late DataContainerCL dataContainer;
+    #+end_src
+
+    todo-01 document the contained containers.
 
 ** DONE 2. Implement new Layouter algorithm
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
@@ -1091,7 +1165,7 @@ Thoughts:
 *TAKEAWAY 4*: - see RenderWrap (extends RenderBox extends RenderObject) - this seems to have lots of interesting stuff
 See also: ~childSize = layoutChild(child, childConstraints);~
 
-*TAKEAWAY 5*: computeDryLayout(Constraints) / getDryLayout(Constraints) - This method should return the [Size] that this [RenderBox] would like to be given the provided [BoxConstraints]. This layout is called "dry" layout as opposed to the regular "wet" layout run performed by [performLayout] because it computes the desired size for the given constraints without changing any internal state.
+*TAKEAWAY 5*: ~computeDryLayout~ (Constraints) / ~getDryLayout~ (Constraints) - This method should return the [Size] that this [RenderBox] would like to be given the provided [BoxConstraints]. This layout is called "dry" layout as opposed to the regular "wet" layout run performed by [performLayout] because it computes the desired size for the given constraints without changing any internal state.
 
 #+begin_src dart
 
@@ -1114,7 +1188,7 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   /// Given the constraints passed to layout, suggest how they should be distributed to children.
   /// This is layout specific. Most layouts will suggest for each child, the full constrains passed to it!
   /// Only if children are greedy and take too much, this is called again
-  void step11SetConstraintsOnChildrenFromMy(Constraints myConstraints) { /* todo-00-last */ };
+  void step11SetConstraintsOnChildrenFromMy(Constraints myConstraints) { /* later */ };
 
   /// side effects:
   /// - Set child.size on all children
@@ -1125,16 +1199,16 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   }
 
   /// Final constraints set on children
-  void step21DistributeConstraintsOnChildrenBasedOnDesiredSizes() { /* todo-00-last */ };
+  void step21DistributeConstraintsOnChildrenBasedOnDesiredSizes() { /* later */ };
 
   /// Final sizes determination
-  void step22AskChildrenToSetFinalSizesWithinTheirConstraints() { /* todo-00-last */ };
+  void step22AskChildrenToSetFinalSizesWithinTheirConstraints() { /* later */ };
 
   /// Final layout step
-  void step23OffsetChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize() { /* todo-00-last */ };
+  void step23OffsetChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize() { /* later */ };
 
   // Final apply parent offset
-  void step24ApplyParentOffsetsOnChildren() { /* todo-00-last */ };
+  void step24ApplyParentOffsetsOnChildren() { /* later */ };
 
 
   /// Layout means to establish size of this component and offset it in parent.
@@ -1291,10 +1365,6 @@ Created in the above LegendItemContainer.build
   - [X] Test it on some combinations in legend layout
     - [X] nested Align.end on Row
     - [X] we also have Column example to test
-- [X] One remaining todo-00-last-last
-  - [X] Find problem or comment
-  - [X] Make sure Tests work
-  - [X] Commit and push
 - [X] Add ability in LegendContainer to create example with several different layouts of ~LegendContainer~
   - [X] We need the ability to define different layout examples for LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
     - [X] Pushing: via ChartOptions.legendOptions
@@ -1516,84 +1586,8 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** DONE KEEP FOR NOW ONLY : BoxContainer extensions : Setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
-Setting up container hierarchy is crucial, as the ~newCoreLayout~ and methods called from it, iterate over ~children~ in ~applyParentOffset~.
-
-Result of this step will be a double-presence of children on the chart BoxContainer extensions:
-
-1. In members such as ChartRootContainer.legendContainer (.xContainer, .yContainer, .dataContainer)
-
-2. In BoxContainer.children
-
-
-Item 1) above is used for direct addressing in existing code, 2) above for iteration and recursion when called from ~newCoreLayout~
-
-
-Details of parent/child relationship establishment:
-
-
-1. [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
-2. [X] Which containers to convert to hierarchy?
-   - [X] ~LegendContainer~ - contains LegendItemContainers children
-     - Had member  ~_legendItemContainers~ for children. 
-     - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
-     - Removed member ~_legendItemContainers~
-     - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
-   - [X] ~LegendItemContainer~ - contains ~LabelContainer~
-     - Had single child member named ~_labelContainer~
-     - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
-     - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
-   - [X] LabelContainer - has no container children, so no changes
-3. [X] Fully converted to new layout - no manual layout used:
-   - [X] LegendContainer
-   - [X] LegendItemContainer
-   - [X] LegendIndicatorRectContainer  
-   - [X] LabelContainer
-   - [X] AxisLabelContainer  : converted bc it is thin extension of LabelContainer
-4. [X] Add ~BoxContainerUsingManualLayout~  which throws exception from ~post_NotLeaf_PositionChildren~. Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
-5. [X] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~ and *extend from it all classes that extend ChartAreaContainer EXCEPT LegendContainer*
-6. [X] Make these extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
-   - [X] ChartRootContainer
-   - [X] ChartAreaContainerUsingManualLayout
-   - [X] YContainer                            (via extends ChartAreaContainerUsingManualLayout)
-   - [X] XContainer                            (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout)
-   - [ ] GridLinesContainer : todo-00
-   - [X] DataContainer                         (via extends ChartAreaContainerUsingManualLayout)
-   - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainerUsingManualLayout)
-   - [X] BarChartRootContainer         (via extends ChartRootContainer)
-   - [X] BarChartDataContainer         (via extends DataContainer)
-   - [X] LineChartRootContainer                (via extends ChartRootContainer)
-   - [X] LineChartDataContainer                (via extends DataContainer)
-
-
-Core of setting up BoxContainer parent/child hierarchy:
-
-- [X] NO WAY POSSIBLE : EITHER X OR Y CONTAINER MYST BE LAYED OUT TWICE UNLESS WE WANT TO USE SOME HARDCODED WIDTH OF Y CONTAINER OR HEIGHT OF X CONTAINER! Try to get rid of yContainerFirst
-- [X] ~layout~ code, changes:
-  - ~List<BoxContainer> children = []; // todo-00-last-done~
-  - after creating each child, ~children.add(child; // todo-00-last-done~
-  - at the end, ~this.children = children; // todo-00-last-done~ to set children on self
-  - Keep the original members for children, clean that up later. 
-- [X] Do ~layout~ changes on:
-  - [X] ChartRootContainer
-  - [X] ChartAreaContainerUsingManualLayout : no layout method, so no change
-  - [X] YContainer
-  - [X] XContainer
-  - [X] GridLinesContainer
-  - [X] DataContainer
-  - [X] AdjustableLabelsChartAreaContainer :  no layout method, so no change
-  - [X] BarChartRootContainer :  no layout method, so no change
-  - [X] BarChartDataContainer :  no layout method, so no change
-  - [X] LineChartRootContainer:  no layout method, so no change
-  - [X] LineChartDataContainer:  no layout method, so no change
-- [X] Test everything.
-
-
-
-
-
-*** DONE KEEP : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
+*** DONE KEEP - contains valuable algorithmic notes : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
 
 **** NOTE Algorithm of old manual ~layoutOLD~
 
@@ -1647,91 +1641,13 @@ Notes:
 
 
 
-*** DONE Remove buildContainerOrSelf from interface. Convert it to private methods _createChildrenOfAAA() called from BoxContainer constructors.
 
-**** DONE Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
+*** TODO-NOW todo-00 Go over coded_layout classes and ensure they are named CL and NOT used outside coded_layout
 
-// todo-00-last : 
-
-1. buildContainerOrSelf can be
-   - [X] made private non-interface _buildContainerOrSelf, AND passed to constructor by adding parameter children: _buildContainerChildrenOrSelf
-     - [X] _buildContainerChildrenOrSelf should remove the list of containers created in it, such as [legendContainer, xContainer, etc]
-     - [X] _buildContainerChildrenOrSelf : remove ~setChildrenAndMakeSelfParent~, this is done in [BoxContainer] constructor if ~children~ are passed
-     - 
-
-**** DONE Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children. Remove this.children setter
-
-1. [X] List classes that use ~buildContainerOrSelf~, move contents to constructor
-2. [X] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
-3. [X] remove ~buildContainerOrSelf~ from comments
-4. [X] Remove ~this.children~ from code and everywhere. Any consequences???? Look at ChartRootContainer returning [legendContainer, yContainer, etc]
-5. [X] run minitest 
-
-**** DONE BoxContainerHierarchy make __children private delegater, and protect the returned get _children as copy of List(__children) 
-
-
-- [X] Change BoxContainer.children to __children
-- [X] Split the children to set children and get children.
-- [X] get _children is public
-- [X] ACTUALLY NOT NEEDED AT ALL! set _children is private
-- [X] getter returns a copy of __children, NOT __children
-- [X] minitest
-
-It seems both getter and setter can remain private, good.
-
-**** DONE Go over setting ~parent~ and rationalize
-
-- [X] never set parent in code, except default code in container_base, and addChildren setting up parent on children.
-- [X] minitest AND test
-- [X] commit and push
-- [X] remove all commented out parent code
-- [X] minitest
-- [X] rename parent to _parent
-- [X] minitest
-- [X] commit and push
-
-
-
-**** DONE NO Can we make ~ensureKeyedMembersHaveUniqueKeys~ private?
-
-
+- [ ] All classes in  coded_layout make CL. Concentrate on all 'presenter.dart' files
+- [ ] Ensure no CL class used outside coded_layout, maybe with minor well defined exceptions
 
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
-
-
-*** LATER Migrate to [BoxContainer] container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
-
-
-Classes with X are BoxContainers with layout implemented
-
-- [X] ~ChartRootContainer~
-  - [X] ~BarChartRootContainer~
-  - [X] ~LineChartRootContainer~
-- [X] ~LabelContainer~ and extensions : all use BoxContainer.layout 
-  - [X] ~AxisLabelContainer~
-  - [X] ~YAxisLabelContainer~
-- [-] ~ChartAreaContainer~ : abstract, uses Presenters
-  - [X] ~AdjustableLabelsChartAreaContainer~ extends ChartAreaContainer implements AdjustableLabels
-    - [X] ~XContainer~
-  - [X] ~DataContainer~
-    - [X] ~LineChartDataContainer~
-    - [X] ~BarChartDataContainer~
-  - [X] ~LegendContainer~
-  - [X] ~YContainer~
-- [ ] ~GridLinesContainer~
-- [ ] ~LineContainer~ (*has no extensions*!)
-    - NOT fully migrated, because ~layout~ is never called. This waits for full automatic layout on everything!!
-- [ ] Presenter
-- [ ] PresentersColumn
-- [ ] PresentersColumn._createPresentersInColumn
-- [ ] PresentersColumns
-- [ ] VerticalBarPresenter
-- [ ] LineAndHotspotPresenter
-- [ ] PresenterCreator.createPointPresenter
-- [ ] LineAndHotspotLeafCreator.createPointPresenter
-- [ ] VerticalBarLeafCreator.createPointPresenter
-- [ ] DefaultIterativeLabelLayoutStrategy
-
 
 *** LATER Make sure each BoxContainer has a key, unique key among siblings
 
@@ -1739,7 +1655,7 @@ This is achieved by first ensuring the BoxContainer children have unique keys:
 
 - [X] Achieve in BoxContainer constructor:
   - [X] If key not passed, generate random key for the constructed BoxContainer
-  - [X] Either way, ensureKeydMembersHaveUniqueKeys is called just after, to ensure the passed [children] or the single child from [buildContainerOrSelf] has a unique key
+  - [X] Either way, ~ensureKeyedMembersHaveUniqueKeys()~ is called just after, to ensure the passed [children] or the single child from [buildContainerOrSelf] has a unique key
 
 
 We also add a 'convenience' application support that allows to *give name* to BoxContainer.children, and access each child by the *name*
@@ -1970,7 +1886,7 @@ Use it in one example:
   - [X] Add data with 12 series
 - [X] Add to run configurations, ex800
 - [X] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
-- [X] Finish the todo-00!!!
+- [X] Finish the todos
 - [X] Test ex800 from IntelliJ
 
 
@@ -1984,7 +1900,7 @@ Use it in one example:
 - [X] Add ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~ first empty, then add lines in the same positions asmiddle of labels . *study how to externally position the lines - use the same layouter*
 - [X] Add ~TransposingGrid~ container, which has child ~TransposingStackLayouter~, with 2 children, ~TransposingInputValuesGrid~ (perpendicular to TransposingInputAxis) and ~TransposingOutputValuesGrid~
 - [X] Test with TransposingGrid is empty! (rather the input/output gridlines have no children) *results should not change*
-- [X] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels. ~todo-00~ continue design here.
+- [X] Add (first only) TransposingInputValuesGrid, which has lines layed out using ExternalTicksColumn. Must use same layout as labels.
 - [X] *study how to externally position the lines in middle of labels - use the same layouter: use the highlighted: On InputAxis*
 - [X] For line chart, grid lines in the middle. For bar chart, grid lines around bars
   
@@ -2196,7 +2112,7 @@ Thoughts on descriptive format of such layout templates:
   
 
 
-** LATER Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
+** LATER-BUT-REVIEW-NEXT Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
 
 ~Cleanup places using public late final fields~
 
@@ -2205,7 +2121,7 @@ See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-withou
 ~use package imports (no relative imports)~
 
 See https://dart.dev/tools/linter-rules#always_use_package_imports 
-** LATER ~BACKUPs~
+** LATER-BUT-REVIEW-NEXT ~BACKUPs~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested # do it for flutter_charts*
@@ -2392,3 +2308,7 @@ For example, we can define:
   +--------------------+----------------------------------------------+
 
 #+END_SRC
+
+
+
+

@@ -65,9 +65,12 @@ class LegendContainer extends chart_legend.LegendContainer {
         );
         break;
       case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-      // wrap second item to [container_base.Greedy] to test container_base.Greedy layout
+        // Each child is LegendItemContainer.
+        // Wrap the second child (second item in legend) to [container_base.Greedy]
+        // to test container_base.Greedy layout. It is mildly confusing we manipulate children here again.
         children[1] = container_base.Greedy(child: children[1]);
         legendSingleChildLayouter = container_base.Row(
+          // This implements legendIsRowStartTight
           // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside container_base.Greedy
           //       remains start + tight. That make sense, as container_base.Greedy is not-positioning.
           //       If we wanted to center the LegendItem inside of container_base.Greedy, wrap the inside into Center.
@@ -194,6 +197,9 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
         );
         break;
       case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
+        // This implements 'ItemIsRowStartTight'.
+        // The 'SecondGreedy' part is implemented during LegendContainer creation by
+        // wrapping the second child in Greedy
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
@@ -226,8 +232,8 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
   }
 
 
-  /// Returns a  a 2-member list with item indicator and label which caller wraps typically in a [container_base.Row]
-  /// or a [container_base.Column]
+  /// Returns a  a 2-member list with item indicator and label which caller wraps
+  /// typically in a [container_base.Row] or a [container_base.Column]
   ///
   /// Invokes super to get the containers, then pads or wraps them
   /// according to passed [doPadIndAndLabel] and [doAlignIndAndLabel].

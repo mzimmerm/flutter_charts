@@ -28,7 +28,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 /// - [TransposingInputAxisLabels] - Equivalent to [TransposingOutputAxisLabels], but manages the input labels.
 /// - [DataContainer] and extensions - manages the area which displays:
 ///   - Data as bar chart, line chart, or other chart type.
-///   - Grid (this includes the X and Y axis).
+///   - Grid (this includes the X anCLd Y axis).
 ///
 /// See [BoxContainer] for discussion of roles of this class.
 /// This extension of  [BoxContainer] has the added ability
