@@ -400,7 +400,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 ///     this object to be created by diagonal transpose of the [ChartModel.dataRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
-/// Note: [PointsBarModel] replaces the [PointsColumn] in legacy layouter.
+/// Note: [PointsBarModel] replaces the [PointsColumnOCL] in legacy layouter.
 ///
 @immutable
 class PointsBarModel {
@@ -629,7 +629,7 @@ abstract class BasePointModel {
 /// Represents one data point in the chart data model [ChartModel] and related model classes.
 ///
 /// Notes:
-///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
+///   - [PointModel] replaces the [StackableValuePointOCL] in legacy layouter.
 ///   - Has private access to the outer [ChartModel] to which it belongs through it's member [outerPointsBarModel],
 ///     which in turn has access to [ChartModel] through it's private [PointsBarModel]
 ///     member `PointsBarModel._chartModel`.

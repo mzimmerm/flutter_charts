@@ -5,18 +5,18 @@ import 'package:flutter_charts/src/coded_layout/chart/container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
-/// PointPresenter of the atomic/leaf element of one data point on the
+/// PointPresenterOCL of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
 /// for which it calculates size and color.
 ///
-/// See [PointPresenter].
-class VerticalBarPointPresenter extends PointPresenter {
+/// See [PointPresenterOCL].
+class VerticalBarPointPresenter extends PointPresenterOCL {
   late ui.Rect presentedRect;
   late ui.Paint valuesRowPaint;
 
   VerticalBarPointPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
+    required StackableValuePointOCL point,
+    StackableValuePointOCL? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartViewModel chartViewModel,
   }) : super(
@@ -44,14 +44,14 @@ class VerticalBarPointPresenter extends PointPresenter {
 /// Creator of the [VerticalBarPointPresenter] instances - the leaf visual
 /// elements on the bar chart (rectangle one data value).
 ///
-/// See [PointPresenterCreator].
-class VerticalBarLeafPointPresenterCreator extends PointPresenterCreator {
+/// See [PointPresenterCreatorOCL].
+class VerticalBarLeafPointPresenterCreator extends PointPresenterCreatorOCL {
   VerticalBarLeafPointPresenterCreator() : super();
 
   @override
-  PointPresenter createPointPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
+  PointPresenterOCL createPointPresenter({
+    required StackableValuePointOCL point,
+    StackableValuePointOCL? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartViewModel chartViewModel,
   }) {

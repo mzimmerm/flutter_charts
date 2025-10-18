@@ -44,11 +44,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// This column grouped data instance is managed here in the [DataContainerCL],
   /// as their data points are needed both during [OutputAxisContainerCL.layout]
   /// to calculate extrapolating, and also here in [DataContainerCL.layout] to create
-  /// [PointPresentersColumns] instance.
+  /// [PointPresentersColumnsOCL] instance.
   ///
   /// Moved here on [DataContainerCL] from [ChartModel]. While this is strictly speaking a model legacy coded_layout
   /// system, the only use is on this [DataContainerCL] so it is a good place to hold it.
-  late PointsColumns pointsColumns;
+  late PointsColumnsOCL pointsColumns;
 
 
   /// Container of gridlines parallel to X axis.
@@ -63,7 +63,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// - points and lines in line chart
   /// - bars (stacked or grouped) in bar chart
   ///
-  late PointPresentersColumns pointPresentersColumns;
+  late PointPresentersColumnsOCL pointPresentersColumns;
 
   /// Overridden builds children of self [DataContainerCL], the [_verticalGridLinesContainer] and [_horizontalGridLinesContainer]
   /// and adds them as self children.
@@ -201,31 +201,31 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // draw vertical grid
     _verticalGridLinesContainer.applyParentOffset(this, offset);
 
-    // Create, layout, then offset, the 'data container' replacement - the [PointPresentersColumns].
-    // The [PointsColumns] and [PointPresentersColumns] are the OLD NOT EXACTLY EQUIVALENT manual way of creating
-    // model [PointsColumns] which is created, and layed out by extrapolating,
-    // and container [PointPresentersColumns] which is painted.
+    // Create, layout, then offset, the 'data container' replacement - the [PointPresentersColumnsOCL].
+    // The [PointsColumnsOCL] and [PointPresentersColumnsOCL] are the OLD NOT EXACTLY EQUIVALENT manual way of creating
+    // model [PointsColumnsOCL] which is created, and layed out by extrapolating,
+    // and container [PointPresentersColumnsOCL] which is painted.
     // So in the old way, the model is layed out, the container is created from the layed out model, then painted.
-    _createLayoutOffset_PointsColumns_Model_Then_Create_PointsPresentersColumns(offset);
+    _createLayoutOffset_PointsColumnsOCL_Model_Then_Create_PointsPresentersColumns(offset);
   }
 
-  void _createLayoutOffset_PointsColumns_Model_Then_Create_PointsPresentersColumns(ui.Offset offset) {
+  void _createLayoutOffset_PointsColumnsOCL_Model_Then_Create_PointsPresentersColumns(ui.Offset offset) {
     // Create, layout, then offset, the 'data container':
 
-    // This section is doing the following:
-    // 1. Creates the 'data container', represented here by [PointsColumns]
+    // This section performs the following steps:
+    // 1. Creates the 'data container', represented here by [PointsColumnsOCL]
     // 2. Layouts the 'data container' by [_affmapPointsColumns].
-    // 3. Applies this parent offset on the 'data container' [PointsColumns].
-    //    This offsets the 'data container' [PointsColumns] to the right of the Y axis,
+    // 3. Applies this parent offset on the 'data container' [PointsColumnsOCL].
+    //    This offsets the 'data container' [PointsColumnsOCL] to the right of the Y axis,
     //    and to the top of the X axis.
-    // 4. Creates the 'view model', represented here by [PointPresentersColumns],
+    // 4. Creates the 'view model', represented here by [PointPresentersColumnsOCL],
     //    and set it on [pointPresentersColumns].
-    // 5. LATER, in [paint], paints the  'view model', represented here by [PointPresentersColumns]
+    // 5. LATER, in [paint], paints the  'view model', represented here by [PointPresentersColumnsOCL]
 
     // 1. From the [ChartViewModel] create the 'data container'
-    //    (the [PointsColumns], which represent the list of columns on chart), and late bind to instance [pointsColumns]
-    //    The coordinates in [PointsColumns] are relative - 0 based
-    pointsColumns = PointsColumns(
+    //    (the [PointsColumnsOCL], which represent the list of columns on chart), and late bind to instance [pointsColumns]
+    //    The coordinates in [PointsColumnsOCL] are relative - 0 based
+    pointsColumns = PointsColumnsOCL(
       chartViewModel: chartViewModel,
       pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
       isStacked: chartViewModel.chartStacking.isStacked,
@@ -238,14 +238,14 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
     _affmapPointsColumns();
 
-    // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
+    // 3. Apply offset to the lines and bars (the 'data container' [PointsColumnsOCL]).
     pointsColumns.applyParentOffset(this, offset);
 
-    // 4. Create the 'view model', represented here by [PointPresentersColumns],
+    // 4. Create the 'view model', represented here by [PointPresentersColumnsOCL],
     //    and set it on [pointPresentersColumns].
-    //    Note: The 'view model' [PointPresentersColumns] is created from the [PointsColumns],
+    //    Note: The 'view model' [PointPresentersColumnsOCL] is created from the [PointsColumnsOCL],
     //          'data container'.
-    pointPresentersColumns = PointPresentersColumns(
+    pointPresentersColumns = PointPresentersColumnsOCL(
       pointsColumns: pointsColumns,
       chartViewModel: chartViewModel,
       pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
@@ -257,7 +257,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Note that the super [paint] remains not implemented in this class.
   /// Superclasses (for example the line chart data container) should
   /// call this method at the beginning of it's [paint] implementation,
-  /// followed by painting the [PointPresenter]s in [_drawPointPresentersColumns].
+  /// followed by painting the [PointPresenterOCL]s in [_drawPointPresentersColumns].
   ///
   void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
@@ -273,7 +273,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// currently the [LineChartDataContainerCL] and the [BarChartDataContainerCL].
   void _drawPointPresentersColumns(ui.Canvas canvas);
 
-  /// Paints grid lines, then paints [PointPresentersColumns]
+  /// Paints grid lines, then paints [PointPresentersColumnsOCL]
   @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
@@ -284,7 +284,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   //       and [pointPresentersColumns]
 
   /// Scales all data stored in leafs of columns and rows
-  /// as [StackableValuePoint]. Depending on whether we are layouting
+  /// as [StackableValuePointOCL]. Depending on whether we are layouting
   /// a stacked or unstacked chart, extrapolating is done on stacked or unstacked
   /// values.
   ///
@@ -299,7 +299,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// vs last to first which is default).
   ///
   /// See [DataContainerOptions.dataRowsPaintingOrder].
-  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
+  List<PointPresenterOCL> optionalPaintOrderReverse(List<PointPresenterOCL> pointPresenters) {
     var options = chartViewModel.chartOptions;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       pointPresenters = pointPresenters.reversed.toList();
@@ -374,13 +374,13 @@ class BarChartDataContainerCL extends DataContainerCL {
   /// or bars/columns, stacked or grouped (on the bar/column charts).
   @override
   void _drawPointPresentersColumns(ui.Canvas canvas) {
-    PointPresentersColumns pointPresentersColumns = this.pointPresentersColumns;
+    PointPresentersColumnsOCL pointPresentersColumns = this.pointPresentersColumns;
 
-    for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
+    for (PointPresentersColumnOCL pointPresentersColumn in pointPresentersColumns) {
 
       var positivePointPresenterList = pointPresentersColumn.positivePointPresenters;
       positivePointPresenterList = optionalPaintOrderReverse(positivePointPresenterList);
-      for (PointPresenter pointPresenter in positivePointPresenterList) {
+      for (PointPresenterOCL pointPresenter in positivePointPresenterList) {
         bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
@@ -390,7 +390,7 @@ class BarChartDataContainerCL extends DataContainerCL {
 
       var negativePointPresenterList = pointPresentersColumn.negativePointPresenters;
       negativePointPresenterList = optionalPaintOrderReverse(negativePointPresenterList);
-      for (PointPresenter pointPresenter in negativePointPresenterList) {
+      for (PointPresenterOCL pointPresenter in negativePointPresenterList) {
         bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
@@ -420,10 +420,10 @@ class LineChartDataContainerCL extends DataContainerCL {
   @override
   void _drawPointPresentersColumns(ui.Canvas canvas) {
     var pointPresentersColumns = this.pointPresentersColumns;
-    for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
+    for (PointPresentersColumnOCL pointPresentersColumn in pointPresentersColumns) {
       var pointPresenterList = pointPresentersColumn.pointPresenters;
       pointPresenterList = optionalPaintOrderReverse(pointPresenterList);
-      for (PointPresenter pointPresenter in pointPresenterList) {
+      for (PointPresenterOCL pointPresenter in pointPresenterList) {
         line_presenters.LineAndHotspotPointPresenter pointPresenterCast = pointPresenter as line_presenters.LineAndHotspotPointPresenter;
         canvas.drawLine(
           pointPresenterCast.lineContainer.lineFrom,

@@ -249,7 +249,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
 
 }
 
-mixin PixelRangeProvider on ChartAreaContainer {
+mixin PixelRangeProviderOCL on ChartAreaContainer {
 
   /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainerCL].
   ///
@@ -296,11 +296,11 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// Stacking management:
 /// - This object does not manage it's stacking,
 ///   stacking is delegated to the container that manages this object along with
-///   values before (below) and after (above). The managing object is [PointsColumn].
-class StackableValuePoint {
+///   values before (below) and after (above). The managing object is [PointsColumnOCL].
+class StackableValuePointOCL {
 
   /// The generative constructor of objects for this class.
-  StackableValuePoint({
+  StackableValuePointOCL({
     required this.xLabel,
     required this.dataY,
     required this.valuesRowIndex,
@@ -324,12 +324,12 @@ class StackableValuePoint {
   /// **ANY [dataYs] are 1. transformed, then 2. potentially stacked IN PLACE, then 3. potentially extrapolated IN A COPY!!**
   late final double dataY;
 
-  /// The index of this point in the [PointsColumn] containing this point in it's
-  /// [PointsColumn.stackableValuePoints] list.
+  /// The index of this point in the [PointsColumnOCL] containing this point in it's
+  /// [PointsColumnOCL.stackableValuePoints] list.
   late final int valuesRowIndex; // series index
 
-  /// The predecessor point in the [PointsColumn] containing this point in it's [PointsColumn.stackableValuePoints] list.
-  StackableValuePoint? predecessorPoint;
+  /// The predecessor point in the [PointsColumnOCL] containing this point in it's [PointsColumnOCL.stackableValuePoints] list.
+  StackableValuePointOCL? predecessorPoint;
 
   /// True if data are stacked.
   bool isStacked = false;
@@ -369,7 +369,7 @@ class StackableValuePoint {
   /// See [scaledFrom].
   ui.Offset scaledTo = ui.Offset.zero;
 
-  StackableValuePoint stack() {
+  StackableValuePointOCL stack() {
     isStacked = true;
 
     // todo-1 validate: check if both points y have the same sign or both zero
@@ -384,7 +384,7 @@ class StackableValuePoint {
   /// Points are constructed unstacked. Depending on chart type,
   /// a later processing can stack points using this method
   /// (if chart type is [ChartRootContainerCL.isStacked].
-  StackableValuePoint stackOnAnother(StackableValuePoint? predecessorPoint) {
+  StackableValuePointOCL stackOnAnother(StackableValuePointOCL? predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
     return stack();
   }
@@ -400,9 +400,9 @@ class StackableValuePoint {
   /// For this reason, the [scaledX] value must be *already extrapolated*!
   /// The provided [scaledX] value should be the
   /// "within [ChartPainter] absolute" x coordinate (generally the center
-  /// of the corresponding x label).
+  /// of the corresponding X label).
   ///
-  StackableValuePoint affmapToPixels({
+  StackableValuePointOCL affmapToPixels({
     required double scaledX,
     required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
   }) {
@@ -436,7 +436,7 @@ class StackableValuePoint {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on extrapolated values, those have chart coordinates that are painted.
 
-    // not needed to offset : StackableValuePoint predecessorPoint;
+    // not needed to offset : StackableValuePointOCL predecessorPoint;
 
     /// Scaled values represent screen coordinates, apply offset to all.
     scaledFrom += offset;
@@ -446,15 +446,15 @@ class StackableValuePoint {
   /// Copy - clone of this object unstacked. Does not allow to clone if
   /// already stacked.
   ///
-  /// Returns a new [StackableValuePoint] which is a full deep copy of this
+  /// Returns a new [StackableValuePointOCL] which is a full deep copy of this
   /// object. This includes cloning of [double] type members and [ui.Offset]
   /// type members.
-  StackableValuePoint unstackedClone() {
+  StackableValuePointOCL unstackedClone() {
     if (isStacked) {
       throw Exception('Cannot unstackedClone if already stacked');
     }
 
-    StackableValuePoint unstackedClone = StackableValuePoint(
+    StackableValuePointOCL unstackedClone = StackableValuePointOCL(
       chartViewModel: chartViewModel,
       xLabel: xLabel,
       dataY: dataY,
@@ -473,33 +473,43 @@ class StackableValuePoint {
   }
 }
 
-/// Represents a column of [StackableValuePoint]s, with support for both stacked and Not-Stacked charts.
+/// Holds list of points, [StackableValuePointOCL]s,
+/// from all data series for one independent 'x value'.
 ///
-/// Corresponds to one column of data from [ChartModel.dataRows], ready for presentation by [PointPresenter]s.
+/// Member [nextRightPointsColumn] holds a 'pointer' to the list of points
+/// for all data series for the 'next' independent 'x value'.
 ///
-/// The
-/// - unstacked (such as in the line chart),  in which case it manages
+/// Corresponds to one column of data from [ChartModel.dataRows],
+/// ready for presentation by [PointPresenter]s.
+///
+/// Supports for both stacked and Not-Stacked charts.
+///
+/// While this is a model-like class, it's internal values in
+/// [stackableValuePoints] are 'bend' to the presentation,
+/// depending on whether presentation elements are 'stacked' on 'unstacked':
+///
+/// - For 'unstacked' presentation (such as in the line chart),  in which case it manages
 ///   [stackableValuePoints] that have values from [ChartModel.dataRows].
-/// - stacked (such as in the bar chart), in which case it manages
-///   [stackableValuePoints] that have values added up from [ChartModel.dataRows].
+/// - For 'stacked' presentation (such as in the bar chart), in which case it manages
+///   [stackableValuePoints] that have values *added up* from [ChartModel.dataRows].
 ///
-/// Negative and positive points must be stacked separately,
+/// If stacked, negative and positive points must be stacked separately,
 /// to support correctly displayed stacked values above and below zero.
-class PointsColumn {
+class PointsColumnOCL {
   /// List of charted values in this column
-  late List<StackableValuePoint> stackableValuePoints;
+  late List<StackableValuePointOCL> stackableValuePoints;
 
   /// List of stacked positive or zero value points - support for stacked type charts,
   /// where negative and positive points must be stacked separately,
   /// above and below zero.
-  late List<StackableValuePoint> stackedPositivePoints; // not-negative actually
+  late List<StackableValuePointOCL> stackedPositivePoints; // not-negative actually
 
   /// List of stacked negative value points - support for stacked type charts,
   /// where negative and positive points must be stacked separately,
   /// above and below zero.
-  late List<StackableValuePoint> stackedNegativePoints;
+  late List<StackableValuePointOCL> stackedNegativePoints;
 
-  PointsColumn? nextRightPointsColumn;
+  PointsColumnOCL? nextRightPointsColumn;
 
   /// Construct column from the passed [points].
   ///
@@ -509,8 +519,8 @@ class PointsColumn {
   /// Creates members [stackedNegativePoints], [stackedPositivePoints]
   /// which exist only to be stacked, so the constructor stacks them
   /// on creation.
-  PointsColumn({
-    required List<StackableValuePoint> points,
+  PointsColumnOCL({
+    required List<StackableValuePointOCL> points,
   }) {
     // todo-1 add validation that points are not stacked
     stackableValuePoints = points;
@@ -523,12 +533,12 @@ class PointsColumn {
 
   //// points are ordered in series order, first to last  (bottom to top),
   //// and maintain their 0 based row (series) index
-  List<StackableValuePoint> _selectThenCollectStacked({
-    required List<StackableValuePoint> points,
-    required bool Function(StackableValuePoint point) selector,
+  List<StackableValuePointOCL> _selectThenCollectStacked({
+    required List<StackableValuePointOCL> points,
+    required bool Function(StackableValuePointOCL point) selector,
   }) {
-    StackableValuePoint? predecessorPoint;
-    List<StackableValuePoint> selected = stackableValuePoints.where((point) {
+    StackableValuePointOCL? predecessorPoint;
+    List<StackableValuePointOCL> selected = stackableValuePoints.where((point) {
       return selector(point);
     }) // point.y >= 0;
         .map((point) {
@@ -540,7 +550,7 @@ class PointsColumn {
   }
 
   /// Column Utility for iterating over all points in order
-  Iterable<StackableValuePoint> allPoints() {
+  Iterable<StackableValuePointOCL> allPoints() {
     return [
       ...stackableValuePoints,
       ...stackedNegativePoints,
@@ -549,21 +559,25 @@ class PointsColumn {
   }
 }
 
-/// A list of [PointsColumn] instances, created from user data rows [ChartModel.dataRows].
+/// A list of [PointsColumnOCL] points, in which each point contains data
+/// for one series above the corresponding X label.
 ///
-/// Represents the chart data created from the [ChartModel.dataRows], but is an internal format suitable for
-/// presenting by the chart [PointPresenter] instances.
+/// Held points are created from user data columns inverted from [ChartModel.dataRows].
+///
+/// Holds chart data created from the [ChartModel.dataRows]; the values are
+/// possibly added up suitable for being presented by the chart [PointPresenter] instances.
 ///
 /// Passed to the [PointPresenter] instances, which use this instance's data to
 /// paint the values in areas above the labels in the appropriate presentation (point and line chart, column chart, etc).
 ///
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
-/// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainerCL].
-// todo-04-note : PointsColumns IS A MODEL, NOT PRESENTER :
-//                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndReplaceChildren 3) layout
-//                 Each PointsColumn is a child in children.
-class PointsColumns extends custom_collection.CustomList<PointsColumn> {
+/// A (single instance per chart) is used to create a [PointPresentersColumnsOCL] instance, managed in the [DataContainerCL].
+///
+/// Note: PointsColumnsOCL is a list of data, hence
+///       MODEL-like, NOT PRESENTER-like.
+//        Each PointsColumnOCL is a child in children.
+class PointsColumnsOCL extends custom_collection.CustomList<PointsColumnOCL> {
   /// Parent chart container.
   final ChartViewModel chartViewModel;
 
@@ -572,11 +586,11 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   final LayoutableBox _caller;
 
-  /// Constructor creates a [PointsColumns] instance from [ChartModel.dataRows] values in
+  /// Constructor creates a [PointsColumnsOCL] instance from [ChartModel.dataRows] values in
   /// the passed [chartViewModel.outerChartViewModel].
-  PointsColumns({
+  PointsColumnsOCL({
     required this.chartViewModel,
-    required PointPresenterCreator pointPresenterCreator,
+    required PointPresenterCreatorOCL pointPresenterCreator,
     required bool isStacked,
     required LayoutableBox caller,
   })  : _isStacked = isStacked,
@@ -585,37 +599,37 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     _createStackableValuePointsFromChartModel(chartViewModel.chartModelInLegacy);
   }
 
-  /// Constructs internals of this object, the [PointsColumns].
+  /// Constructs internals of this object, the [PointsColumnsOCL].
   ///
   /// Transposes data passed as rows in [chartModel] member [ChartModel.dataRows]
   /// to [_valuePointArrInRows] and to [_valuePointArrInColumns].
   ///
   /// Creates links on "this column" to "successor in stack on the right",
-  /// managed in [PointsColumn.nextRightPointsColumn].
+  /// managed in [PointsColumnOCL.nextRightPointsColumn].
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
   void _createStackableValuePointsFromChartModel(ChartModel chartModel) {
-    List<StackableValuePoint?> rowOfPredecessorPoints =
+    List<StackableValuePointOCL?> rowOfPredecessorPoints =
         List.filled(chartModel.dataRows[0].length, null);
     for (int col = 0; col < chartModel.dataRows[0].length; col++) {
-      rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
+      rowOfPredecessorPoints[col] = null; // new StackableValuePointOCL.initial(); // was:null
     }
 
     // Data points managed row.  Internal only, should be refactored away.
-    List<List<StackableValuePoint>> valuePointArrInRows = List.empty(growable: true);
+    List<List<StackableValuePointOCL>> valuePointArrInRows = List.empty(growable: true);
 
     for (int row = 0; row < chartModel.dataRows.length; row++) {
       List<num> valuesRow = chartModel.dataRows[row];
-      List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
+      List<StackableValuePointOCL> pointsRow = List<StackableValuePointOCL>.empty(growable: true);
       valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < valuesRow.length; col++) {
-        // yTransform data before placing data point on StackableValuePoint.
+        // yTransform data before placing data point on StackableValuePointOCL.
         num colValue = chartViewModel.chartOptions.dataContainerOptions.yTransform(valuesRow[col]);
 
         // Create all points unstacked. A later processing can stack them,
-        // depending on chart type. See [StackableValuePoint.stackOnAnother]
-        var thisPoint = StackableValuePoint(
+        // depending on chart type. See [StackableValuePointOCL.stackOnAnother]
+        var thisPoint = StackableValuePointOCL(
             chartViewModel: chartViewModel,
             xLabel: 'initial',
             dataY: colValue.toDouble(),
@@ -629,14 +643,14 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     valuePointArrInRows.toList();
 
     // Data points managed column. Internal only, should be refactored away.
-    List<List<StackableValuePoint>> valuePointArrInColumns = transposeRowsToColumns(valuePointArrInRows);
+    List<List<StackableValuePointOCL>> valuePointArrInColumns = transposeRowsToColumns(valuePointArrInRows);
 
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
-    PointsColumn? leftColumn;
+    PointsColumnOCL? leftColumn;
 
-    for (List<StackableValuePoint> columnPoints in valuePointArrInColumns) {
-      var pointsColumn = PointsColumn(points: columnPoints);
+    for (List<StackableValuePointOCL> columnPoints in valuePointArrInColumns) {
+      var pointsColumn = PointsColumnOCL(points: columnPoints);
       add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
@@ -650,15 +664,15 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// on the stackable (stacked or unstacked) values.
   ///
   /// Notes:
-  /// - Iterates this object's internal list of [PointsColumn], then the contained
-  ///   [PointsColumn.stackableValuePoints], and extrapolates each point by
-  ///   applying its [StackableValuePoint.affmapToPixels] method.
+  /// - Iterates this object's internal list of [PointsColumnOCL], then the contained
+  ///   [PointsColumnOCL.stackableValuePoints], and extrapolates each point by
+  ///   applying its [StackableValuePointOCL.affmapToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
   void affmapPointsColumns(ChartViewModel chartViewModel, ChartRootContainerCL chartRootContainer) {
     int col = 0;
-    for (PointsColumn column in this) {
-      column.allPoints().forEach((StackableValuePoint point) {
+    for (PointsColumnOCL column in this) {
+      column.allPoints().forEach((StackableValuePointOCL point) {
         double scaledX = chartRootContainer.xTickXs[col];
         point.affmapToPixels(
           scaledX: scaledX,
@@ -669,9 +683,9 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
   }
 
-  /// Makes this [PointsColumns] object a [BoxContainer] - like class,
+  /// Makes this [PointsColumnsOCL] object a [BoxContainer] - like class,
   ///
-  /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewModel.chartModel] by the [offset],
+  /// Offsets the coordinates of this [PointsColumnsOCL] kept in [ChartViewModel.chartModel] by the [offset],
   /// assumed invoked from parent [DataContainerCL].
   ///
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer
@@ -679,8 +693,8 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// it moves all points by the offset of [DataContainerCL] in [ChartRootContainerCL].
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    for (PointsColumn column in this) {
-      column.allPoints().forEach((StackableValuePoint point) {
+    for (PointsColumnOCL column in this) {
+      column.allPoints().forEach((StackableValuePointOCL point) {
         point.applyParentOffset(_caller, offset);
       });
     }
@@ -697,8 +711,8 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Use in containers for unstacked charts (e.g. line chart)
   List<double> flattenUnstackedPointsDataYs() {
     List<double> flat = [];
-    for (PointsColumn column in this) {
-      for (StackableValuePoint point in column.stackableValuePoints) {
+    for (PointsColumnOCL column in this) {
+      for (StackableValuePointOCL point in column.stackableValuePoints) {
         flat.add(point.toY);
       }
     }
@@ -710,11 +724,11 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<double> flattenStackedPointsDataYs() {
     List<double> flat = [];
-    for (PointsColumn column in this) {
-      for (StackableValuePoint point in column.stackedNegativePoints) {
+    for (PointsColumnOCL column in this) {
+      for (StackableValuePointOCL point in column.stackedNegativePoints) {
         flat.add(point.toY);
       }
-      for (StackableValuePoint point in column.stackedPositivePoints) {
+      for (StackableValuePointOCL point in column.stackedPositivePoints) {
         flat.add(point.toY);
       }
     }

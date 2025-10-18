@@ -1644,8 +1644,19 @@ Notes:
 
 *** TODO-NOW todo-00 Go over coded_layout classes and ensure they are named CL and NOT used outside coded_layout
 
-- [ ] All classes in  coded_layout make CL. Concentrate on all 'presenter.dart' files
-- [ ] Ensure no CL class used outside coded_layout, maybe with minor well defined exceptions
+- Use regex replace examples:
+  - ([^a-zA-Z])(PointPresenter)([^a-zA-Z]) => $1$2OCL$3
+  
+- [X] All classes in  coded_layout make CL. Concentrate on all 'presenter.dart' files
+  - [X] PointPresenter        => PointPresenterOCL
+  - [X] PointPresenterCreator => PointPresenterCreatorOCL
+  - [X] PointPresentersColumns => PointPresentersColumnsOCL
+  - [X] PointPresentersColumn => PointPresentersColumnOCL
+  - [X] PixelRangeProvider     => PixelRangeProviderOCL
+  - [X] StackableValuePoint    => StackableValuePointOCL
+  - [X] PointsColumns          => PointsColumnsOCL
+  - [X] PointsColumn           => PointsColumnOCL
+- [X] Ensure no CL class used outside coded_layout, maybe with minor well defined exceptions
 
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 

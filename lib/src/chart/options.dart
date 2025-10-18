@@ -220,7 +220,8 @@ num inverseLog10(num y) => math.pow(10, y); // 10^y;
 class DataContainerOptions {
   final ui.Color gridLinesColor;
 
-  /// Portion of horizontal (X) grid width, used to display [PointPresenter] leafs.
+  /// Portion of horizontal (X) grid width,
+  /// used to display the coded_layout [PointPresenterOCL] leafs.
   ///
   /// For example, for the bar chart, this represents the portion of one
   /// label width along X axis, which displays the bars (grouped or stacked).

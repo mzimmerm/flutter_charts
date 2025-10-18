@@ -34,8 +34,8 @@ abstract class SwitchChartViewModelCL extends SwitchChartViewModel {
   /// represent data, (points and lines for the line chart,
   /// rectangles for the bar chart, and so on).
   ///
-  /// See [PointPresenterCreator] and [PointPresenter] for more details.
-  late presenter.PointPresenterCreator pointPresenterCreator; // equivalent of NEW ChartViewModel in OLD layout
+  /// See [PointPresenterCreatorOCL] and [PointPresenter] for more details.
+  late presenter.PointPresenterCreatorOCL pointPresenterCreator; // equivalent of NEW ChartViewModel in OLD layout
 
   /// Overridden view models for chart areas.
   @override

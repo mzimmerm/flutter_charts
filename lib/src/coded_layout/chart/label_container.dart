@@ -1,7 +1,7 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
-import 'package:flutter_charts/src/coded_layout/chart/container.dart' show PixelRangeProvider;
+import 'package:flutter_charts/src/coded_layout/chart/container.dart' show PixelRangeProviderOCL;
 
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
 import 'package:flutter_charts/src/morphic/container/label_container.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_charts/src/chart/view_model/label_model.dart' show AxisL
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:
 ///   1. overrides method [layout_Post_Leaf_SetSize_FromInternals] to use the
-///      (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange to affmap label data values to pixels
+///      (outerChartAreaContainer as PixelRangeProviderOCL).axisPixelsRange to affmap label data values to pixels
 ///   2. has member parentOffsetTick to keep location (from build to manual layout?).
 ///
 ///  Legacy label containers [InputLabelContainerCL] and [OutputLabelContainerCL] should extend this
@@ -126,8 +126,8 @@ class AxisLabelContainerCL extends AxisLabelContainer {
 
     parentOffsetTick = rangeDescriptor.affmapValueToPixels(
       value: labelInfo.centerTickValue.toDouble(),
-      axisPixelsMin: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
-      axisPixelsMax: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
+      axisPixelsMin: (outerChartAreaContainer as PixelRangeProviderOCL).axisPixelsRange.min,
+      axisPixelsMax: (outerChartAreaContainer as PixelRangeProviderOCL).axisPixelsRange.max,
     );
 
     super.layout_Post_Leaf_SetSize_FromInternals();

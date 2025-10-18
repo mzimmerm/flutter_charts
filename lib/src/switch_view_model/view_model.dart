@@ -19,12 +19,12 @@ import 'package:flutter_charts/test/src/switch_view_model/coded_layout/bar/view_
 import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
 
 
-List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in CL');
+List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in coded_layout CL situation.');
 
-/// This class [SwitchChartViewModel] is the only class that knows about (depend on)
-/// both the new auto layout and the old coded_layout classes.
+/// This abstract view model allows to create either the legacy 'coded_layout' ('CL')
+/// view model, or the new 'auto-layout' used view model.
 ///
-/// The abstract view model has factory constructors that return the old coded_layout or the
+/// It has factory constructors that return either the old coded_layout or the
 /// new auto-layout instances for bar chart view model or line chart view model,
 /// determined by the environment variable `CHART_LAYOUTER` defined on scripts command lines using
 ///   ```sh
@@ -35,6 +35,13 @@ List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingG
 ///     const String chartLayouterStr = String.fromEnvironment('CHART_LAYOUTER', defaultValue: 'oldManualLayouter').replaceFirst('ChartLayouter.', '');
 ///     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 ///   ```
+///
+/// This class [SwitchChartViewModel] is the only 'reversed dependency' class,
+/// in the sense it is the only 'new' 'auto-layout' related class that knows about (depend on)
+/// both the new 'auto-layout' and the old 'coded_layout' classes.
+///
+/// Example: [SwitchChartViewModel.barChartViewModelFactory] returns either
+///          [SwitchBarChartViewModelCL] or [SwitchBarChartViewModel].
 ///
 abstract class SwitchChartViewModel extends ChartViewModel {
   SwitchChartViewModel ({

@@ -22,7 +22,7 @@ import 'package:flutter_charts/src/chart/view_model/label_model.dart';
 import 'package:flutter_charts/src/morphic/container/constraints.dart' show BoxContainerConstraints;
 
 /// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [OutputAxisContainerCL].
-abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {
+abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProviderOCL {
   AxisContainerCL({
     required ChartViewModel chartViewModel,
   }) : super(
@@ -231,7 +231,7 @@ class OutputAxisContainerCL
 /// - See the [HorizontalAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
 class HorizontalAxisContainerCL
     extends AdjustableLabelsChartAreaContainer
-    with PixelRangeProvider
+    with PixelRangeProviderOCL
     implements TransposingInputAxisLabels {
 
   /// Constructs the container that holds X labels.

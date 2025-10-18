@@ -18,7 +18,7 @@ import 'package:flutter_charts/src/util/util_dart.dart';
 ///     So in constructor, [ChartModel] cannot be given access to the root container, and it's needed members
 ///     such as [ChartRootContainerCL.rangeDescriptor].
 ///
-/// Legacy Note: Replacement for legacy [ChartData], [PointsColumns],
+/// Legacy Note: Replacement for legacy [ChartData], [PointsColumnsOCL],
 ///              and various holders of dependent data values, including parts of [DataRangeTicksAndLabelsDescriptor]
 @immutable
 class ChartModel {

@@ -7,15 +7,15 @@ import 'package:flutter_charts/src/coded_layout/chart/presenter.dart'; // OLD
 
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
-/// PointPresenter of the atomic/leaf element of one data point on the
+/// PointPresenterOCL of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
 /// and the line from this data value point to the next data value point
 /// on the right.
 ///
 /// The line leads from this [offsetPoint]
 /// to the [offsetPoint] of the [LineAndHotspotPointPresenter]
-/// which is next in the [PointPresentersColumn.pointPresenters] list.
-class LineAndHotspotPointPresenter extends PointPresenter {
+/// which is next in the [PointPresentersColumnOCL.pointPresenters] list.
+class LineAndHotspotPointPresenter extends PointPresenterOCL {
   late LineContainerCL lineContainer;
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
@@ -26,8 +26,8 @@ class LineAndHotspotPointPresenter extends PointPresenter {
   late ui.Paint rowDataPaint;
 
   LineAndHotspotPointPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
+    required StackableValuePointOCL point,
+    StackableValuePointOCL? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartViewModel chartViewModel,
   }) : super(
@@ -60,14 +60,14 @@ class LineAndHotspotPointPresenter extends PointPresenter {
 /// Creator of the [LineAndHotspotPointPresenter] instances - the leaf visual
 /// elements on the line chart (point and line showing one data value).
 ///
-/// See [PointPresenterCreator].
-class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreator {
+/// See [PointPresenterCreatorOCL].
+class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreatorOCL {
   LineAndHotspotLeafPointPresenterCreator() : super();
 
   @override
-  PointPresenter createPointPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
+  PointPresenterOCL createPointPresenter({
+    required StackableValuePointOCL point,
+    StackableValuePointOCL? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartViewModel chartViewModel,
   }) {

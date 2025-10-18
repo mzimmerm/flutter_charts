@@ -236,7 +236,7 @@ class DataRangeTicksAndLabelsDescriptor {
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
   ///            after the axis size is calculated.
   ///
-  /// todo-04-cl-removal: used only for CL. Remove
+  /// todo-04-cl-removal: used only for coded_layout CL. Remove
   double affmapValueToPixels({
     required double value,
     required double axisPixelsMin,
@@ -512,7 +512,7 @@ enum MoveTickTo {
 ///   ```dart
 ///    _axisValue = rangeDescriptor.scaleY(value: transformedOutputValue.toDouble());
 ///   ```
-///   It is created as extrapolated [centerTickValue], in the [PointsColumns]
+///   It is created as extrapolated [centerTickValue], in the [PointsColumnsOCL]
 ///   where the extrapolation is from the Y data and labels envelop to the Y axis envelop.
 ///   - This value is **transformed and extrapolated**.
 ///   - This value is obtained as follows
