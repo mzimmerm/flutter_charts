@@ -64,7 +64,11 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     }
   }
 
-  void _makeSelfParentOf(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {
+  /// Force [thisContainer] to parent [parentedChildren].
+  ///
+  /// In all known usages, [thisContainer] should be 'this'.
+  ///
+  void _forceContainerToParentChildren(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {
     for (var child in parentedChildren) {
       child._parent = thisContainer as BoxContainer;
     }
@@ -75,7 +79,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// keys among all [_children].
   void addChildren(List<BoxContainer> addedChildren) {
     __children.addAll(addedChildren);
-    _makeSelfParentOf(this, addedChildren);
+    _forceContainerToParentChildren(this, addedChildren);
     ensureKeyedMembersHaveUniqueKeys();
   }
 
@@ -1403,7 +1407,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    _makeSelfParentOf(this, __children);
+    _forceContainerToParentChildren(this, __children);
 
     // NAMED GENERATIVE super() called implicitly here.
   }

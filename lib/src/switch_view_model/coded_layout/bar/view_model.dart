@@ -15,7 +15,10 @@ import 'package:flutter_charts/src/switch_view_model/view_model.dart' show direc
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-// todo-00-last : we are using testing_ in non testing code!!!!!
+// todo-01-last : we are using testing_ in non testing code!!!!!
+//                 This is unfortunate result of keeping some legend options
+//                 such as legendIsColumnStartLooseItemIsRowStartLoose only as
+//                 test options.
 import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
 
 

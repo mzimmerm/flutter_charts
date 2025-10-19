@@ -35,7 +35,7 @@ class LegendContainer extends chart_legend.LegendContainer {
 
     container_base.BoxContainer legendSingleChildLayouter;
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
-    var children = _makeLegendItemContainers(chartViewModel, labelStyle, options);
+    var children = _createLegendItemContainers(chartViewModel, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
       // LegendOptions default: children created as [LegendItem]s in row which is start tight
@@ -107,7 +107,7 @@ class LegendContainer extends chart_legend.LegendContainer {
         break;
       default:
         throw StateError(
-            '_makeChildrenOfLegendItemContainer: Invalid option: ${options.legendOptions.legendAndItemLayoutEnum}');
+            '_createChildrenOfLegendItemContainer: Invalid option: ${options.legendOptions.legendAndItemLayoutEnum}');
     }
     return [legendSingleChildLayouter];
   }
@@ -115,13 +115,13 @@ class LegendContainer extends chart_legend.LegendContainer {
   /// Builds the legend container contents below self,
   /// a child [container_base.Row] or [container_base.Column],
   /// which contains a list of [LegendItemContainer]s,
-  /// created separately in [_makeLegendItemContainers].
+  /// created separately in [_createLegendItemContainers].
   @override
   void buildAndReplaceChildren() {
     replaceChildrenWith(_createChildrenOfLegendContainer());
   }
 
-  List<container_base.BoxContainer> _makeLegendItemContainers(
+  List<container_base.BoxContainer> _createLegendItemContainers(
       view_model.ChartViewModel chartViewModel,
       label_container.LabelStyle labelStyle,
       chart_options.ChartOptions options,
@@ -153,11 +153,11 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
 
   @override
   void buildAndReplaceChildren() {
-    replaceChildrenWith(_makeChildrenOfLegendItemContainer());
+    replaceChildrenWith(_createChildrenOfLegendItemContainer());
     // buildAndReplaceChildrenDefault();
   }
   
-  List<container_base.BoxContainer> _makeChildrenOfLegendItemContainer() {
+  List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
 
     // Pull out the creation, remember on this object as member _label,
     // set _labelMaxWidth on it in layout.
@@ -236,7 +236,7 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
         break;
       default:
         throw StateError(
-            '_makeChildrenOfLegendItemContainer: Invalid option: ${chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum}');
+            '_createChildrenOfLegendItemContainer: Invalid option: ${chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum}');
     }
     return [layoutChild];
   }
