@@ -12,14 +12,14 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 ///
 void main() {
 
-  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
     message: 'main() of screenshot_validate_test.dart',
   );
 
   test('after screenshot integration, test for sameness', () {
 
-    for (var exampleDescriptor in examplesDescriptors) {
+    for (var exampleDescriptor in exampleDescriptors) {
 
       print(' \n\n######### Log.Info.Level1: screenshot_validate_test.dart: Will COMPARE SCREENSHOT of $exampleDescriptor');
 

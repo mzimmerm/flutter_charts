@@ -14,9 +14,9 @@ import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {
 
-  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
   // This is here only to show a message whether the env variable was picked up.
-  // List<ExampleDescriptor> examplesDescriptors =
+  // List<ExampleDescriptor> exampleDescriptors =
   ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
     message: 'main() of screenshot_create_test.dart',
   );

@@ -23,16 +23,12 @@
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/presenter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/presenter.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_all_tests.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_compare_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_driver/integration_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test_driver/integration_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -1173,6 +1169,41 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/painter.dart</url>
           <line>79</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>648</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>251</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>123</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>141</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/screenshot_create_test.dart</url>
+          <line>143</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>254</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>257</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>

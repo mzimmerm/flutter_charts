@@ -58,7 +58,7 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 ///
 ///   - The old method using `--dart-define` command line argument named 'EXAMPLE_TO_RUN' picked up in
 ///     a global function [ExampleDescriptor.requestedExampleToRun], used in [ExampleWidgetCreator.createRequestedChart].
-///   - The new method using arguments [examplesDescriptors] passed to [main].
+///   - The new method using arguments [exampleDescriptors] passed to [main].
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
 /// be imported using the "package:" scheme, e.g.
@@ -70,8 +70,8 @@ void main() {
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.warning;
 
-  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
     message: 'From lib/test/src/test_main.dart',
   );
 
@@ -125,7 +125,7 @@ void main() {
   //    ```
 
   // Configure the examples to run.
-  if (examplesDescriptors.isEmpty) {
+  if (exampleDescriptors.isEmpty) {
     // With no arguments, use the old method - using --dart-define - to extract the (always single) example to run.
     ExampleDescriptor exampleToRun = ExampleDescriptor.requestedExampleToRun();
     if (!ExampleDescriptor.exampleIsAllowed(exampleToRun)) {
@@ -133,9 +133,9 @@ void main() {
       print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
       io.exit(0);
     }
-    examplesDescriptors.add(exampleToRun);
+    exampleDescriptors.add(exampleToRun);
   }
-  ExampleRunState exampleRunState = ExampleRunState(examplesToRun: examplesDescriptors);
+  ExampleRunState exampleRunState = ExampleRunState(exampleDescriptorsToRun: exampleDescriptors);
 
   // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with
   // installing the fonts in pubspec.yaml.
@@ -1146,22 +1146,22 @@ class ExampleWidgetCreator {
 class ExampleRunState {
 
   ExampleRunState({
-    required this.examplesToRun,
+    required this.exampleDescriptorsToRun,
   }) {
-    if (examplesToRun.isEmpty) {
+    if (exampleDescriptorsToRun.isEmpty) {
       throw StateError('At least one example must be specified.');
     }
-    runningExample = examplesToRun.first;
-    indexOfRunningExampleInExamplesToRun = 0;
+    runningExample = exampleDescriptorsToRun.first;
+    indexOfRunningExampleInexampleDescriptorsToRun = 0;
   }
 
-  List<ExampleDescriptor> examplesToRun;
+  List<ExampleDescriptor> exampleDescriptorsToRun;
   late ExampleDescriptor runningExample;
-  late int indexOfRunningExampleInExamplesToRun;
+  late int indexOfRunningExampleInexampleDescriptorsToRun;
 
-  bool get isConfiguredForSingleExample => examplesToRun.length == 1;
+  bool get isConfiguredForSingleExample => exampleDescriptorsToRun.length == 1;
   bool get isConfiguredForMultiExample => !isConfiguredForSingleExample;
-  bool get isRunningExampleLast => indexOfRunningExampleInExamplesToRun == examplesToRun.length - 1;
+  bool get isRunningExampleLast => indexOfRunningExampleInexampleDescriptorsToRun == exampleDescriptorsToRun.length - 1;
   bool get isFloatingButtonDisabled => isConfiguredForMultiExample && isRunningExampleLast;
 
   ExampleDescriptor moveToNextExample() {
@@ -1173,8 +1173,8 @@ class ExampleRunState {
     }
 
     // On not-last example, move to next
-    indexOfRunningExampleInExamplesToRun++;
-    runningExample = examplesToRun[indexOfRunningExampleInExamplesToRun];
+    indexOfRunningExampleInexampleDescriptorsToRun++;
+    runningExample = exampleDescriptorsToRun[indexOfRunningExampleInexampleDescriptorsToRun];
 
     return runningExample;
   }

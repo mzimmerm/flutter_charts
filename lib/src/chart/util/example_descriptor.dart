@@ -255,12 +255,12 @@ class ExampleDescriptor {
       descriptorsStrings = env.split(' ');
     }
     if (message != null) {
-      print(' ### Log.Info: $message: Passed examplesDescriptors=$descriptorsStrings, length=${descriptorsStrings.length}');
+      print(' ### Log.Info: $message: Passed exampleDescriptors=$descriptorsStrings, length=${descriptorsStrings.length}');
     }
     return ExampleDescriptor.parseEnhancedDescriptors(descriptorsStrings);
   }
 
-  /// Returns the enum of the chart example to run *in widget tests, integration tests,
+  /// Returns the enum of the chart example to run in widget tests, integration tests,
   /// or 'lib/test/src/test_main.dart'.
   ///
   /// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
@@ -553,7 +553,7 @@ class ExampleDescriptor {
 
     List<List> orientationsAndStackingToRun = multiplyListElementsBy(orientationsToRun, stackingToRun);
 
-    List<ExampleDescriptor> examplesToRun =
+    List<ExampleDescriptor> exampleDescriptorsToRun =
       multiplyListElementsBy(combosToRun, orientationsAndStackingToRun).map((tuple2AndOrientationWithStacking) =>
         ExampleDescriptor(
           exampleEnum:      tuple2AndOrientationWithStacking[0].item1 as ExampleEnum,
@@ -563,7 +563,7 @@ class ExampleDescriptor {
           chartLayouter:    chartLayouter,
         )).toList();
 
-    for (ExampleDescriptor exampleDescriptor in examplesToRun) {
+    for (ExampleDescriptor exampleDescriptor in exampleDescriptorsToRun) {
       print('set -o errexit');
       print('echo');
       print('echo');

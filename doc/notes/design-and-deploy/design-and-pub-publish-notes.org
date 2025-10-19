@@ -2114,6 +2114,27 @@ The steps to do here:
 
 This todo is also documented in container_layouter_base.dart
 
+*** Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'
+
+Before changes:
+
+screenshots_expected> ls -1 *oldManual* | wc
+     29      29    2574
+screenshots_expected> ls -1 *newAuto* | wc
+     18      18    1647
+
+
+
+- [ ] ?? rename old images to OLD, and code to create and check for images with that name
+
+
+Later:
+
+- [ ] Rename screenshot_create_test to screenshots_create_test
+- [ ] Note only: If dart file ends with *_test.dart* it must (should?) have main()
+- 
+*** Core of the parent section
+
 - [ ] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
   - [ ] 
 - [ ] ?? rename old images to OLD, and code to create and check for images with that name

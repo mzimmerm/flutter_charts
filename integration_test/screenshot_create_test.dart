@@ -4,9 +4,9 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 import '../lib/test/src/util/test_util.dart';
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
-import 'package:flutter_charts/test/src/test_main.dart' as app;
+import 'package:flutter_charts/test/src/test_main.dart' as device_test_app;
 
-/// Flutter integration test takes screenshots as files from the running app 'lib/test/src/test_main.dart'
+/// Flutter integration test takes and saves screenshots from the running app 'lib/test/src/test_main.dart'
 /// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
 /// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
 ///
@@ -17,6 +17,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as app;
 ///       --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' \
 ///       --driver=test_driver/integration_test.dart  \
 ///       --target=integration_test/screenshot_create_test.dart
+///
 ///   ```
 ///
 /// Note: Samples of EXAMPLES_DESCRIPTORS:
@@ -119,8 +120,8 @@ void main() {
   //        ```
   //   - So, in the ensureInitialized(), the singleton instance of IntegrationTestWidgetsFlutterBinding is created.
 
-  // Extract descriptors for examples to run. examplesDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> examplesDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
     message: 'main() of screenshot_create_test.dart',
   );
 
@@ -131,14 +132,14 @@ void main() {
 
   testWidgets('screenshot', (WidgetTester tester) async {
 
-    // Build the app and run it on device.
-    app.main();
+    // Build the tested app, start it on device.
+    device_test_app.main();
 
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();
 
     // Keep generating screenshots while Tooltip on the FloatingButton is ''
-    for (var exampleDescriptor in examplesDescriptors) {
+    for (var exampleDescriptor in exampleDescriptors) {
 
       print(' \n\n######### Log.Info.Level1: screenshot_create_test.dart: Will TAKE SCREENSHOT of $exampleDescriptor');
 
@@ -173,7 +174,7 @@ void main() {
       final Finder floatingButton = find.byTooltip(ExampleMainAndTestSupport.floatingButtonTooltipMoveToNextExample);
 
       // Emulate a tap on the floating action button.
-      // Important: This ensures the app moves to build and display the next example, having taken
+      // Important: This ensures the device_test_app moves to build and display the next example, having taken
       //            the screenshot two steps above.
       //            The loop that runs here ensures it moves to the next example as well,
       //            to capture the screenshot using the correct corresponding name.
