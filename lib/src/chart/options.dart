@@ -120,7 +120,7 @@ class LegendOptions {
 
   final ui.TextAlign legendTextAlign;
 
-  /// Controls (four) build-in layouts for legends that client can choose
+  /// Controls the build-in layouts for legends that client can choose
   /// without requiring code extensions.
   final LegendAndItemLayoutEnum legendAndItemLayoutEnum;
 
@@ -293,7 +293,7 @@ class DataContainerOptions {
     ui.Paint paint = ui.Paint();
     paint.color = gridLinesColor;
     paint.style = ui.PaintingStyle.stroke;
-    paint.strokeWidth = 6.0; // todo-00 : put back : 1.0;
+    paint.strokeWidth = 6.0; // todo-01 : put back : 1.0;
 
     return paint;
   }

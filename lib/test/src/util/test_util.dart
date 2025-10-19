@@ -35,16 +35,6 @@ class ScreenshotPaths {
   String _screenshotFileName(
       ExampleDescriptor exampleDescriptor,
       ) {
-    /* todo-00-done
-    ChartLayouter chartLayouter = exampleDescriptor.chartLayouter;
-    String newLayoutSuffix = '';
-    if (!(chartLayouter == ChartLayouter.oldManualLayouter)) {
-      newLayoutSuffix =
-      '_NEW_orientation_${exampleDescriptor.chartOrientation.name}_stacking_${exampleDescriptor.chartStacking.name}';
-    }
-
-    return '${enumName(exampleDescriptor.exampleEnum)}_${enumName(exampleDescriptor.chartType)}$newLayoutSuffix.png';
-    */
     String version;
     switch (exampleDescriptor.chartLayouter) {
       case ChartLayouter.newAutoLayouter:

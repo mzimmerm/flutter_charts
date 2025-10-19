@@ -1642,7 +1642,7 @@ Notes:
 
 
 
-*** TODO-NOW todo-00 Go over coded_layout classes and ensure they are named CL and NOT used outside coded_layout
+*** DONE Go over coded_layout classes and ensure they are named CL and NOT used outside coded_layout
 
 - Use regex replace examples:
   - ([^a-zA-Z])(PointPresenter)([^a-zA-Z]) => $1$2OCL$3
@@ -1691,7 +1691,6 @@ We also add a 'convenience' application support that allows to *give name* to Bo
 *** NOTE NO-NO-NO ChartOptions turn into a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
 Options are NOT a singleton. Multiple charts may be used in an application, each with a different ChartOptions
-
 
 ** DONE 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
@@ -1833,7 +1832,6 @@ Notes or Later:
 22. [X] Add tests for PointOffset lextr method
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
-
 ** DONE 11. Line chart 2 days. Started May 20 (started day late) finished May 23
 
 - [X] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
@@ -1842,7 +1840,6 @@ Notes or Later:
 - [X] show nicer points
 - [X] review use of covariant in code
 
-
 ** DONE 12. Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel. 1/2 day - started May 24, finished May 24
 
 Not sure if to do this ... Need to think through the separation of View and ViewModel.
@@ -1850,7 +1847,6 @@ Not sure if to do this ... Need to think through the separation of View and View
 - [X] Search all  *data_container*dart for import of data_model.dart
   - [X] replace all imports, and usages of classes from  data_model.dart with corresponding classes from view_model.dart
 - [X] Search all data_container*dart for 'import.*model' regex - BUT USAGE OF 'view_model' is fine
-
 
 ** DONE 13. Create a test app for super fast testing:  2 days, but be willing to give up. Should start May 23, started May 24. Should go: May 23, May 24.
 
@@ -1883,7 +1879,6 @@ followed by
 
 NOW WORK TO CREATE AND VALIDATE!!
 
-
 ** DONE 14. Add  WrappingRow/Column layouter, similar to but simpler than Column or Row. 3 days: Should start May25, end May27
 
 Use it in one example:
@@ -1899,7 +1894,6 @@ Use it in one example:
 - [X] Add to ExampleEnum, beside ~absoluteMinimumNew~ also ~current~, and add ex800 there.
 - [X] Finish the todos
 - [X] Test ex800 from IntelliJ
-
 
 
 ** DONE 16. Add dotted grid lines in it's own StackLayouter, then place axis lines into it's own container 4 days: Should start May28, end June 1.
@@ -1920,26 +1914,13 @@ Use it in one example:
 
 *** DONE Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
 
-*** IN-PROGRESS Steps to change the example and test directory structure
 
-1. [X] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
-2. [X] Move example/lib/src/main.dart to ~lib/test/src/example/test_main.dart~
-3. [X] Move ~test/src/example/test_main.dart~ to ~lib/test/src/test_main.dart~ 
-4. [X] Look for ~example/lib/main.dart~ AND ~example/lib/test_main.dart~ and change to ~lib/test/src/test_main.dart~ (in comments to  ~lib/test/src/test_main.dart~)
-5. [X] Look for ~test_main.dart~ in comments and see if they are correct.
-6. [X] Use the above in test and integration_test instead of example/lib/src/main.dart
-7. [X] Change all run configurations to point to the above 
-8. [ ] ~LegendContainer~: In ~lib/test/src/~ create directory ~chart~ and a structure that allows to add test-specific ~LegendContainer~ and perhaps other containters. Refactor/copy file with  ~LegendContainer~ to that directory. Now make following changes:
-   - [ ] Simplify chart .. LegendContainer to only use the default ContainerItem WHICH ONE? ~LegendOptions.legendAndItemLayoutEnum~ 
-   - [ ] Rename test .. LegendContainer to TestLegendContainer, implement (extend?) LegendContainer under chart
-   - [ ] Think if any layout, including Legend should be in options. Probably NOT. Remove ~LegendOptions.legendAndItemLayoutEnum~
-9. [ ] Equivalent of the above for ~LegendItemContainer~
-   
+*** DONE Script to rename images to standard names
 
 
-ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png
-ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png
+The script below renames images to use a unique descriptive names. One-time only but KEEP.
 
+#+name: rename-images-in-integration-test
 #+begin_src bash :results raw
   cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_expected/
 
@@ -1988,106 +1969,148 @@ ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_ba
 #+end_src
 
 #+EXPECTED_RESULTS:
-mv ex10RandomData_barChart.png ex10RandomData_barChart_column_stacked_oldManualLayouter.png
-mv ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_oldManualLayouter.png
-mv ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png ex31SomeNegativeValues_barChart_row_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png ex31SomeNegativeValues_barChart_row_stacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart.png ex31SomeNegativeValues_barChart_column_stacked_oldManualLayouter.png
-mv ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png ex31SomeNegativeValues_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_lineChart.png ex31SomeNegativeValues_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex32AllPositiveYsYAxisStartsAbove0_barChart.png ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_oldManualLayouter.png
-mv ex32AllPositiveYsYAxisStartsAbove0_lineChart.png ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex33AllNegativeYsYAxisEndsBelow0_lineChart.png ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex35AnimalsBySeasonNoLabelsShown_barChart.png ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png
-mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex50StocksWithNegativesWithUserColors_barChart.png ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_barChart.png ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex60LabelsIteration1_barChart.png ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration2_barChart.png ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration3_barChart.png ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration4_barChart.png ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png
-mv ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_oldManualLayouter.png
-mv ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
-mv ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter.png
-mv ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
-mv ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_oldManualLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_oldManualLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_oldManualLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_barChart_column_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png ex800EU12CountriesHistoricalPopulation_barChart_column_stacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_barChart_row_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png ex800EU12CountriesHistoricalPopulation_barChart_row_stacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex900ErrorFixUserDataAllZero_lineChart.png ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex10RandomData_barChart.png                                                                                                                 ex10RandomData_barChart_column_stacked_oldManualLayouter.png
+mv ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png                                                                                     ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_oldManualLayouter.png
+mv ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png                                                                                    ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png                                                              ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png                                                                 ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png                                                                 ex31SomeNegativeValues_barChart_row_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png                                                                    ex31SomeNegativeValues_barChart_row_stacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart.png                                                                                                         ex31SomeNegativeValues_barChart_column_stacked_oldManualLayouter.png
+mv ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png                                                             ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png                                                                ex31SomeNegativeValues_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_lineChart.png                                                                                                        ex31SomeNegativeValues_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex32AllPositiveYsYAxisStartsAbove0_barChart.png                                                                                             ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_oldManualLayouter.png
+mv ex32AllPositiveYsYAxisStartsAbove0_lineChart.png                                                                                            ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex33AllNegativeYsYAxisEndsBelow0_lineChart.png                                                                                              ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png                                                                                      ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex35AnimalsBySeasonNoLabelsShown_barChart.png                                                                                               ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png
+mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png                                                                                              ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png                                                                              ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex50StocksWithNegativesWithUserColors_barChart.png                                                                                          ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
+mv ex52AnimalsBySeasonLogarithmicScale_barChart.png                                                                                            ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
+mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png                                                                                           ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex60LabelsIteration1_barChart.png                                                                                                           ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration2_barChart.png                                                                                                           ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration3_barChart.png                                                                                                           ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration4_barChart.png                                                                                                           ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png
+mv ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png                                                                 ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_oldManualLayouter.png
+mv ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png                                                                 ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
+mv ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png                                                                     ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter.png
+mv ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png                                                                    ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
+mv ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png                                                        ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_oldManualLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png       ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png          ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png          ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png             ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png                                                  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_oldManualLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png      ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png         ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png                                                 ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png                                                 ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_oldManualLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png                                              ex800EU12CountriesHistoricalPopulation_barChart_column_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png                                                 ex800EU12CountriesHistoricalPopulation_barChart_column_stacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png                                                 ex800EU12CountriesHistoricalPopulation_barChart_row_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png                                                    ex800EU12CountriesHistoricalPopulation_barChart_row_stacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png                                             ex800EU12CountriesHistoricalPopulation_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png                                                ex800EU12CountriesHistoricalPopulation_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex900ErrorFixUserDataAllZero_lineChart.png                                                                                                  ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png
 
 #+TESTED_RESULTS:
-mv ex10RandomData_barChart.png ex10RandomData_barChart_column_stacked_oldManualLayouter.png
-mv ex10RandomData_lineChart.png ex10RandomData_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_oldManualLayouter.png
-mv ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png ex31SomeNegativeValues_barChart_row_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png ex31SomeNegativeValues_barChart_row_stacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_barChart.png ex31SomeNegativeValues_barChart_column_stacked_oldManualLayouter.png
-mv ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png ex31SomeNegativeValues_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex31SomeNegativeValues_lineChart.png ex31SomeNegativeValues_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex32AllPositiveYsYAxisStartsAbove0_barChart.png ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_oldManualLayouter.png
-mv ex32AllPositiveYsYAxisStartsAbove0_lineChart.png ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex33AllNegativeYsYAxisEndsBelow0_lineChart.png ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex35AnimalsBySeasonNoLabelsShown_barChart.png ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png
-mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex50StocksWithNegativesWithUserColors_barChart.png ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_barChart.png ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex60LabelsIteration1_barChart.png ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration2_barChart.png ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration3_barChart.png ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
-mv ex60LabelsIteration4_barChart.png ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png
-mv ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_oldManualLayouter.png
-mv ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
-mv ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter.png
-mv ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
-mv ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_oldManualLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_oldManualLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_oldManualLayouter.png
-mv ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_oldManualLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_barChart_column_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png ex800EU12CountriesHistoricalPopulation_barChart_column_stacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_barChart_row_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png ex800EU12CountriesHistoricalPopulation_barChart_row_stacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_lineChart_column_nonStacked_newAutoLayouter.png
-mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png ex800EU12CountriesHistoricalPopulation_lineChart_row_nonStacked_newAutoLayouter.png
-mv ex900ErrorFixUserDataAllZero_lineChart.png ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex10RandomData_barChart.png                                                                                                                 ex10RandomData_barChart_column_stacked_oldManualLayouter.png
+mv ex10RandomData_lineChart.png                                                                                                                ex10RandomData_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png                                                                                     ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_oldManualLayouter.png
+mv ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png                                                                                    ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_nonStacked.png                                                              ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_column_stacking_stacked.png                                                                 ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_nonStacked.png                                                                 ex31SomeNegativeValues_barChart_row_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart_NEW_orientation_row_stacking_stacked.png                                                                    ex31SomeNegativeValues_barChart_row_stacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_barChart.png                                                                                                         ex31SomeNegativeValues_barChart_column_stacked_oldManualLayouter.png
+mv ex31SomeNegativeValues_lineChart_NEW_orientation_column_stacking_nonStacked.png                                                             ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_lineChart_NEW_orientation_row_stacking_nonStacked.png                                                                ex31SomeNegativeValues_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex31SomeNegativeValues_lineChart.png                                                                                                        ex31SomeNegativeValues_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex32AllPositiveYsYAxisStartsAbove0_barChart.png                                                                                             ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_oldManualLayouter.png
+mv ex32AllPositiveYsYAxisStartsAbove0_lineChart.png                                                                                            ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex33AllNegativeYsYAxisEndsBelow0_lineChart.png                                                                                              ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png                                                                                      ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex35AnimalsBySeasonNoLabelsShown_barChart.png                                                                                               ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png
+mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png                                                                                              ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png                                                                              ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex50StocksWithNegativesWithUserColors_barChart.png                                                                                          ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
+mv ex52AnimalsBySeasonLogarithmicScale_barChart.png                                                                                            ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
+mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png                                                                                           ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex60LabelsIteration1_barChart.png                                                                                                           ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration2_barChart.png                                                                                                           ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration3_barChart.png                                                                                                           ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
+mv ex60LabelsIteration4_barChart.png                                                                                                           ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png
+mv ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart.png                                                                 ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_oldManualLayouter.png
+mv ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart.png                                                                 ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
+mv ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png                                                                     ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter.png
+mv ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart.png                                                                    ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_oldManualLayouter.png
+mv ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart.png                                                        ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_oldManualLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_nonStacked.png       ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_column_stacking_stacked.png          ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_nonStacked.png          ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_NEW_orientation_row_stacking_stacked.png             ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart.png                                                  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_oldManualLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_column_stacking_nonStacked.png      ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_NEW_orientation_row_stacking_nonStacked.png         ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart.png                                                 ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart.png                                                 ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_oldManualLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_nonStacked.png                                              ex800EU12CountriesHistoricalPopulation_barChart_column_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_column_stacking_stacked.png                                                 ex800EU12CountriesHistoricalPopulation_barChart_column_stacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_nonStacked.png                                                 ex800EU12CountriesHistoricalPopulation_barChart_row_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_barChart_NEW_orientation_row_stacking_stacked.png                                                    ex800EU12CountriesHistoricalPopulation_barChart_row_stacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_column_stacking_nonStacked.png                                             ex800EU12CountriesHistoricalPopulation_lineChart_column_nonStacked_newAutoLayouter.png
+mv ex800EU12CountriesHistoricalPopulation_lineChart_NEW_orientation_row_stacking_nonStacked.png                                                ex800EU12CountriesHistoricalPopulation_lineChart_row_nonStacked_newAutoLayouter.png
+mv ex900ErrorFixUserDataAllZero_lineChart.png                                                                                                  ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png
 
 
 
+*** DONE Change the example and test directory structure
 
-** IN-PROGRESS ~18. Figure out how to create, name, and keep some basic layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
+1. [X] ~in widget_test.dart, when running, make sure it is using new layouter NOT old, and ensure that tests still work - in debugger~ 
+2. [X] Move example/lib/src/main.dart to ~lib/test/src/example/test_main.dart~
+3. [X] Move ~test/src/example/test_main.dart~ to ~lib/test/src/test_main.dart~ 
+4. [X] Look for ~example/lib/main.dart~ AND ~example/lib/test_main.dart~ and change to ~lib/test/src/test_main.dart~ (in comments to  ~lib/test/src/test_main.dart~)
+5. [X] Look for ~test_main.dart~ in comments and see if they are correct.
+6. [X] Use the above in test and integration_test instead of example/lib/src/main.dart
+7. [X] Change all run configurations to point to the above
+
+
+*** IN-PROGRESS-NOW Allow extendable Legend Layout
+
+Allow tests and clients to extend LegendContainer and layout legend items freely.
+
+There are 2 methods: use test-defined or client-defined enums in options.dart.
+
+- For tests, we SHOULD use enums in options.dart to support clear naming in tests.
+- If a client wishes to NOT add a layout enum, they can follow the test ... *legend_container.dart* but not use any new enums - simply setup any layout they wish..
+
+
+The steps to do here:
+
+- [X] Options should have limited Legend layouts, controlled by ~LegendOptions.legendAndItemLayoutEnum~, which clients can use without adding extensions of LegendContainer
+  - [X] Src *options.dart*  
+    - legendIsRowStartTightItemIsRowStartTightDefault
+    - legendIsWrappingRowItemIsRowStartTight
+  - [X] Test *options.dart*  
+    - legendIsColumnStartLooseItemIsRowStartLoose
+    - legendIsColumnStartTightItemIsRowStartTight
+    - legendIsRowCenterLooseItemIsRowEndLoose
+    - legendIsRowStartTightItemIsRowStartTightSecondGreedy
+    - legendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+    - legendIsRowStartTightItemIsRowStartTightItemChildrenAligned
+- [X] Simplify chart ..legend_container.dart -> LegendContainer to only use the 2 default ~LegendOptions.legendAndItemLayoutEnum~ 
+- [ ] todo-00 Rename as test_ to as testing_     
+- [ ] Address // todo-00-last 
+- [ ] Equivalent of the above for ~LegendItemContainer~
+   
+
+*** IN-PROGRESS-NOW Clarify difference _make , _create
+
+
+** IN-PROGRESS ~18. Figure out how to create, name, and keep some basic chart layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
 
 Thoughts on descriptive format of such layout templates:
 
@@ -2117,10 +2140,6 @@ Thoughts on descriptive format of such layout templates:
 
 *** Running Issues
     
-- [ ] Canot duplicate : At some point during running a test, I got this error (does not repeat, but there are also hangups during test startup sometimes):
-  - VMServiceFlutterDriver: Flutter Driver extension is taking a long time to become available. Ensure your test app (often "lib/main.dart") imports "package:flutter_driver/driver_extension.dart" and calls enableFlutterDriverExtension() as the first call in main().
-  - [ ] Add the above action and test
-  
 
 
 ** LATER-BUT-REVIEW-NEXT Follow linter rules: 1) in late final and 2) use package imports (no relative imports)

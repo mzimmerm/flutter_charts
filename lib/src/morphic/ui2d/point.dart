@@ -36,7 +36,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart
 ///
 /// todo-02-design : instead of extending Offset, make Offset member, and forward to it only methods needed.
 ///
-/// todo-00-ideas-from-walk
+/// todo-01-ideas-from-walk
 ///   - Rename [PointOffset] to [RangedPointOffset]
 ///   - Add [RollingLayouterRangedPointOffset] extends   [RangedPointOffset]; this adds the behavior
 ///     and members [isLayouterPositioningMeInCrossDirection] and [mainLayoutAxis], also the

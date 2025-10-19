@@ -3,20 +3,30 @@ import 'dart:ui' as ui show Paint;
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as chart_legend;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
 import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
-import '../../options.dart' as test_options;
+import 'package:flutter_charts/test/src/chart/options.dart' as testing_options show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
 import 'package:flutter_charts/src/chart/options.dart' as chart_options;
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align, Packing;
 
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
-import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 
 class LegendContainer extends chart_legend.LegendContainer {
   LegendContainer({
     required super.chartViewModel,
   });
 
+  /// Return a list with single element, a [container_base.BoxLayouter]
+  /// layouter for the [chart_legend.LegendContainer].
+  ///
+  /// The returned layouter would typically be a [container_base.Row], or
+  /// [container_base.Column], fully populated with children and their hierarchy;
+  /// each child should be a [chart_legend.LegendItemContainer].
+  ///
+  /// Note: The signature requirement is weaker,
+  ///       for the returned list to contain a [container_base.BoxContainer]
+  ///       rather than [container_base.BoxLayouter].
+  ///
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewModel.chartOptions;
 
@@ -40,14 +50,14 @@ class LegendContainer extends chart_legend.LegendContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
+      case testing_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         legendSingleChildLayouter = container_base.Column(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.loose,
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
+      case testing_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
       // legend items in column
         legendSingleChildLayouter = container_base.Column(
           mainAxisAlign: Align.start,
@@ -57,14 +67,14 @@ class LegendContainer extends chart_legend.LegendContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         legendSingleChildLayouter = container_base.Row(
           mainAxisAlign: Align.center,
           mainAxisPacking: Packing.loose,
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
         // Each child is LegendItemContainer.
         // Wrap the second child (second item in legend) to [container_base.Greedy]
         // to test container_base.Greedy layout. It is mildly confusing we manipulate children here again.
@@ -79,7 +89,7 @@ class LegendContainer extends chart_legend.LegendContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
       // [children] were created as padded [LegendItem]s in `children = makeItemIndAndLabel(doPadIndAndLabel: true)`
         legendSingleChildLayouter = container_base.Row(
           mainAxisAlign: Align.start,
@@ -87,7 +97,7 @@ class LegendContainer extends chart_legend.LegendContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
       // [children] were created as aligned LegendItems in `children = makeItemIndAndLabel(doAlignIndAndLabel: true`
         legendSingleChildLayouter = container_base.Row(
           mainAxisAlign: Align.start,
@@ -175,28 +185,28 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
+      case testing_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.loose,
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
+      case testing_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         layoutChild = container_base.Row(
           mainAxisAlign: Align.end,
           mainAxisPacking: Packing.loose,
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
         // This implements 'ItemIsRowStartTight'.
         // The 'SecondGreedy' part is implemented during LegendContainer creation by
         // wrapping the second child in Greedy
@@ -206,7 +216,7 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
       // create padded children
         children = makeItemIndAndLabel(doPadIndAndLabel: true);
         layoutChild = container_base.Row(
@@ -215,7 +225,7 @@ class LegendItemContainer extends chart_legend.LegendItemContainer {
           children: children,
         );
         break;
-      case test_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+      case testing_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
       // create aligned children
         children = makeItemIndAndLabel(doAlignIndAndLabel: true);
         layoutChild = container_base.Row(
