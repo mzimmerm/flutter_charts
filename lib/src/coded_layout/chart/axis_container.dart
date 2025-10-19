@@ -375,7 +375,7 @@ class HorizontalAxisContainerCL
       return;
     }
 
-    // This achieves auto-layout of labels to fit along X axis.
+    // This achieves auto_layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
     labelLayoutStrategy.reLayout(BoxContainerConstraints.unused());
@@ -468,7 +468,7 @@ class HorizontalAxisContainerCL
   //
   /// Only should be called after [layout]
   ///
-  /// Identifying overlap is crucial in labels auto-layout.
+  /// Identifying overlap is crucial in labels auto_layout.
   ///
   /// Notes:
   /// - [_xGridStep] is a limit for each label container width in the X direction.

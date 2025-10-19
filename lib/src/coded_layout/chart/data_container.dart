@@ -173,7 +173,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   @override
   void layout() {
 
-    // OLD Manual layout build. NEW invokes this as part of auto-layout.
+    // OLD Manual layout build. NEW invokes this as part of auto_layout.
     buildAndReplaceChildren();
 
     // DataContainer uses it's full constraints to lay out it's grid and presenters!

@@ -22,10 +22,10 @@ import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view
 List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in coded_layout CL situation.');
 
 /// This abstract view model allows to create either the legacy 'coded_layout' ('CL')
-/// view model, or the new 'auto-layout' used view model.
+/// view model, or the new 'auto_layout' used view model.
 ///
 /// It has factory constructors that return either the old coded_layout or the
-/// new auto-layout instances for bar chart view model or line chart view model,
+/// new auto_layout instances for bar chart view model or line chart view model,
 /// determined by the environment variable `CHART_LAYOUTER` defined on scripts command lines using
 ///   ```sh
 ///     --dart-define=CHART_LAYOUTER=oldManualLayouter # false
@@ -37,8 +37,8 @@ List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingG
 ///   ```
 ///
 /// This class [SwitchChartViewModel] is the only 'reversed dependency' class,
-/// in the sense it is the only 'new' 'auto-layout' related class that knows about (depend on)
-/// both the new 'auto-layout' and the old 'coded_layout' classes.
+/// in the sense it is the only 'new' 'auto_layout' related class that knows about (depend on)
+/// both the new 'auto_layout' and the old 'coded_layout' classes.
 ///
 /// Example: [SwitchChartViewModel.barChartViewModelFactory] returns either
 ///          [SwitchBarChartViewModelCL] or [SwitchBarChartViewModel].
@@ -63,7 +63,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
   ///
   final LiveOrTesting liveOrTesting;
 
-  /// Factory switch returns instances of auto-layout or coded_layout versions of view model
+  /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for vertical bar chart.
   factory SwitchChartViewModel.barChartViewModelFactory({
     required model.ChartModel chartModel,
@@ -109,7 +109,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     }
   }
 
-  /// Factory switch returns instances of auto-layout or coded_layout versions of view model
+  /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for line chart.
   factory SwitchChartViewModel.lineChartViewModelFactory({
     required model.ChartModel chartModel,

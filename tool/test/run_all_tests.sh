@@ -33,6 +33,6 @@ tool/test/run_core_dart_and_flutter_widget_tests.sh
 
 # Run on-device-driven    'flutter drive' integration test 'screenshot_create_test.dart',
 # followed by on-computer 'flutter test'  unit test        'screenshot_validate_test.dart'.
-tool/test/run_screenshots_compare_integration_test.sh "$@"
+tool/test/run_screenshots_create_then_validate_integration_test.sh "$@"
 
 

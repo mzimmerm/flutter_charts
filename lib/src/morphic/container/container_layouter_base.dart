@@ -450,7 +450,7 @@ abstract class LayoutableBox {
   ///
   /// Important override notes and rules for [layout] on extensions:
   ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
-  ///      which auto-layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
+  ///      which auto_layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
   ///
   ///   2: General rules for [layout] on extensions
   ///

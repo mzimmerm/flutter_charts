@@ -15,7 +15,7 @@ import 'package:flutter_charts/src/morphic/util/extensible_enum.dart';
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
-/// related, may be overridden or adjusted by the chart auto-layout,
+/// related, may be overridden or adjusted by the chart auto_layout,
 /// see [SimpleChartContainer].
 @immutable
 class ChartOptions {
@@ -74,7 +74,7 @@ class IterativeLayoutOptions {
   /// label font size does not result in labels fitting the provided width or height.
   final int showEveryNthLabel;
 
-  /// On multiple auto layout iterations, every new iteration skips more labels.
+  /// On multiple auto_layout iterations, every new iteration skips more labels.
   /// every iteration, the number of labels skipped is multiplied by
   /// [multiplyLabelSkip]. For example, if on first layout,
   /// [showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
@@ -272,21 +272,21 @@ class DataContainerOptions {
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
+  /// Auto_layout can increase these lengths, to fit labels below them.
   final double dataBottomTickHeight;
 
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
+  /// Auto_layout can increase these lengths, to fit labels below them.
   final double dataLeftTickWidth;
 
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
+  /// Auto_layout can increase these lengths, to fit labels below them.
   final double dataRightTickWidth;
 
   ui.Paint gridLinesPaint() {

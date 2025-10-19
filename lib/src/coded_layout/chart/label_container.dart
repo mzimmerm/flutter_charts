@@ -99,7 +99,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   ///     First "tick dash" is on the first label, last on the last label,
   ///     but both x and y label containers can be skipped.
   ///
-  /// Must NOT be used in new auto-layout
+  /// Must NOT be used in new auto_layout
   double parentOffsetTick = 0.0;
 
   /// Overridden from [AxisLabelContainer.layout_Post_Leaf_SetSize_FromInternals]

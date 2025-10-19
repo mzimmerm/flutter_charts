@@ -69,7 +69,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   @override
   int get showEveryNthLabel => _showEveryNthLabel;
 
-  /// On multiple auto layout iterations, every new iteration skips more labels.
+  /// On multiple auto_layout iterations, every new iteration skips more labels.
   /// every iteration, the number of labels skipped is multiplied by
   /// [_multiplyLabelSkip]. For example, if on first layout,
   /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
@@ -106,10 +106,10 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
   }
 
-  /// Core of the auto layout strategy.
+  /// Core of the auto_layout strategy.
   ///
   /// If labels in the [_adjustableLabelsContainer] overlap, this method takes the
-  /// next prescribed auto-layout action - one of the actions defined in the
+  /// next prescribed auto_layout action - one of the actions defined in the
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
@@ -204,7 +204,7 @@ abstract class LabelLayoutStrategy {
     _adjustableLabelsContainer = adjustableLabelsContainer;
   }
 
-  /// Core of the auto layout strategy.
+  /// Core of the auto_layout strategy.
   ///
   /// Typically called from the [Container]'s [Container.layout]
   /// method to achieve iterative layout.

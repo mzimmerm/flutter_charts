@@ -16,7 +16,7 @@ import 'package:flutter_charts/src/util/collection.dart' as custom_collection sh
 /// information which allows to peek directly to the source data.
 ///
 /// It serves the same role as the view (the [BoxContainer])
-/// of one leaf data point in the auto-layout version.
+/// of one leaf data point in the auto_layout version.
 ///
 /// For example, on a bar chart, this is one rectangle;
 /// on a line chart this is a point with line connecting to the next
@@ -109,7 +109,7 @@ class PointPresentersColumnOCL {
 ///   [PointPresenterCreatorOCL.createPointPresenter]
 ///
 /// Notes:
-///   - In auto-layout situation, this class would be a [BoxContainer]
+///   - In auto_layout situation, this class would be a [BoxContainer]
 ///     that lays out and displays columns (or rows, depending on orientation).
 ///   - Each [PointPresentersColumnOCL] element of [pointPresentersColumns]
 ///     manages a link to the [PointPresentersColumnOCL] on it's right, allowing
@@ -139,7 +139,7 @@ class PointPresentersColumnsOCL extends custom_collection.CustomList<PointPresen
 
 /// Maker of [PointPresenterOCL] instances.
 ///
-/// It serves the same role as [ChartViewModel] in the auto-layout version.
+/// It serves the same role as [ChartViewModel] in the auto_layout version.
 ///
 /// It's core method [createPointPresenter] creates [PointPresenterOCL]s,
 /// the visuals painted on each chart column that
