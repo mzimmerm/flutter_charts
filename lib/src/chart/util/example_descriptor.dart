@@ -255,7 +255,7 @@ class ExampleDescriptor {
       descriptorsStrings = env.split(' ');
     }
     if (message != null) {
-      print(' ### Log.Info: $message: Passed exampleDescriptors=$descriptorsStrings, length=${descriptorsStrings.length}');
+      print(' ### Log.Info: extractExampleDescriptorsFromDartDefine $message: Passed exampleDescriptors=$descriptorsStrings, length=${descriptorsStrings.length}');
     }
     return ExampleDescriptor.parseEnhancedDescriptors(descriptorsStrings);
   }
@@ -336,7 +336,7 @@ class ExampleDescriptor {
   static List<ExampleDescriptor> _parseDescriptor(String descriptor) {
     var parsedFields = descriptor.split('_');
     if (parsedFields.length != 5) throw StateError('Descriptor requires 5 _ separated fields: descriptor=$descriptor');
-    
+
     // Field 0: [ExampleEnum]
     String exampleNameStartStr = parsedFields[0];
     List<ExampleEnum> exampleEnums = _allowed
@@ -421,11 +421,6 @@ class ExampleDescriptor {
         .toList();
   }
 
-  static List<ExampleDescriptor> current = parseDescriptors([
-    // 'ex800_barChart_column_stacked_newAutoLayouter',
-    'ex75_lineChart_row_nonStacked_newAutoLayouter',
-  ]);
-
   static List<ExampleDescriptor> absoluteMinimumNew = parseDescriptors([
     'ex75_lineChart_row_nonStacked_newAutoLayouter',
     'ex31_barChart_column_stacked_newAutoLayouter',
@@ -488,6 +483,11 @@ class ExampleDescriptor {
 
   static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(allSupportedOld);
 
+  static List<ExampleDescriptor> current = parseDescriptors([
+    // 'ex800_barChart_column_stacked_newAutoLayouter',
+    'ex75_lineChart_row_nonStacked_newAutoLayouter',
+  ]);
+
   static List<ExampleDescriptor> parseEnhancedDescriptors(List<String> descriptors) {
     List<ExampleDescriptor> allDefined = [];
     for (var descriptor in descriptors) {
@@ -516,6 +516,9 @@ class ExampleDescriptor {
             break;
           case _GroupDescriptor.allSupported:
             allDefined.addAll(allSupported);
+            break;
+          case _GroupDescriptor.current:
+            allDefined.addAll(current);
             break;
         }
       }
@@ -619,7 +622,8 @@ enum _GroupDescriptor {
   minimumOld,
   allSupportedOld,
   minimum,
-  allSupported;
+  allSupported,
+  current;
 
   /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if
   /// the [enumStr] does not match any enum value.
