@@ -479,14 +479,14 @@ class ExampleDescriptor {
     'ex90_lineChart_column_nonStacked_oldManualLayouter',
   ]);
 
-  static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
-
-  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(allSupportedOld);
-
   static List<ExampleDescriptor> current = parseDescriptors([
     // 'ex800_barChart_column_stacked_newAutoLayouter',
     'ex75_lineChart_row_nonStacked_newAutoLayouter',
   ]);
+
+  static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
+
+  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(allSupportedOld);
 
   static List<ExampleDescriptor> parseEnhancedDescriptors(List<String> descriptors) {
     List<ExampleDescriptor> allDefined = [];
@@ -511,15 +511,17 @@ class ExampleDescriptor {
           case _GroupDescriptor.allSupportedOld:
             allDefined.addAll(allSupportedOld);
             break;
+          case _GroupDescriptor.current:
+            allDefined.addAll(current);
+            break;
           case _GroupDescriptor.minimum:
             allDefined.addAll(minimum);
             break;
           case _GroupDescriptor.allSupported:
             allDefined.addAll(allSupported);
             break;
-          case _GroupDescriptor.current:
-            allDefined.addAll(current);
-            break;
+          default:
+            throw StateError('Passed an unknown name of group ExampleDescriptor: $maybeGroupDescriptor');
         }
       }
     }
@@ -621,9 +623,9 @@ enum _GroupDescriptor {
   allSupportedNew,
   minimumOld,
   allSupportedOld,
+  current,
   minimum,
-  allSupported,
-  current;
+  allSupported;
 
   /// Converts [enumStr] to a matching value of this enum, throws [StateError] with [errorMessage] if
   /// the [enumStr] does not match any enum value.
