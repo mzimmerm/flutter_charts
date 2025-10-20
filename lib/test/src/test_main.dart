@@ -89,7 +89,7 @@ void main() {
   //          Note: *NOT* 'package:flutter/material/material.dart'.
   //          Note: material.dart is on path: PROJ/packages/flutter/lib/material.dart
   //          so another note:
-  //             * the lib level is skipped int the import reference
+  //             * the lib level is skipped in the import reference
   //             * package: represent a directory where packages
   //               for this project are installed in pub update package
   //      - And:
@@ -1152,16 +1152,16 @@ class ExampleRunState {
       throw StateError('At least one example must be specified.');
     }
     runningExample = exampleDescriptorsToRun.first;
-    indexOfRunningExampleInexampleDescriptorsToRun = 0;
+    indexOfRunningExampleInExampleDescriptorsToRun = 0;
   }
 
   List<ExampleDescriptor> exampleDescriptorsToRun;
   late ExampleDescriptor runningExample;
-  late int indexOfRunningExampleInexampleDescriptorsToRun;
+  late int indexOfRunningExampleInExampleDescriptorsToRun;
 
   bool get isConfiguredForSingleExample => exampleDescriptorsToRun.length == 1;
   bool get isConfiguredForMultiExample => !isConfiguredForSingleExample;
-  bool get isRunningExampleLast => indexOfRunningExampleInexampleDescriptorsToRun == exampleDescriptorsToRun.length - 1;
+  bool get isRunningExampleLast => indexOfRunningExampleInExampleDescriptorsToRun == exampleDescriptorsToRun.length - 1;
   bool get isFloatingButtonDisabled => isConfiguredForMultiExample && isRunningExampleLast;
 
   ExampleDescriptor moveToNextExample() {
@@ -1173,8 +1173,8 @@ class ExampleRunState {
     }
 
     // On not-last example, move to next
-    indexOfRunningExampleInexampleDescriptorsToRun++;
-    runningExample = exampleDescriptorsToRun[indexOfRunningExampleInexampleDescriptorsToRun];
+    indexOfRunningExampleInExampleDescriptorsToRun++;
+    runningExample = exampleDescriptorsToRun[indexOfRunningExampleInExampleDescriptorsToRun];
 
     return runningExample;
   }

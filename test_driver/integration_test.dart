@@ -14,6 +14,8 @@ import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {
 
+  // This integration_test.dart main() runs on computer.
+
   // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
   // This is here only to show a message whether the env variable was picked up.
   // List<ExampleDescriptor> exampleDescriptors =

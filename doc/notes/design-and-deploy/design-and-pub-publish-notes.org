@@ -2135,10 +2135,7 @@ Later:
 - 
 *** Core of the parent section
 
-- [ ] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
-  - [ ] 
-- [ ] ?? rename old images to OLD, and code to create and check for images with that name
-- [ ] rerun tests
+- [X] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
 - [ ] add class ParentOrderedSkip
   - [ ] bool isSkipLayout
   - [ ] bool isSkipPaint

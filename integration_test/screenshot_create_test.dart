@@ -152,7 +152,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pumpAndSettle();
 
-      // When [binding.takeScreenshot] is called, the [binding] INVOKES the method callback
+      // When [binding.takeScreenshocontrol the device main as if a 'user hand'.t] is called, the [binding] INVOKES the method callback
       // defined for [onScreenshot:] in [test_driver/integration_test.dart] and passes the callback
       // the stream of bytes from the screenshot. The callback is executed, and saves the screenshot
       // bytes to a file specified there - the test_driver framework somehow causes the image saved on
