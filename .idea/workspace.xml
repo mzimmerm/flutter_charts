@@ -21,11 +21,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/README.org" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/README.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/screenshot_validate_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/screenshot_validate_test.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_driver/integration_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test_driver/integration_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/demo/run_example.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/demo/run_example.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/frequent_commands.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/frequent_commands.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -343,7 +349,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Z main_run_doc_example in TOP/example/main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_barChart_column_nonStacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex31_barChart_column_nonStacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/example/main_run_doc_example.dart" />
       <method v="2" />
     </configuration>
@@ -353,122 +359,122 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart absoluteMinimumNew" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex10" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex30_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex30_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex31_*_*_*_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex31_*_*_*_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex32 - explicit x, y, all Y positive, axis starts above zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex10_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex33 - explicit x, y, Y negative, axis ends below zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex33_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex33_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex34 Custom Font" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex34_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex34_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex35 - no labels" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex35_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex35_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex40_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex40_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex50" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex50_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex50_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex52 logarithmic" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex52_lineChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex52_lineChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 1" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 2 (tilted)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 3 (shows 3 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 4 (shows 2 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex70" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex70_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex70_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex71" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex71_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex71_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex72" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex72_barChart_column_stacked_oldManualLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex72_barChart_column_stacked_oldManualLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex73" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex73_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex73_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex74" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex74_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex74_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex75 new" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex75_barChart_column_nonStacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex75_barChart_column_nonStacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex76" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex76_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex76_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex800 12EUCountriesPopulation" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex800_*_*_*_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex800_*_*_*_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex900 error all 0 data" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLES_DESCRIPTORS='ex90_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex90_barChart_column_stacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -514,7 +520,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Test driver test" type="ShConfigurationType">
-      <option name="SCRIPT_TEXT" value="flutter drive --dart-define=EXAMPLES_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart" />
+      <option name="SCRIPT_TEXT" value="flutter drive --dart-define=EXAMPLE_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart" />
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
       <option name="SCRIPT_PATH" value="" />
       <option name="SCRIPT_OPTIONS" value="" />
@@ -1170,7 +1176,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>648</line>
+          <line>649</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1202,6 +1208,11 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
           <line>257</line>
           <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
+          <line>425</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>

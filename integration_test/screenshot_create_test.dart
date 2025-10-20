@@ -7,20 +7,20 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
 import 'package:flutter_charts/test/src/test_main.dart' as device_test_app;
 
 /// Flutter integration test takes and saves screenshots from the running app 'lib/test/src/test_main.dart'
-/// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
-/// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
+/// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLE_DESCRIPTORS',
+/// and resolved in [ExampleDescriptor.extractExampleDescriptorsFromDartDefine].
 ///
 /// Integration test invocation from command line:
 ///
 ///   ```shell
 ///     flutter drive \
-///       --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' \
+///       --dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew' \
 ///       --driver=test_driver/integration_test.dart  \
 ///       --target=integration_test/screenshot_create_test.dart
 ///
 ///   ```
 ///
-/// Note: Samples of EXAMPLES_DESCRIPTORS:
+/// Note: Samples of EXAMPLE_DESCRIPTORS:
 ///   - 'ex75_lineChart_row_nonStacked_newAutoLayouter ex31_barChart_*_*_newAutoLayouter'
 ///   - 'absoluteMinimumNew'
 ///   - etc, see [ExampleDescriptor]
@@ -36,7 +36,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as device_test_app;
 /// Integration test steps:
 ///   - This `--target` installs and runs 'main' of the example app in 'lib/test/src/test_main.dart' on the device,
 ///   - This '--target' extracts the set of examples to run and take screenshots from by
-///       invoking [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine] in this code
+///       invoking [ExampleDescriptor.extractExampleDescriptorsFromDartDefine] in this code
 ///       ```dart
 ///         await binding.takeScreenshot(screenshotPath);
 ///       ```
@@ -56,7 +56,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as device_test_app;
 ///
 ///   ```shell
 ///     flutter test \
-///       --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' \
+///       --dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew' \
 ///       test/screenshot_validate_test.dart
 ///   ```
 ///
@@ -120,8 +120,8 @@ void main() {
   //        ```
   //   - So, in the ensureInitialized(), the singleton instance of IntegrationTestWidgetsFlutterBinding is created.
 
-  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLE_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExampleDescriptorsFromDartDefine(
     message: 'main() of screenshot_create_test.dart',
   );
 
@@ -179,7 +179,7 @@ void main() {
       //            The loop that runs here ensures it moves to the next example as well,
       //            to capture the screenshot using the correct corresponding name.
       //            This whole thing assumes that both this main(), and main() in 'lib/test/src/test_main.dart'
-      //            obtain and process the same  [extractExamplesDescriptorsFromDartDefine]!
+      //            obtain and process the same  [extractExampleDescriptorsFromDartDefine]!
       await tester.tap(floatingButton);
 
       // Trigger a frame again after a tap. This seems to workaround the target artifact on second screenshot.

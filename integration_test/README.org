@@ -8,10 +8,10 @@ Files in this directory which end with '_test.dart' are such *integration tests*
 in a command such as
 
 #+begin_src: sh
-  # Note: "$examplesDescriptors" may be "allSupported" or similar single test or named group of tests,
+  # Note: "$exampleDescriptors" may be "allSupported" or similar single test or named group of tests,
   #       or a list of single test names
   flutter drive \
-    --dart-define=EXAMPLES_DESCRIPTORS="$examplesDescriptors" \
+    --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
     --driver=test_driver/integration_test.dart  \
     --target=integration_test/screenshot_create_test.dart
 #+end_src

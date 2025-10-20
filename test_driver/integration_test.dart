@@ -16,10 +16,10 @@ Future<void> main() async {
 
   // This integration_test.dart main() runs on computer.
 
-  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLE_DESCRIPTORS.
   // This is here only to show a message whether the env variable was picked up.
   // List<ExampleDescriptor> exampleDescriptors =
-  ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  ExampleDescriptor.extractExampleDescriptorsFromDartDefine(
     message: 'main() of screenshot_create_test.dart',
   );
 

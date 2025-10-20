@@ -70,8 +70,8 @@ void main() {
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.warning;
 
-  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLE_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExampleDescriptorsFromDartDefine(
     message: 'From lib/test/src/test_main.dart',
   );
 

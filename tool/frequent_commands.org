@@ -19,7 +19,7 @@ tool/test/run_all_tests.sh ex31_barChart_column_nonStacked_newAutoLayouter
 
   # Run allSupported tests
   flutter drive \
-    --dart-define=EXAMPLES_DESCRIPTORS="allSupported" \
+    --dart-define=EXAMPLE_DESCRIPTORS="allSupported" \
     --driver=test_driver/integration_test.dart  \
     --target=integration_test/screenshot_create_test.dart
 #+end_src

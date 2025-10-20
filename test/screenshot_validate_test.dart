@@ -7,13 +7,13 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor;
 
 /// Flutter test compares expected screenshots to actual screenshots for all chart examples
-/// defined by the '--dart-define' environment variable 'EXAMPLES_DESCRIPTORS',
-/// and resolved in [ExampleDescriptor.extractExamplesDescriptorsFromDartDefine].
+/// defined by the '--dart-define' environment variable 'EXAMPLE_DESCRIPTORS',
+/// and resolved in [ExampleDescriptor.extractExampleDescriptorsFromDartDefine].
 ///
 void main() {
 
-  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLES_DESCRIPTORS.
-  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine(
+  // Extract descriptors for examples to run. exampleDescriptors must be pushed via --dart-define=EXAMPLE_DESCRIPTORS.
+  List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExampleDescriptorsFromDartDefine(
     message: 'main() of screenshot_validate_test.dart',
   );
 

@@ -98,7 +98,7 @@ enum ExampleEnum {
 /// The [_allowed] member is the list of allowed combinations of [ExampleEnum] and [ChartType].
 ///
 /// The following static methods support generation of [ExampleDescriptor] lists:
-///  - [extractExamplesDescriptorsFromDartDefine]
+///  - [extractExampleDescriptorsFromDartDefine]
 ///  - [_parseDescriptor]
 ///  - [parseDescriptors]
 ///  - [parseEnhancedDescriptors]
@@ -238,18 +238,18 @@ class ExampleDescriptor {
   /// Extract [ExampleDescriptor] list from environment.
   ///
   /// The list must be pushed via `--dart-define` for example,
-  /// `--dart-define=EXAMPLES_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter ex75_barChart_row_nonStacked_newAutoLayouter'`
+  /// `--dart-define=EXAMPLE_DESCRIPTORS='ex75_lineChart_row_nonStacked_newAutoLayouter ex75_barChart_row_nonStacked_newAutoLayouter'`
   /// as port of test such as `screenshot_create_test.dart` invoked as
   ///
   ///   ```shell
   ///     flutter drive \
-  ///       --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' \
+  ///       --dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew' \
   ///       --driver=test_driver/integration_test.dart  \
   ///       --target=integration_test/screenshot_create_test.dart
   ///   ```
   ///
-  static List<ExampleDescriptor> extractExamplesDescriptorsFromDartDefine({String? message}) {
-    String env = const String.fromEnvironment('EXAMPLES_DESCRIPTORS', defaultValue: '');
+  static List<ExampleDescriptor> extractExampleDescriptorsFromDartDefine({String? message}) {
+    String env = const String.fromEnvironment('EXAMPLE_DESCRIPTORS', defaultValue: '');
     List<String> descriptorsStrings = [];
     if (env != '') {
       descriptorsStrings = env.split(' ');
@@ -422,7 +422,8 @@ class ExampleDescriptor {
   }
 
   static List<ExampleDescriptor> current = parseDescriptors([
-    'ex800_barChart_column_stacked_newAutoLayouter',
+    // 'ex800_barChart_column_stacked_newAutoLayouter',
+    'ex75_lineChart_row_nonStacked_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> absoluteMinimumNew = parseDescriptors([

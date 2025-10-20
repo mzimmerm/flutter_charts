@@ -46,10 +46,10 @@ tool/test/start_emulator.sh
 # Detail interaction:
 #
 # 010. screenshot_create_thread:  'screenshot_create_test.main()':
-# 020. screenshot_create_thread:  Picks up the EXAMPLES_DESCRIPTORS from the environment, and runs all chart example enums
-#      screenshot_create_thread:  from the EXAMPLES_DESCRIPTORS test or group (the test name or group name passed here via exampleDescriptors="$*").
+# 020. screenshot_create_thread:  Picks up the EXAMPLE_DESCRIPTORS from the environment, and runs all chart example enums
+#      screenshot_create_thread:  from the EXAMPLE_DESCRIPTORS test or group (the test name or group name passed here via exampleDescriptors="$*").
 # 020. screenshot_create_thread:  Reads examples list:
-#      screenshot_create_thread:      List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine
+#      screenshot_create_thread:      List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExampleDescriptorsFromDartDefine
 # 030. screenshot_create_thread:  Calls the 'device_test_app.main()' (this is possible, main() is just another function) from the app device_test_app
 #                                 WHICH STARTS the 'device_test_app.main()' on the DEVICE. *Steps on DEVICE unless noted*.
 #                                 Note:
@@ -62,7 +62,7 @@ tool/test/start_emulator.sh
 #                                                The initial state holds
 #                                                'runningExample = exampleDescriptorsToRun.first'.
 #                                                The state change after tap on + is used to display next example chart on device.
-# 040. device_thread:            List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExamplesDescriptorsFromDartDefine
+# 040. device_thread:            List<ExampleDescriptor> exampleDescriptors = ExampleDescriptor.extractExampleDescriptorsFromDartDefine
 # 040. device_thread:            Now both 'device_test_app' and 'screenshot_create_test' have the same list of examples to run
 # 040. device_thread:            Displays the chart described inThis tap causes state change, which the 'runningExample' (set initially to exampleDescriptorsToRun.first),
 # 050. screenshot_create_thread: loop over all 'exampleDescriptors', and call:
@@ -90,12 +90,12 @@ tool/test/start_emulator.sh
 #    3. The on-device-running-app      main() in 'test/src/test_main.dart' as device_test_app;' which is the chart app
 
 flutter drive \
-  --dart-define=EXAMPLES_DESCRIPTORS="$exampleDescriptors" \
+  --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
   --driver=test_driver/integration_test.dart  \
   --target=integration_test/screenshot_create_test.dart
 
 # Run the main() in screenshot_validate_test.dart.
 # The main() runs all chart example enums from the group - see above drive test for details of expansion.
 flutter test \
-  --dart-define=EXAMPLES_DESCRIPTORS="$exampleDescriptors" \
+  --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
   test/screenshot_validate_test.dart

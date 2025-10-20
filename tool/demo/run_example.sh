@@ -30,7 +30,7 @@ fi
 # To quit the running example, type 'q' on the command line.
 
 # flutter run \
-#   --dart-define=EXAMPLES_DESCRIPTORS="$exampleEnum" \
+#   --dart-define=EXAMPLE_DESCRIPTORS="$exampleEnum" \
 #   example/main_run_doc_example.dart
 
 flutter run \

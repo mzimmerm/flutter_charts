@@ -1871,11 +1871,11 @@ Implementation
   - [X] Loop end condition is that 'next' is disabled
 
 
-~flutter drive --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart~
+~flutter drive --dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew' --driver=test_driver/integration_test.dart  --target=integration_test/screenshot_create_test_new.dart~
 
 followed by
 
-~flutter test --dart-define=EXAMPLES_DESCRIPTORS='absoluteMinimumNew' test/screenshot_validate_test_new.dart~
+~flutter test --dart-define=EXAMPLE_DESCRIPTORS='absoluteMinimumNew' test/screenshot_validate_test_new.dart~
 
 NOW WORK TO CREATE AND VALIDATE!!
 
