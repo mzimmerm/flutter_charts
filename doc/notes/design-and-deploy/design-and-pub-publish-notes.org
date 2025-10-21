@@ -2110,31 +2110,15 @@ The steps to do here:
 *** DONE Clarify difference _make , _create
 
 
-** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
 
-This todo is also documented in container_layouter_base.dart
-
-*** Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'
-
-Before changes:
-
-screenshots_expected> ls -1 *oldManual* | wc
-     29      29    2574
-screenshots_expected> ls -1 *newAuto* | wc
-     18      18    1647
-
-Images currently in *origAllTestedOld*
-
-New enum *onlySupportedOld* for charts that do not work in new auto_layout
-
-
+** DONE Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'. Identify charts that do NOT work in auto_layout.
 
 #+begin_src bash
   cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested/
   ls -lt
 #+end_src
 
-#+name: images-in-old
+#+name: images-tested-before-2025-10-21
 |                                                                                                                               |                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                               | Visual comparison with    | If NOT OK,                                                                                                                                                            |
 |                                                                                                                               |                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                               | old image OK, move to new | describe issue in new                                                                                                                                                 |
 |-------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------+---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -2167,7 +2151,7 @@ New enum *onlySupportedOld* for charts that do not work in new auto_layout
 | ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                    | okular integration_test/screenshots_expected/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                                                       | ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                    | OK                        | [warn 1]                                                                                                                                                              |
 |                                                                                                                               |                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                               |                           |                                                                                                                                                                       |
 
-Non-failing versions:
+Succesful Charts in new auto_layout if failing, using old coded_layout:
 
 ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png                                                
 ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter.png    
@@ -2198,66 +2182,84 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_newAutoLayout
 ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                    
                                                                                                                               
 
-onlyoldFailingInNew
+** IN-PROGRESS-NOW Fix charts that are NOT working in new auto_layouter
 
-ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter.png                                          
-ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter.png                                            
-ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png                                                
-ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png                                            
-ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png                            
-ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png                                                            
-ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png                                                            
-ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png                                                            
-ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter.png                      
-ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter.png                                                
+Failing auto-layouter has several categories
 
-convertedToNew
+*** DONE 1. Failing unexplained, but something to do with all-negative or all-positive values that do not start at 0
 
-ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                    
-ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_newAutoLayouter.png                                                
-ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter.png                                      
-ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png                                             
-ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               
-ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           
-ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png                                                              
-ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter.png                    
-ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png                    
-ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png                       
-ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_newAutoLayouter.png           
-ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_stacked_newAutoLayouter.png     
-ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter.png    
-                                                                                                                              
+*bug fix in Interval resolved this error*
 
-Summary:
+BOTH linechart is failing, ALL 4 Bar Chart OK
 
-// ex30 : only add line chart to allSupportedNew (tests explicit LabelLayoutStrategy, but does not add anything new, as the LabelLayoutStrategy is default anyway)
-// ex32 : some fail in new, put only selected to new
-// ex33 : all fail in new, put only selected to new
-// ex34 : tests custom font on labels, no need to test layout
-// ex35 : tests no labels all fail in new
-// ex50 : tests user defined colors on series
-// ex52 : tests logarithmic scale - no sense to stack
-// ex60 : tests labels iteration, only first iteration works
-// ex70 : tests legend layout
-// ex71 : tests legend layout
-// ex73 : tests legend layout
-// ex74 : tests legend layout
-// ex75 : only bar chart to new (tests legend layout
-// ex76 : tests legend layout
-// ex80 : all already in allSupportedNew (tests row/column inversion with only positive values
+#+begin_example
+    'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
+    'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
+#+end_example
 
-logarithmic scale - no sense to stack
+Core problem: At some point two intervals are intersected and the intersection (although non empty) fails because one end of the interval is Infinity
 
+#+begin_example
+The following StateError was thrown during paint():
+Bad state: Intervals this=Interval(20.0, 40.0) and other=Interval(0.0, Infinity) do not intersect
 
-- [ ] ?? rename old images to OLD, and code to create and check for images with that name
+The relevant error-causing widget was: 
+  LineChart LineChart:file:///home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src/test_main.dart:1105:31
+When the exception was thrown, this was the stack: 
+#0      Interval.intersectionOrException (package:flutter_charts/src/util/util_dart.dart:242:7)
+#1      Interval.positivePortionOrException (package:flutter_charts/src/util/util_dart.dart:247:46)
+#2      Interval.portionForSignOfValue (package:flutter_charts/src/util/util_dart.dart:254:12)
+#3      FromTransposing2DValueRange.subsetForSignOfPointOffsetBeforeAffmap (package:flutter_charts/src/util/util_flutter.dart:63:40)
+#4      PointContainer.layoutUsingPointModelAffmapToPixels (package:flutter_charts/src/chart/cartesian/container/data_container.dart:662:79)
+#5      LineAndPointContainer.layout (package:flutter_charts/src/chart/cartesian/chart_type/line/container/data_container.dart:190:36)
+#6      BoxLayouter._layout_Descend (package:flutter_charts/src/morphic/container/container_layouter_base.dart:1110:13)
+#7      BoxLayouter._layout_TopRecurse (package:flutter_charts/src/morphic/container/container_layouter_base.dart:1079:5)
+#+end_example
+
+*** TODO-NEXT 2. Failing known reason - a chart without labels not implemented
+
+failing:
+
+#+begin_example
+    'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
+#+end_example
+
+*** TODO-NOW 3 3. Failing due to ordinal user labels
+
+failing:
+
+#+begin_example
+    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
+#+end_example
 
 
-Later:
+*** TODO-NEXT 4. Failing to rotate or skip labels
 
-- [ ] Rename screenshot_create_test to screenshots_create_test
-- [ ] Note only: If dart file ends with *_test.dart* it must (should?) have main()
-- 
-*** Core of the parent section
+#+begin_example
+    'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
+    'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
+    'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
+#+end_example
+
+*** TODO-NOW 1 5. Failing reason unkown
+
+ #+begin_example
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
+ #+end_example
+
+
+*** TODO-NOW 2 6. Failing due to no data but it should be fixed
+
+#+begin_example
+    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
+#+end_example
+
+
+** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
+
+This todo is also documented in container_layouter_base.dart
+
 
 - [X] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
 - [ ] add class ParentOrderedSkip

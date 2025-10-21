@@ -3,6 +3,85 @@ import 'package:test/test.dart'; // Dart test package
 import 'package:flutter_charts/src/util/util_dart.dart';
 
 void main() {
+
+  // todo-00-done moved here from util_labels_test
+
+  test('Poly power and coeff', () {
+    Poly p = Poly(from: 123.04);
+    expect(p.signum, 1);
+    expect(p.maxPower, 2);
+    expect(p.coefficientAtMaxPower, 1);
+
+    p = Poly(from: 78);
+    expect(p.signum, 1);
+    expect(p.maxPower, 1);
+    expect(p.coefficientAtMaxPower, 7);
+
+    p = Poly(from: 0);
+    expect(p.signum, 0);
+    expect(p.maxPower, 0);
+    expect(p.coefficientAtMaxPower, 0);
+
+    p = Poly(from: 0.0);
+    expect(p.signum, 0);
+    expect(p.maxPower, 0);
+    expect(p.coefficientAtMaxPower, 0);
+
+    p = Poly(from: 0.1);
+    expect(p.signum, 1);
+    expect(p.maxPower, -1);
+    expect(p.coefficientAtMaxPower, 1);
+
+    p = Poly(from: 0.01);
+    expect(p.signum, 1);
+    expect(p.maxPower, -2);
+    expect(p.coefficientAtMaxPower, 1);
+
+    p = Poly(from: -0.01);
+    expect(p.signum, -1);
+    expect(p.maxPower, -2);
+    expect(p.coefficientAtMaxPower, 1);
+  });
+
+  test('Poly floor and ceil', () {
+    Poly p = Poly(from: 123.04);
+    expect(p.floorAtMaxPower, 100);
+    expect(p.ceilAtMaxPower, 200);
+
+    // todo 1 test pure fractions and negatives
+  });
+
+  test('Interval', () {
+    Interval i = Interval(20.0, 40.0);
+    // other starts before i min && ends before i min
+    Interval oni11 = Interval(double.negativeInfinity, 0.0);
+    Interval oni12 = Interval(-20.0, 0.0);
+    // other starts before i min && ends inside i
+    Interval oi21 = Interval(double.negativeInfinity, 30.0);
+    Interval oi22 = Interval(-20.0, 30.0);
+    // other starts before i min && ends after i max
+    Interval oi31 = Interval(double.negativeInfinity, 50.0);  // Bug test
+    Interval oi32 = Interval(0.0, double.infinity);           // Bug test
+    Interval oi33 = Interval(-20.0, 50.0);
+    Interval oi34 = Interval(double.negativeInfinity, double.infinity);
+    // other starts inside i && ends inside i
+    Interval oi41 = Interval(25.0, 35.0);
+    // other starts after i max && ends after i max
+    Interval oni51 = Interval(50.0, 60.0);
+    Interval oni52 = Interval(50.0, double.negativeInfinity);
+
+    expect (i.isIntersects(oni11), false);
+    expect (i.isIntersects(oni12), false);
+    expect (i.isIntersects(oi21), true);
+    expect (i.isIntersects(oi22), true);
+    expect (i.isIntersects(oi31), true);
+    expect (i.isIntersects(oi32), true);
+    expect (i.isIntersects(oi33), true);
+    expect (i.isIntersects(oi34), true);
+    expect (i.isIntersects(oni51), false);
+    expect (i.isIntersects(oni52), false);
+  });
+
   test('AffineRangedMap1D.apply - from generated data', () {
     var data = [
       //[1.0, 1.0, 2.0, 10.0, 20.0, 12.0],

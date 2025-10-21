@@ -143,7 +143,8 @@ class Interval {
   }
 
   bool isIntersects(Interval other) {
-    return includes(other.min) || includes(other.max);
+    // todo-00-last-done : return includes(other.min) || includes(other.max);
+    return min < other.max && other.min < max;
   }
 
   bool get isAcrossZero {
@@ -160,6 +161,7 @@ class Interval {
 
   /// Returns [true] if the passed [other] is inside self.
   bool containsFully(Interval other) {
+    // todo-00-last
     return includes(other.min) && includes(other.max);
   }
 

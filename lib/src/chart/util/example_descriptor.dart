@@ -433,9 +433,27 @@ class ExampleDescriptor {
     'ex31_barChart_*_*_newAutoLayouter',
   ]);
 
+  // todo-00 add coreLayouterTestingNew and add all individual
+  // todo-00 add reasonableAmountOfNew and include coreLayouterTestingNew AND
+  // : 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
+  // : 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
+  // 'ex31_lineChart_*_nonStacked_newAutoLayouter',
+  // 'ex31_barChart_*_*_newAutoLayouter',
+  // 'ex33_lineChart_*_nonStacked_newAutoLayouter',
+  // 'ex33_barChart_*_*_newAutoLayouter',
+  // 'ex800_lineChart_*_nonStacked_newAutoLayouter',
+  // 'ex800_barChart_*_*_newAutoLayouter',
+  //
+
+  // todo-00 move  individual to  coreLayouterTestingNew
+   // todo-00 add dataset name to description: animal data - pos/neg data - only pos data - only neg data - user label
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
     'ex31_lineChart_*_nonStacked_newAutoLayouter',  // ex31 tests all row/column inversions with positive+negative data
     'ex31_barChart_*_*_newAutoLayouter',
+    'ex32_lineChart_*_nonStacked_newAutoLayouter',  // ex32 tests all row/column inversions with only positive, starts above 0
+    'ex32_barChart_*_*_newAutoLayouter',
+    'ex33_lineChart_*_nonStacked_newAutoLayouter',  // ex33 tests all row/column inversions with only negative, starts below 0
+    'ex33_barChart_*_*_newAutoLayouter',
     'ex75_lineChart_*_nonStacked_newAutoLayouter',  // ex75 tests all row/column inversions; also Legend layout, consider only test 1
     'ex75_barChart_*_*_newAutoLayouter',
     'ex800_lineChart_*_nonStacked_newAutoLayouter', // ex80 tests all row/column inversions with all positive data
@@ -443,11 +461,10 @@ class ExampleDescriptor {
     // individual
     // ex30 : tests explicit LabelLayoutStrategy, but does not add anything new, as the LabelLayoutStrategy is default anyway
     'ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter',
-    // ex31 : all already in allSupportedNew (tests row/column inversion with positive and negative values)
-    // ex32AllPositiveYsYAxisStartsAbove0 : tests all positive ys, some fail in new, this succeeds
-    'ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_newAutoLayouter',
-    // ex33AllNegativeYsYAxisEndsBelow0 : tests all negative ys, all fail in new
-    // ex34 : tests custom font on labels
+    // ex31 : tests row/column inversion with positive and negative values;  already in group
+    // ex32 : tests row/column inversion with only positive values above 0;  already in group
+    // ex33 : tests row/column inversion with only negative values below 0;  already in group
+    // ex34 : tests custom font on labels, only need 1 test
     'ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter',
     // ex35 : tests no labels, all fail in new
     // ex40 : tests ordinal user labels, fails in new
@@ -479,8 +496,8 @@ class ExampleDescriptor {
 
   // Use old coded_layouter as new auto_layouter fails
   static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
-    'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
-    'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
+    // todo-00-remove-fixed: 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
+    // todo-00-remove-fixed: 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
     'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
@@ -529,6 +546,11 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> current = parseDescriptors([
+    // all positive starting above 0 AND all negative starting below 0
+    'ex32_lineChart_*_nonStacked_newAutoLayouter',
+    'ex32_barChart_*_*_newAutoLayouter',
+    'ex33_lineChart_*_nonStacked_newAutoLayouter',
+    'ex33_barChart_*_*_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
