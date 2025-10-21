@@ -2,12 +2,12 @@
 
 ** Most commonly used
 
-# Run unit tests + all screen-comparing integration tests (allSupported = allSupportedNew + allSupportedOld)
+# Run unit tests + all screen-comparing integration tests (allSupported = allSupportedNew + origAllTestedOld)
 tool/test/run_all_tests.sh allSupported
 # Run unit tests + auto-layout screen-comparing integration tests
 tool/test/run_all_tests.sh allSupportedNew
 # Run unit tests + manual-layout screen-comparing integration tests
-tool/test/run_all_tests.sh allSupportedOld
+tool/test/run_all_tests.sh origAllTestedOld
 # Run unit tests + single screen-comparing integration test
 tool/test/run_all_tests.sh ex31_barChart_column_nonStacked_newAutoLayouter
 

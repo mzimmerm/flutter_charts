@@ -7,7 +7,7 @@
 #       minimumNew
 #       allSupportedNew
 #       minimumOld
-#       allSupportedOld
+#       origAllTestedOld
 #       minimum
 #       allSupported
 #   - The individual test names must adhere to naming convention. A few examples:

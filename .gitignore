@@ -32,7 +32,9 @@ INTERNAL-GITIGNORE/
 integration_test/screenshots_tested/
 integration_test/screenshots_expected_laptop/
 integration_test/screenshots_expected_server/
+integration_test/screenshots_expected_with_all_old_KEEP/
 # mz ^^^
+
 
 
 # Miscellaneous

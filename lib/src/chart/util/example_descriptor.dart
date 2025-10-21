@@ -110,7 +110,9 @@ enum ExampleEnum {
 ///  - [minimum]
 ///  - [minimumOld]
 ///  - [allSupportedNew]
-///  - [allSupportedOld]
+///  - [oldFailingInNew]
+///  - [convertedToNew]
+///  - [origAllTestedOld]
 ///  - [allSupported]
 ///
 /// @Deprecated Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example.
@@ -432,22 +434,69 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
-    'ex31_lineChart_*_nonStacked_newAutoLayouter',
+    'ex31_lineChart_*_nonStacked_newAutoLayouter',  // ex31 tests all row/column inversions with positive+negative data
     'ex31_barChart_*_*_newAutoLayouter',
-    'ex75_lineChart_*_nonStacked_newAutoLayouter',
+    'ex75_lineChart_*_nonStacked_newAutoLayouter',  // ex75 tests all row/column inversions; also Legend layout, consider only test 1
     'ex75_barChart_*_*_newAutoLayouter',
+    'ex800_lineChart_*_nonStacked_newAutoLayouter', // ex80 tests all row/column inversions with all positive data
     'ex800_barChart_*_*_newAutoLayouter',
-    'ex800_lineChart_*_nonStacked_newAutoLayouter',
+    // individual
+    // ex30 : tests explicit LabelLayoutStrategy, but does not add anything new, as the LabelLayoutStrategy is default anyway
+    'ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter',
+    // ex31 : all already in allSupportedNew (tests row/column inversion with positive and negative values)
+    // ex32AllPositiveYsYAxisStartsAbove0 : tests all positive ys, some fail in new, this succeeds
+    'ex32AllPositiveYsYAxisStartsAbove0_barChart_column_stacked_newAutoLayouter',
+    // ex33AllNegativeYsYAxisEndsBelow0 : tests all negative ys, all fail in new
+    // ex34 : tests custom font on labels
+    'ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter',
+    // ex35 : tests no labels, all fail in new
+    // ex40 : tests ordinal user labels, fails in new
+    // ex50 : tests user defined colors on series
+    'ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter',
+    // ex52 : tests logarithmic scale - no sense to stack
+    'ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter',
+    'ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter',
+    // ex60 : tests labels iteration, only first iteration works
+    'ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter',
+    // ex70 : tests legend layout
+    'ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter',
+    // ex71 : tests legend layout
+    'ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter',
+    // ex72 : tests legend layout OVERFLOW FAILS BECAUSE OVERFLOW ON LEGEND SPILLS TO CHART; SHOULD BE FIXED
+    // ex73 : tests legend layout
+    'ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter',
+    // ex74 : tests legend layout
+    'ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_newAutoLayouter',
+    // ex75 : tests legend layout LegendIsRowStartTightItemIsRowStartTightItemChildrenPadded already in group
+    // ex76 : tests legend layout
+    'ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter',
+    // ex80 : all already in allSupportedNew (tests row/column inversion with only positive values
+  ]);
+
+   // Successfully converted to new layout
+  static List<ExampleDescriptor> convertedToNew = parseDescriptors([
+  ]);
+
+  // Use old coded_layouter as new auto_layouter fails
+  static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
+    'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
+    'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
+    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
+    'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
+    'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
+    'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
+    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
   ]);
 
   static List<ExampleDescriptor> minimumOld = parseDescriptors([
-    // 'ex10_lineChart_column_nonStacked_oldManualLayouter',
-    // 'ex10_barChart_column_stacked_oldManualLayouter',
     'ex75_lineChart_column_nonStacked_oldManualLayouter',
     'ex31_barChart_column_stacked_oldManualLayouter',
   ]);
 
-  static List<ExampleDescriptor> allSupportedOld = parseDescriptors([
+  static List<ExampleDescriptor> origAllTestedOld = parseDescriptors([
     'ex10_lineChart_column_nonStacked_oldManualLayouter',
     'ex10_barChart_column_stacked_oldManualLayouter',
     'ex30_lineChart_column_nonStacked_oldManualLayouter',
@@ -480,13 +529,11 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> current = parseDescriptors([
-    // 'ex800_barChart_column_stacked_newAutoLayouter',
-    'ex75_lineChart_row_nonStacked_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
 
-  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(allSupportedOld);
+  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(convertedToNew)..addAll(oldFailingInNew);
 
   static List<ExampleDescriptor> parseEnhancedDescriptors(List<String> descriptors) {
     List<ExampleDescriptor> allDefined = [];
@@ -505,11 +552,17 @@ class ExampleDescriptor {
           case _GroupDescriptor.allSupportedNew:
             allDefined.addAll(allSupportedNew);
             break;
+          case _GroupDescriptor.convertedToNew:
+            allDefined.addAll(convertedToNew);
+            break;
+          case _GroupDescriptor.oldFailingInNew:
+            allDefined.addAll(oldFailingInNew);
+            break;
           case _GroupDescriptor.minimumOld:
             allDefined.addAll(minimumOld);
             break;
-          case _GroupDescriptor.allSupportedOld:
-            allDefined.addAll(allSupportedOld);
+          case _GroupDescriptor.origAllTestedOld:
+            allDefined.addAll(origAllTestedOld);
             break;
           case _GroupDescriptor.current:
             allDefined.addAll(current);
@@ -621,8 +674,10 @@ enum _GroupDescriptor {
   absoluteMinimumNew,
   minimumNew,
   allSupportedNew,
+  convertedToNew,
+  oldFailingInNew,
   minimumOld,
-  allSupportedOld,
+  origAllTestedOld,
   current,
   minimum,
   allSupported;
