@@ -143,7 +143,6 @@ class Interval {
   }
 
   bool isIntersects(Interval other) {
-    // todo-00-last-done : return includes(other.min) || includes(other.max);
     return min < other.max && other.min < max;
   }
 
@@ -161,7 +160,6 @@ class Interval {
 
   /// Returns [true] if the passed [other] is inside self.
   bool containsFully(Interval other) {
-    // todo-00-last
     return includes(other.min) && includes(other.max);
   }
 
@@ -481,7 +479,6 @@ class AffineRangedMap1D {
       :
         // Allow the TO range to be collapsed, but not the FROM range, which is in denominator -
         //  RangeExtrapolation1D.apply would not be a function.
-        assert (fromRangeStart != fromRangeEnd),
         _fromRangeStart = fromRangeStart,
         _fromRangeEnd = fromRangeEnd,
         _toRangeStart = toRangeStart,

@@ -33,6 +33,7 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 /// will be placed (these points are also values of the labels).
 ///
 /// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
+/// todo-01 : This should be moved from label_model to axis_model or similar
 ///
 class DataRangeTicksAndLabelsDescriptor {
 
@@ -76,14 +77,16 @@ class DataRangeTicksAndLabelsDescriptor {
         _valueToLabel = valueToLabel,
         _inverseTransform = inverseTransform
   {
+    // Constructor-local variables
     util_dart.Interval dataEnvelope;
     List<double> transformedLabelValues;
 
-    // Finds the [dataRange] interval for data values
-    //   (which may be an envelop around values, for example if we want to always start at 0),
+    // Finds the local [dataEnvelope] and derives the [dataRange] interval for data values.
     //   then creates [_labelInfos] labels evenly distributed in the [dataRange] interval.
+    // [dataRange] may be a non-tight envelop around actual data values,
+    //   for example if we want axis data to start at 0 (despite far from 0 data).
     // Both local [dataEnvelope] and member [dataRange]
-    //   are **transformed && not-extrapolated** data from [ChartModelPoint].
+    //   are *transformed && not-extrapolated* data from [ChartModelPoint].
     if (userLabels != null) {
       switch(dataDependency) {
         case DataDependency.inputData:
@@ -91,7 +94,7 @@ class DataRangeTicksAndLabelsDescriptor {
           //   the interval is, once the pixels range on the axis is available,
           //   it will be affmap-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
-          //   as that is for dependent data, it would be confusing.
+          //   because that is for dependent data, it would be confusing.
           dataEnvelope = chartViewModel.dataRangeWhenStringLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
@@ -110,6 +113,7 @@ class DataRangeTicksAndLabelsDescriptor {
           break;
       }
     } else {
+      // If [userLabels] null (not set), [dataEnvelope] is taken from data only
       dataEnvelope = chartViewModel.extendedValuesInterval(
         extendAxisToOrigin: extendAxisToOrigin,
         chartStacking: chartStacking,
@@ -120,12 +124,17 @@ class DataRangeTicksAndLabelsDescriptor {
       );
     }
 
-    // Store the merged interval of values and label envelope for [AxisLabelInfos] creation
-    // that can be created immediately after by invoking [createAxisLabelInfos].
-    dataRange = util_dart.Interval(
+    // [dataRange] member holds the full (min, max) of the full axis (start, end) section;
+    // it represents *transformed && not-extrapolated* model data values.
+    // Because labels can extend beyond model data values, merge the interval of model data values
+    // with the label interval.
+    util_dart.Interval lFullAxisIntervalAsTrfdData = util_dart.Interval(
+    // todo-00-done dataRange = util_dart.Interval(
       transformedLabelValues.reduce(math.min),
       transformedLabelValues.reduce(math.max),
     ).merge(dataEnvelope);
+
+    dataRange = _ifAxisIntervalCollapsedExtendIt(lFullAxisIntervalAsTrfdData);
 
     // Format and extrapolate labels from the [_labelPositions] local to the [_labelInfos] member.
     List<AxisLabelInfo> labelInfos = transformedLabelValues
@@ -464,6 +473,26 @@ class DataRangeTicksAndLabelsDescriptor {
     return labels;
   }
 
+  /// If the passed interval (representing full axis interval) is collapsed (min=max),
+  /// extend it by some reasonable length.
+  ///
+  /// Fix for ex900 bug.
+  util_dart.Interval _ifAxisIntervalCollapsedExtendIt( util_dart.Interval axisInterval ) {
+    if (!util_dart.isCloserThanEpsilon(axisInterval.min, axisInterval.max)) {
+      return axisInterval;
+    }
+
+    // axisInterval is collapsed to 0.0, return (0,1)
+    if (util_dart.isCloserThanEpsilon(0.0, axisInterval.min)) {
+      return util_dart.Interval(0.0, 1.0);
+    }
+
+    // axisInterval is collapsed to non-0.0,
+    // return interval that is 1/10 of initial value, either towards positive
+    // or negarive
+    return util_dart.Interval(
+        axisInterval.min, axisInterval.min + (axisInterval.min / 10.0));
+  }
 }
 
 /// Represents the position in label.
@@ -514,7 +543,7 @@ enum MoveTickTo {
 ///   ```
 ///   It is created as extrapolated [centerTickValue], in the [PointsColumnsOCL]
 ///   where the extrapolation is from the Y data and labels envelop to the Y axis envelop.
-///   - This value is **transformed and extrapolated**.
+///   - This value is **transformed && extrapolated**.
 ///   - This value is obtained as follows
 ///     ```dart
 ///        _axisValue = rangeDescriptor.scaleY(value: transformedOutputValue.toDouble());

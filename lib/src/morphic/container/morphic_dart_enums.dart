@@ -30,9 +30,13 @@ enum LayoutAxis {
 
 }
 
-/// Describes the type of data shown on a [LayoutAxis], for a [ChartOrientation].
+/// Enum describes the type of data shown on a [LayoutAxis]
+/// as [inputData] or [outputData].
 ///
-/// Given a [ChartOrientation], the [LayoutAxis] on which a given [DataDependency]
+/// This information must be attached on both chart axes,
+/// to hint if data on either axis can be stacked.
+///
+/// Each chart has a [ChartOrientation], the [LayoutAxis] on which a given [DataDependency]
 /// is shown, is defined by [ChartOrientation.layoutAxisForDataDependency].
 enum DataDependency {
   inputData,

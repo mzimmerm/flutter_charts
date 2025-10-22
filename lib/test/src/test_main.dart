@@ -1083,6 +1083,27 @@ class ExampleWidgetCreator {
           chartOptions: chartOptions,
         );
         break;
+
+      case ExampleEnum.ex901ErrorFixUserDataAllSame50:
+
+      /// Bug Fix: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
+        chartModel = ChartModel(
+          dataRows: const [
+            [50.0, 50.0, 50.0],
+          ],
+          // Note: When ChartData is defined,
+          //       ALL OF  inputUserLabels,  byRowLegends, byRowColors
+          //       must be set by client
+          inputUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          legendNames: const [
+            'Row 1',
+          ],
+          legendColors: const [
+            Colors.blue,
+          ],
+          chartOptions: chartOptions,
+        );
+        break;
     }
 
     // LineChart or BarChart depending on what is set in environment.

@@ -10,53 +10,6 @@ import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 void main() {
   // todo 1 add tests for extrapolating . Add more tests in general
 
-  /* todo-00-last-done moved to util_dart_test
-  test('Poly power and coeff', () {
-    Poly p = Poly(from: 123.04);
-    expect(p.signum, 1);
-    expect(p.maxPower, 2);
-    expect(p.coefficientAtMaxPower, 1);
-
-    p = Poly(from: 78);
-    expect(p.signum, 1);
-    expect(p.maxPower, 1);
-    expect(p.coefficientAtMaxPower, 7);
-
-    p = Poly(from: 0);
-    expect(p.signum, 0);
-    expect(p.maxPower, 0);
-    expect(p.coefficientAtMaxPower, 0);
-
-    p = Poly(from: 0.0);
-    expect(p.signum, 0);
-    expect(p.maxPower, 0);
-    expect(p.coefficientAtMaxPower, 0);
-
-    p = Poly(from: 0.1);
-    expect(p.signum, 1);
-    expect(p.maxPower, -1);
-    expect(p.coefficientAtMaxPower, 1);
-
-    p = Poly(from: 0.01);
-    expect(p.signum, 1);
-    expect(p.maxPower, -2);
-    expect(p.coefficientAtMaxPower, 1);
-
-    p = Poly(from: -0.01);
-    expect(p.signum, -1);
-    expect(p.maxPower, -2);
-    expect(p.coefficientAtMaxPower, 1);
-  });
-
-  test('Poly floor and ceil', () {
-    Poly p = Poly(from: 123.04);
-    expect(p.floorAtMaxPower, 100);
-    expect(p.ceilAtMaxPower, 200);
-
-    // todo 1 test pure fractions and negatives
-  });
-  */
-
   test('Range.makeRangeDescriptorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
     ChartOrientation chartOrientation = ChartOrientation.column;

@@ -4,8 +4,6 @@ import 'package:flutter_charts/src/util/util_dart.dart';
 
 void main() {
 
-  // todo-00-done moved here from util_labels_test
-
   test('Poly power and coeff', () {
     Poly p = Poly(from: 123.04);
     expect(p.signum, 1);

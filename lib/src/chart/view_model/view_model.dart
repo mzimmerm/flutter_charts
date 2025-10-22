@@ -164,8 +164,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
         .extremeValueWithSign(sign);
   }
 
-  /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
-  /// specific for the passed [isStacked].
+  /// Returns the minimum and maximum *transformed && not-extrapolated* data values calculated from [ChartModel],
+  /// specific for the passed [ChartStacking.isStacked].
   ///
   /// The returned value is calculated from [ChartModel] by finding maximum and minimum of data values
   /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
@@ -179,18 +179,44 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Implementation detail: maximum and minimum is calculated column-wise [PointsBarModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
+  /// // todo-00-last : this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
+  ///  // todo-00-last :  rename view_model. valuesInterval FUNCTION to findTrfdDataTightInterval
+  ///  // todo-00-last :  rename extendedValuesInterval FUNCTION to findTrfdDataExtendedInterval
+  ///  // todo-00-last : in label_model (ELSWhERE TOO??) rename dataEnvelope => trfdDataExtendedInterval
+  ///  // todo-00-last : in label_model rename transformedLabelValues => trfdLabelNumbers
+  ///  // todo-00-last : rename _placeLabelPointsInInterval => _generateLabelNumbersForLabelsCountInInterval
+  ///  // todo-00-last : rename _generateValuesForLabelsIn => _generatePolySuitableLabelNumbersInInterval
+  ///  // todo-00-last : rename labelPointsCount => labelsCount
+  ///  // todo-00-last :
+  ///  // todo-00-last :
+  ///  // todo-00-last :
+  ///  // todo-00-last : rename extremeValueWithSign => outerDatumForSign
+  ///  // todo-00-last : rename extremeValue => outerDatum
+  ///  // todo-00-last : rename transformedData => trfdData
+  ///  // todo-00-last : rename _transformedValuesMin => _trfdDataMin
+  ///  // todo-00-last : rename _transformedValuesMax => _trfdDataMax
+  ///  // MAYBE!!!!!
+  ///  // todo-00-last : dataRange (core holder of axis range on LabelDescriptor) => fullAxisIntervalAsTrfdData
+  ///  // todo-00-last : look at places where 'transformed' is used and rename to trfd??
+  ///  // todo-00-last : look at places where 'envelope' is used and rename
+  ///  // todo-00-last : in view_model.PointModel rename outputValue to trfdOutputDatum
   util_dart.Interval valuesInterval({
     required ChartStacking chartStacking,
   }) {
     switch(chartStacking) {
       case ChartStacking.stacked:
-      // Stacked values always start or end at 0.0.isStacked
+      // Stacked values always start or end at 0.0.
+      // Stacked value can NOT be transformed (logarithmic)
+      // Values of extremeValueWithSign are taken from
+      //   thisChartViewModel.pointsBarModels.each.pointModelList.each.PointModel.outputValue
         return util_dart.Interval(
           extremeValueWithSign(Sign.negative, chartStacking),
           extremeValueWithSign(Sign.positiveOr0, chartStacking),
         );
       case ChartStacking.nonStacked:
-      // not-Stacked values can just use values from [ChartModel.dataRows] transformed values.
+      // not-Stacked values just use values DIRECTLY from [ChartModel.dataRows]
+      // as opposed from PointModel.outputValue
+      // todo-01 Try using extremeValueWithSign here as well, then transform it
         return util_dart.Interval(
           _transformedValuesMin,
           _transformedValuesMax,
@@ -226,12 +252,12 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///
   final util_dart.Interval dataRangeWhenStringLabels = const util_dart.Interval(0.0, 100.0);
 
-  List<double> get _flatten => _chartModel.flattenRows;
+  List<double> get _flattenModelRows => _chartModel.flattenRows;
 
   double get _transformedValuesMin =>
-      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
+      _flattenModelRows.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
   double get _transformedValuesMax =>
-      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
+      _flattenModelRows.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
   int get numRows => _chartModel.numRows;
 
@@ -663,7 +689,7 @@ class PointModel extends BasePointModel {
 
   // ===================== NEW CODE ============================================
 
-  /// The *transformed, not-extrapolated* data value from one data item
+  /// The *transformed && not-extrapolated* data value from one data item
   /// in the 2D, rows first, [ChartModel.valuesRows] at position [rowIndex].
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:

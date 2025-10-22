@@ -51,7 +51,7 @@ class SwitchBarChartViewModel extends SwitchChartViewModel {
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///
-  /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
+  /// Overridden to [true] on this bar chart container, where the y axis must start from 0.
   ///
   @override
   bool get extendAxisToOrigin => true;

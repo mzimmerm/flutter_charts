@@ -86,6 +86,7 @@ enum ExampleEnum {
 
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
+  ex901ErrorFixUserDataAllSame50,
 }
 
 /// Describes and generates properties of one example or a list of pre-configured chart examples.
@@ -224,6 +225,10 @@ class ExampleDescriptor {
 
     //
     const Tuple2(ExampleEnum.ex900ErrorFixUserDataAllZero, ChartType.lineChart),
+
+    //
+    const Tuple2(ExampleEnum.ex901ErrorFixUserDataAllSame50, ChartType.lineChart),
+
   ];
 
   /// Check if the example described with the passed enums should run in a test.
@@ -434,7 +439,7 @@ class ExampleDescriptor {
   ]);
 
   // todo-00 add coreLayouterTestingNew and add all individual
-  // todo-00 add reasonableAmountOfNew and include coreLayouterTestingNew AND
+  //         add reasonableAmountOfNew and include coreLayouterTestingNew AND
   // : 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
   // : 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
   // 'ex31_lineChart_*_nonStacked_newAutoLayouter',
@@ -446,7 +451,7 @@ class ExampleDescriptor {
   //
 
   // todo-00 move  individual to  coreLayouterTestingNew
-   // todo-00 add dataset name to description: animal data - pos/neg data - only pos data - only neg data - user label
+  //         AND add dataset name to description: animal data - pos/neg data - only pos data - only neg data - user label
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
     'ex31_lineChart_*_nonStacked_newAutoLayouter',  // ex31 tests all row/column inversions with positive+negative data
     'ex31_barChart_*_*_newAutoLayouter',
@@ -488,6 +493,9 @@ class ExampleDescriptor {
     // ex76 : tests legend layout
     'ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter',
     // ex80 : all already in allSupportedNew (tests row/column inversion with only positive values
+    // ex900 : bug fixed on affine transform with all data 0.0
+    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter',
+    'ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter',
   ]);
 
    // Successfully converted to new layout
@@ -496,8 +504,6 @@ class ExampleDescriptor {
 
   // Use old coded_layouter as new auto_layouter fails
   static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
-    // todo-00-remove-fixed: 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
-    // todo-00-remove-fixed: 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
     'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
@@ -505,7 +511,6 @@ class ExampleDescriptor {
     'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
-    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
   ]);
 
   static List<ExampleDescriptor> minimumOld = parseDescriptors([
@@ -546,11 +551,12 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> current = parseDescriptors([
-    // all positive starting above 0 AND all negative starting below 0
-    'ex32_lineChart_*_nonStacked_newAutoLayouter',
-    'ex32_barChart_*_*_newAutoLayouter',
-    'ex33_lineChart_*_nonStacked_newAutoLayouter',
-    'ex33_barChart_*_*_newAutoLayouter',
+    // 'ex900ErrorFixUserDataAllZero_lineChart_*_nonStacked_newAutoLayouter',
+    // 'ex900ErrorFixUserDataAllZero_barChart_*_*_newAutoLayouter',
+    // 'ex901ErrorFixUserDataAllSame50_lineChart_*_nonStacked_newAutoLayouter',
+    // 'ex901ErrorFixUserDataAllSame50_barChart_*_*_newAutoLayouter',
+    // 'ex72_lineChart_*_nonStacked_newAutoLayouter',
+    // 'ex72_barChart_*_*_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);

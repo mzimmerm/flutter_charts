@@ -2182,6 +2182,11 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_column_stacked_newAutoLayout
 ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter.png                                    
                                                                                                                               
 
+
+** IN-PROGRESS-NOW Refactor naming around chart_mode.ChartViewModel and label_model.DataRangeTicksAndLabelsDescriptor
+
+- [ ] in view_model.PointModel rename outputValue to trfdOutputDatum
+
 ** IN-PROGRESS-NOW Fix charts that are NOT working in new auto_layouter
 
 Failing auto-layouter has several categories
@@ -2244,16 +2249,36 @@ failing:
 
 *** TODO-NOW 1 5. Failing reason unkown
 
- #+begin_example
+#+begin_example
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
- #+end_example
+#+end_example
 
+Interval fix did NOT help this bug
 
 *** TODO-NOW 2 6. Failing due to no data but it should be fixed
 
+todo-0000-now
 #+begin_example
     'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
 #+end_example
+
+Error from IntelliJ
+
+======== Exception caught by rendering library =====================================================
+The following assertion was thrown during paint():
+'package:flutter_charts/src/util/util_dart.dart': Failed assertion: line 484 pos 17: 'fromRangeStart != fromRangeEnd': is not true.
+
+The relevant error-causing widget was: 
+  BarChart BarChart:file:///home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src/test_main.dart:1123:29
+When the exception was thrown, this was the stack: 
+#2      new AffineRangedMap1D (package:flutter_charts/src/util/util_dart.dart:484:17)
+#3      new ToPixelsAffineMap1D (package:flutter_charts/src/util/util_dart.dart:604:8)
+#4      ExternalTicksLayoutDescriptor._affmapValuesToPixels.<anonymous closure> (package:flutter_charts/src/morphic/container/container_layouter_base.dart:4114:42)
+#5      MappedListIterable.elementAt (dart:_internal/iterable.dart:442:31)
+#6      ListIterator.moveNext (dart:_internal/iterable.dart:371:26)
+#7      new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194:27)
+#8      new _GrowableList.of (dart:core-patch/growable_array.dart:154:28)
+#9      new List.of (dart:core-patch/array_patch.dart:39:18)
 
 
 ** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
