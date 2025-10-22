@@ -39,27 +39,27 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   void howFromToAreCalculated(DataDependency axisDataDependency) {
     /*
     // to use this, make fromPointOffset member late
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
-    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
+    AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor = chartViewModel.axisIntervalDescriptorFor(axisDataDependency);
+    AxisIntervalTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
 
     double inputValueFrom, inputValueTo, outputValueFrom, outputValueTo;
 
     switch (axisDataDependency) {
       case DataDependency.inputData:
       // cross direction (output), zero or min on cross range
-        outputValueFrom = crossRangeDescriptor.dataRange.zeroElseMin;
-        outputValueTo = crossRangeDescriptor.dataRange.zeroElseMin;
+        outputValueFrom = crossRangeDescriptor.axisInterval.zeroElseMin;
+        outputValueTo = crossRangeDescriptor.axisInterval.zeroElseMin;
         // same direction (input), from min to max on range independent of orientation
-        inputValueFrom = rangeDescriptor.dataRange.min;
-        inputValueTo = rangeDescriptor.dataRange.max;
+        inputValueFrom = axisIntervalDescriptor.axisInterval.min;
+        inputValueTo = axisIntervalDescriptor.axisInterval.max;
         break;
       case DataDependency.outputData:
       // cross direction (input), zero or min on cross range
-        inputValueFrom = crossRangeDescriptor.dataRange.zeroElseMin;
-        inputValueTo = crossRangeDescriptor.dataRange.zeroElseMin;
+        inputValueFrom = crossRangeDescriptor.axisInterval.zeroElseMin;
+        inputValueTo = crossRangeDescriptor.axisInterval.zeroElseMin;
         // same direction (output), from min to max on range independent of orientation
-        outputValueFrom = rangeDescriptor.dataRange.min;
-        outputValueTo = rangeDescriptor.dataRange.max;
+        outputValueFrom = axisIntervalDescriptor.axisInterval.min;
+        outputValueTo = axisIntervalDescriptor.axisInterval.max;
         break;
     }
 
@@ -87,12 +87,12 @@ class TransposingInputAxisLine extends AxisLineContainer {
     super.constraintsWeight,
   }) : super(
           fromPointOffset: PointOffset(
-            inputValue: chartViewModel.inputRangeDescriptor.dataRange.min,
-            outputValue: chartViewModel.outputRangeDescriptor.dataRange.zeroElseMin,
+            inputValue: chartViewModel.inputAxisDescriptor.axisInterval.min,
+            outputValue: chartViewModel.outputAxisDescriptor.axisInterval.zeroElseMin,
           ),
           toPointOffset: PointOffset(
-            inputValue: chartViewModel.inputRangeDescriptor.dataRange.max,
-            outputValue: chartViewModel.outputRangeDescriptor.dataRange.zeroElseMin,
+            inputValue: chartViewModel.inputAxisDescriptor.axisInterval.max,
+            outputValue: chartViewModel.outputAxisDescriptor.axisInterval.zeroElseMin,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
@@ -114,12 +114,12 @@ class TransposingOutputAxisLine extends AxisLineContainer {
     required ChartViewModel chartViewModel,
   }) : super(
           fromPointOffset: PointOffset(
-            inputValue: chartViewModel.inputRangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
-            outputValue: chartViewModel.outputRangeDescriptor.dataRange.min,
+            inputValue: chartViewModel.inputAxisDescriptor.axisInterval.zeroElseMin, // inputAxisDescriptor.axisInterval.min,
+            outputValue: chartViewModel.outputAxisDescriptor.axisInterval.min,
           ),
           toPointOffset: PointOffset(
-            inputValue: chartViewModel.inputRangeDescriptor.dataRange.zeroElseMin, // inputRangeDescriptor.dataRange.min,
-            outputValue: chartViewModel.outputRangeDescriptor.dataRange.max,
+            inputValue: chartViewModel.inputAxisDescriptor.axisInterval.zeroElseMin, // inputAxisDescriptor.axisInterval.min,
+            outputValue: chartViewModel.outputAxisDescriptor.axisInterval.max,
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
@@ -135,7 +135,7 @@ class TransposingOutputAxisLine extends AxisLineContainer {
 /// The passed [chartViewModel] provides definition of chart type, orientation, and data ranges.
 ///
 /// The passed [axisDataDependency] defines if the method builds the input or output;
-/// it is translated to [DataRangeTicksAndLabelsDescriptor] which is used to iterate the ticked
+/// it is translated to [AxisIntervalTicksAndLabelsDescriptor] which is used to iterate the ticked
 /// labels or grid lines.
 abstract class _ChildrenProviderMixin {
   List<BoxContainer> _externallyTickedAxisLabelsOrGridLinesOnAxis({
@@ -155,13 +155,13 @@ mixin _AxisLabelsProviderMixin implements _ChildrenProviderMixin, _LabelStyleMix
     required ChartViewModel chartViewModel,
     required DataDependency axisDataDependency,
   }) {
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
+    AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor = chartViewModel.axisIntervalDescriptorFor(axisDataDependency);
 
     return [
       // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-      //   in the [DataRangeTicksAndLabelsDescriptor] constructor called in the [ChartViewModel] constructor,
-      //   where both input and output [DataRangeTicksAndLabelsDescriptor]s are created.
-      for (var labelInfo in rangeDescriptor.labelInfoList)
+      //   in the [AxisIntervalTicksAndLabelsDescriptor] constructor called in the [ChartViewModel] constructor,
+      //   where both input and output [AxisIntervalTicksAndLabelsDescriptor]s are created.
+      for (var labelInfo in axisIntervalDescriptor.labelInfoList)
         AxisLabelContainer(
           chartViewModel: chartViewModel,
           label: labelInfo.formattedLabel,
@@ -185,7 +185,7 @@ mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
   /// The passed [axisDataDependency] describes the children (labels for axis, grid lines for grid)
   /// being build:
   ///   - for [axisDataDependency] equal to [DataDependency.inputData], children for input axis are built;
-  ///     also, the line is between [ChartViewModel.outputRangeDescriptor] max and min.
+  ///     also, the line is between [ChartViewModel.outputAxisDescriptor] max and min.
   ///   - equivalent for  [axisDataDependency] equal to [DataDependency.outputData],
   ///
   /// Important note:
@@ -197,8 +197,8 @@ mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
     required DataDependency axisDataDependency,
   }) {
 
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = chartViewModel.rangeDescriptorFor(axisDataDependency);
-    DataRangeTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
+    AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor = chartViewModel.axisIntervalDescriptorFor(axisDataDependency);
+    AxisIntervalTicksAndLabelsDescriptor crossRangeDescriptor = chartViewModel.crossRangeDescriptorFor(axisDataDependency);
 
     // Set values of the 'from' and 'to' points of grid lines.
     // The values are the same for all grid lines; each grid line is placed at min pixels (horizontal or vertical),
@@ -224,28 +224,28 @@ mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
     switch(axisDataDependency) {
       case DataDependency.inputData:
         // cross direction, from min to max on cross range (output range)
-        outputValueFrom = crossRangeDescriptor.dataRange.min;
-        outputValueTo = crossRangeDescriptor.dataRange.max;
+        outputValueFrom = crossRangeDescriptor.axisInterval.min;
+        outputValueTo = crossRangeDescriptor.axisInterval.max;
         // same direction, from min to min or max to max on range (output range) depending on orientation
         inputValueFrom = chartViewModel.chartOrientation == ChartOrientation.column
-            ? rangeDescriptor.dataRange.min
-            : rangeDescriptor.dataRange.max;
+            ? axisIntervalDescriptor.axisInterval.min
+            : axisIntervalDescriptor.axisInterval.max;
         inputValueTo = inputValueFrom;
         break;
       case DataDependency.outputData:
         // cross direction, from min to max on cross range (input range)
-        inputValueFrom = crossRangeDescriptor.dataRange.min;
-        inputValueTo = crossRangeDescriptor.dataRange.max;
+        inputValueFrom = crossRangeDescriptor.axisInterval.min;
+        inputValueTo = crossRangeDescriptor.axisInterval.max;
         // same direction, from min to min or max to max on range (input range) depending on orientation
         outputValueFrom = chartViewModel.chartOrientation == ChartOrientation.column
-            ? rangeDescriptor.dataRange.max // affmap places it to min on vertical pixels, ticks move it to position
-            : rangeDescriptor.dataRange.min;
+            ? axisIntervalDescriptor.axisInterval.max // affmap places it to min on vertical pixels, ticks move it to position
+            : axisIntervalDescriptor.axisInterval.min;
         outputValueTo = outputValueFrom;
         break;
     }
 
     return [
-      for (var labelInfo in rangeDescriptor.labelInfoList)
+      for (var labelInfo in axisIntervalDescriptor.labelInfoList)
         LineBetweenPointOffsetsContainer(
           fromPointOffset: PointOffset(
             inputValue: inputValueFrom,
@@ -298,7 +298,7 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
       case DataDependency.inputData:
         return TransposingExternalTicks.Row(
           chartOrientation: chartOrientation,
-          mainAxisExternalTicksLayoutDescriptor: chartViewModel.inputRangeDescriptor.asExternalTicksLayoutDescriptor(
+          mainAxisExternalTicksLayoutDescriptor: chartViewModel.inputAxisDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
             moveTickTo: moveTickTo,
           ),
@@ -307,7 +307,7 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
       case DataDependency.outputData:
         return TransposingExternalTicks.Column(
           chartOrientation: chartOrientation,
-          mainAxisExternalTicksLayoutDescriptor: chartViewModel.outputRangeDescriptor.asExternalTicksLayoutDescriptor(
+          mainAxisExternalTicksLayoutDescriptor: chartViewModel.outputAxisDescriptor.asExternalTicksLayoutDescriptor(
             externalTickAtPosition: ExternalTickAtPosition.childCenter,
             moveTickTo: moveTickTo,
           ),
@@ -338,8 +338,8 @@ abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAr
 
   /// Defines either input or output data.
   ///
-  /// If set to [DataDependency.inputData], implementations must use [ChartViewModel.inputRangeDescriptor],
-  /// if set to [DataDependency.outputData], implementations must use [ChartViewModel.outputRangeDescriptor].
+  /// If set to [DataDependency.inputData], implementations must use [ChartViewModel.inputAxisDescriptor],
+  /// if set to [DataDependency.outputData], implementations must use [ChartViewModel.outputAxisDescriptor].
   late final DataDependency dataDependency;
 
   /// Determines the position, on which label centers or grid lines are placed.

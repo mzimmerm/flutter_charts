@@ -36,14 +36,14 @@ extension IterableExtension<E> on Iterable<E> {
     throw StateError('Iterable $this has no elements. this=${toList()}');
   }
 
-  double extremeValueWithSign(Sign sign) {
+  double outerDatumForSign(Sign sign) {
     switch(sign) {
       case Sign.positiveOr0:
         return fold<double>(0.0, (prev, element) => math.max(prev, element as double));
       case Sign.negative:
         return fold<double>(0.0, (prev, element) => math.min(prev, element as double));
       case Sign.any:
-        throw StateError('method extremeWithSign cannot be applied on Sign.any');
+        throw StateError('method outerDatumForSign cannot be applied on Sign.any');
     }
   }
 }

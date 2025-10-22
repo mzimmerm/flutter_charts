@@ -15,15 +15,15 @@ void main() {
     ChartOrientation chartOrientation = ChartOrientation.column;
     ChartStacking chartStacking = ChartStacking.stacked;
 
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor;
+    AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor;
     
     var extendAxisToOrigin = true;
     var inputUserLabels = ['1', '2', '3'];
     var legendNames = ['Legend of row 1'];
 
     var dataRows = [[1.0, 22.0, 333.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    List<AxisLabelInfo> labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    List<AxisLabelInfo> labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].centerTickValue, 0.0);
     expect(labelInfoList[1].centerTickValue, 100.0);
@@ -32,8 +32,8 @@ void main() {
 
 
     dataRows = [[-1.0, -22.0, -333.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].centerTickValue, -300.0);
     expect(labelInfoList[1].centerTickValue, -200.0);
@@ -41,8 +41,8 @@ void main() {
     expect(labelInfoList[3].centerTickValue, 0.0);
 
     dataRows = [[22.0, 10.0, -333.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].centerTickValue, -300.0);
     expect(labelInfoList[1].centerTickValue, -200.0);
@@ -51,8 +51,8 @@ void main() {
     expect(labelInfoList[4].centerTickValue, 100.0);
 
     dataRows = [[-22.0, -10.0, 333.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].centerTickValue, -100.0);
     expect(labelInfoList[1].centerTickValue, 0.0);
@@ -61,8 +61,8 @@ void main() {
     expect(labelInfoList[4].centerTickValue, 300.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], legendNames);
-    labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], legendNames);
+    labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].centerTickValue, -1000.0);
     expect(labelInfoList[1].centerTickValue, 0.0);
@@ -70,8 +70,8 @@ void main() {
     expect(labelInfoList[3].centerTickValue, 2000.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
-    rangeDescriptor = dataRangeRangeDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
-    labelInfoList = rangeDescriptor.labelInfoList;
+    axisIntervalDescriptor = makeAxisIntervalDescriptor(chartOrientation, chartStacking, extendAxisToOrigin, options, dataRows, inputUserLabels, legendNames);
+    labelInfoList = axisIntervalDescriptor.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].centerTickValue, -1000.0);
     expect(labelInfoList[1].centerTickValue, 0.0);
@@ -81,9 +81,9 @@ void main() {
 
 }
 
-DataRangeTicksAndLabelsDescriptor dataRangeRangeDescriptor(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
+AxisIntervalTicksAndLabelsDescriptor makeAxisIntervalDescriptor(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
   var mockChartModel = _constructMockChartModel(options, dataRows, inputUserLabels, extendAxisToOrigin, legendNames);
-  return DataRangeTicksAndLabelsDescriptor(
+  return AxisIntervalTicksAndLabelsDescriptor(
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     chartViewModel: MockChartViewModel(
@@ -155,7 +155,7 @@ void rangeTestCore(
     // Reversing min max in makeRangeDescriptorWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeRangeDescriptorWithLabelInfosFromDataYsOnScale not adjust?
-    DataRangeTicksAndLabelsDescriptor rangeDescriptor = DataRangeTicksAndLabelsDescriptor(
+    AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor = AxisIntervalTicksAndLabelsDescriptor(
       chartOrientation: ChartOrientation.column,
       chartStacking: ChartStacking.nonStacked,
       chartViewModel: MockChartViewModel(
@@ -171,10 +171,10 @@ void rangeTestCore(
     );
 
 
-    expect(rangeDescriptor.labelInfoList.length, expectedLabels.length);
-    for (int i = 0; i < rangeDescriptor.labelInfoList.length; i++) {
+    expect(axisIntervalDescriptor.labelInfoList.length, expectedLabels.length);
+    for (int i = 0; i < axisIntervalDescriptor.labelInfoList.length; i++) {
       expect(
-        rangeDescriptor.labelInfoList[i].centerTickValue,
+        axisIntervalDescriptor.labelInfoList[i].centerTickValue,
         expectedLabels[i],
       );
     }

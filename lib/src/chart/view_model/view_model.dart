@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart' show immutable;
 // import 'dart:developer' as dart_developer;
 
 // this level
-import 'package:flutter_charts/src/chart/view_model/label_model.dart' as util_labels show DataRangeTicksAndLabelsDescriptor, extendToOrigin;
+import 'package:flutter_charts/src/chart/view_model/label_model.dart' as util_labels show AxisIntervalTicksAndLabelsDescriptor, extendToOrigin;
 import 'package:flutter_charts/src/chart/view_model/label_model.dart';
 
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
@@ -100,11 +100,11 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: _chartModel.chartOptions);
     inputLabelLayoutStrategyInst = inputLabelLayoutStrategy;
 
-    // Create [outputRangeDescriptor] which depends on both ChartModel and ChartRootContainer.
+    // Create [outputAxisDescriptor] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewModel] constructor or later
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewModel] is the first time we can
-    // create the [inputRangeDescriptor] and [inputRangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor], so do that.
-    outputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
+    // create the [inputAxisDescriptor] and [inputAxisDescriptor] instance of [AxisIntervalTicksAndLabelsDescriptor], so do that.
+    outputAxisDescriptor = util_labels.AxisIntervalTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
       chartViewModel: this,
@@ -116,7 +116,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     );
 
     // See comment in VerticalAxisContainer constructor
-    inputRangeDescriptor = util_labels.DataRangeTicksAndLabelsDescriptor(
+    inputAxisDescriptor = util_labels.AxisIntervalTicksAndLabelsDescriptor(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
       chartViewModel: this,
@@ -129,8 +129,8 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
     // Convenience wrapper for ranges of input and output values of all chart data
     fromTransposing2DValueRange = FromTransposing2DValueRange(
-      inputDataRange: inputRangeDescriptor.dataRange,
-      outputDataRange: outputRangeDescriptor.dataRange,
+      inputAxisInterval: inputAxisDescriptor.axisInterval,
+      outputAxisInterval: outputAxisDescriptor.axisInterval,
       chartOrientation: chartOrientation,
     );
   }
@@ -144,7 +144,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   @Deprecated('Only use in legacy coded_layout')
   model.ChartModel get chartModelInLegacy => _chartModel;
 
-  /// The methods [pointsBarModels], [numRows], [getLegendItemAt], [dataRangeWhenStringLabels]
+  /// The methods [pointsBarModels], [numRows], [getLegendItemAt], [axisIntervalWhenStringLabels]
   /// are legacy public views of [ChartViewModel] into [model.ChartModel] and may be removed.
   final List<PointsBarModel> pointsBarModels = [];
 
@@ -158,10 +158,10 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///
   /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
   /// their separately positive or negative values stacked if [isStacked] is true
-  double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
+  double outerDatumForSign(Sign sign, ChartStacking chartStacking) {
     return pointsBarModels
-        .map((pointsBarModel) => pointsBarModel.extremeValueWithSign(sign, chartStacking))
-        .extremeValueWithSign(sign);
+        .map((pointsBarModel) => pointsBarModel.outerDatumForSign(sign, chartStacking))
+        .outerDatumForSign(sign);
   }
 
   /// Returns the minimum and maximum *transformed && not-extrapolated* data values calculated from [ChartModel],
@@ -172,54 +172,34 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///
   /// The source data of the returned interval differs in stacked and not-Stacked data, determined by argument [isStacked] :
   ///   - For [chartStacking] == [ChartStacking.stacked],
-  ///       the min and max is from [extremeValueWithSign] for positive and negative sign
+  ///       the min and max is from [outerDatumForSign] for positive and negative sign
   ///   - For [chartStacking] == [ChartStacking.nonStacked],
-  ///       the min and max is from [_transformedValuesMin] and max.
+  ///       the min and max is from [_trfdDataMin] and max.
   ///
   /// Implementation detail: maximum and minimum is calculated column-wise [PointsBarModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
-  /// // todo-00-last : this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
-  ///  // todo-00-last :  rename view_model. valuesInterval FUNCTION to findTrfdDataTightInterval
-  ///  // todo-00-last :  rename extendedValuesInterval FUNCTION to findTrfdDataExtendedInterval
-  ///  // todo-00-last : in label_model (ELSWhERE TOO??) rename dataEnvelope => trfdDataExtendedInterval
-  ///  // todo-00-last : in label_model rename transformedLabelValues => trfdLabelNumbers
-  ///  // todo-00-last : rename _placeLabelPointsInInterval => _generateLabelNumbersForLabelsCountInInterval
-  ///  // todo-00-last : rename _generateValuesForLabelsIn => _generatePolySuitableLabelNumbersInInterval
-  ///  // todo-00-last : rename labelPointsCount => labelsCount
-  ///  // todo-00-last :
-  ///  // todo-00-last :
-  ///  // todo-00-last :
-  ///  // todo-00-last : rename extremeValueWithSign => outerDatumForSign
-  ///  // todo-00-last : rename extremeValue => outerDatum
-  ///  // todo-00-last : rename transformedData => trfdData
-  ///  // todo-00-last : rename _transformedValuesMin => _trfdDataMin
-  ///  // todo-00-last : rename _transformedValuesMax => _trfdDataMax
-  ///  // MAYBE!!!!!
-  ///  // todo-00-last : dataRange (core holder of axis range on LabelDescriptor) => fullAxisIntervalAsTrfdData
-  ///  // todo-00-last : look at places where 'transformed' is used and rename to trfd??
-  ///  // todo-00-last : look at places where 'envelope' is used and rename
-  ///  // todo-00-last : in view_model.PointModel rename outputValue to trfdOutputDatum
-  util_dart.Interval valuesInterval({
+  ///  // todo-00-last : Consider: in view_model.PointModel rename outputValue to trfdOutputDatum
+  util_dart.Interval findTrfdDataTightInterval({
     required ChartStacking chartStacking,
   }) {
     switch(chartStacking) {
       case ChartStacking.stacked:
       // Stacked values always start or end at 0.0.
       // Stacked value can NOT be transformed (logarithmic)
-      // Values of extremeValueWithSign are taken from
+      // Values of outerDatumForSign are taken from
       //   thisChartViewModel.pointsBarModels.each.pointModelList.each.PointModel.outputValue
         return util_dart.Interval(
-          extremeValueWithSign(Sign.negative, chartStacking),
-          extremeValueWithSign(Sign.positiveOr0, chartStacking),
+          outerDatumForSign(Sign.negative, chartStacking),
+          outerDatumForSign(Sign.positiveOr0, chartStacking),
         );
       case ChartStacking.nonStacked:
       // not-Stacked values just use values DIRECTLY from [ChartModel.dataRows]
       // as opposed from PointModel.outputValue
-      // todo-01 Try using extremeValueWithSign here as well, then transform it
+      // todo-01 Try using outerDatumForSign here as well, then transform it
         return util_dart.Interval(
-          _transformedValuesMin,
-          _transformedValuesMax,
+          _trfdDataMin,
+          _trfdDataMax,
         );
     }
   }
@@ -233,12 +213,12 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// is controlled by [extendAxisToOrigin]. If true, the interval is extended to zero
   /// if all values are positive or all values are negative.
   ///
-  util_dart.Interval extendedValuesInterval({
+  util_dart.Interval findTrfdDataExtendedInterval({
     required ChartStacking chartStacking,
     required bool extendAxisToOrigin,
   }) {
     return util_labels.extendToOrigin(
-      valuesInterval(chartStacking: chartStacking),
+      findTrfdDataTightInterval(chartStacking: chartStacking),
       extendAxisToOrigin,
     );
   }
@@ -250,13 +230,13 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   ///   converted to numeric, there must still be some way to affmap values to pixels.
   ///   This member provides a default 'from' range for such affmap-ing.
   ///
-  final util_dart.Interval dataRangeWhenStringLabels = const util_dart.Interval(0.0, 100.0);
+  final util_dart.Interval axisIntervalWhenStringLabels = const util_dart.Interval(0.0, 100.0);
 
   List<double> get _flattenModelRows => _chartModel.flattenRows;
 
-  double get _transformedValuesMin =>
+  double get _trfdDataMin =>
       _flattenModelRows.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
-  double get _transformedValuesMax =>
+  double get _trfdDataMax =>
       _flattenModelRows.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
   int get numRows => _chartModel.numRows;
@@ -269,15 +249,15 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Initialized late in this [ChartViewModel] constructor, and held as member
   /// for scaling to pixels in [data_container.DataContainer] and [axis_container.TransposingAxisContainer].
   ///
-  /// The [rangeDescriptor]'s interval [DataRangeTicksAndLabelsDescriptor.dataRange]
+  /// The [axisIntervalDescriptor]'s interval [AxisIntervalTicksAndLabelsDescriptor.axisInterval]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
   ///
   /// Important note: This should NOT be part of model,
   ///                 as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
-  late final util_labels.DataRangeTicksAndLabelsDescriptor outputRangeDescriptor;
+  late final util_labels.AxisIntervalTicksAndLabelsDescriptor outputAxisDescriptor;
 
-  late final util_labels.DataRangeTicksAndLabelsDescriptor inputRangeDescriptor;
+  late final util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisDescriptor;
 
   /// Wraps the ranges of input values and output values this view model contains.
   late final FromTransposing2DValueRange fromTransposing2DValueRange;
@@ -317,7 +297,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     // Create the concrete [ChartRootContainer] for this concrete [ChartViewModel].
     // After this invocation, the created root container is populated with children
     // HorizontalAxisContainer, VerticalAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeTicksAndLabelsDescriptor.
+    // depending on the concrete container. For example VerticalAxisContainer is populated with AxisIntervalTicksAndLabelsDescriptor.
 
     String isFirstStr = _debugPrintBegin();
 
@@ -375,21 +355,21 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     required covariant ChartViewModel chartViewModel,
   });
 
-  DataRangeTicksAndLabelsDescriptor rangeDescriptorFor(DataDependency dataDependency) {
+  AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptorFor(DataDependency dataDependency) {
     switch (dataDependency) {
       case DataDependency.inputData:
-        return inputRangeDescriptor;
+        return inputAxisDescriptor;
       case DataDependency.outputData:
-        return outputRangeDescriptor;
+        return outputAxisDescriptor;
     }
   }
 
-  DataRangeTicksAndLabelsDescriptor crossRangeDescriptorFor(DataDependency dataDependency) {
+  AxisIntervalTicksAndLabelsDescriptor crossRangeDescriptorFor(DataDependency dataDependency) {
     switch (dataDependency) {
       case DataDependency.inputData:
-        return outputRangeDescriptor;
+        return outputAxisDescriptor;
       case DataDependency.outputData:
-        return inputRangeDescriptor;
+        return inputAxisDescriptor;
     }
   }
 
@@ -437,7 +417,7 @@ class PointsBarModel {
   /// The [outerChartViewModel] is the [ChartModel] underlying the [PointsBarModel] instance being created.
   /// The [columnIndex] is index of the [valuesColumn] in the [outerChartViewModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
-  ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeTicksAndLabelsDescriptor]
+  ///   which assumes this point is on an axis with data range given by a [util_labels.AxisIntervalTicksAndLabelsDescriptor]
   ///   instance.
   PointsBarModel({
     required List<double> valuesColumn,
@@ -480,18 +460,18 @@ class PointsBarModel {
   /// instances of this [PointsBarModel] and it's [PointModel] elements.
   ///
   /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numChartModelColumns] columns that
-  /// divide the [dataRange].
+  /// divide the [axisInterval].
   ///
   /// Note: So this is offset from start and end of the Interval.
   ///
-  /// Late, once [util_labels.DataRangeTicksAndLabelsDescriptor] is established in view model,
-  /// we can use the [_numChartModelColumns] and the [util_labels.DataRangeTicksAndLabelsDescriptor.dataRange]
+  /// Late, once [util_labels.AxisIntervalTicksAndLabelsDescriptor] is established in view model,
+  /// we can use the [_numChartModelColumns] and the [util_labels.AxisIntervalTicksAndLabelsDescriptor.axisInterval]
   /// to calculate this value
   double inputValueOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor dataRangeLabelInfosGenerator,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor axisIntervalLabelInfosGenerator,
   }) {
-    util_dart.Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / outerChartViewModel._chartModel.numColumns);
+    util_dart.Interval axisInterval = axisIntervalLabelInfosGenerator.axisInterval;
+    double columnWidth = (axisInterval.length / outerChartViewModel._chartModel.numColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
@@ -527,7 +507,7 @@ class PointsBarModel {
   ///       for all positive [PointModel]s in this [PointsBarModel] instance.
   ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
   ///       for all negative [PointModel]s in this [PointsBarModel] instance.
-  double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
+  double outerDatumForSign(Sign sign, ChartStacking chartStacking) {
     switch(chartStacking) {
       case ChartStacking.stacked:
         return _pointsWithSign(sign)
@@ -536,7 +516,7 @@ class PointsBarModel {
       case ChartStacking.nonStacked:
         return _pointsWithSign(sign)
             .map((pointModel) => pointModel.outputValue)
-            .extremeValueWithSign(sign);
+            .outerDatumForSign(sign);
     }
   }
 
@@ -598,7 +578,7 @@ abstract class BasePointModel {
   /// Abstract method; implementations should get or calculate the inputValue-position of this [PointModel] instance.
   ///
   /// Delegated to the same name method on [outerPointsBarModel] - the [PointsBarModel.inputValueOnInputRange] -
-  /// given the passed [inputDataRangeTicksAndLabelsDescriptor].
+  /// given the passed [inputAxisIntervalTicksAndLabelsDescriptor].
   ///
   /// The delegated method divides the input data range into the number of columns,
   /// and places this instance input value in the middle of the column at which this [PointModel] lives.
@@ -615,20 +595,20 @@ abstract class BasePointModel {
   ///   it's pixel display position.  Assigning an inputValue by itself would not help;
   ///   To affmap the inputValue to some pixel value, we need to affix the inputValue
   ///   to a range. This method, [inputValueOnInputRange] does just that:
-  ///   Given the passed [inputDataRangeTicksAndLabelsDescriptor], using its data range
-  ///   [util_labels.DataRangeTicksAndLabelsDescriptor.dataRange], we can assign an inputValue
+  ///   Given the passed [inputAxisIntervalTicksAndLabelsDescriptor], using its data range
+  ///   [util_labels.AxisIntervalTicksAndLabelsDescriptor.axisInterval], we can assign an inputValue
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
   double inputValueOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   });
 
   /// Converts this [PointModel] to [PointOffset] with the same output value (the [PointModel.outputValue]
   /// is copied to [PointOffset.outputValue]), and the [PointOffset]'s [PointOffset.inputValue]
-  /// created by evenly dividing the passed input range of the passed [inputDataRangeTicksAndLabelsDescriptor].
+  /// created by evenly dividing the passed input range of the passed [inputAxisIntervalTicksAndLabelsDescriptor].
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   });
 
   /// Abstract indicates sign of value; intended to be defined in some extensions.
@@ -744,20 +724,20 @@ class PointModel extends BasePointModel {
 
   @override
   double inputValueOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   }) {
     return outerPointsBarModel.inputValueOnInputRange(
-      dataRangeLabelInfosGenerator: inputDataRangeTicksAndLabelsDescriptor,
+      axisIntervalLabelInfosGenerator: inputAxisIntervalTicksAndLabelsDescriptor,
     );
   }
 
   @override
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   }) =>
       PointOffset(
         inputValue: inputValueOnInputRange(
-          inputDataRangeTicksAndLabelsDescriptor: inputDataRangeTicksAndLabelsDescriptor,
+          inputAxisIntervalTicksAndLabelsDescriptor: inputAxisIntervalTicksAndLabelsDescriptor,
         ),
         outputValue: outputValue,
       );
@@ -789,13 +769,13 @@ class FillerPointModel extends BasePointModel {
 
   @override
   double inputValueOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   }) => throw UnsupportedError(
       '$runtimeType: "inputValueOnInputRange" should never be invoked.');
 
   @override
   PointOffset toPointOffsetOnInputRange({
-    required util_labels.DataRangeTicksAndLabelsDescriptor inputDataRangeTicksAndLabelsDescriptor,
+    required util_labels.AxisIntervalTicksAndLabelsDescriptor inputAxisIntervalTicksAndLabelsDescriptor,
   }) =>throw UnsupportedError(
       '$runtimeType: "toPointOffsetOnInputRange" should never be invoked.');
 }

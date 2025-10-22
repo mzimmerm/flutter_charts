@@ -25,8 +25,8 @@ void main() {
       var rowOrientation = ChartOrientation.row;
       var fromTransposing2DValueRange = FromTransposing2DValueRange(
         chartOrientation: rowOrientation,
-        inputDataRange: const Interval(0.0, 100.0),
-        outputDataRange: const Interval(-1000.0, 2300.0),
+        inputAxisInterval: const Interval(0.0, 100.0),
+        outputAxisInterval: const Interval(-1000.0, 2300.0),
       );
       var to2DPixelRange = To2DPixelRange(
         width: 300,

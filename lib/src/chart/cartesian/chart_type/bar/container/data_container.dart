@@ -213,7 +213,7 @@ class BarPointContainer extends PointContainer {
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
-    // KEEP generateTestCode(pointOffset, inputRangeDescriptor, outputRangeDescriptor, pixelPointOffset);
+    // KEEP generateTestCode(pointOffset, inputAxisDescriptor, outputAxisDescriptor, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
     // which is the [layoutSize] of the rectangle presenting the point.

@@ -25,7 +25,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 // up and down levels
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, ClsPointToNullableContainer, PointsBarModel, BasePointModel;
-import 'package:flutter_charts/src/chart/view_model/label_model.dart' show DataRangeTicksAndLabelsDescriptor;
+import 'package:flutter_charts/src/chart/view_model/label_model.dart' show AxisIntervalTicksAndLabelsDescriptor;
 import 'package:flutter_charts/src/util/util_flutter.dart' show  To2DPixelRange;
 
 // morphic
@@ -130,7 +130,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                         outerDataContainer: this,
                         constraintsWeight: ConstraintsWeight(
                             weight:
-                                chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.positiveOr0)),
+                                chartViewModel.outputAxisDescriptor.axisIntervalRatioOfPortionWithSign(Sign.positiveOr0)),
                       ),
                       // Row with columns of negative values
                       negativeBarsContainer: makeInnerBarsContainer(
@@ -138,7 +138,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                         outerDataContainer: this,
                         constraintsWeight: ConstraintsWeight(
                             weight:
-                                chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(Sign.negative)),
+                                chartViewModel.outputAxisDescriptor.axisIntervalRatioOfPortionWithSign(Sign.negative)),
                       ),
                       outerDataContainer: this,
                     ),
@@ -342,7 +342,7 @@ abstract class BarsContainer extends container_common.ChartAreaContainer {
       TransposingRoller.Row(
         chartOrientation: chartViewModel.chartOrientation,
         constraintsWeight: ConstraintsWeight(
-          weight: chartViewModel.outputRangeDescriptor.dataRangeRatioOfPortionWithSign(barsAreaSign),
+          weight: chartViewModel.outputAxisDescriptor.axisIntervalRatioOfPortionWithSign(barsAreaSign),
         ),
         mainAxisAlign: Align.start, // default
         // sit positive bars at end (bottom), negative pop to start (top)
@@ -634,10 +634,10 @@ abstract class PointContainer extends BasePointContainer {
   ///      - Further, the container-parent bar's [constraints] ALWAYS represents either positive or negative value,
   ///        this method must SEPARATELY AFFMAP the positive or negative 'from range'
   ///        to the container-parent bar's [constraints]. The [constraints] are sized as follows:
-  ///        - in the layouter Main direction,  length is the dataRange of positive values (the positive portion of data range)
+  ///        - in the layouter Main direction,  length is the axisInterval of positive values (the positive portion of data range)
   ///        - in the layouter Cross direction, length is the width of the bar
   ///   7. So the affmap ranges are:
-  ///      - fromInputRange:  the positive or negative portion of dataRange (Sign of the PointModel.inputValue)
+  ///      - fromInputRange:  the positive or negative portion of axisInterval (Sign of the PointModel.inputValue)
   ///      - fromOutputRange: as above, Sign of PointModel.outputValue
   ///      - pixelRange:      height = constraints height, width = constraints width.
   ///                         constraints are those given to 'container-parent bar'. They are sized in both directions
@@ -649,7 +649,7 @@ abstract class PointContainer extends BasePointContainer {
   PointOffset layoutUsingPointModelAffmapToPixels() {
 
     PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
-      inputDataRangeTicksAndLabelsDescriptor: chartViewModel.inputRangeDescriptor,
+      inputAxisIntervalTicksAndLabelsDescriptor: chartViewModel.inputAxisDescriptor,
     );
 
     To2DPixelRange to2DPixelRange = To2DPixelRange(
@@ -674,16 +674,16 @@ abstract class PointContainer extends BasePointContainer {
   // todo-020 : fix this after changes in API of this class
   void generateTestCode(
       PointOffset pointOffset,
-      DataRangeTicksAndLabelsDescriptor inputRangeDescriptor,
-      DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
+      AxisIntervalTicksAndLabelsDescriptor inputAxisDescriptor,
+      AxisIntervalTicksAndLabelsDescriptor outputAxisDescriptor,
       PointOffset pixelPointOffset,
       ) {
     var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
     var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
         '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
         '       withinConstraints: ${constraints.asCodeConstructorInsideBox()},\n'
-        '       inputDataRange: ${inputRangeDescriptor.dataRange.asCodeConstructor()},\n'
-        '       outputDataRange: ${outputRangeDescriptor.dataRange.asCodeConstructor()},\n'
+        '       inputAxisInterval: ${inputAxisDescriptor.axisInterval.asCodeConstructor()},\n'
+        '       outputAxisInterval: ${outputAxisDescriptor.axisInterval.asCodeConstructor()},\n'
         '       sizerHeight: $sizerHeight,\n'
         '       sizerWidth: $sizerWidth,\n'
         '       //  isAffmapUseSizerInsteadOfConstraint: false,\n'

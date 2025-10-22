@@ -15,8 +15,8 @@ import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 
 
-/// Generates, describes, and manages the data range of values shown on chart, as well as label values,
-/// and the tick values shown.
+/// Generates and describes the chart axis interval,
+/// as well as axis label values and label-tick values to be shown on the axis.
 ///
 /// Part of View Model, rather than Model, as it depends on stacking, a view specific behavior.
 ///
@@ -35,10 +35,10 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 /// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
 /// todo-01 : This should be moved from label_model to axis_model or similar
 ///
-class DataRangeTicksAndLabelsDescriptor {
+class AxisIntervalTicksAndLabelsDescriptor {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
-  /// by this [DataRangeTicksAndLabelsDescriptor].
+  /// by this [AxisIntervalTicksAndLabelsDescriptor].
   ///
   /// If [userLabels] list of user labels is passed, user labels will be used and distributed evenly (linearly)
   /// between the passed [chartModel] minimum and maximum.
@@ -52,19 +52,19 @@ class DataRangeTicksAndLabelsDescriptor {
   ///   Whether the envelope interval starts or ends at 0.0, even if data are away from 0.0, is controlled by member
   ///   [extendAxisToOrigin].
   /// - [userLabels] may be set by user.
-  /// - [_labelInfos] and [dataRange] are created from [dataMode] for only the highest order of values
+  /// - [_labelInfos] and [axisInterval] are created from [dataMode] for only the highest order of values
   ///   in [chartModel], and can be both wider or narrower than extremes of the [chartModel].
   ///     1. Ex1. for [chartModel] values [-600.0 .. 2200.0]
   ///             ==> [labelInfos] =   [-1000, 0, 1000, 2000] (NARROWER THAN chartModel max 2200)
-  ///             ==> [dataRange] = [-600 .. 2200]
+  ///             ==> [axisInterval] = [-600 .. 2200]
   ///     2. Ex2. for [chartModel] values  [0.0 .. 1800.0]
   ///             ==> [labelInfos]   = [0, 1000, 2000]
-  ///             ==> [dataRange] = [0 .. 2000] (WIDER than chartModel max 1800)
+  ///             ==> [axisInterval] = [0 .. 2000] (WIDER than chartModel max 1800)
   ///
   /// Constructor calculates the following members:
-  ///   - [dataRange]
+  ///   - [axisInterval]
   ///   - [_labelInfos]
-  DataRangeTicksAndLabelsDescriptor({
+  AxisIntervalTicksAndLabelsDescriptor({
     required this.chartOrientation,
     required ChartStacking chartStacking,
     required ChartViewModel chartViewModel,
@@ -78,14 +78,18 @@ class DataRangeTicksAndLabelsDescriptor {
         _inverseTransform = inverseTransform
   {
     // Constructor-local variables
-    util_dart.Interval dataEnvelope;
-    List<double> transformedLabelValues;
 
-    // Finds the local [dataEnvelope] and derives the [dataRange] interval for data values.
-    //   then creates [_labelInfos] labels evenly distributed in the [dataRange] interval.
-    // [dataRange] may be a non-tight envelop around actual data values,
+    // Interval envelope of all transformed data, POSSIBLY extended to 0.0
+    // if requested by option, or on stacked chart which always starts at 0.0.
+    util_dart.Interval trfdDataExtendedInterval;
+    // Numbers shown on labels, either user-defined or poly-generated
+    List<double> trfdLabelNumbers;
+
+    // Finds the local [trfdDataExtendedInterval] and derives the [axisInterval] interval for data values.
+    //   then creates [_labelInfos] labels evenly distributed in the [axisInterval] interval.
+    // [axisInterval] may be a non-tight envelop around actual data values,
     //   for example if we want axis data to start at 0 (despite far from 0 data).
-    // Both local [dataEnvelope] and member [dataRange]
+    // Both local [trfdDataExtendedInterval] and member [axisInterval]
     //   are *transformed && not-extrapolated* data from [ChartModelPoint].
     if (userLabels != null) {
       switch(dataDependency) {
@@ -93,12 +97,12 @@ class DataRangeTicksAndLabelsDescriptor {
           // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
           //   the interval is, once the pixels range on the axis is available,
           //   it will be affmap-ed to the pixel range.
-          // We COULD return the same valuesInterval(isStacked: isStacked) but
+          // We COULD return the same findTrfdDataTightInterval(isStacked: isStacked) but
           //   because that is for dependent data, it would be confusing.
-          dataEnvelope = chartViewModel.dataRangeWhenStringLabels;
-          transformedLabelValues = _placeLabelPointsInInterval(
-            interval: dataEnvelope,
-            labelPointsCount: userLabels.length,
+          trfdDataExtendedInterval = chartViewModel.axisIntervalWhenStringLabels;
+          trfdLabelNumbers = _generateLabelNumbersForLabelsCountInInterval(
+            interval: trfdDataExtendedInterval,
+            labelsCount: userLabels.length,
             pointPositionInSegment: util_dart.LineSegmentPosition.center,
           );
           break;
@@ -106,38 +110,39 @@ class DataRangeTicksAndLabelsDescriptor {
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
-          dataEnvelope = chartViewModel.valuesInterval(chartStacking: chartStacking);
-          double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
-          transformedLabelValues =
-              List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
+          trfdDataExtendedInterval = chartViewModel.findTrfdDataTightInterval(chartStacking: chartStacking);
+          double dataStepHeight = (trfdDataExtendedInterval.max - trfdDataExtendedInterval.min) / (userLabels.length - 1);
+          trfdLabelNumbers =
+              List.generate(userLabels.length, (index) => trfdDataExtendedInterval.min + index * dataStepHeight);
           break;
       }
     } else {
-      // If [userLabels] null (not set), [dataEnvelope] is taken from data only
-      dataEnvelope = chartViewModel.extendedValuesInterval(
+      // If [userLabels] null (not set), [trfdDataExtendedInterval] is taken from data only
+      trfdDataExtendedInterval = chartViewModel.findTrfdDataExtendedInterval(
         extendAxisToOrigin: extendAxisToOrigin,
         chartStacking: chartStacking,
       );
-      transformedLabelValues = _generateValuesForLabelsIn(
-        interval: dataEnvelope,
+      trfdLabelNumbers =  _generatePolySuitableLabelNumbersInInterval(
+        interval: trfdDataExtendedInterval,
         extendAxisToOrigin: extendAxisToOrigin,
       );
     }
 
-    // [dataRange] member holds the full (min, max) of the full axis (start, end) section;
+    // [axisInterval] member holds the full (min, max) of the full axis (start, end) section;
     // it represents *transformed && not-extrapolated* model data values.
-    // Because labels can extend beyond model data values, merge the interval of model data values
-    // with the label interval.
+    // !! Because labels can extend beyond model data values, merge the interval of model data values
+    // with the label interval to get the full interval representing the axis.
     util_dart.Interval lFullAxisIntervalAsTrfdData = util_dart.Interval(
-    // todo-00-done dataRange = util_dart.Interval(
-      transformedLabelValues.reduce(math.min),
-      transformedLabelValues.reduce(math.max),
-    ).merge(dataEnvelope);
+      trfdLabelNumbers.reduce(math.min),
+      trfdLabelNumbers.reduce(math.max),
+    ).merge(trfdDataExtendedInterval);
 
-    dataRange = _ifAxisIntervalCollapsedExtendIt(lFullAxisIntervalAsTrfdData);
+    // In lFullAxisIntervalAsTrfdData is collapsed to min=max, extend it.
+    // Required to be able to affmap the axis interval.
+    axisInterval = _ifAxisIntervalCollapsedExtendIt(lFullAxisIntervalAsTrfdData);
 
     // Format and extrapolate labels from the [_labelPositions] local to the [_labelInfos] member.
-    List<AxisLabelInfo> labelInfos = transformedLabelValues
+    List<AxisLabelInfo> labelInfos = trfdLabelNumbers
         .map((transformedLabelValue) =>
         AxisLabelInfo(
           centerTickValue: transformedLabelValue,
@@ -146,7 +151,7 @@ class DataRangeTicksAndLabelsDescriptor {
         .toList();
     _labelInfos = _AxisLabelInfos(
       from: labelInfos,
-      rangeDescriptor: this,
+      axisIntervalDescriptor: this,
       userLabels: userLabels,
     );
 
@@ -154,7 +159,7 @@ class DataRangeTicksAndLabelsDescriptor {
 
   final ChartOrientation chartOrientation; // todo-done-keep-for-later-removal : KEEP : added as a temporary to test old vs new
 
-  /// Describes if this [DataRangeTicksAndLabelsDescriptor] instance is for dependent or independent data.
+  /// Describes if this [AxisIntervalTicksAndLabelsDescriptor] instance is for dependent or independent data.
   ///
   /// [DataDependency.outputData] determines this instance is for dependent data,
   /// [DataDependency.inputData] determines this instance is for independent data.
@@ -189,9 +194,9 @@ class DataRangeTicksAndLabelsDescriptor {
   ///
   /// The list contains labels passed from user, or originating in code, as follows:
   ///
-  ///   - If userLabels are passed in constructor [DataRangeTicksAndLabelsDescriptor],
+  ///   - If userLabels are passed in constructor [AxisIntervalTicksAndLabelsDescriptor],
   ///     the returned list in [labelInfoList] is in the same order as userLabels.
-  ///   - Otherwise, data labels are generated by [DataRangeTicksAndLabelsDescriptor], and returned here in [labelInfoList].
+  ///   - Otherwise, data labels are generated by [AxisIntervalTicksAndLabelsDescriptor], and returned here in [labelInfoList].
   ///     The [AxisLabelInfo.centerTickValue]s in [labelInfoList] are numerically always numerically increasing.
   ///
   /// The labels' pixel layout placing is determined by values of [ExternalTicksLayoutDescriptor.tickPixels] created
@@ -202,23 +207,25 @@ class DataRangeTicksAndLabelsDescriptor {
   /// See [_reversibleLabelInfoList] for a reversed list.
   List<AxisLabelInfo> get labelInfoList => _reversibleLabelInfoList(isReversed: false);
 
-  /// The numerical range of data.
+  /// The numerical range of axis.
   ///
   /// Calculated in the constructor, from [ChartModelPoint]s.
   /// as the merged outer interval of generated labels and [ChartModelPoint] values.
   ///
   /// This [Interval] is displayed on the axis pixel range [AxisContainer.axisPixelsRange].
   /// Extrapolation is done between those intervals.
-  late final util_dart.Interval dataRange;
+  ///
+  /// Note: original name : dataRange (more descriptive name: fullAxisIntervalAsTrfdData)
+  late final util_dart.Interval axisInterval;
 
-  double dataRangeRatioOfPortionWithSign(Sign sign) {
+  double axisIntervalRatioOfPortionWithSign(Sign sign) {
     switch(sign) {
       case Sign.positiveOr0:
-        return dataRange.ratioOfPositivePortion();
+        return axisInterval.ratioOfPositivePortion();
       case Sign.negative:
-        return dataRange.ratioOfNegativePortion();
+        return axisInterval.ratioOfNegativePortion();
       case Sign.any:
-        return dataRange.ratioOfAnySignPortion();
+        return axisInterval.ratioOfAnySignPortion();
     }
   }
 
@@ -232,14 +239,14 @@ class DataRangeTicksAndLabelsDescriptor {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Given the member [chartOrientation] and passed [axisDataDependency], deduces if this [DataRangeTicksAndLabelsDescriptor]
+  /// Given the member [chartOrientation] and passed [axisDataDependency], deduces if this [AxisIntervalTicksAndLabelsDescriptor]
   /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
   ///
-  /// Returns true if this [DataRangeTicksAndLabelsDescriptor] labels will be shown on [LayoutAxis.vertical].
+  /// Returns true if this [AxisIntervalTicksAndLabelsDescriptor] labels will be shown on [LayoutAxis.vertical].
   bool get isOnHorizontalAxis =>
       chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) == LayoutAxis.horizontal;
 
-  /// Extrapolates [value] from extended data range [dataRange],
+  /// Extrapolates [value] from extended data range [axisInterval],
   /// to the pixels range passed in the passed [axisPixelsMin], [axisPixelsMax].
   ///
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
@@ -252,9 +259,9 @@ class DataRangeTicksAndLabelsDescriptor {
     required double axisPixelsMax,
   }) {
 
-    // Special case, if _rangeDescriptor.dataRange=(0.0,0.0), there are either no data, or all data 0.
+    // Special case, if _axisIntervalDescriptor.axisInterval=(0.0,0.0), there are either no data, or all data 0.
     // Affmap the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
-    if (dataRange == const util_dart.Interval(0.0, 0.0)) {
+    if (axisInterval == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
       if (!isOnHorizontalAxis) {
         pixels = axisPixelsMax;
@@ -263,10 +270,10 @@ class DataRangeTicksAndLabelsDescriptor {
       }
       return pixels;
     }
-    // affmap the data value range [dataRange] on this [DataRangeTicksAndLabelsDescriptor] to the pixel range.
+    // affmap the data value range [axisInterval] on this [AxisIntervalTicksAndLabelsDescriptor] to the pixel range.
     // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
     return util_dart.ToPixelsAffineMap1D(
-      fromValuesRange: util_dart.Interval(dataRange.min, dataRange.max),
+      fromValuesRange: util_dart.Interval(axisInterval.min, axisInterval.max),
       toPixelsRange: util_dart.Interval(axisPixelsMin, axisPixelsMax),
       isFlipToRange: !isOnHorizontalAxis,
     ).apply(value);
@@ -274,7 +281,7 @@ class DataRangeTicksAndLabelsDescriptor {
 
   /// Creates an instance of [ExternalTicksLayoutDescriptor] from self.
   ///
-  /// As this [DataRangeTicksAndLabelsDescriptor] holds on everything about relative (data ranged)
+  /// As this [AxisIntervalTicksAndLabelsDescriptor] holds on everything about relative (data ranged)
   /// position of labels, it can be converted to a provider of these label positions as tick values
   /// for layouts that use externally defined positions to layout their children on the tick values.
   ///
@@ -315,22 +322,22 @@ class DataRangeTicksAndLabelsDescriptor {
 
     return ExternalTicksLayoutDescriptor(
       tickValues: tickValues,
-      tickValuesRange: dataRange,
+      tickValuesRange: axisInterval,
       isOnHorizontalAxis: isOnHorizontalAxis,
       externalTickAtPosition: externalTickAtPosition,
     );
   }
 
-  /// Places [labelPointsCount] positions evenly distanced in [interval] between [interval.min]
+  /// Places [labelsCount] positions evenly distanced in [interval] between [interval.min]
   /// and [interval.max], and returns the positions list.
   ///
   /// Motivation and role:
-  ///   We need to evenly place [labelPointsCount] labels inside [interval].
+  ///   We need to evenly place [labelsCount] labels inside [interval].
   ///   This method allows to do that, returning positions of label starts, label centers,
   ///   or label ends in the [interval]. The positions are controlled by the passed [pointPositionInSegment].
   ///
   /// Algorithm:
-  ///   The returned positions list is calculated by dividing the [interval] into [labelPointsCount]
+  ///   The returned positions list is calculated by dividing the [interval] into [labelsCount]
   ///   line segments of type [util_dart.LineSegment], and returning the start, center, or end of the line segments,
   ///   depending on [pointPositionInSegment] set to one of [util_dart.LineSegmentPosition.min],
   ///   [util_dart.LineSegmentPosition.center], or [util_dart.LineSegmentPosition.max]
@@ -348,22 +355,22 @@ class DataRangeTicksAndLabelsDescriptor {
   ///        to the right of the [interval.min], and to the left of [interval.max] respectively.
   ///      - If [pointPositionInSegment] is [util_dart.LineSegmentPosition.max], the first point in the returned list
   ///        is at  at `interval.min + points_equidistance`, the last point is at [interval.max].
-  ///    3. As this method simply divides the available interval into [labelPointsCount],
+  ///    3. As this method simply divides the available interval into [labelsCount],
   ///       it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
   ///       (which it would be even for logarithmic scale). The interval represents transformed (usually identity),
   ///       not-affmap-ed values.
-  List<double> _placeLabelPointsInInterval({
+  List<double> _generateLabelNumbersForLabelsCountInInterval({
     required util_dart.Interval interval,
-    required int labelPointsCount,
+    required int labelsCount,
     required util_dart.LineSegmentPosition pointPositionInSegment,
   }) {
-    if (labelPointsCount < 0) {
+    if (labelsCount < 0) {
       throw StateError('Cannot distribute negative number of positions');
     }
 
     // Use existing positioner to find layedout line segments for labels
     PositionedLineSegments positionedSegments = LayedoutLengthsPositioner(
-      lengths: List.generate(labelPointsCount, (index) => interval.length / labelPointsCount),
+      lengths: List.generate(labelsCount, (index) => interval.length / labelsCount),
       lengthsPositionerProperties: const LengthsPositionerProperties(
         align: Align.start,
         packing: Packing.tight,
@@ -403,11 +410,11 @@ class DataRangeTicksAndLabelsDescriptor {
   ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
   /// Further notes and related topics:
-  ///   - Labels are encapsulated in the [DataRangeTicksAndLabelsDescriptor],
+  ///   - Labels are encapsulated in the [AxisIntervalTicksAndLabelsDescriptor],
   ///     which creates [AxisLabelInfo]s for all generated labels.
   ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
   ///
-  List<double> _generateValuesForLabelsIn({
+  List<double>  _generatePolySuitableLabelNumbersInInterval({
     required util_dart.Interval interval,
     required bool extendAxisToOrigin,
   }) {
@@ -489,7 +496,7 @@ class DataRangeTicksAndLabelsDescriptor {
 
     // axisInterval is collapsed to non-0.0,
     // return interval that is 1/10 of initial value, either towards positive
-    // or negarive
+    // or negative
     return util_dart.Interval(
         axisInterval.min, axisInterval.min + (axisInterval.min / 10.0));
   }
@@ -513,18 +520,18 @@ enum MoveTickTo {
 /// The values used and shown on the chart undergo the following processing:
 ///    1. [_rawCenterTickValue] -- using [DataContainerOptions.yTransform] (or [DataContainerOptions.xTransform])
 ///       ==> [centerTickValue] (transformed)
-///    2. [centerTickValue]    -- using [DataRangeTicksAndLabelsDescriptor.affmapValueToPixels]
+///    2. [centerTickValue]    -- using [AxisIntervalTicksAndLabelsDescriptor.affmapValueToPixels]
 ///       ==> [parentOffsetTick]
 ///    3. [_rawCenterTickValue] -- using formatted String-value
 ///       ==> [_formattedLabel]
 ///
 /// todo-02-doc below finish documentation, this stuff is old, and simplify
-/// The last mapping in item 3. is using either `toString` if [DataRangeTicksAndLabelsDescriptor.userLabels] are used,
-/// or [DataRangeTicksAndLabelsDescriptor._valueToLabel] for chart-generated labels.
+/// The last mapping in item 3. is using either `toString` if [AxisIntervalTicksAndLabelsDescriptor.userLabels] are used,
+/// or [AxisIntervalTicksAndLabelsDescriptor._valueToLabel] for chart-generated labels.
 ///
 /// There are four values each [AxisLabelInfo] manages:
 /// 1. The [_rawCenterTickValue] : The value of dependent (y) variable in data, given by
-///   the [DataRangeTicksAndLabelsDescriptor._mergedLabelYsIntervalWithdataEnvelope].
+///   the [AxisIntervalTicksAndLabelsDescriptor._mergedLabelYsIntervalWithtrfdDataExtendedInterval].
 ///   - This value is **not-transformed && not-extrapolated**.
 ///   - This value is in the interval extended from the interval of minimum and maximum data values (x or y)
 ///     to the interval of the displayed labels. The reason is the chart may show axis lines and labels
@@ -539,14 +546,14 @@ enum MoveTickTo {
 ///   - This value is passed in the primary generative constructor [AxisLabelInfo].
 /// 3. The [parentOffsetTick] :  Equals to the **transformed && extrapolated** outputValue, in other words
 ///   ```dart
-///    _axisValue = rangeDescriptor.scaleY(value: transformedOutputValue.toDouble());
+///    _axisValue = axisIntervalDescriptor.scaleY(value: transformedOutputValue.toDouble());
 ///   ```
 ///   It is created as extrapolated [centerTickValue], in the [PointsColumnsOCL]
 ///   where the extrapolation is from the Y data and labels envelop to the Y axis envelop.
 ///   - This value is **transformed && extrapolated**.
 ///   - This value is obtained as follows
 ///     ```dart
-///        _axisValue = rangeDescriptor.scaleY(value: transformedOutputValue.toDouble());
+///        _axisValue = axisIntervalDescriptor.scaleY(value: transformedOutputValue.toDouble());
 ///        // which does
 ///        return extrapolateValue(
 ///            value: value.toDouble(),
@@ -567,14 +574,14 @@ class AxisLabelInfo {
   /// which provides data range corresponding to axis range.
   AxisLabelInfo({
     required this.centerTickValue,
-    required DataRangeTicksAndLabelsDescriptor outerRangeDescriptor,
+    required AxisIntervalTicksAndLabelsDescriptor outerRangeDescriptor,
   })  :
         _outerRangeDescriptor = outerRangeDescriptor {
     var yInverseTransform = _outerRangeDescriptor._inverseTransform;
     _rawCenterTickValue = yInverseTransform(centerTickValue);
   }
 
-  final DataRangeTicksAndLabelsDescriptor _outerRangeDescriptor;
+  final AxisIntervalTicksAndLabelsDescriptor _outerRangeDescriptor;
 
   /// not-extrapolated and not-transformed label value.
   ///
@@ -614,38 +621,38 @@ class AxisLabelInfo {
 
 /// A wrapper for the list of [AxisLabelInfo]s shown on an axis.
 ///
-/// Stores the list of labels as [_AxisLabelInfos] created by [DataRangeTicksAndLabelsDescriptor].
+/// Stores the list of labels as [_AxisLabelInfos] created by [AxisIntervalTicksAndLabelsDescriptor].
 ///
 /// During creation from the `List<LabelInfo>` argument [from] ,
 /// formats the labels using each [AxisLabelInfo]'s own formatter.
 class _AxisLabelInfos {
   _AxisLabelInfos({
     required List<AxisLabelInfo> from,
-    required DataRangeTicksAndLabelsDescriptor rangeDescriptor,
+    required AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor,
     List<String>? userLabels,
   })  : _labelInfoList = from
   {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
       AxisLabelInfo labelInfo = _labelInfoList[i];
-      _setRightAndLeftBorderOnLabelInfo(i, labelInfo, rangeDescriptor);
+      _setRightAndLeftBorderOnLabelInfo(i, labelInfo, axisIntervalDescriptor);
       // If labels were set by user in [userLabels], their formatted value [_formattedLabel]
       //   is set to the user String without formatting or mangling.
       // Otherwise, labels are the raw data values previously generated
-      //   by [DataRangeTicksAndLabelsDescriptor], formatted by applying the [_valueToLabel]
+      //   by [AxisIntervalTicksAndLabelsDescriptor], formatted by applying the [_valueToLabel]
       if (userLabels != null) {
         labelInfo._formattedLabel = userLabels[i];
       } else {
-        labelInfo._formattedLabel = rangeDescriptor._valueToLabel(labelInfo._rawCenterTickValue);
+        labelInfo._formattedLabel = axisIntervalDescriptor._valueToLabel(labelInfo._rawCenterTickValue);
       }
     }
   }
 
-  void _setRightAndLeftBorderOnLabelInfo(int i, AxisLabelInfo labelInfo, DataRangeTicksAndLabelsDescriptor rangeDescriptor) {
+  void _setRightAndLeftBorderOnLabelInfo(int i, AxisLabelInfo labelInfo, AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptor) {
     if (i == 0) {
-      labelInfo.leftBorderTickValue = rangeDescriptor.dataRange.min;
+      labelInfo.leftBorderTickValue = axisIntervalDescriptor.axisInterval.min;
       if (_labelInfoList.length == 1) {
-        labelInfo.rightBorderTickValue = rangeDescriptor.dataRange.max;
+        labelInfo.rightBorderTickValue = axisIntervalDescriptor.axisInterval.max;
       } else {
         // There is a next i (1)
         labelInfo.rightBorderTickValue = (_labelInfoList[i+1].centerTickValue + labelInfo.centerTickValue) / 2;
@@ -653,7 +660,7 @@ class _AxisLabelInfos {
     } else if (i == _labelInfoList.length - 1) {
       // If we get here, there are 2 or more element, and we are at end, so we can look one back from [i]
       labelInfo.leftBorderTickValue = (_labelInfoList[i - 1].centerTickValue + labelInfo.centerTickValue) / 2;
-      labelInfo.rightBorderTickValue = rangeDescriptor.dataRange.max;
+      labelInfo.rightBorderTickValue = axisIntervalDescriptor.axisInterval.max;
     } else {
       // If we get here, there are 3 or more elements, and we are not at end,
       // so we can look one back and one forward from [i]
@@ -664,7 +671,7 @@ class _AxisLabelInfos {
 
   /// The labels' values; if numerical, always in increasing order.
   ///
-  /// For the logic of layout placing, see [DataRangeTicksAndLabelsDescriptor.labelInfoList].
+  /// For the logic of layout placing, see [AxisIntervalTicksAndLabelsDescriptor.labelInfoList].
   final List<AxisLabelInfo> _labelInfoList;
 }
 

@@ -265,8 +265,8 @@ mixin PixelRangeProviderOCL on ChartAreaContainer {
   ///  2. The difference between [axisPixelsRange] min and max is the height constraint
   ///     on [DataContainer]!
   ///
-  ///   3. If is the interval to which the axis data values, stored in [rangeDescriptor]'s
-  ///      member [DataRangeTicksAndLabelsDescriptor.dataRange] should be extrapolated.
+  ///   3. If is the interval to which the axis data values, stored in [axisIntervalDescriptor]'s
+  ///      member [AxisIntervalTicksAndLabelsDescriptor.axisInterval] should be extrapolated.
   ///
   /// Important note: Cannot be final, because, if on HorizontalAxisContainer, the [layout] code where
   ///                 this is set may be called multiple times.
@@ -404,9 +404,9 @@ class StackableValuePointOCL {
   ///
   StackableValuePointOCL affmapToPixels({
     required double scaledX,
-    required DataRangeTicksAndLabelsDescriptor outputRangeDescriptor,
+    required AxisIntervalTicksAndLabelsDescriptor outputAxisDescriptor,
   }) {
-    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating ranges in outputRangeDescriptor
+    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating ranges in outputAxisDescriptor
     // were calculated using the NEW [ChartModel]
 
     OutputAxisContainerCL verticalAxisContainerCL = chartViewModel.chartRootContainer.verticalAxisContainer as OutputAxisContainerCL;
@@ -415,7 +415,7 @@ class StackableValuePointOCL {
 
     scaledFrom = ui.Offset(
       scaledX,
-      outputRangeDescriptor.affmapValueToPixels(
+      outputAxisDescriptor.affmapValueToPixels(
         value: fromY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -423,7 +423,7 @@ class StackableValuePointOCL {
     );
     scaledTo = ui.Offset(
       scaledX,
-      outputRangeDescriptor.affmapValueToPixels(
+      outputAxisDescriptor.affmapValueToPixels(
         value: toY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -676,7 +676,7 @@ class PointsColumnsOCL extends custom_collection.CustomList<PointsColumnOCL> {
         double scaledX = chartRootContainer.xTickXs[col];
         point.affmapToPixels(
           scaledX: scaledX,
-          outputRangeDescriptor: chartViewModel.outputRangeDescriptor,
+          outputAxisDescriptor: chartViewModel.outputAxisDescriptor,
         );
       });
       col++;

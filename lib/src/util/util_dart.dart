@@ -192,10 +192,10 @@ class Interval {
     }
 
     if (max <= 0.0) {
-      // dataRange negative or 0
+      // axisInterval negative or 0
       return 0.0;
     } else if (min >= 0.0) {
-      // dataRange purely positive or 0
+      // axisInterval purely positive or 0
       return 1.0;
     }
 

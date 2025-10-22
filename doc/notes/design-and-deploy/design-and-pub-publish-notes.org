@@ -318,10 +318,10 @@ reason is, yLabels have 2 modes:
 
           List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
 
-          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
+          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###axisInterval= ${from} to ${to} ");
 
           var yScaler = YScalerAndLabelFormatter(
-            dataRange: Interval(from, to),
+            axisInterval: Interval(from, to),
             valueOnLabels: labels,
             toScaleMin: toScaleMin,
             toScaleMax: toScaleMax,
@@ -2183,9 +2183,26 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
                                                                                                                               
 
 
-** IN-PROGRESS-NOW Refactor naming around chart_mode.ChartViewModel and label_model.DataRangeTicksAndLabelsDescriptor
+** IN-PROGRESS-NOW Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor
 
-- [ ] in view_model.PointModel rename outputValue to trfdOutputDatum
+- [X] this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
+
+- [X] rename extendedValuesInterval FUNCTION to findTrfdDataExtendedInterval
+- [X] rename view_model. valuesInterval FUNCTION to findTrfdDataTightInterval
+- [X] rename dataEnvelope => trfdDataExtendedInterval
+- [X] rename dataRange => axisInterval (more descriptive name: fullAxisIntervalAsTrfdData)
+- [X] rename transformedLabelValues => trfdLabelNumbers
+- [X] rename _generateLabelNumbersForLabelsCountInInterval => _generateLabelNumbersForLabelsCountInInterval
+- [X] rename  _generateValuesForLabelsIn => _generatePolySuitableLabelNumbersInInterval
+- [X] rename labelsCount => labelsCount
+- [X] rename extremeValueWithSign => outerDatumForSign
+- [X] rename _transformedValuesMin => _trfdDataMin
+- [X] rename _transformedValuesMax => _trfdDataMax
+- [ ] Maybe:
+  - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is hard, used a lot*
+  - [ ] look at places where 'transformed' is used and rename to trfd??
+  - [ ] look at places where 'envelope' is used and rename
+
 
 ** IN-PROGRESS-NOW Fix charts that are NOT working in new auto_layouter
 

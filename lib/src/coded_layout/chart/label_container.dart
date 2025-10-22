@@ -90,7 +90,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// [parentOffsetTick]  has multiple other roles:
   ///   - The X or Y offset of the X or Y label middle point
   ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
-  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeTicksAndLabelsDescriptor]).
+  ///     (currently, xTickX is from x value data position, not from generated labels by [AxisIntervalTicksAndLabelsDescriptor]).
   ///     ```dart
   ///        double yTickY = outputLabelContainer.parentOffsetTick;
   ///        double labelTopY = yTickY - outputLabelContainer.layoutSize.height / 2;
@@ -105,7 +105,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// Overridden from [AxisLabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
-  /// Uses the [OutputAxisContainerCL.rangeDescriptor] instance of [DataRangeTicksAndLabelsDescriptor] to
+  /// Uses the [OutputAxisContainerCL.axisIntervalDescriptor] instance of [AxisIntervalTicksAndLabelsDescriptor] to
   /// affmap the [labelInfo] value [AxisLabelInfo.centerTickValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
@@ -122,9 +122,9 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE HorizontalAxisContainer / OutputAxisContainer
     // and place it on [parentOffsetTick]
-    var rangeDescriptor = outerChartAreaContainer.chartViewModel.outputRangeDescriptor;
+    var axisIntervalDescriptor = outerChartAreaContainer.chartViewModel.outputAxisDescriptor;
 
-    parentOffsetTick = rangeDescriptor.affmapValueToPixels(
+    parentOffsetTick = axisIntervalDescriptor.affmapValueToPixels(
       value: labelInfo.centerTickValue.toDouble(),
       axisPixelsMin: (outerChartAreaContainer as PixelRangeProviderOCL).axisPixelsRange.min,
       axisPixelsMax: (outerChartAreaContainer as PixelRangeProviderOCL).axisPixelsRange.max,

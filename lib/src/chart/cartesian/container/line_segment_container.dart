@@ -40,7 +40,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///   LineBetweenPointOffsetsContainer( // could also place in Row with main constraints weight=0.0
   ///     chartOrientation: ChartOrientation.column,
   ///     fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
-  ///     toPointOffset: PointOffset(inputValue: chartViewModel.chartModel.dataRangeWhenStringLabels.max, outputValue: 0.0),
+  ///     toPointOffset: PointOffset(inputValue: chartViewModel.chartModel.axisIntervalWhenStringLabels.max, outputValue: 0.0),
   ///     linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
   ///     chartViewModel: chartViewModel,
   ///   ),
@@ -105,8 +105,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     _fromOffsetPixels = fromPointOffset.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
-        inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
-        outputDataRange: chartViewModel.outputRangeDescriptor.dataRange,
+        inputAxisInterval: chartViewModel.inputAxisDescriptor.axisInterval,
+        outputAxisInterval: chartViewModel.outputAxisDescriptor.axisInterval,
       ),
       to2DPixelRange: To2DPixelRange(
         height: sizerHeight,
@@ -118,8 +118,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     _toOffsetPixels = toPointOffset.affmapBetweenRanges(
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
-        inputDataRange: chartViewModel.inputRangeDescriptor.dataRange,
-        outputDataRange: chartViewModel.outputRangeDescriptor.dataRange,
+        inputAxisInterval: chartViewModel.inputAxisDescriptor.axisInterval,
+        outputAxisInterval: chartViewModel.outputAxisDescriptor.axisInterval,
       ),
       to2DPixelRange: To2DPixelRange(
         height: sizerHeight,
@@ -206,19 +206,19 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   /// the [model.PointModel]'s [fromPointModel].
   ///
   /// Calculates [fromPointOffset] from the [fromPointModel], using
-  ///   - for [PointOffset.inputValue], the data range from the [chartViewModel.inputRangeDescriptor] and
+  ///   - for [PointOffset.inputValue], the data range from the [chartViewModel.inputAxisDescriptor] and
   ///     [fromPointModel]'s column index.
   ///   - for [PointOffset.outputValue], the [fromPointModel]'s input value [model.PointModel.outputValue] directly.
   ///
-  /// Both points are on x axis, so the inputRangeDescriptor is used as input dataRange for both from/to points.
+  /// Both points are on x axis, so the inputAxisDescriptor is used as input axisInterval for both from/to points.
   @override
   PointOffset get fromPointOffset => fromPointModel.toPointOffsetOnInputRange(
-        inputDataRangeTicksAndLabelsDescriptor: chartViewModel.inputRangeDescriptor,
+        inputAxisIntervalTicksAndLabelsDescriptor: chartViewModel.inputAxisDescriptor,
       );
 
   /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
-      toPointModel.toPointOffsetOnInputRange(inputDataRangeTicksAndLabelsDescriptor: chartViewModel.inputRangeDescriptor);
+      toPointModel.toPointOffsetOnInputRange(inputAxisIntervalTicksAndLabelsDescriptor: chartViewModel.inputAxisDescriptor);
 }
 */

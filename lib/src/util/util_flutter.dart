@@ -48,19 +48,19 @@ void assertOffsetResultsSame(Offset result, Offset otherResult) {
 class FromTransposing2DValueRange {
 
   FromTransposing2DValueRange ({
-    required this.inputDataRange,
-    required this.outputDataRange,
+    required this.inputAxisInterval,
+    required this.outputAxisInterval,
     required this.chartOrientation,
   });
 
-  final Interval inputDataRange;
-  final Interval outputDataRange;
+  final Interval inputAxisInterval;
+  final Interval outputAxisInterval;
   final ChartOrientation chartOrientation;
 
   FromTransposing2DValueRange subsetForSignOfPointOffsetBeforeAffmap({required PointOffset pointOffset,}) {
     return FromTransposing2DValueRange(
-      inputDataRange: inputDataRange.portionForSignOfValue(pointOffset.inputValue),
-      outputDataRange: outputDataRange.portionForSignOfValue(pointOffset.outputValue),
+      inputAxisInterval: inputAxisInterval.portionForSignOfValue(pointOffset.inputValue),
+      outputAxisInterval: outputAxisInterval.portionForSignOfValue(pointOffset.outputValue),
       chartOrientation: chartOrientation,
     );
   }

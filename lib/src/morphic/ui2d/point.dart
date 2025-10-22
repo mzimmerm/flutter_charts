@@ -156,7 +156,7 @@ class PointOffset extends Offset {
   ///     - [ChartOrientation.row] transforms twice on each axis:
   ///       - first transposes value on each axis to value on cross-axis, using their respective value-ranges,
   ///       - second is affmap on each cross axis, from value-range to pixel-range
-  ///   - [fromTransposing2DValueRange] is a wrapper around input and output values DataRanges
+  ///   - [fromTransposing2DValueRange] is a wrapper around input and output values AxisIntervals
   ///   - [to2DPixelRange] Horizontal and vertical pixels ranges to which this method affmap-s;
   ///     does NOT depend on orientation, must be set correctly by caller.
   ///     - Typically set from either:
@@ -201,8 +201,8 @@ class PointOffset extends Offset {
   ///            on position Y pixels corresponding to outputValue 0
   ///            (in the middle of a chart, if both positive and negative present)
   ///       ``` dart
-  ///         fromPointOffset: PointOffset(inputValue: inputRangeDescriptor.dataRange.min, outputValue: outputRangeDescriptor.dataRange.max),
-  ///         toPointOffset:   PointOffset(inputValue: inputRangeDescriptor.dataRange.max, outputValue: outputRangeDescriptor.dataRange.max),
+  ///         fromPointOffset: PointOffset(inputValue: inputAxisDescriptor.axisInterval.min, outputValue: outputAxisDescriptor.axisInterval.max),
+  ///         toPointOffset:   PointOffset(inputValue: inputAxisDescriptor.axisInterval.max, outputValue: outputAxisDescriptor.axisInterval.max),
   ///       ```
   ///       - Using the transform steps, the `fromPointOffset` and `toPointOffset` draws
   ///         a HORIZONTAL line at x = x pixel min, where we want the Y Axis:
@@ -234,8 +234,8 @@ class PointOffset extends Offset {
   ///     -  Example: AxisLineContainer FOR Y AXIS LINE : we define a HORIZONTAL line, which draws VERTICAL line
   ///            on position X pixels = 0 (in DataContainer coordinates) due to the transpose of coordinates:
   ///       ``` dart
-  ///         fromPointOffset: PointOffset(inputValue: inputRangeDescriptor.dataRange.min, outputValue: outputRangeDescriptor.dataRange.min),
-  ///         toPointOffset:   PointOffset(inputValue: inputRangeDescriptor.dataRange.max, outputValue: outputRangeDescriptor.dataRange.min),
+  ///         fromPointOffset: PointOffset(inputValue: inputAxisDescriptor.axisInterval.min, outputValue: outputAxisDescriptor.axisInterval.min),
+  ///         toPointOffset:   PointOffset(inputValue: inputAxisDescriptor.axisInterval.max, outputValue: outputAxisDescriptor.axisInterval.min),
   ///       ```
   ///       - Using the transform steps, the `fromPointOffset` and `toPointOffset` draws
   ///         a vertical line at x = x pixel min, where we want the Y Axis:
@@ -292,14 +292,14 @@ class PointOffset extends Offset {
 
         //   m[0,0] (input->px)
         var transfXX = ToPixelsAffineMap1D(
-          fromValuesRange: fromTransposing2DValueRange.inputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.inputAxisInterval,
           toPixelsRange:   to2DPixelRange.horizontalPixelRange,
           isFlipToRange:   false,
         );
 
         //   m[1,1] (output->py)
         var transfYY = ToPixelsAffineMap1D(
-          fromValuesRange: fromTransposing2DValueRange.outputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.outputAxisInterval,
           toPixelsRange:   to2DPixelRange.verticalPixelRange,
           isFlipToRange:   true,
         );
@@ -320,13 +320,13 @@ class PointOffset extends Offset {
 
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
-          fromValuesRange: fromTransposing2DValueRange.inputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.inputAxisInterval,
           toPixelsRange:   to2DPixelRange.verticalPixelRange,
           isFlipToRange:   true,
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
-          fromValuesRange: fromTransposing2DValueRange.outputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.outputAxisInterval,
           toPixelsRange:   to2DPixelRange.horizontalPixelRange,
           isFlipToRange:   false,
         );
@@ -397,8 +397,8 @@ class PointOffset extends Offset {
   PointOffset affmapToPixelsMaybeTransposeInContextOfOLD({
     required ChartOrientation  chartOrientation,
     required BoxContainerConstraints withinConstraints,
-    required Interval                inputDataRange,
-    required Interval                outputDataRange,
+    required Interval                inputAxisInterval,
+    required Interval                outputAxisInterval,
     required double                  sizerHeight,
     required double                  sizerWidth,
   }) {
@@ -421,7 +421,7 @@ class PointOffset extends Offset {
 
         var horizontalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
-          fromValuesRange: inputDataRange,
+          fromValuesRange: inputAxisInterval,
           toPixelsRange: horizontalPixelsRange,
           doInvertRange: false,
         );
@@ -432,7 +432,7 @@ class PointOffset extends Offset {
 
         var verticalValuePixels    = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
-          fromValuesRange: outputDataRange,
+          fromValuesRange: outputAxisInterval,
           toPixelsRange: verticalPixelsRange,
           doInvertRange: true,
         );
@@ -455,7 +455,7 @@ class PointOffset extends Offset {
 
         var verticalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
-          fromValuesRange: inputDataRange,
+          fromValuesRange: inputAxisInterval,
           toPixelsRange: verticalPixelsRange,
           doInvertRange: false,
         );
@@ -467,7 +467,7 @@ class PointOffset extends Offset {
 
         var horizontalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
-          fromValuesRange: outputDataRange,
+          fromValuesRange: outputAxisInterval,
           toPixelsRange: horizontalPixelsRange,
           doInvertRange: true,
         );

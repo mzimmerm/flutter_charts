@@ -103,7 +103,7 @@ class OutputAxisContainerCL
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in chartViewModel.outputRangeDescriptor.labelInfoList) {
+    for (AxisLabelInfo labelInfo in chartViewModel.outputAxisDescriptor.labelInfoList) {
       var outputLabelContainer = AxisLabelContainerCL(
         chartViewModel: chartViewModel,
         label: labelInfo.formattedLabel,
@@ -285,7 +285,7 @@ class HorizontalAxisContainerCL
     inputLabelContainerCLs = List.empty(growable: true);
 
     ChartOptions options = chartViewModel.chartOptions;
-    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputRangeDescriptor.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputAxisDescriptor.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -298,7 +298,7 @@ class HorizontalAxisContainerCL
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in HorizontalAxisContainer
         labelStyle: labelStyle,
         // In [InputLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: chartViewModel.inputRangeDescriptor.labelInfoList[xIndex],
+        labelInfo: chartViewModel.inputAxisDescriptor.labelInfoList[xIndex],
         outerChartAreaContainer: this,
       );
       inputLabelContainerCLs.add(inputLabelContainer);
@@ -321,9 +321,9 @@ class HorizontalAxisContainerCL
     ChartOptions options = chartViewModel.chartOptions;
 
     // Purely artificial on HorizontalAxisContainer for now, we are taking labels from data, or user, NOT generating range.
-    axisPixelsRange = chartViewModel.dataRangeWhenStringLabels;
+    axisPixelsRange = chartViewModel.axisIntervalWhenStringLabels;
 
-    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputRangeDescriptor.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputAxisDescriptor.labelInfoList;
     double       yTicksWidth =
         options.dataContainerOptions.dataLeftTickWidth + options.dataContainerOptions.dataRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;

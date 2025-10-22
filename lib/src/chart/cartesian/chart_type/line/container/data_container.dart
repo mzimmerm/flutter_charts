@@ -189,7 +189,7 @@ class LineAndPointContainer extends PointContainer {
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
 
-    // KEEP generateTestCode(pointOffset, inputRangeDescriptor, outputRangeDescriptor, pixelPointOffset);
+    // KEEP generateTestCode(pointOffset, inputAxisDescriptor, outputAxisDescriptor, pixelPointOffset);
 
     // Store pixelPointOffset as member for paint to use as added offset
     this.pixelPointOffset = pixelPointOffset;
