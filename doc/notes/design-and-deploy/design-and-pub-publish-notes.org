@@ -2207,7 +2207,7 @@ Note: Places where 'envelope' is used: currently only for Rectangle and it means
 
 Failing auto-layouter has several categories
 
-*** DONE 1. Failing unexplained, but something to do with all-negative or all-positive values that do not start at 0
+*** DONE Failing unexplained, but something to do with all-negative or all-positive values that do not start at 0
 
 *bug fix in Interval resolved this error*
 
@@ -2237,24 +2237,28 @@ When the exception was thrown, this was the stack:
 #7      BoxLayouter._layout_TopRecurse (package:flutter_charts/src/morphic/container/container_layouter_base.dart:1079:5)
 #+end_example
 
-*** TODO-NEXT 2. Failing known reason - a chart without labels not implemented
+*** DONE ex900 Failing due to all data 0.0 
 
-failing:
+Error assert failed in AffineRangedMap1D creation: The following assertion was thrown during paint():
+'package:flutter_charts/src/util/util_dart.dart': Failed assertion: line 484 pos 17: 'fromRangeStart != fromRangeEnd': is not true.
 
+
+Fix was: 
 #+begin_example
-    'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
-    'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
+    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
 #+end_example
 
-*** IN-PROGRESS-NOW 3. ex40 Failing due to ordinal user labels
+*** DONE ex40 Failing due to ordinal user labels
 
-failing in bar chart mode - seems like overflow on the chart
+*Core problem was: Bar chart must always extend Y values to 0.0, and ordinal user labels branch was not doing this*
 
-rename axisIntervalWhenStringLabels => axisIntervalWhenUserLabels
+failing in bar chart mode - overflow on the chart
+
 
 #+begin_example
     'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter',
 #+end_example
+
 
 *Compare to: ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter*
 
@@ -2374,10 +2378,29 @@ then paint infos and warnings
 ### Log.Warning: closestIntersectWith: This rectangle Rect.fromLTRB(0.0, 0.0, 1242.6, 560.0) does NOT overlap at all rectangle other = Rect.fromLTRB(1357.6, 510.0, 2535.1, 527.0).
 ### Log.Warning: closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.intersection = Rect.fromLTRB(1357.6, 510.0, 1242.6, 527.0), widthIntersect=50.0
 
-  
+*** TODO-NOW ex72: INTENTIONALLY OVERFLOWING because Legend layout INTENTIONAL overflow makes chart ALSO overflow
 
+Reason: because (Legend, ChartBody) in ChartRootContainer are in TableLayout which uses Align.center by default.
 
-*** TODO-NEXT 4. Failing to rotate or skip labels
+The coded_layout oldManualLayout works, because it does it's own layout on top ChartRootContainer.
+
+        
+#+begin_example
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
+#+end_example
+
+Interval fix did NOT help this bug
+
+*** TODO-NEXT Failing known reason - a chart without labels not implemented
+
+failing:
+
+#+begin_example
+    'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
+#+end_example
+
+*** TODO-NEXT Failing to rotate or skip labels
 
 #+begin_example
     'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
@@ -2385,30 +2408,13 @@ then paint infos and warnings
     'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
 #+end_example
 
-*** TODO-NOW 1 5. Failing reason unkown
 
-#+begin_example
-    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
-#+end_example
-
-Interval fix did NOT help this bug
-
-*** DONE 6. ex900 Failing due to all data 0.0 
-
-Error assert failed in AffineRangedMap1D creation: The following assertion was thrown during paint():
-'package:flutter_charts/src/util/util_dart.dart': Failed assertion: line 484 pos 17: 'fromRangeStart != fromRangeEnd': is not true.
-
-
-Fix was: 
-#+begin_example
-    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
-#+end_example
-
-
-** TODO-NOW Refactor consideration
+** TODO-NOW Refactor / rename consideration
 
  - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
  - [ ] Consider rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but agains this is used a lot and related to a lot*
+ - [ ] 
+ - 
 
 ** TODO-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
 

@@ -438,7 +438,7 @@ class ExampleDescriptor {
     'ex31_barChart_*_*_newAutoLayouter',
   ]);
 
-  // todo-00 add coreLayouterTestingNew and add all individual
+  // todo-00 add layoutsGalleryNew and add all individual which tests layout as part of Legend
   //         add reasonableAmountOfNew and include coreLayouterTestingNew AND
   // : 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
   // : 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
@@ -450,31 +450,30 @@ class ExampleDescriptor {
   // 'ex800_barChart_*_*_newAutoLayouter',
   //
 
-  // todo-00 move  individual to  coreLayouterTestingNew
-  //         AND add dataset name to description: animal data - pos/neg data - only pos data - only neg data - user label
+  // todo-00 move  individual to  layoutsGalleryNew and merge them here
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
-    'ex31_lineChart_*_nonStacked_newAutoLayouter',  // ex31 tests all row/column inversions with positive+negative data
+    'ex31_lineChart_*_nonStacked_newAutoLayouter',  // pos+neg data
     'ex31_barChart_*_*_newAutoLayouter',
-    'ex32_lineChart_*_nonStacked_newAutoLayouter',  // ex32 tests all row/column inversions with only positive, starts above 0
+    'ex32_lineChart_*_nonStacked_newAutoLayouter',  // pos data y axes starts above zero
     'ex32_barChart_*_*_newAutoLayouter',
-    'ex33_lineChart_*_nonStacked_newAutoLayouter',  // ex33 tests all row/column inversions with only negative, starts below 0
+    'ex33_lineChart_*_nonStacked_newAutoLayouter',  // neg data y axes starts below zero
     'ex33_barChart_*_*_newAutoLayouter',
-    'ex40_lineChart_*_nonStacked_newAutoLayouter',  // ex40 tests YOrdinalUserLabelsAndUserColors
+    'ex40_lineChart_*_nonStacked_newAutoLayouter',  // ordinal data - YOrdinalUserLabelsAndUserColors
     'ex40_barChart_*_*_newAutoLayouter',
-    'ex75_lineChart_*_nonStacked_newAutoLayouter',  // ex75 tests all row/column inversions; also Legend layout, consider only test 1
+    'ex75_lineChart_*_nonStacked_newAutoLayouter',  // animals pos data - legendIsRowStartTightItemIsRowStartTightItemChildrenPadded
     'ex75_barChart_*_*_newAutoLayouter',
-    'ex800_lineChart_*_nonStacked_newAutoLayouter', // ex80 tests all row/column inversions with all positive data
+    'ex800_lineChart_*_nonStacked_newAutoLayouter', // EU countries pos data - legendIsWrappingRowItemIsRowStartTight
     'ex800_barChart_*_*_newAutoLayouter',
     // individual
     // ex30 : tests explicit LabelLayoutStrategy, but does not add anything new, as the LabelLayoutStrategy is default anyway
     'ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter',
-    // ex31 : tests row/column inversion with positive and negative values;  already in group
-    // ex32 : tests row/column inversion with only positive values above 0;  already in group
-    // ex33 : tests row/column inversion with only negative values below 0;  already in group
+    // ex31 : group
+    // ex32 : group
+    // ex33 : group
     // ex34 : tests custom font on labels, only need 1 test
     'ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter',
     // ex35 : tests no labels, all fail in new
-    // ex40 : tests ordinal user labels, fails in new
+    // ex40 : group
     // ex50 : tests user defined colors on series
     'ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter',
     // ex52 : tests logarithmic scale - no sense to stack
@@ -486,7 +485,8 @@ class ExampleDescriptor {
     'ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter',
     // ex71 : tests legend layout
     'ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter',
-    // ex72 : tests legend layout OVERFLOW FAILS BECAUSE OVERFLOW ON LEGEND SPILLS TO CHART; SHOULD BE FIXED
+    // ex72 : tests legend layout overflow. INTENTIONAL test of overflow. Do not 'fix' this is intended
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_newAutoLayouter',
     // ex73 : tests legend layout
     'ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter',
     // ex74 : tests legend layout
@@ -552,9 +552,9 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> current = parseDescriptors([
-    // 'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter', // todo-00 move to new
-    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_*_nonStacked_newAutoLayouter',
-    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_*_*_newAutoLayouter', // todo-00-last nonStacked Bar fails, investigate
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_newAutoLayouter',
+    'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
+
     // 'ex72_lineChart_*_nonStacked_newAutoLayouter',
     // 'ex72_barChart_*_*_newAutoLayouter',
   ]);

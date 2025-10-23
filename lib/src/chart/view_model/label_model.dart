@@ -107,24 +107,11 @@ class AxisIntervalTicksAndLabelsDescriptor {
           );
           break;
         case DataDependency.outputData:
-          // User-defined labels present on output axis: we have to use actual
-          // data values for the axisInterval, for the affine transforms to work.
-          // todo-00-last: original : trfdDataExtendedInterval = chartViewModel.findTrfdDataTightInterval(chartStacking: chartStacking);
-          // todo-00-done-HARDCODE START AT ORIGIN VVVVV
-          // IT APPEARS THAT FOR NON-STACKED BAR DATA MUST BE EXTENDED TO 0?????
-          // yes: Starting at 0 is NOT allowed ('banned')
-        //   /// in several conditions:
-        //   /// - On the [BarChart]
-        //   /// - For some [yTransform]s for example logarithm transform,
-        //   ///   where both data and logarithm must start above y value of 0.
-        //  In context of bug:
-        //  THIS IS CALLED WITH extendAxisToOrigin = true
-        //  THE DIFFERENCE from working nonStacked bar chart such as ex75: WHEN USING USER Y LABELS (userLabels != null) IN EX40, THIS BLOCK IS CALLED ON
-        //  DataDependency.outputData INSTEAD OF THE BLOCK BELOW. THIS BLOCK DOES NOT EXTEND THE outputData
-        //  TO 0.0 WHILE THE BLOCK BELOW FORCES IT BY CALLING findTrfdDataExtendedInterval!!!
-        //  SO ON BAR CHART, WE HAVE TO FORCE extendAxisToOrigin = true .
-        //  BUT WE NEED TO FIGURE OUT WHY NON-ZERO ORIGIN BREAKS THE BAR CHART !!!
-        //  trfdDataExtendedInterval = util_dart.Interval(0.0, 10.0); // WORKS
+          // User-defined labels present on output axis: for 'axisInterval',
+          // we have to use actual data values for the affine transforms to work.
+          //
+          // Note only: Ex40 has user y labels (userLabels != null). For 'outputData',
+          //     ensure to extend the data interval to 0.0 if extendAxisToOrigin==true.
           if (extendAxisToOrigin) {
             trfdDataExtendedInterval = chartViewModel.findTrfdDataExtendedInterval(
                 chartStacking: chartStacking,
@@ -135,7 +122,6 @@ class AxisIntervalTicksAndLabelsDescriptor {
                 chartStacking: chartStacking
             );
           }
-        // todo-00-done-HARDCODE START AT ORIGIN ^^^^^^
           double dataStepHeight = (trfdDataExtendedInterval.max - trfdDataExtendedInterval.min) / (userLabels.length - 1);
           trfdLabelNumbers =
               List.generate(userLabels.length, (index) => trfdDataExtendedInterval.min + index * dataStepHeight);

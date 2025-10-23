@@ -179,7 +179,6 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Implementation detail: maximum and minimum is calculated column-wise [PointsBarModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
-  ///  // todo-00-last : Consider: in view_model.PointModel rename outputValue to trfdOutputDatum
   util_dart.Interval findTrfdDataTightInterval({
     required ChartStacking chartStacking,
   }) {
