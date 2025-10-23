@@ -459,6 +459,8 @@ class ExampleDescriptor {
     'ex32_barChart_*_*_newAutoLayouter',
     'ex33_lineChart_*_nonStacked_newAutoLayouter',  // ex33 tests all row/column inversions with only negative, starts below 0
     'ex33_barChart_*_*_newAutoLayouter',
+    'ex40_lineChart_*_nonStacked_newAutoLayouter',  // ex40 tests YOrdinalUserLabelsAndUserColors
+    'ex40_barChart_*_*_newAutoLayouter',
     'ex75_lineChart_*_nonStacked_newAutoLayouter',  // ex75 tests all row/column inversions; also Legend layout, consider only test 1
     'ex75_barChart_*_*_newAutoLayouter',
     'ex800_lineChart_*_nonStacked_newAutoLayouter', // ex80 tests all row/column inversions with all positive data
@@ -493,7 +495,7 @@ class ExampleDescriptor {
     // ex76 : tests legend layout
     'ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter',
     // ex80 : all already in allSupportedNew (tests row/column inversion with only positive values
-    // ex900 : bug fixed on affine transform with all data 0.0
+    // ex900, ex901 : bug fixed on affine transform with all data 0.0
     'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter',
     'ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter',
   ]);
@@ -506,7 +508,6 @@ class ExampleDescriptor {
   static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
     'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
-    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
     'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
@@ -551,10 +552,9 @@ class ExampleDescriptor {
   ]);
 
   static List<ExampleDescriptor> current = parseDescriptors([
-    // 'ex900ErrorFixUserDataAllZero_lineChart_*_nonStacked_newAutoLayouter',
-    // 'ex900ErrorFixUserDataAllZero_barChart_*_*_newAutoLayouter',
-    // 'ex901ErrorFixUserDataAllSame50_lineChart_*_nonStacked_newAutoLayouter',
-    // 'ex901ErrorFixUserDataAllSame50_barChart_*_*_newAutoLayouter',
+    // 'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter', // todo-00 move to new
+    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_*_nonStacked_newAutoLayouter',
+    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_*_*_newAutoLayouter', // todo-00-last nonStacked Bar fails, investigate
     // 'ex72_lineChart_*_nonStacked_newAutoLayouter',
     // 'ex72_barChart_*_*_newAutoLayouter',
   ]);

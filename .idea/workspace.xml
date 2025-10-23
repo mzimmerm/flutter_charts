@@ -23,24 +23,10 @@
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/bar/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/bar/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/line/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/line/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/line_segment_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/line_segment_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/model/data_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/model/data_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/label_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/util/extensions_dart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/util/extensions_dart.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/util/util_dart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/util/util_dart.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/util/util_flutter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/util/util_flutter.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/util/util_flutter_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/util/util_flutter_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/util/util_labels_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/util/util_labels_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +216,9 @@
     &quot;Flutter.main.dart ex30 - explicit y numbers, all small positives.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex32 - line FAILS - explicit x, y, all Y positive, axis starts above zero (1).executor&quot;: &quot;Debug&quot;,
+    &quot;Flutter.main.dart ex40 - manual labels - languages.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex71.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex75 new.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex900 error all 0 data.executor&quot;: &quot;Debug&quot;,
     &quot;Flutter.main.dart ex900 error all data same 0.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex901 error all data same 50.executor&quot;: &quot;Run&quot;,
@@ -281,7 +269,7 @@
       <recent name="$PROJECT_DIR$/test/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex901 error all data same 50">
+  <component name="RunManager" selected="Flutter.main.dart ex40 - manual labels - languages">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -420,7 +408,7 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex40_barChart_column_stacked_newAutoLayouter'" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter'" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -1224,13 +1212,8 @@
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/chart/painter.dart</url>
-          <line>136</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
-          <line>520</line>
+          <line>521</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
@@ -1249,16 +1232,6 @@
           <option name="timeStamp" value="23" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/util/util_dart.dart</url>
-          <line>240</line>
-          <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/util/util_dart.dart</url>
-          <line>246</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/test/util/util_dart_test.dart</url>
           <line>82</line>
           <option name="timeStamp" value="27" />
@@ -1275,17 +1248,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>263</line>
+          <line>288</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>275</line>
+          <line>300</line>
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>330</line>
+          <line>355</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1295,23 +1268,128 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>101</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>169</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>408</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>412</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>414</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/util_dart.dart</url>
+          <line>224</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/root_container.dart</url>
+          <line>33</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/util/extensions_flutter.dart</url>
+          <line>215</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1510</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
+          <line>1496</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>111</line>
+          <option name="timeStamp" value="72" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
           <line>93</line>
-          <option name="timeStamp" value="38" />
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart</url>
+          <line>281</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart</url>
+          <line>383</line>
+          <option name="timeStamp" value="76" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>96</line>
-          <option name="timeStamp" value="39" />
+          <line>159</line>
+          <option name="timeStamp" value="77" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>121</line>
-          <option name="timeStamp" value="40" />
+          <line>145</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>106</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>118</line>
+          <option name="timeStamp" value="86" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
+          <line>130</line>
+          <option name="timeStamp" value="87" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
-          <line>366</line>
-          <option name="timeStamp" value="41" />
+          <line>176</line>
+          <option name="timeStamp" value="88" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/model/random_chart_data.dart</url>
+          <line>21</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
+          <line>770</line>
+          <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart</url>
+          <line>115</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart</url>
+          <line>63</line>
+          <option name="timeStamp" value="94" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/view_model/label_model.dart</url>
+          <line>712</line>
+          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1322,6 +1400,11 @@
         </breakpoints-dialog>
       </breakpoints-dialog>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="FlutterRunConfigurationType">
+        <watch expression="pixelPointOffset" language="Dart" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

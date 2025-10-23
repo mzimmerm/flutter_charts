@@ -2183,7 +2183,7 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
                                                                                                                               
 
 
-** IN-PROGRESS-NOW Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor
+** DONE Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor
 
 - [X] this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
 
@@ -2198,11 +2198,10 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
 - [X] rename extremeValueWithSign => outerDatumForSign
 - [X] rename _transformedValuesMin => _trfdDataMin
 - [X] rename _transformedValuesMax => _trfdDataMax
-- [ ] Maybe:
-  - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is hard, used a lot*
-  - [ ] look at places where 'transformed' is used and rename to trfd??
-  - [ ] look at places where 'envelope' is used and rename
+- [X] look at places where 'transformed' is used and rename to trfd
+ 
 
+Note: Places where 'envelope' is used: currently only for Rectangle and it means tight envelope, keep that.
 
 ** IN-PROGRESS-NOW Fix charts that are NOT working in new auto_layouter
 
@@ -2247,13 +2246,135 @@ failing:
     'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
 #+end_example
 
-*** TODO-NOW 3 3. Failing due to ordinal user labels
+*** IN-PROGRESS-NOW 3. ex40 Failing due to ordinal user labels
 
-failing:
+failing in bar chart mode - seems like overflow on the chart
+
+rename axisIntervalWhenStringLabels => axisIntervalWhenUserLabels
 
 #+begin_example
-    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter',
+    'ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter',
 #+end_example
+
+*Compare to: ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_column_nonStacked_newAutoLayouter*
+
+The full log for ex75 is ONLY:
+
+Launching lib/test/src/test_main.dart on Linux in debug mode...
+Building Linux application...
+✓ Built build/linux/x64/debug/bundle/flutter_charts
+Gdk-Message: 19:36:33.807: Unable to load  from the cursor theme
+Debug service listening on ws://127.0.0.1:37811/IiKqV4Rwdoo=/ws
+Syncing files to device Linux...
+ ### Log.Info: extractExampleDescriptorsFromDartDefine From lib/test/src/test_main.dart: Passed exampleDescriptors=[ex75_barChart_column_nonStacked_newAutoLayouter], length=1
+ ### Log.Info: FlutterChartPainter. FLUTTER_CHART_PAINTER.PAINT: passed size=Size(1242.6, 560.0).
+ ### Log.Info: First paint!
+ ### Log.Info: get root: No cached _root found all the way to actual hierarchy-root.
+
+*THE DIFFERENCE SEEMS TO BE EX40 DOES NOT EXTEND HORIZONTAL AXIS TO 0*
+ 
+
+*Debug: When calling affmapBetweenRanges*
+
+
+fromTransposing2DValueRange: ALWAYS SAME
+
+- input int  (0.0, 100.0)
+- output int (1.0, 10.0)
+- orient Column
+
+  .. *I THINK THE PROBLEM IS INPUT AND OUTPUT IS REVERSED ABOVE!!!*
+  fromTransposing2DValueRange is created by calling:
+  #+begin_src dart
+  FromTransposing2DValueRange subsetForSignOfPointOffsetBeforeAffmap({required PointOffset pointOffset,}) {
+    return FromTransposing2DValueRange(
+      inputAxisInterval: inputAxisInterval.portionForSignOfValue(pointOffset.inputValue),
+      outputAxisInterval: outputAxisInterval.portionForSignOfValue(pointOffset.outputValue),
+      chartOrientation: chartOrientation,
+    );
+  }
+  #+end_src
+  
+to2DPixelRange (comes from constraints): BUT
+ON ROOT hor=(0,1177.55), ver=(0, 496.0)
+
+- horizontal = (0, 69.09) <== this is weird no???? we transform full axis interval to a subset (probably for bar)
+- vertical   = (0, 496.0)
+
+
+Examples of result pixelPointOffset when  horizontal =(0, 69.09), vertical =  (0, 496.0)
+
+this=(12.5, 9.0) result=(34.5, 55.1)
+this=(, 7) result=(34.5, 165.3)
+this=(, 4) result=(34.5, 330.7)
+this=(, 3) result=(34.5, 385.8 )
+---
+this=(37.5, 4) result=(34.5, 330.7) --- SAME AS (12.5, 4.0) ABOVE?? WHY??
+this=(, 6) result=(, 220.4)
+this=(, 9) result=(, 55.1)
+this=(, 9) result=(, 55.1)
+----
+this=(62.5, 3) result=(34.5, 385.8)
+this=(, 7) result=(, 165.3)
+this=(, 6) result=(, 220.4)
+this=(, 10) result=(, 0.0) !!
+-----
+this=(87.5, 9) result=(34.5, 55.1)
+this=(, 6) result=(, 220.4)
+this=(, 8) result=(, 110.2)
+this=(, 1) result=(, 496.0) !!
+----- END
+this=(, ) result=(, )
+this=(, ) result=(, )
+
+
+       chartModel = ChartModel(
+          dataRows: const [
+            [9.0, 4.0, 3.0, 9.0],
+            [7.0, 6.0, 7.0, 6.0],
+            [4.0, 9.0, 6.0, 8.0],
+            [3.0, 9.0, 10.0, 1.0],
+
+            containsL 1,3,4,6,7,8,9,10
+            miss 2,5
+
+isMoveInCrossDirectionToPixelRangeCenter: false
+
+
+isSetBarPointRectInCrossDirectionToPixelRange: false
+
+
+This warning:
+
+ ### Log.Info: extractExampleDescriptorsFromDartDefine From lib/test/src/test_main.dart: Passed exampleDescriptors=[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter], length=1
+### Log.Info: FlutterChartPainter. FLUTTER_CHART_PAINTER.PAINT: passed size=Size(1242.6, 560.0). <== same as ex75
+### Log.Info: First paint!
+### Log.Info: get root: No cached _root found all the way to actual hierarchy-root.
+### Log.Warning: Layout size of this layouter Instance of 'Padder' is Size(71.1, 551.1), which does not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(71.1, 496.0)
+### Log.Warning: Layout size of this layouter Instance of 'Row' is Size(284.4, 551.1), which does not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(284.4, 496.0)
+### Log.Warning: Layout size of this layouter Instance of 'BarChartPointContainersBar' is Size(284.4, 551.1), which does not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(284.4, 496.0)
+
+
+and
+
+### Log.Warning: Layout size of this layouter Instance of 'WidthSizerLayouter' is Size(1177.6, 551.1), which does not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(1177.6, 496.0)
+### Log.Warning: HeightSizerLayouter: layoutSize calculated is Size(1177.6, 551.1) exceeds, in height, the constraint length=496.0
+
+and last
+
+### Log.Warning: Layout size of this layouter Instance of 'BarChartRootContainer' is Size(1242.6, 615.1), which does not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(1242.6, 560.0)
+
+then paint infos and warnings
+
+### Log.Info: paintWarningIfLayoutOverflowsRootConstraints: rootOffset=Offset(0.0, 0.0), myPaintedRect=Rect.fromLTRB(0.0, 0.0, 1242.6, 615.1), rootConstraints=BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(1242.6, 560.0)
+
+
+### Log.Info: paintWarningIfLayoutOverflowsRootConstraints: rootOffset=Offset(0.0, 0.0), myPaintedRect=Rect.fromLTRB(0.0, 20.0, 1242.6, 615.1), rootConstraints=BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(1242.6, 560.0)
+### Log.Info: paintWarningIfLayoutOverflowsRootConstraints: rootOffset=Offset(0.0, 0.0), myPaintedRect=Rect.fromLTRB(65.0, 595.1, 1242.6, 612.1), rootConstraints=BoxContainerConstraints: minSize=Size(0.0, 0.0), maxSize=Size(1242.6, 560.0)
+### Log.Warning: closestIntersectWith: This rectangle Rect.fromLTRB(0.0, 0.0, 1242.6, 560.0) does NOT overlap at all rectangle other = Rect.fromLTRB(1357.6, 510.0, 2535.1, 527.0).
+### Log.Warning: closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.intersection = Rect.fromLTRB(1357.6, 510.0, 1242.6, 527.0), widthIntersect=50.0
+
+  
 
 
 *** TODO-NEXT 4. Failing to rotate or skip labels
@@ -2272,33 +2393,24 @@ failing:
 
 Interval fix did NOT help this bug
 
-*** TODO-NOW 2 6. Failing due to no data but it should be fixed
+*** DONE 6. ex900 Failing due to all data 0.0 
 
-todo-0000-now
+Error assert failed in AffineRangedMap1D creation: The following assertion was thrown during paint():
+'package:flutter_charts/src/util/util_dart.dart': Failed assertion: line 484 pos 17: 'fromRangeStart != fromRangeEnd': is not true.
+
+
+Fix was: 
 #+begin_example
     'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_oldManualLayouter',
 #+end_example
 
-Error from IntelliJ
 
-======== Exception caught by rendering library =====================================================
-The following assertion was thrown during paint():
-'package:flutter_charts/src/util/util_dart.dart': Failed assertion: line 484 pos 17: 'fromRangeStart != fromRangeEnd': is not true.
+** TODO-NOW Refactor consideration
 
-The relevant error-causing widget was: 
-  BarChart BarChart:file:///home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src/test_main.dart:1123:29
-When the exception was thrown, this was the stack: 
-#2      new AffineRangedMap1D (package:flutter_charts/src/util/util_dart.dart:484:17)
-#3      new ToPixelsAffineMap1D (package:flutter_charts/src/util/util_dart.dart:604:8)
-#4      ExternalTicksLayoutDescriptor._affmapValuesToPixels.<anonymous closure> (package:flutter_charts/src/morphic/container/container_layouter_base.dart:4114:42)
-#5      MappedListIterable.elementAt (dart:_internal/iterable.dart:442:31)
-#6      ListIterator.moveNext (dart:_internal/iterable.dart:371:26)
-#7      new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194:27)
-#8      new _GrowableList.of (dart:core-patch/growable_array.dart:154:28)
-#9      new List.of (dart:core-patch/array_patch.dart:39:18)
+ - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
+ - [ ] Consider rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but agains this is used a lot and related to a lot*
 
-
-** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
+** TODO-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
 
 This todo is also documented in container_layouter_base.dart
 
