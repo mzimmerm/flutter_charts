@@ -15,7 +15,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
 import 'package:flutter_charts/src/switch_view_model/view_model.dart' show directionWrapperAroundCL;
 
-import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as testing_legend_container;
 
 class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
   SwitchLineChartViewModelCL({

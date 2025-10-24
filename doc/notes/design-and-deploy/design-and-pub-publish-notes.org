@@ -2111,7 +2111,7 @@ The steps to do here:
 
 
 
-** DONE Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'. Identify charts that do NOT work in auto_layout.
+** DONE ~17.1. Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'. Identify charts that do NOT work in auto_layout.~
 
 #+begin_src bash
   cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested/
@@ -2183,7 +2183,7 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
                                                                                                                               
 
 
-** DONE Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor
+** DONE ~17.2. Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor~
 
 - [X] this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
 
@@ -2203,7 +2203,74 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
 
 Note: Places where 'envelope' is used: currently only for Rectangle and it means tight envelope, keep that.
 
-** IN-PROGRESS-NOW Fix charts that are NOT working in new auto_layouter
+
+** IN-PROGRESS-NOW ~18. Simplify project structure regarding coded_layout: Make coded_layout and new_layout less dependend for testing: Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting use instead test_coded_layou_main.dart in addition to test_main.dart~
+
+intellij:
+- how to compare files?
+- search class ([0-9_A-Za-z]+)[^O]CL
+- search class Switch([0-9_A-Za-z]+)
+
+  
+
+In general, some libraries or classes in 'testing' are merged back to lib OR create a new library under lib/src/custom
+
+1. [X] move lib/test/src/test/options.dart to lib/src/chart/layout_alternatives
+1. [X] move lib/test/src/test/chart/cartesian/container/options.dart to lib/src/chart/layout_alternatives/cartesian/container/options.dart
+6. [ ] TEST FOR SAME
+
+
+*** Notes from deleted code
+
+**** Example of extending dynamic enum
+
+Deleted a file options.dart with contents:
+
+#+name: test-slash-option
+#+begin_src java
+  import 'package:flutter_charts/src/chart/options.dart' as chart_options;
+
+  class LegendAndItemLayoutEnum extends chart_options.LegendAndItemLayoutEnum {
+    
+    const LegendAndItemLayoutEnum(super.i);
+    
+    static const legendIsColumnStartLooseItemIsRowStartLoose = chart_options.LegendAndItemLayoutEnum(1001); // See comment on legendIsColumnStartTightItemIsRowStartTight
+    static const legendIsColumnStartTightItemIsRowStartTight = chart_options.LegendAndItemLayoutEnum(1002); // legend items in column
+    static const legendIsRowCenterLooseItemIsRowEndLoose = chart_options.LegendAndItemLayoutEnum(1003); // Item row is not top = chart_options.LegendAndItemLayoutEnum(XX); forced to 'start' = chart_options.LegendAndItemLayoutEnum(XX); 'tight'  = chart_options.LegendAndItemLayoutEnum(XX); so noop
+    static const legendIsRowStartTightItemIsRowStartTightSecondGreedy = chart_options.LegendAndItemLayoutEnum(1005); // second Item is greedy wrapped
+    static const legendIsRowStartTightItemIsRowStartTightItemChildrenPadded = chart_options.LegendAndItemLayoutEnum(1006);
+    static const legendIsRowStartTightItemIsRowStartTightItemChildrenAligned = chart_options.LegendAndItemLayoutEnum(1007);
+  }
+#+end_src
+** TODO-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
+
+This todo is also documented in container_layouter_base.dart
+
+
+- [X] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
+- [ ] add class ParentOrderedSkip
+  - [ ] bool isSkipLayout
+  - [ ] bool isSkipPaint
+  - [ ] private generative constructor
+  - [ ] const static skipPaint
+  - const static skipLayoutAndPaint
+  - [ ] const static skipNone
+  - [ ] 
+- [ ] on BoxContainer, add member parentOrderedSkip,
+  - [ ] (also search for it first), default to skipNone
+  - [ ] not final, we want to be able layout code to force skip if needed
+- [ ] review options related to skipping
+  - [ ] add 6 options for skipping - [ ] default skipNone
+    - [ ] input labels
+    - [ ] input axis
+    - [ ] output labels
+    - [ ] output axis
+    - [ ] input grid
+    - [ ] output grid
+  - [ ] test things work unchanged
+
+
+** TODO-NEXT ~20. Fix charts that are NOT working in new auto_layouter~
 
 Failing auto-layouter has several categories
 
@@ -2378,9 +2445,11 @@ then paint infos and warnings
 ### Log.Warning: closestIntersectWith: This rectangle Rect.fromLTRB(0.0, 0.0, 1242.6, 560.0) does NOT overlap at all rectangle other = Rect.fromLTRB(1357.6, 510.0, 2535.1, 527.0).
 ### Log.Warning: closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.intersection = Rect.fromLTRB(1357.6, 510.0, 1242.6, 527.0), widthIntersect=50.0
 
-*** TODO-NOW ex72: INTENTIONALLY OVERFLOWING because Legend layout INTENTIONAL overflow makes chart ALSO overflow
+*** DONE ex72: INTENTIONALLY OVERFLOWING because Legend layout INTENTIONAL overflow makes chart ALSO overflow
 
-Reason: because (Legend, ChartBody) in ChartRootContainer are in TableLayout which uses Align.center by default.
+*Reason: because (Legend, ChartBody) in ChartRootContainer are in TableLayout which uses Align.center by default.*
+
+*Do not fix. this is intentionall presentation of how the layout overflow is handled*
 
 The coded_layout oldManualLayout works, because it does it's own layout on top ChartRootContainer.
 
@@ -2388,8 +2457,6 @@ The coded_layout oldManualLayout works, because it does it's own layout on top C
 #+begin_example
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
 #+end_example
-
-Interval fix did NOT help this bug
 
 *** TODO-NEXT Failing known reason - a chart without labels not implemented
 
@@ -2409,98 +2476,7 @@ failing:
 #+end_example
 
 
-** TODO-NOW Refactor / rename consideration
-
- - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
- - [ ] Consider rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but agains this is used a lot and related to a lot*
- - [ ] 
- - 
-
-** TODO-NOW Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend
-
-This todo is also documented in container_layouter_base.dart
-
-
-- [X] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
-- [ ] add class ParentOrderedSkip
-  - [ ] bool isSkipLayout
-  - [ ] bool isSkipPaint
-  - [ ] private generative constructor
-  - [ ] const static skipPaint
-  - const static skipLayoutAndPaint
-  - [ ] const static skipNone
-  - [ ] 
-- [ ] on BoxContainer, add member parentOrderedSkip,
-  - [ ] (also search for it first), default to skipNone
-  - [ ] not final, we want to be able layout code to force skip if needed
-- [ ] review options related to skipping
-  - [ ] add 6 options for skipping - [ ] default skipNone
-    - [ ] input labels
-    - [ ] input axis
-    - [ ] output labels
-    - [ ] output axis
-    - [ ] input grid
-    - [ ] output grid
-  - [ ] test things work unchanged
-- [ ] 
-- [ ] for each OLD 35 test (testing skip), add same NEW test and make sure they work well
-- [ ] remove the OLD 35 test which is testing skip
-- [ ] move the images for OLD 35 skip testing to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 10 test (random data), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 10 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 7* test (testing layouters on legend layout), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 7* to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] convert ex900 to new, ensure result satisfactory
-    - [ ] move the images for OLD 900 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 52 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 52 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 52 test (logarithmic scale), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 52 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 32 test (start y above 0), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 32 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 33 test (start y below 0 with y all negative), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 33 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 34 test (different font), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 34 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 40 test (ordinal labels), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 40 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 50 test (stocks with positive/negative values), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 50 to OLD-LAYOUTER directory
-  - [ ] next
-    - [ ] each OLD ex 6* test (tilted labels), convert to NEW, and ensure result is satisfactory
-    - [ ] move the images for OLD 6* to OLD-LAYOUTER directory
-
-/////
-// Find a way to still run OLD layout, while removing the SWITCH, and keep SOME old layout tests.
-///////////////////////////////
-
-
-** IN-PROGRESS ~18. Figure out how to create, name, and keep some basic chart layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
-
-Thoughts on descriptive format of such layout templates:
-
-- 'chartType=barChart_chartLayoutTemplate=Column(Legend, (Table(OutputAxisVertical11, DataContainer12, EmptyCorner21, InputAxisHorizontal22))_chartStacking=stacked' : the name of OutputAxisVertical determines 'column', OutputAxisHorizontal would be 'row'
-  - this could be also called 'chartType=barChart_chartLayoutTemplate=default_chartStacking=stacked'
-
-** ~Milestone: 2 weeks: June 4~
-
-** TODO 19. Add Spacing to chart
-
-
-** IN-PROGRESS ~20. RUNNING ISSUES and SHORT TODOs~
+** IN-PROGRESS ~YYY. RUNNING ISSUES and SHORT TODOs~
 
 *** Running TODOs
 
@@ -2515,11 +2491,23 @@ Thoughts on descriptive format of such layout templates:
     - layoutNoPaint
     - noLayoutNoPaint
     - [ ] Think about places where and how to use it. Look at current code
-
-
-*** Running Issues
     
 
+
+** TODO-NEXT ~21. Refactor / rename consideration~
+
+ - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
+ - [ ] Consider rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but agains this is used a lot and related to a lot*
+ - [ ] Rename boundingRect to envelopeRect
+ - [ ] 
+ - 
+
+** TODO-NEXT ~22. Figure out how to create, name, and keep some basic chart layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
+
+Thoughts on descriptive format of such layout templates:
+
+- 'chartType=barChart_chartLayoutTemplate=Column(Legend, (Table(OutputAxisVertical11, DataContainer12, EmptyCorner21, InputAxisHorizontal22))_chartStacking=stacked' : the name of OutputAxisVertical determines 'column', OutputAxisHorizontal would be 'row'
+  - this could be also called 'chartType=barChart_chartLayoutTemplate=default_chartStacking=stacked'
 
 ** LATER-BUT-REVIEW-NEXT Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
 
@@ -2537,18 +2525,20 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
   2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/test/tmp (may already be, see above)
   3. 
 
-** TODO FUTURE WORK
+** TODO ~23. Add Spacing to charts~
+
+** TODO ~24. LARGE: Layout related changes~
+
 - [ ] review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.
 - [ ] review again, all uses of applyParentOffset, esp between positioning and BoxLayouter
 - [ ] should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
-- [ ] Rename boundingRect to envelopeRect
   
 
-** TODO 20. ~Containers to MORPHS~
+** TODO ~25. HUGE: Containers to MORPHS~
 
   - [ ] start doing Morph stuff: start with everything is a transform!
 
-** TODO-NEXT 21. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
+** TODO ~26. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places~
 
 
 - [ ] EVEN-LATER BoxContainer debuggability
@@ -2561,7 +2551,7 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 
 
-** 10. IDEAS TO IMPLEMENT
+** 30. *IDEAS TO IMPLEMENT - table - is this done??*
 
 *** TableLayouter which can be used to layout the chart XContainer, YContainer, DataContainer
 

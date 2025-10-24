@@ -2,7 +2,7 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 // import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
-import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as testing_legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart' as line_chart_view_model;

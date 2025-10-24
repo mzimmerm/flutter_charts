@@ -1,6 +1,6 @@
 // import 'package:logger/logger.dart' as logger;
 
-import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as testing_legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries

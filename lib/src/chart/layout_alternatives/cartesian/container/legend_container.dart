@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Paint;
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as chart_legend;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
 import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
-import 'package:flutter_charts/test/src/chart/options.dart' as testing_options show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as testing_options show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
 import 'package:flutter_charts/src/chart/options.dart' as chart_options;
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align, Packing;

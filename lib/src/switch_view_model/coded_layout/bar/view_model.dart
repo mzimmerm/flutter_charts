@@ -19,7 +19,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 //                 This is unfortunate result of keeping some legend options
 //                 such as legendIsColumnStartLooseItemIsRowStartLoose only as
 //                 test options.
-import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as testing_legend_container;
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as testing_legend_container;
 
 
 class SwitchBarChartViewModelCL extends SwitchChartViewModelCL {

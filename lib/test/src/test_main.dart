@@ -16,7 +16,7 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
 import 'package:flutter_charts/src/chart/options.dart';
-import 'package:flutter_charts/test/src/chart/options.dart' as testing_options show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as testing_options show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
