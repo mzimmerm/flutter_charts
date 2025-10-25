@@ -1,6 +1,6 @@
 // import 'package:logger/logger.dart' as logger;
 
-import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as testing_legend_container;
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries
@@ -36,7 +36,7 @@ class SwitchBarChartViewModel extends bar_chart_view_model.SwitchBarChartViewMod
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
-      legendContainer: testing_legend_container.LegendContainer(chartViewModel: this),
+      legendContainer: layout_alternative_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
       verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),

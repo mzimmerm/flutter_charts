@@ -23,13 +23,16 @@
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshot_create_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/layout_alternatives/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/layout_alternatives/cartesian/container/legend_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/layout_alternatives/cartesian/container/legend_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/layout_alternatives/options.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_core_dart_and_flutter_widget_tests.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -208,55 +211,55 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter Test.Interval.executor": "Run",
-    "Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor": "Run",
-    "Flutter.main.dart absoluteMinimumNew.executor": "Run",
-    "Flutter.main.dart ex10 - newAutoLayouter.executor": "Run",
-    "Flutter.main.dart ex10 - oldManualLayouter.executor": "Run",
-    "Flutter.main.dart ex10.executor": "Run",
-    "Flutter.main.dart ex30 - explicit y numbers, all small positives.executor": "Run",
-    "Flutter.main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero.executor": "Run",
-    "Flutter.main.dart ex32 - line FAILS - explicit x, y, all Y positive, axis starts above zero (1).executor": "Debug",
-    "Flutter.main.dart ex40 - manual labels - languages.executor": "Run",
-    "Flutter.main.dart ex71.executor": "Run",
-    "Flutter.main.dart ex72.executor": "Run",
-    "Flutter.main.dart ex75 new.executor": "Run",
-    "Flutter.main.dart ex900 error all 0 data.executor": "Debug",
-    "Flutter.main.dart ex900 error all data same 0.executor": "Run",
-    "Flutter.main.dart ex901 error all data same 50.executor": "Run",
-    "Flutter.main_run_doc_example.dart.executor": "Run",
-    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHELLCHECK.PATH": "/home/mzimmermann/.local/share/JetBrains/IdeaIC2024.2/Shell Script/shellcheck",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "flutter.preview.tool.window.visible": "true",
-    "git-widget-placeholder": "flutter__charts__v4__2023-01-26__convert__Presenters__to__BoxContainers",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test/deprecated_v1",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.1477105",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "reference.settings.ide.settings.spelling",
-    "settings.editor.splitter.proportion": "0.23529412",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter Test.Interval.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart absoluteMinimumNew.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex10 - newAutoLayouter.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex10 - oldManualLayouter.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex10.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex30 - explicit y numbers, all small positives.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex32 - line FAILS - explicit x, y, all Y positive, axis starts above zero (1).executor&quot;: &quot;Debug&quot;,
+    &quot;Flutter.main.dart ex40 - manual labels - languages.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex71.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex72.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex75 new.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex900 error all 0 data.executor&quot;: &quot;Debug&quot;,
+    &quot;Flutter.main.dart ex900 error all data same 0.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart ex901 error all data same 50.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main_run_doc_example.dart.executor&quot;: &quot;Run&quot;,
+    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;/home/mzimmermann/.local/share/JetBrains/IdeaIC2024.2/Shell Script/shellcheck&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;flutter.preview.tool.window.visible&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;flutter__charts__v4__2023-01-26__convert__Presenters__to__BoxContainers&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/tool/test/deprecated_v1&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.spelling&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.23529412&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Dart"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Dart&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/tool/test/deprecated_v1" />
@@ -1439,6 +1442,11 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart</url>
           <line>266</line>
           <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/integration_test/deprecated_v1/screenshot_create_deprecated_v1_test.dart</url>
+          <line>9</line>
+          <option name="timeStamp" value="112" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>

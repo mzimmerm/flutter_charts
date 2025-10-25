@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_charts/test/src/test_main.dart' as app;
+import 'package:flutter_charts/test/src/test_main.dart' as headless_test_app;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleMainAndTestSupport;
 
 /// Flutter widget tests for the example app in 'lib/test/src/test_main.dart'.
@@ -15,7 +15,7 @@ void main() {
   group('Widget tests on page 1', () {
     testWidgets('find expected text on widgets', (WidgetTester tester) async {
       // Build the app.
-      app.main();
+      headless_test_app.main();
 
       await tester.pumpAndSettle();
 

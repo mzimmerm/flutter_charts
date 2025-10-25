@@ -10,6 +10,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as app;
 ///   Integration testing by taking a screenshot from the example app,
 ///   and comparing the produced screenshot with a known correct screenshot.
 ///
+@Deprecated('Deprecated integration test of taking a screenshot.')
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 

@@ -4,7 +4,7 @@ import 'package:integration_test/integration_test.dart' show IntegrationTestWidg
 import '../lib/test/src/util/test_util.dart';
 
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart';
-import 'package:flutter_charts/test/src/test_main.dart' as device_test_app;
+import 'package:flutter_charts/test/src/test_main.dart' as on_device_test_app;
 
 /// Flutter integration test takes and saves screenshots from the running app 'lib/test/src/test_main.dart'
 /// for all chart examples defined by the '--dart-define' environment variable 'EXAMPLE_DESCRIPTORS',
@@ -133,7 +133,7 @@ void main() {
   testWidgets('screenshot', (WidgetTester tester) async {
 
     // Build the tested app, start it on device.
-    device_test_app.main();
+    on_device_test_app.main();
 
     // This is required prior to taking the screenshot (Android only).
     await binding.convertFlutterSurfaceToImage();
