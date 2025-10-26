@@ -5,12 +5,28 @@
 
 set -o errexit
 
-if [[ $# -eq 0 ]]; then
-  echo 'Specify at least one example or group from the command line, exiting'
-  exit 1
-fi
+# To process command line arguments, we use bargs.sh and run_screenshot_test_bargs_vars,
+# downloaded as
+#    'curl https://raw.githubusercontent.com/unfor19/bargs/master/bargs.sh --output bargs.sh'
 
-exampleDescriptors="$*"
+# export BARGS_VARS_PATH="${PWD}/tool/test/run_screenshot_test_bargs_vars"
+export BARGS_VARS_PATH="tool/test/run_screenshot_test_bargs_vars"
+
+
+#set -eo pipefail
+#source "${PWD}"/"$(dirname ${BASH_SOURCE[0]})"/bargs.sh "$@"
+
+echo "Press any key 1"; read # todo-00-remove
+source tool/external/bargs.sh "$@"
+echo "Running auto_layout examples in : $auto_layout"
+echo "Running coded_layout examples in : $coded_layout"
+echo "Press any key 2"; read # todo-00-remove
+
+# todo-00-last remove: exampleDescriptors="$*"
+exampleDescriptorsAutoLayout="$auto_layout"
+exampleDescriptorsCodedLayout="$coded_layout"
+
+echo "Press any key to continue:"; read -r # todo-00-remove
 
 # Start emulator
 tool/test/start_emulator.sh
@@ -89,13 +105,43 @@ tool/test/start_emulator.sh
 #          b) Creates a 'user hand' tester which controls the on-device-running-app
 #    3. The on-device-running-app      main() in 'test/src/test_main.dart' as device_test_app;' which is the chart app
 
-flutter drive \
-  --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
-  --driver=test_driver/integration_test.dart  \
-  --target=integration_test/screenshot_create_test.dart
+echo BEFORE LOOP press enter; read # todo-00
 
-# Run the main() in screenshot_validate_test.dart.
-# The main() runs all chart example enums from the group - see above drive test for details of expansion.
-flutter test \
-  --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
-  test/screenshot_validate_test.dart
+for layout in auto_layout coded_layout; do
+
+  case $layout in
+    auto_layout)
+      exampleDescriptors="$exampleDescriptorsAutoLayout"
+      screenshot_create_test="screenshot_create_test.dart"
+      comment_run_screenshot_create="'\n'----------'\n'Creating screenshots for $layout '\n'"
+      comment_run_screenshot_validate="'\n'----------'\n'Validating screenshots for $layout '\n'"
+      ;;
+    coded_layout)
+      exampleDescriptors="$exampleDescriptorsCodedLayout"
+      screenshot_create_test="coded_layout_screenshot_create_test.dart"
+      comment_run_screenshot_create="'\n'----------'\n'Creating screenshots for $layout '\n'"
+      comment_run_screenshot_validate="'\n'----------'\n'Validating screenshots for $layout '\n'"
+      ;;
+    default)
+      echo Internal error, invalid layout=$layout, exiting
+      echo 'Press any key to exit'; read -r # todo-00
+      exit 1
+  esac
+
+
+  # Run the main() in [coded_layout_]screenshot_create_test.dart.
+  # The main() runs all chart example enums from the group - see above drive test for details of expansion.
+  echo "$comment_run_screenshot_create"
+  flutter drive \
+    --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
+    --driver=test_driver/integration_test.dart  \
+    --target=integration_test/"$screenshot_create_test"
+
+  # Run the main() in screenshot_validate_test.dart.
+  # The main() runs all chart example enums from the group - see above drive test for details of expansion.
+  echo "$comment_run_screenshot_validate"
+  flutter test \
+    --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
+    test/screenshot_validate_test.dart
+
+done
