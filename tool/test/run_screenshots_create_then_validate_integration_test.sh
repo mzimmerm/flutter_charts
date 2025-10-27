@@ -5,40 +5,38 @@
 
 set -o errexit
 
-# To process command line arguments, we use bargs.sh and run_screenshot_test_bargs_vars,
+echo "$0" called with args "$@" # todo-00-last remove
+
+# To process command line arguments, we use bargs.sh and .run_screenshot_create_then_validate_integration_test_bargs_vars,
 # downloaded as
 #    'curl https://raw.githubusercontent.com/unfor19/bargs/master/bargs.sh --output bargs.sh'
 
-# export BARGS_VARS_PATH="${PWD}/tool/test/run_screenshot_test_bargs_vars"
-export BARGS_VARS_PATH="tool/test/run_screenshot_test_bargs_vars"
+# export BARGS_VARS_PATH="${PWD}/tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars"
+export BARGS_VARS_PATH="tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars"
 
-
-#set -eo pipefail
-#source "${PWD}"/"$(dirname ${BASH_SOURCE[0]})"/bargs.sh "$@"
-
-echo "Press any key 1"; read # todo-00-remove
 source tool/external/bargs.sh "$@"
 echo "Running auto_layout examples in : $auto_layout"
 echo "Running coded_layout examples in : $coded_layout"
-echo "Press any key 2"; read # todo-00-remove
 
-# todo-00-last remove: exampleDescriptors="$*"
 exampleDescriptorsAutoLayout="$auto_layout"
 exampleDescriptorsCodedLayout="$coded_layout"
-
-echo "Press any key to continue:"; read -r # todo-00-remove
 
 # Start emulator
 tool/test/start_emulator.sh
 
-# Run the main() in 'target screenshot_create_test.dart', in context of the Flutter driver 'integration_test.dart'.
+# Run the main() in 'target screenshot_create_test.dart',
+# in the context of the Flutter driver 'integration_test.dart'.
 #
-# The 'screenshot_create_test' creates a 'human hand tester' instance, which can start an app on device and interact with it:
+# The 'screenshot_create_test' is the integration test which main()
+# calls the method  'testWidget(screenshot, testerCallback)'.
+# The 'testerCallback' method is declared inline. It is a 'human hand tester'
+# (referred to as 'tester'), which can start an app on device and interact with it
+# as a human hand would: tap, drag, set text etc:
 #
-#    The tester can start the app on device (in our case 'package:flutter_charts/test/src/test_main.dart' as device_test_app)
-#    The tester can tap, set text, and overall interact with the device.
-#    This ability is used to start the device_test_app, keep tapping a + button, each tap runs next chart example.
-#    which the 'human hand' takes a screenshot of.
+#    The 'tester' starts the app on device (in our case 'package:flutter_charts/test/src/test_main.dart'
+#    as device_test_app). The tester can tap, set text, and overall interact with the device.
+#    This ability is used to start the device_test_app, keep tapping a + button, each tap runs
+#    next chart example,  which the 'human hand' takes a screenshot of.
 #    Each 'human hand action' is implemented by a method call on the 'tester' object.
 #
 # Overall interaction summary between screenshot_test and device:
@@ -105,33 +103,28 @@ tool/test/start_emulator.sh
 #          b) Creates a 'user hand' tester which controls the on-device-running-app
 #    3. The on-device-running-app      main() in 'test/src/test_main.dart' as device_test_app;' which is the chart app
 
-echo BEFORE LOOP press enter; read # todo-00
-
 for layout in auto_layout coded_layout; do
 
   case $layout in
     auto_layout)
       exampleDescriptors="$exampleDescriptorsAutoLayout"
       screenshot_create_test="screenshot_create_test.dart"
-      comment_run_screenshot_create="'\n'----------'\n'Creating screenshots for $layout '\n'"
-      comment_run_screenshot_validate="'\n'----------'\n'Validating screenshots for $layout '\n'"
       ;;
     coded_layout)
       exampleDescriptors="$exampleDescriptorsCodedLayout"
       screenshot_create_test="coded_layout_screenshot_create_test.dart"
-      comment_run_screenshot_create="'\n'----------'\n'Creating screenshots for $layout '\n'"
-      comment_run_screenshot_validate="'\n'----------'\n'Validating screenshots for $layout '\n'"
       ;;
     default)
       echo Internal error, invalid layout=$layout, exiting
-      echo 'Press any key to exit'; read -r # todo-00
       exit 1
   esac
 
+  comment_run_screenshot_create=$'\n----------\nCreating screenshots for '${layout}$'.\n'
+  comment_run_screenshot_validate=$'\n----------\nValidating screenshots for '${layout}$'.\n'
 
   # Run the main() in [coded_layout_]screenshot_create_test.dart.
   # The main() runs all chart example enums from the group - see above drive test for details of expansion.
-  echo "$comment_run_screenshot_create"
+  echo "$comment_run_screenshot_create"; sleep 2
   flutter drive \
     --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
     --driver=test_driver/integration_test.dart  \
@@ -139,7 +132,7 @@ for layout in auto_layout coded_layout; do
 
   # Run the main() in screenshot_validate_test.dart.
   # The main() runs all chart example enums from the group - see above drive test for details of expansion.
-  echo "$comment_run_screenshot_validate"
+  echo "$comment_run_screenshot_validate"; sleep 2
   flutter test \
     --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
     test/screenshot_validate_test.dart

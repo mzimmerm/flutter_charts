@@ -20,7 +20,7 @@ import 'package:flutter_charts/test/src/test_main.dart' as on_device_test_app;
 ///
 ///   ```
 ///
-/// Note: Samples of EXAMPLE_DESCRIPTORS:
+/// Note: Samples of EXAMPLE_DESCRIPTORS values:
 ///   - 'ex75_lineChart_row_nonStacked_newAutoLayouter ex31_barChart_*_*_newAutoLayouter'
 ///   - 'absoluteMinimumNew'
 ///   - etc, see [ExampleDescriptor]

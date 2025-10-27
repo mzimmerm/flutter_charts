@@ -1,19 +1,28 @@
 #!/bin/bash
 
-# This script runs tests named in arguments.
-# The arguments can be either individual test names, or names of test groups.
+# Usage example:
+#   tool/test/run_all_tests.sh \
+#   --auto_layout="allSupportedNew convertedToNew"
+#   --coded_layout="oldFailingInNew"
+
+# This script runs all unit tests in this 'flutter_charts' library,
+# as well as the integration tests named in arguments values of '--auto_layout' and '--coded_layout'.
+# The argument values can be either individual test names, or names of test groups.
 #   - The test group names must be defined in 'example_descriptor.dart'
 #     - Possible group names:
-#       minimumNew
-#       allSupportedNew
-#       minimumOld
-#       origAllTestedOld
-#       minimum
-#       allSupported
+#       - 'minimumNew'
+#       - 'allSupportedNew'
+#       - 'minimumOld'
+#       - 'origAllTestedOld'
+#       - 'minimum'
+#       - 'allSupported'
 #   - The individual test names must adhere to naming convention. A few examples:
-#     - ex31_barChart_column_stacked_newAutoLayouter
-#     - ex75_lineChart_row_nonStacked_newAutoLayouter
-#
+#     - 'ex31_barChart_column_stacked_newAutoLayouter'
+#     - 'ex75_lineChart_row_nonStacked_newAutoLayouter'
+
+# See 'tool/test/run_screenshots_create_then_validate_integration_test.sh' for detail
+# description of the integration tests structure.
+
 # This script can be used as part of other bash commands.
 # A few useful examples of this:
 #

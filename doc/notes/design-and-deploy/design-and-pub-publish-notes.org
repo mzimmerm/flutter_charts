@@ -2227,7 +2227,6 @@ In general, some libraries or classes in 'testing' are merged back to lib OR cre
       1. [ ]  run-all-tests.sh --auto-layout="ex1 ex2 group1 group2" --coded-layout"ex1 ex3 group3"
          + [ ] In processing, of run_all_tests.sh:
            - [ ] no change
-           - [ ] 
          + [ ]  In processing, of run_screenshots_create_then_validate_integration_test.sh
            - [ ] check for --coded-layout and --auto-layout, pick the codedLayoutExampleDescriptors and autoLayoutExampleDescriptors
            - [ ] Run flutter drive 2x, separately for coded_layout and auto_layout, passing the appropriate example descriptors.

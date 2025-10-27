@@ -146,7 +146,7 @@ check_bargs_vars_path(){
     if [[ -n "$BARGS_VARS_PATH" && -f "$BARGS_VARS_PATH" ]]; then
         _BARGS_VARS_PATH="$BARGS_VARS_PATH"
     elif [[ -z "$BARGS_VARS_PATH" || ! -f "$BARGS_VARS_PATH" ]]; then
-        bargs_vars_path=$(dirname "${BASH_SOURCE[0]}")/run_screenshot_test_bargs_vars
+        bargs_vars_path=$(dirname "${BASH_SOURCE[0]}")/.run_screenshot_create_then_validate_integration_test_bargs_vars
         [[ ! -f $bargs_vars_path ]] && error_msg "Make sure bargs_vars is in the same folder as bargs.sh\n\tAnother option - export BARGS_VARS_PATH=\"\${PWD}/path/to/my_bargs_vars\"" no_usage    
         _BARGS_VARS_PATH="$bargs_vars_path"
     else

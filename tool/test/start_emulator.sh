@@ -5,7 +5,7 @@
   # This is the AVD emulator we request to exist
   emulator_used="Nexus_6_API_35"
 
-  echo Check if emulator exists
+  echo Check if emulator is running
   if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
     echo "Emulator $emulator_used does not exist. Please create it, our integration tests depend on it. Exiting"
     exit 1
@@ -17,15 +17,16 @@
   if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
     echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
     flutter emulators --launch "$emulator_used"
-    echo Sleep 22 on server to give the emulator time to start fully. Sleep 40 on laptop.
-    sleep 22
+    emulator_wait_sleep=24 # 42 on laptop
+    echo Sleeping $emulator_wait_sleep.
+    sleep $emulator_wait_sleep
     echo The AVD emulator $emulator_used succesfully launched.
   else
     echo The emulator $emulator_used appears running and connected.
   fi
 
   # Sleep for a bit and check that SOME device is running
-  sleep 1
+  sleep 2
   if ! flutter devices  2>/dev/null | grep --quiet "emulator-"; then
     echo "Unexpected error: flutter devices is telling us that no emulators are connected to a device. Exiting"
     exit 1
