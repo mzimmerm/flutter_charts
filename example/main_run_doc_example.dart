@@ -64,8 +64,6 @@ Widget chartToRun() {
   //   a DefaultIterativeLabelLayoutStrategy.
   // LabelLayoutStrategy? inputLabelLayoutStrategy;
 
- //  chartOptions = const ChartOptions();
-
   chartModel = ChartModel(
     dataRows: const [
       [61.9, 69.8, 73.1, 78.3, 82.2, 83.1],
