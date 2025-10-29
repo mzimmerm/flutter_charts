@@ -24,14 +24,14 @@ class LineChartViewModelCL extends ChartViewModelCL {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    liveOrTesting: liveOrTesting,
+    // todo-00-done: liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');
@@ -41,11 +41,21 @@ class LineChartViewModelCL extends ChartViewModelCL {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      dataContainer: LineChartDataContainer(chartViewModel: this),
+      legendContainer: LegendContainer(
+          chartViewModel: this
+      ),
+      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(
+          chartViewModel: this
+      ),
+      dataContainer: LineChartDataContainer(
+          chartViewModel: this
+      ),
       chartViewModel: chartViewModel,
     );
   }

@@ -49,7 +49,7 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    required this.liveOrTesting,
+    // todo-00-done: required this.liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
@@ -61,7 +61,7 @@ abstract class ChartViewModelCL extends ChartViewModel {
 
   /// Temporary allows to instantiate live or testing components
   ///
-  final LiveOrTesting liveOrTesting;
+  // todo-00-done: final LiveOrTesting liveOrTesting;
 
   /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for vertical bar chart.
@@ -70,7 +70,7 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -82,10 +82,12 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
-        liveOrTesting: LiveOrTesting.testing,
+        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
+      // todo-00-done: replaced all with testing
+      /*
       switch (liveOrTesting) {
         case LiveOrTesting.live:
           return BarChartViewModelCL(
@@ -106,6 +108,15 @@ abstract class ChartViewModelCL extends ChartViewModel {
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
           );
       }
+      */
+      return testing_bar_view_model.BarChartViewModelCL(
+        chartModel: chartModel,
+        chartType: chartType,
+        chartOrientation: chartOrientation,
+        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
+        chartStacking: chartStacking,
+        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+      );
     }
   }
 
@@ -116,7 +127,7 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -128,10 +139,12 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
-        liveOrTesting: LiveOrTesting.testing,
+        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
+      // todo-00-done: replaced all with testing
+      /*
       switch (liveOrTesting) {
         case LiveOrTesting.live:
           return LineChartViewModelCL(
@@ -152,6 +165,15 @@ abstract class ChartViewModelCL extends ChartViewModel {
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
           );
       }
+      */
+      return testing_line_view_model.LineChartViewModelCL(
+        chartModel: chartModel,
+        chartType: chartType,
+        chartOrientation: chartOrientation,
+        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
+        chartStacking: chartStacking,
+        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+      );
     }
   }
 

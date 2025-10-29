@@ -23,14 +23,14 @@ class LineChartViewModelCLCL extends ChartViewModelCLCL {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
           chartStacking: chartStacking,
-          liveOrTesting: liveOrTesting,
+          // todo-00-done: liveOrTesting: liveOrTesting,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         ) {
     logger.Logger().d('$runtimeType created');

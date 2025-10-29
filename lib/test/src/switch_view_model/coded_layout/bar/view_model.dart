@@ -20,7 +20,7 @@ class BarChartViewModelCL extends bar_chart_view_model.BarChartViewModelCL {
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -28,7 +28,7 @@ class BarChartViewModelCL extends bar_chart_view_model.BarChartViewModelCL {
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    liveOrTesting: liveOrTesting,
+    // todo-00-done: liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
@@ -37,10 +37,18 @@ class BarChartViewModelCL extends bar_chart_view_model.BarChartViewModelCL {
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
       legendContainer: layout_alternative_legend_container.LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      dataContainer: BarChartDataContainer(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis
+        (chartViewModel: this
+      ),
+      dataContainer: BarChartDataContainer(
+          chartViewModel: this
+      ),
       chartViewModel: chartViewModel,
     );
   }

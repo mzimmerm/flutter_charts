@@ -22,7 +22,7 @@ class BarChartViewModelCL extends ChartViewModelCL {
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
-    required LiveOrTesting liveOrTesting,
+    // todo-00-done: required LiveOrTesting liveOrTesting,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -30,7 +30,7 @@ class BarChartViewModelCL extends ChartViewModelCL {
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    liveOrTesting: liveOrTesting,
+    // todo-00-done: liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');
@@ -40,11 +40,20 @@ class BarChartViewModelCL extends ChartViewModelCL {
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
-      legendContainer: LegendContainer(chartViewModel: this),
-      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(chartViewModel: this),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this),
-      dataContainer: BarChartDataContainer(chartViewModel: this),
+      legendContainer: LegendContainer(
+          chartViewModel: this
+      ),
+      horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+          chartViewModel: this
+      ),
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(chartViewModel: this
+      ),
+      dataContainer: BarChartDataContainer(
+          chartViewModel: this
+      ),
       chartViewModel: chartViewModel,
     );
   }

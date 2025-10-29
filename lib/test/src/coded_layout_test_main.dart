@@ -1119,7 +1119,7 @@ class ExampleWidgetCreator {
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
           chartLayouter: chartLayouter,
-          liveOrTesting: LiveOrTesting.testing,
+          // todo-00-done: liveOrTesting: LiveOrTesting.testing,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -1137,7 +1137,7 @@ class ExampleWidgetCreator {
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           chartLayouter: chartLayouter,
-          liveOrTesting: LiveOrTesting.testing,
+          // todo-00-done: liveOrTesting: LiveOrTesting.testing,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
