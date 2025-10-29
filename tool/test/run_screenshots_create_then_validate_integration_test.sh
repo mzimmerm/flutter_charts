@@ -21,6 +21,29 @@ echo "Running coded_layout examples in : $coded_layout"
 exampleDescriptorsAutoLayout="$auto_layout"
 exampleDescriptorsCodedLayout="$coded_layout"
 
+# Inner
+function _duplicate_test_files_from_auto_layout_to_coded_layout() {
+
+  if ! \
+    sed -e 's?package:flutter_charts/test/src/test_main.dart?package:flutter_charts/test/src/coded_layout_test_main.dart?' \
+      < integration_test/screenshot_create_test.dart \
+      > integration_test/coded_layout_screenshot_create_test.dart; then
+    echo ERROR substituting in 'screenshot_create_test.dart', exiting.
+    sleep 10
+    exit 1
+  fi
+
+  if ! \
+    sed -e 's?SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory?SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory?' \
+        -e 's?SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory?SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory?' \
+      < lib/test/src/test_main.dart \
+      > lib/test/src/coded_layout_test_main.dart; then
+    echo ERROR substituting in 'test_main.dart', exiting.
+    sleep 10
+    exit 1
+  fi
+}
+
 # Start emulator
 tool/test/start_emulator.sh
 
@@ -119,12 +142,21 @@ for layout in auto_layout coded_layout; do
       exit 1
   esac
 
+  comment_duplicate_files_from_auto_layout=$'\n----------\nDuplicating test files from auto_layout to coded_layout\n'
   comment_run_screenshot_create=$'\n----------\nCreating screenshots for '${layout}$'.\n'
   comment_run_screenshot_validate=$'\n----------\nValidating screenshots for '${layout}$'.\n'
 
+  if [[ $layout == coded_layout ]]; then
+    # auto_layout test files 'screenshot_create_test.dart' and in there called app 'test_main.dart'
+    # are copied to their coded_layout equivalents. We want to express this is a temporal step,
+    # and keep the files the same.
+    echo "$comment_duplicate_files_from_auto_layout"
+    _duplicate_test_files_from_auto_layout_to_coded_layout
+    sleep 5
+  fi
   # Run the main() in [coded_layout_]screenshot_create_test.dart.
   # The main() runs all chart example enums from the group - see above drive test for details of expansion.
-  echo "$comment_run_screenshot_create"; sleep 2
+  echo "$comment_run_screenshot_create"; sleep 5
   flutter drive \
     --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
     --driver=test_driver/integration_test.dart  \
@@ -132,7 +164,7 @@ for layout in auto_layout coded_layout; do
 
   # Run the main() in screenshot_validate_test.dart.
   # The main() runs all chart example enums from the group - see above drive test for details of expansion.
-  echo "$comment_run_screenshot_validate"; sleep 2
+  echo "$comment_run_screenshot_validate"; sleep 5
   flutter test \
     --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
     test/screenshot_validate_test.dart

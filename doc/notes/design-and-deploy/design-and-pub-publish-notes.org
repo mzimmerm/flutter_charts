@@ -2212,43 +2212,41 @@ intellij:
 - search class Switch([0-9_A-Za-z]+)
 
 
-*** IN-PROGRESS-NOW Make script changes and duplicate 2 test files
+*** DONE Make test script changes and duplicate 2 test files from auto_layout to coded_layout
 
 In general, some libraries or classes in 'testing' are merged back to lib OR create a new library under lib/src/custom
 
 1. [X] move lib/test/src/test/options.dart to lib/src/chart/layout_alternatives
 2. [X] move lib/test/src/test/chart/cartesian/container/options.dart to lib/src/chart/layout_alternatives/cartesian/container/options.dart
 3. [X] TEST FOR SAME
-4. [-] USE 2 TEST APPS : ONE FOR auto_layout, OTHER for coded_layout with the eventual goal of coded_layout gone.
+4. [X] USE 2 TEST APPS : ONE FOR auto_layout, OTHER for coded_layout with the eventual goal of coded_layout gone.
    1) [X] Copy test_main.dart to coded_layout_test_main.dart
    2) [X] Copy integration_test/screenshot_create_test.dart to coded_layout_screenshot_create_test.dart
       1. [X] in the coded_layout version coded_layout_screenshot_create_test.dart, instead of IMPORTING AND CALLING  test_main.dart, call coded_layout_test_main.dart
-   3) [ ] Modify run-all-tests.sh and related scripts to accept auto_layout and coded_layout options separately
-      1. [ ]  run-all-tests.sh --auto-layout="ex1 ex2 group1 group2" --coded-layout"ex1 ex3 group3"
-         + [ ] In processing, of run_all_tests.sh:
-           - [ ] no change
-         + [ ]  In processing, of run_screenshots_create_then_validate_integration_test.sh
-           - [ ] check for --coded-layout and --auto-layout, pick the codedLayoutExampleDescriptors and autoLayoutExampleDescriptors
-           - [ ] Run flutter drive 2x, separately for coded_layout and auto_layout, passing the appropriate example descriptors.
-         + [ ] 
-   4) [ ] TEST FOR SAMENESS AND COMMIT
-      + [ ] Delete the tested files first, to make sure all images are generated
-      + [ ] run_all_tests.sh --auto-layout="allSupportedNew convertedToNew" --coded-layout="oldFailingInNew"
-      + [ ] COMMIT
-   5) [ ] NEXT STEP IS INTRODUCE A COPY WITH MINOR CHANGE OF THE TEST FILES FOR CODED_LAYOUT AND AUTO_LAYOUT, SO THAT WE ONLY HAVE TO MAINTAIN ONE VERSION:
-      1. [ ] In run_screenshots_create_then_validate_integration_test.sh before calling flutter drive:
-         * [ ] copy test_main.dart to coded_layout_test_main.dart with sed editing DOING NOTHING; LATER THIS WILL MAKE SURE CODED_LAYOUT VERSION IS CALLED
-         * [ ] Copy screenshot_create_test.dart to coded_layout_screenshot_create_test.dart with sed editing REPLACING
+   3) [X] Modify run-all-tests.sh and related scripts to accept auto_layout and coded_layout options separately
+      1. [X]  run-all-tests.sh --auto-layout="ex1 ex2 group1 group2" --coded-layout"ex1 ex3 group3"
+         + [X] In processing, of run_all_tests.sh:
+           - [X] no change
+         + [X]  In processing, of run_screenshots_create_then_validate_integration_test.sh
+           - [X] check for --coded-layout and --auto-layout, pick the codedLayoutExampleDescriptors and autoLayoutExampleDescriptors
+           - [X] Run flutter drive 2x, separately for coded_layout and auto_layout, passing the appropriate example descriptors.
+   4) [X] TEST FOR SAMENESS AND COMMIT
+      + [X] Delete the tested files first, to make sure all images are generated
+      + [X] run_all_tests.sh --auto-layout="allSupportedNew convertedToNew" --coded-layout="oldFailingInNew"
+      + [X] COMMIT
+   5) [X] NEXT STEP IS INTRODUCE A COPY WITH MINOR CHANGE OF THE TEST FILES FOR CODED_LAYOUT AND AUTO_LAYOUT, SO THAT WE ONLY HAVE TO MAINTAIN ONE VERSION, the other will ba copied with sed edit changes:
+      1. [X] In run_screenshots_create_then_validate_integration_test.sh before calling the loop around auto_layout coded_layout:
+         * [X] copy test_main.dart to coded_layout_test_main.dart with sed editing DOING NOTHING; LATER THIS WILL MAKE SURE CODED_LAYOUT VERSION IS CALLED
+         * [X] Copy screenshot_create_test.dart to coded_layout_screenshot_create_test.dart with sed editing REPLACING
            - import \(.*\)\(test_main.dart' as on_device_test_app;\)
            - import \1coded_layout\2
-      2. [ ] TEST FOR SAMENESS
-      3. [ ] COMMIT
-5. [ ] 
+      2. [X] TEST FOR SAMENESS
+      3. [X] COMMIT
 
 
 
 
-*** TODO-NOW Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting
+*** IN-PROGRESS-NOW Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting
 
 *** Notes from deleted code
 

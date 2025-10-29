@@ -26,7 +26,7 @@
   fi
 
   # Sleep for a bit and check that SOME device is running
-  sleep 2
+  sleep 5
   if ! flutter devices  2>/dev/null | grep --quiet "emulator-"; then
     echo "Unexpected error: flutter devices is telling us that no emulators are connected to a device. Exiting"
     exit 1
