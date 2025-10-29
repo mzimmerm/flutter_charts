@@ -22,8 +22,8 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 
 
-class SwitchBarChartViewModelCL extends SwitchChartViewModelCL {
-  SwitchBarChartViewModelCL({
+class BarChartViewModelCLCL extends ChartViewModelCLCL {
+  BarChartViewModelCLCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

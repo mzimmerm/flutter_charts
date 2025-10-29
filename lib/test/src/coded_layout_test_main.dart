@@ -1111,7 +1111,7 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-        SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
+        ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory(
           chartModel: chartModel,
           chartType: chartType,
           // transpose column/row is set in env var CHART_ORIENTATION
@@ -1131,7 +1131,7 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory(
+        ChartViewModelCL barChartViewModel = ChartViewModelCL.barChartViewModelFactory(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION

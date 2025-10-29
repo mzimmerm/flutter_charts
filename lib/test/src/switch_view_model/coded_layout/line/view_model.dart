@@ -18,8 +18,8 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
-class SwitchLineChartViewModel extends line_chart_view_model.SwitchLineChartViewModel {
-  SwitchLineChartViewModel({
+class LineChartViewModelCL extends line_chart_view_model.LineChartViewModelCL {
+  LineChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

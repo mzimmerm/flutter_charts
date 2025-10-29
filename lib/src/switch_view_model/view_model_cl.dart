@@ -12,9 +12,9 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 
 import 'package:flutter_charts/src/coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
 
-abstract class SwitchChartViewModelCL extends SwitchChartViewModel {
+abstract class ChartViewModelCLCL extends ChartViewModelCL {
 
-  SwitchChartViewModelCL({
+  ChartViewModelCLCL({
     required model.ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

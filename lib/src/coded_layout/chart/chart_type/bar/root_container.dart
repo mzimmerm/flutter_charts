@@ -28,7 +28,7 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     dataContainer: dataContainer,
     chartViewModel: chartViewModel,
   ) {
-    (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    (chartViewModel as ChartViewModelCLCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
 }

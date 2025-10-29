@@ -34,8 +34,8 @@ function _duplicate_test_files_from_auto_layout_to_coded_layout() {
   fi
 
   if ! \
-    sed -e 's?SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory?SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory?' \
-        -e 's?SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory?SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory?' \
+    sed -e 's?ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory?ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory?' \
+        -e 's?ChartViewModelCL barChartViewModel = ChartViewModelCL.barChartViewModelFactory?ChartViewModelCL barChartViewModel = ChartViewModelCL.barChartViewModelFactory?' \
       < lib/test/src/test_main.dart \
       > lib/test/src/coded_layout_test_main.dart; then
     echo ERROR substituting in 'test_main.dart', exiting.

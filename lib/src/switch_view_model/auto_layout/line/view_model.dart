@@ -18,8 +18,8 @@ import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SW
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
-class SwitchLineChartViewModel extends SwitchChartViewModel {
-  SwitchLineChartViewModel({
+class LineChartViewModelCL extends ChartViewModelCL {
+  LineChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

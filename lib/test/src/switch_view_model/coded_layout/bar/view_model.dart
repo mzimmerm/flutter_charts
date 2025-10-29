@@ -15,8 +15,8 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
-class SwitchBarChartViewModel extends bar_chart_view_model.SwitchBarChartViewModel {
-  SwitchBarChartViewModel({
+class BarChartViewModelCL extends bar_chart_view_model.BarChartViewModelCL {
+  BarChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

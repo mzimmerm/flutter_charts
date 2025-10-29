@@ -27,6 +27,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
           dataContainer: dataContainer,
           chartViewModel: chartViewModel,
         ) {
-    (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
+    (chartViewModel as ChartViewModelCLCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 }

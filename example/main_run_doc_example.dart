@@ -117,7 +117,7 @@ Widget chartToRun() {
   Widget chartToRun;
 
   // Uses newChartLayouter
-  SwitchChartViewModel lineChartViewModel = SwitchLineChartViewModel(
+  ChartViewModelCL lineChartViewModel = LineChartViewModelCL(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,

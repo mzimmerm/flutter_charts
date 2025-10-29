@@ -17,8 +17,8 @@ import 'package:flutter_charts/src/switch_view_model/view_model.dart' show direc
 
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 
-class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
-  SwitchLineChartViewModelCL({
+class LineChartViewModelCLCL extends ChartViewModelCLCL {
+  LineChartViewModelCLCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

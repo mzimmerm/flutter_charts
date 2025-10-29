@@ -61,7 +61,7 @@ import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 ///       Such 'delivery of [MyBarPointContainer] instances to their places' is possible in one of two methods:
 ///       1. Gradual override of all classes under [DataContainer]
 ///         - 1.1 Extend the [ChartRootContainer] to [MyBarChartRootContainer]
-///         - 1.2 Extend the [SwitchBarChartViewModel] to [MyBarChartViewModel] and override [ChartViewModel.makeChartRootContainer]
+///         - 1.2 Extend the [BarChartViewModelCL] to [MyBarChartViewModel] and override [ChartViewModel.makeChartRootContainer]
 ///             to return [MyBarChartRootContainer].
 ///         - 1.3 Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.makeInnerBarsContainer]
 ///             to return instance of [MyBarsContainer]

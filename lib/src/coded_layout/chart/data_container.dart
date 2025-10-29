@@ -33,7 +33,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Constructs instance from [ChartViewModel].
   ///
   /// Note: It is assumed that the passed [chartViewModel]
-  ///       is [SwitchChartViewModelCL], a derivation of [ChartViewModel].
+  ///       is [ChartViewModelCLCL], a derivation of [ChartViewModel].
   DataContainerCL({required ChartViewModel chartViewModel})
       : super(
     chartViewModel: chartViewModel,
@@ -227,7 +227,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     //    The coordinates in [PointsColumnsOCL] are relative - 0 based
     pointsColumns = PointsColumnsOCL(
       chartViewModel: chartViewModel,
-      pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
+      pointPresenterCreator: (chartViewModel as ChartViewModelCLCL).pointPresenterCreator,
       isStacked: chartViewModel.chartStacking.isStacked,
       caller: this,
     );
@@ -248,7 +248,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     pointPresentersColumns = PointPresentersColumnsOCL(
       pointsColumns: pointsColumns,
       chartViewModel: chartViewModel,
-      pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
+      pointPresenterCreator: (chartViewModel as ChartViewModelCLCL).pointPresenterCreator,
     );
   }
 

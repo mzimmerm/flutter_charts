@@ -17,8 +17,8 @@ import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SW
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
-class SwitchBarChartViewModel extends SwitchChartViewModel {
-  SwitchBarChartViewModel({
+class BarChartViewModelCL extends ChartViewModelCL {
+  BarChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,

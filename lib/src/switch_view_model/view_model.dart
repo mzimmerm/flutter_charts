@@ -36,15 +36,15 @@ List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingG
 ///     ChartLayouter chartLayouter = chartLayouterStr.asEnum(ChartLayouter.values);
 ///   ```
 ///
-/// This class [SwitchChartViewModel] is the only 'reversed dependency' class,
+/// This class [ChartViewModelCL] is the only 'reversed dependency' class,
 /// in the sense it is the only 'new' 'auto_layout' related class that knows about (depend on)
 /// both the new 'auto_layout' and the old 'coded_layout' classes.
 ///
-/// Example: [SwitchChartViewModel.barChartViewModelFactory] returns either
-///          [SwitchBarChartViewModelCL] or [SwitchBarChartViewModel].
+/// Example: [ChartViewModelCL.barChartViewModelFactory] returns either
+///          [BarChartViewModelCLCL] or [BarChartViewModelCL].
 ///
-abstract class SwitchChartViewModel extends ChartViewModel {
-  SwitchChartViewModel ({
+abstract class ChartViewModelCL extends ChartViewModel {
+  ChartViewModelCL ({
     required model.ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
@@ -65,7 +65,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
 
   /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for vertical bar chart.
-  factory SwitchChartViewModel.barChartViewModelFactory({
+  factory ChartViewModelCL.barChartViewModelFactory({
     required model.ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
@@ -74,10 +74,10 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
-    logger.Logger().d('Constructing SwitchChartViewModel');
+    logger.Logger().d('Constructing ChartViewModelCL');
 
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
-      return SwitchBarChartViewModelCL(
+      return BarChartViewModelCLCL(
         chartModel: chartModel,
         chartType: chartType,
         chartOrientation: chartOrientation,
@@ -88,7 +88,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     } else {
       switch (liveOrTesting) {
         case LiveOrTesting.live:
-          return SwitchBarChartViewModel(
+          return BarChartViewModelCL(
             chartModel: chartModel,
             chartType: chartType,
             chartOrientation: chartOrientation,
@@ -97,7 +97,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
           );
         case LiveOrTesting.testing:
-          return testing_bar_view_model.SwitchBarChartViewModel(
+          return testing_bar_view_model.BarChartViewModelCL(
             chartModel: chartModel,
             chartType: chartType,
             chartOrientation: chartOrientation,
@@ -111,7 +111,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
 
   /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for line chart.
-  factory SwitchChartViewModel.lineChartViewModelFactory({
+  factory ChartViewModelCL.lineChartViewModelFactory({
     required model.ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
@@ -120,10 +120,10 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
-    logger.Logger().d('Constructing SwitchChartViewModel');
+    logger.Logger().d('Constructing ChartViewModelCL');
 
     if (chartLayouter == ChartLayouter.oldManualLayouter) {
-      return SwitchLineChartViewModelCL(
+      return LineChartViewModelCLCL(
         chartModel: chartModel,
         chartType: chartType,
         chartOrientation: chartOrientation,
@@ -134,7 +134,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
     } else {
       switch (liveOrTesting) {
         case LiveOrTesting.live:
-          return SwitchLineChartViewModel(
+          return LineChartViewModelCL(
             chartModel: chartModel,
             chartType: chartType,
             chartOrientation: chartOrientation,
@@ -143,7 +143,7 @@ abstract class SwitchChartViewModel extends ChartViewModel {
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
           );
         case LiveOrTesting.testing:
-          return testing_line_view_model.SwitchLineChartViewModel(
+          return testing_line_view_model.LineChartViewModelCL(
             chartModel: chartModel,
             chartType: chartType,
             chartOrientation: chartOrientation,
