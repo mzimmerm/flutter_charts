@@ -27,6 +27,11 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
+// todo-00-done: added
+import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
+import 'package:flutter_charts/test/src/switch_view_model/coded_layout/bar/view_model.dart' as testing_bar_view_model;
+
+
 /// Test app for use in tests and integration tests in `flutter_charts`.
 ///
 /// The app is configurable to run either a single chart, or multiple charts;
@@ -1111,6 +1116,7 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
+        /* todo-00-done:
         ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory(
           chartModel: chartModel,
           chartType: chartType,
@@ -1119,6 +1125,14 @@ class ExampleWidgetCreator {
           // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
           chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
           chartLayouter: chartLayouter,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+        );
+        */
+         ChartViewModelCL lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
+          chartModel: chartModel,
+          chartType: chartType,
+          chartOrientation: chartOrientation,
+          chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
@@ -1130,12 +1144,21 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
+        /* todo-00-done:
         ChartViewModelCL barChartViewModel = ChartViewModelCL.barChartViewModelFactory(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           chartLayouter: chartLayouter,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+        );
+        */
+        ChartViewModelCL barChartViewModel = testing_bar_view_model.BarChartViewModelCL(
+          chartModel: chartModel,
+          chartType: chartType,
+          chartOrientation: chartOrientation,
+          chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

@@ -151,7 +151,7 @@ for layout in auto_layout coded_layout; do
     # are copied to their coded_layout equivalents. We want to express this is a temporal step,
     # and keep the files the same.
     echo "$comment_duplicate_files_from_auto_layout"
-    _duplicate_test_files_from_auto_layout_to_coded_layout
+    # todo-00-done: temporary remove, keep manuall edited files: _duplicate_test_files_from_auto_layout_to_coded_layout
     sleep 5
   fi
   # Run the main() in [coded_layout_]screenshot_create_test.dart.
