@@ -8,7 +8,7 @@ import 'dart:ui' as ui show Paint, Canvas, Offset;
 // up 2 level chart
 import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart'
     show DataContainer, BarsContainer, PointContainersBar, BasePointContainer, PointContainer, FillerPointContainer;
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel, FillerPointModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel, FillerPointModel;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 
 // morphic

@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/coded_layout/chart/container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/line_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/presenter.dart'; // OLD
 
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 /// PointPresenterOCL of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,

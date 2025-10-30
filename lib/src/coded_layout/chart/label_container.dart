@@ -6,8 +6,8 @@ import 'package:flutter_charts/src/coded_layout/chart/container.dart' show Pixel
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
 import 'package:flutter_charts/src/morphic/container/label_container.dart';
 import 'package:flutter_charts/src/chart/chart_label_container.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
-import 'package:flutter_charts/src/chart/view_model/label_model.dart' show AxisLabelInfo;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:

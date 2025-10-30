@@ -24,8 +24,8 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 
 // up and down levels
 import 'package:flutter_charts/src/chart/options.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel, ClsPointToNullableContainer, PointsBarModel, BasePointModel;
-import 'package:flutter_charts/src/chart/view_model/label_model.dart' show AxisIntervalTicksAndLabelsDescriptor;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel, ClsPointToNullableContainer, PointsBarModel, BasePointModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' show AxisIntervalTicksAndLabelsDescriptor;
 import 'package:flutter_charts/src/util/util_flutter.dart' show  To2DPixelRange;
 
 // morphic
@@ -61,7 +61,7 @@ import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 ///       Such 'delivery of [MyBarPointContainer] instances to their places' is possible in one of two methods:
 ///       1. Gradual override of all classes under [DataContainer]
 ///         - 1.1 Extend the [ChartRootContainer] to [MyBarChartRootContainer]
-///         - 1.2 Extend the [BarChartViewModelCL] to [MyBarChartViewModel] and override [ChartViewModel.makeChartRootContainer]
+///         - 1.2 Extend the [BarChartViewModel] to [MyBarChartViewModel] and override [ChartViewModel.makeChartRootContainer]
 ///             to return [MyBarChartRootContainer].
 ///         - 1.3 Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.makeInnerBarsContainer]
 ///             to return instance of [MyBarsContainer]

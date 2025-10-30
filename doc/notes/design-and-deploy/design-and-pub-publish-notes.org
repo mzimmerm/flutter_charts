@@ -2248,9 +2248,6 @@ In general, some libraries or classes in 'testing' are merged back to lib OR cre
 
 *** IN-PROGRESS-NOW Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting
 
-todo-00-last
-
-
 
 ~makeChartRootContainer~ is declared in:
 
@@ -2307,11 +2304,23 @@ test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout
 
 
     todo-00-now :
-    - replace ViewModelCL with ViewModel case sensitive
-    - replace viewModelCL with viewModel case sensitive
-    - move everything from switch directory away
-      
-      
+   - [X] replace ViewModelCL with ViewModel case sensitive
+   - [X] replace viewModelCL with viewModel case sensitive (none)
+   - [-] move everything from switch directory away:
+     - [X] move src/switch_view_model/auto_layout/line/view_model.dart => src/chart/view_model/line/line_view_model.dart
+     - [X] move src/switch_view_model/coded_layout/line/view_model.dart => src/coded_layout/chart/view_model/line/coded_layout_line_view_model.dart
+     - [ ] same for bar
+     - [ ] special care: view_model_cl.dart - where to move?
+   - [ ] Rename packages 'as switch' such as switch_auto_layout_bar_view_model
+   - [ ] Search for switch Switch
+
+
+
+Later:
+
+- [ ] Ensure
+  - import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
+  - is used everywhere with 'as view_model'
 
 *** Notes from deleted code
 

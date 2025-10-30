@@ -3,7 +3,7 @@
 // this level or equivalent
 import 'package:flutter_charts/src/coded_layout/chart/container.dart';
 
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
 
 /// The visual element representing one data value (data point) on the chart.

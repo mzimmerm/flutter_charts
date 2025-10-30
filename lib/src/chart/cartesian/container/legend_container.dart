@@ -5,7 +5,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common
     show ChartAreaContainer;
 
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
 import 'package:flutter_charts/src/chart/options.dart' as chart_options;
 import 'package:flutter_charts/src/chart/chart_label_container.dart' as chart_label_container;
 

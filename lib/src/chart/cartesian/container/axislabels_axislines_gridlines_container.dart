@@ -13,8 +13,8 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 
 import 'package:flutter_charts/src/chart/chart_label_container.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 
 /// Container for line showing a horizontal or vertical axis.

@@ -4,8 +4,8 @@ import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart';
 
 // this level
 import 'presenter.dart'; // OLD
@@ -28,7 +28,7 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     dataContainer: dataContainer,
     chartViewModel: chartViewModel,
   ) {
-    (chartViewModel as ChartViewModelCLCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    (chartViewModel as ChartViewModelCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
 }

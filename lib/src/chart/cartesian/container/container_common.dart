@@ -1,5 +1,5 @@
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' show LabelLayoutStrategy;
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart';

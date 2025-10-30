@@ -26,10 +26,9 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
-// todo-00-done: added
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart' as switch_auto_layout_line_view_model;
-import 'package:flutter_charts/src/switch_view_model/auto_layout/bar/view_model.dart' as switch_auto_layout_bar_view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_auto_layout_line_view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_auto_layout_bar_view_model;
 
 
 /// Test app for use in tests and integration tests in `flutter_charts`.
@@ -1116,7 +1115,7 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-         ChartViewModel lineChartViewModel = switch_auto_layout_line_view_model.LineChartViewModelCL(
+         ChartViewModel lineChartViewModel = switch_auto_layout_line_view_model.LineChartViewModel(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
@@ -1132,7 +1131,7 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        ChartViewModel barChartViewModel = switch_auto_layout_bar_view_model.BarChartViewModelCL(
+        ChartViewModel barChartViewModel = switch_auto_layout_bar_view_model.BarChartViewModel(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,

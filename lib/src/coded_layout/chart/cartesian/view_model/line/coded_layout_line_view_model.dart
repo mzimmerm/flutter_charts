@@ -1,46 +1,39 @@
 import 'package:logger/logger.dart' as logger;
 
-// this level
-import 'package:flutter_charts/src/coded_layout/chart/chart_type/bar/root_container.dart';
-
-// base libraries
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
-import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+// ChartViewModel passed to makeChartRootContainer is from auto_layout
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
-import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart';
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/chart_type/line/root_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-// todo-01-last : we are using testing_ in non testing code!!!!!
-//                 This is unfortunate result of keeping some legend options
-//                 such as legendIsColumnStartLooseItemIsRowStartLoose only as
-//                 test options.
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 
 
-class BarChartViewModelCLCL extends ChartViewModelCLCL {
-  BarChartViewModelCLCL({
+class LineChartViewModelCL extends ChartViewModelCL {
+  LineChartViewModelCL({
     required ChartModel chartModel,
-    required ChartType chartType,
-    required ChartOrientation chartOrientation,
+    required ChartType chartType,    required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
-          chartModel: chartModel,
-          chartType: chartType,
-          chartOrientation: chartOrientation,
-          chartStacking: chartStacking,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        ) {
+    chartModel: chartModel,
+    chartType: chartType,
+    chartOrientation: chartOrientation,
+    chartStacking: chartStacking,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+  ) {
     logger.Logger().d('$runtimeType created');
   }
 
   @override
-  BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
-    return BarChartRootContainerCL(
+  LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
+    return LineChartRootContainerCL(
       legendContainer: layout_alternative_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: HorizontalAxisContainerCL(
         chartViewModel: this,
@@ -54,7 +47,7 @@ class BarChartViewModelCLCL extends ChartViewModelCLCL {
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),
-      dataContainer: BarChartDataContainerCL(chartViewModel: this),
+      dataContainer: LineChartDataContainerCL(chartViewModel: this),
       chartViewModel: chartViewModel,
     );
   }

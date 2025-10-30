@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Rect, Offset, Paint;
 import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
 import 'package:flutter_charts/src/coded_layout/chart/container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 /// PointPresenterOCL of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],

@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart' show immutable;
 // import 'dart:developer' as dart_developer;
 
 // this level
-import 'package:flutter_charts/src/chart/view_model/label_model.dart' as util_labels show AxisIntervalTicksAndLabelsDescriptor, extendToOrigin;
-import 'package:flutter_charts/src/chart/view_model/label_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' as util_labels show AxisIntervalTicksAndLabelsDescriptor, extendToOrigin;
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart';
 
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
 
@@ -27,13 +27,6 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as stra
 import 'package:flutter_charts/src/chart/model/data_model.dart' as model show ChartModel, LegendItem;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show Interval, assertDoubleResultsSame;
 import 'package:flutter_charts/src/util/extensions_dart.dart';
-
-// todo-00-done: added
-import 'package:flutter_charts/src/chart/options.dart' show ChartPaddingGroup;
-
-// todo-00-done: added
-List<BoxContainer> directionWrapperAroundCL(List<BoxContainer> p1, ChartPaddingGroup p2) => throw StateError('Should not be called in coded_layout CL situation.');
-
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].

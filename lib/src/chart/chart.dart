@@ -3,7 +3,7 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/root
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/root_container.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:logger/logger.dart' as logger;
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 import 'package:flutter_charts/src/chart/painter.dart' as painter;
 
@@ -37,7 +37,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart
 ///
 ///   ``` dart
 ///   todo-0000 fix example
-///   ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory(
+///   ChartViewModel lineChartViewModel = ChartViewModel.lineChartViewModelFactory(
 ///     chartOrientation: ChartOrientation.column,
 ///     chartStacking: ChartStacking.nonStacked,
 ///     chartModel: chartModel,

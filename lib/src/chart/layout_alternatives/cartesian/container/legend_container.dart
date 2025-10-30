@@ -4,10 +4,10 @@ import 'package:flutter_charts/src/chart/cartesian/container/legend_container.da
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' as container_base;
 import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
 import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as layout_alternative_options show LegendAndItemLayoutEnum;
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
 import 'package:flutter_charts/src/chart/options.dart' as chart_options;
-import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align, Packing;
 
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align, Packing;
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
@@ -26,7 +26,7 @@ class LegendContainer extends chart_legend.LegendContainer {
   /// Note: The signature requirement is weaker,
   ///       for the returned list to contain a [container_base.BoxContainer]
   ///       rather than [container_base.BoxLayouter].
-  ///
+
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewModel.chartOptions;
 

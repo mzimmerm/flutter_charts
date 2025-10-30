@@ -1,12 +1,11 @@
 import 'package:flutter/widgets.dart' as widgets show TextSpan, TextPainter;
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-// this level or equivalent
-import 'package:flutter_charts/src/morphic/container/label_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
-import 'package:flutter_charts/src/chart/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
+import 'package:flutter_charts/src/morphic/container/label_container.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///

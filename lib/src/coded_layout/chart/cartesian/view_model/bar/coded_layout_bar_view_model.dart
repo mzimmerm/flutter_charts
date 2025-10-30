@@ -1,26 +1,24 @@
 import 'package:logger/logger.dart' as logger;
 
-// base libraries
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+// ChartViewModel passed to makeChartRootContainer is from auto_layout
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
+
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart';
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/chart_type/bar/root_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
-import 'package:flutter_charts/src/chart/model/data_model.dart';
-
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-
-// this level
-import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_container.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
 
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 
-class LineChartViewModelCLCL extends ChartViewModelCLCL {
-  LineChartViewModelCLCL({
+
+class BarChartViewModelCL extends ChartViewModelCL {
+  BarChartViewModelCL({
     required ChartModel chartModel,
-    required ChartType chartType,
-    required ChartOrientation chartOrientation,
+    required ChartType chartType,    required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -34,8 +32,8 @@ class LineChartViewModelCLCL extends ChartViewModelCLCL {
   }
 
   @override
-  LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
-    return LineChartRootContainerCL(
+  BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
+    return BarChartRootContainerCL(
       legendContainer: layout_alternative_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: HorizontalAxisContainerCL(
         chartViewModel: this,
@@ -49,22 +47,11 @@ class LineChartViewModelCLCL extends ChartViewModelCLCL {
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),
-      dataContainer: LineChartDataContainerCL(chartViewModel: this),
+      dataContainer: BarChartDataContainerCL(chartViewModel: this),
       chartViewModel: chartViewModel,
     );
   }
 
-  /// Implements [ChartBehavior] mixin abstract method.
-  ///
-  /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
-  ///
-  /// This is the method used in code logic when building the Y labels and axis.
-  ///
-  /// The related variable [DataContainerOptions.extendAxisToOriginRequested],
-  /// is merely a request that may not be granted in some situations.
-  ///
-  /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
-  bool get extendAxisToOrigin => chartOptions.dataContainerOptions.extendAxisToOriginRequested;
-
+  bool get extendAxisToOrigin => true;
 }

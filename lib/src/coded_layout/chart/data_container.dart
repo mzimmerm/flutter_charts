@@ -10,7 +10,7 @@ import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
 
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
-import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel, PointsBarModel, BasePointModel;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
 import 'package:flutter_charts/src/chart/options.dart';
@@ -18,11 +18,11 @@ import 'package:flutter_charts/src/morphic/container/container_key.dart' show Co
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show ConstraintsWeight;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 
-import '../../switch_view_model/view_model_cl.dart';
+import 'cartesian/view_model/coded_layout_view_model.dart';
 
 // extension libraries
-import 'chart_type/line/presenter.dart' as line_presenters;
-import 'chart_type/bar/presenter.dart' as bar_presenters;
+import 'cartesian/chart_type/line/presenter.dart' as line_presenters;
+import 'cartesian/chart_type/bar/presenter.dart' as bar_presenters;
 
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -33,7 +33,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Constructs instance from [ChartViewModel].
   ///
   /// Note: It is assumed that the passed [chartViewModel]
-  ///       is [ChartViewModelCLCL], a derivation of [ChartViewModel].
+  ///       is [ChartViewModel], a derivation of [ChartViewModel].
   DataContainerCL({required ChartViewModel chartViewModel})
       : super(
     chartViewModel: chartViewModel,
@@ -227,7 +227,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     //    The coordinates in [PointsColumnsOCL] are relative - 0 based
     pointsColumns = PointsColumnsOCL(
       chartViewModel: chartViewModel,
-      pointPresenterCreator: (chartViewModel as ChartViewModelCLCL).pointPresenterCreator,
+      pointPresenterCreator: (chartViewModel as ChartViewModelCL).pointPresenterCreator,
       isStacked: chartViewModel.chartStacking.isStacked,
       caller: this,
     );
@@ -248,7 +248,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     pointPresentersColumns = PointPresentersColumnsOCL(
       pointsColumns: pointsColumns,
       chartViewModel: chartViewModel,
-      pointPresenterCreator: (chartViewModel as ChartViewModelCLCL).pointPresenterCreator,
+      pointPresenterCreator: (chartViewModel as ChartViewModelCL).pointPresenterCreator,
     );
   }
 
