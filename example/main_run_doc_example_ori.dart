@@ -10,13 +10,6 @@ import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-// todo-0000 changed:
-import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as layout_alternative_options show LegendAndItemLayoutEnum;
-import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
-// todo-0000: DIFFERENCE: The testing_view_model is using the testing Legend enums; the NON-testing(LIFE)_view_Model is using the LIFE legend enums
-import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
-
-
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
 ///
@@ -55,16 +48,66 @@ Widget chartToRun() {
   // Declare chartModel; the data object will be different in every examples.
   ChartModel chartModel;
 
-  // main_run_doc_example.dart runs ExampleEnum.ex10RandomData.
-
   // Create chartOptions defaults here, so we do not repeat it in every example section,
   //   unless specific examples need to override this chartOptions default.
   ChartOptions chartOptions = const ChartOptions(
-    legendOptions: LegendOptions(
-        legendAndItemLayoutEnum:
-        layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+           legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+              LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
+
   );
-  chartModel = RandomChartModel.generated(
+
+  // Using a null inputLabelLayoutStrategy.
+  // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+  //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
+  // If inputLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
+  //   a DefaultIterativeLabelLayoutStrategy.
+  // LabelLayoutStrategy? inputLabelLayoutStrategy;
+
+  chartModel = ChartModel(
+    dataRows: const [
+      [61.9, 69.8, 73.1, 78.3, 82.2, 83.1],
+      [39.0, 42.5, 45.4, 53.7, 58.8, 67.4],
+      [37.9, 44.0, 50.6, 56.5, 56.9, 59.2],
+      [21.3, 26.0, 30.5, 37.6, 40.8, 47.4],
+      [25.0, 40.6, 42.4, 50.0, 49.4, 41.9],
+      [27.2, 34.8, 29.5, 35.5, 38.6, 38.2],
+      [16.0, 19.9, 18.4, 22.2, 22.4, 19.2],
+      [06.7, 08.8, 11.0, 14.0, 15.0, 17.0],
+      [07.4, 08.3, 09.1, 09.8, 10.2, 11.4],
+      [09.9, 11.2, 09.4, 10.2, 10.2, 10.7],
+      [05.8, 06.3, 07.4, 08.3, 08.8, 10.3],
+      [03.0, 03.5, 03.9, 04.9, 05.4, 05.4],
+    ],
+    inputUserLabels: const ['1920', '1940', '1960', '1980', '2000', '2020'],
+    legendNames: const [
+      'Germany',
+      'France',
+      'Italy',
+      'Spain',
+      'Ukraine',
+      'Poland',
+      'Romania',
+      'Netherlands',
+      'Belgium',
+      'Czechia',
+      'Sweden',
+      'Slovakia',
+    ],
+    legendColors: const [
+      Colors.black,
+      Colors.blue,
+      Colors.cyan,
+      Colors.brown,
+      Colors.yellow,
+      Colors.red,
+      Colors.lightGreen,
+      Colors.deepPurple,
+      Colors.black12,
+      Colors.black26,
+      Colors.black38,
+      Colors.black45,
+    ],
     chartOptions: chartOptions,
   );
 
@@ -72,8 +115,7 @@ Widget chartToRun() {
   Widget chartToRun;
 
   // Uses newChartLayouter
-  // todo-0000: this fails because it is using the non-test version: ChartViewModelCL lineChartViewModel = LineChartViewModelCL(
-  ChartViewModelCL lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
+  ChartViewModelCL lineChartViewModel = LineChartViewModelCL(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,

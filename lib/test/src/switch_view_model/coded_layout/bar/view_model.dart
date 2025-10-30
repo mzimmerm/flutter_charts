@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 
 // base libraries
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
-import 'package:flutter_charts/src/switch_view_model/auto_layout/bar/view_model.dart' as bar_chart_view_model;
+import 'package:flutter_charts/src/switch_view_model/auto_layout/bar/view_model.dart' as auto_layout_bar_chart_view_model;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/root_container.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
@@ -15,7 +15,7 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
-class BarChartViewModelCL extends bar_chart_view_model.BarChartViewModelCL {
+class BarChartViewModelCL extends auto_layout_bar_chart_view_model.BarChartViewModelCL {
   BarChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,

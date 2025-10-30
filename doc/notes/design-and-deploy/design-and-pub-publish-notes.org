@@ -2251,6 +2251,57 @@ In general, some libraries or classes in 'testing' are merged back to lib OR cre
 todo-00-last
 
 
+
+makeChartRootContainer is declared in:
+
+1. lib/test/src/switch_view_model/coded_layout/bar/view_model.dart:  BarChartViewModelCL    as: BarChartRootContainer    makeChartRootContainer({})
+2. lib/test/src/switch_view_model/coded_layout/line/view_model.dart: LineChartViewModelCL   as: LineChartRootContainer   makeChartRootContainer({})
+3. lib/src/switch_view_model/coded_layout/bar/view_model.dart:       BarChartViewModelCLCL  as: BarChartRootContainerCL  makeChartRootContainer({})
+4. lib/src/switch_view_model/coded_layout/line/view_model.dart:      LineChartViewModelCLCL as: LineChartRootContainerCL makeChartRootContainer({})
+5. lib/src/switch_view_model/auto_layout/bar/view_model.dart:        BarChartViewModelCL    as: BarChartRootContainer    makeChartRootContainer({})
+6. lib/src/switch_view_model/auto_layout/line/view_model.dart:       LineChartViewModelCL   as: LineChartRootContainer   makeChartRootContainer({})
+7. lib/src/switch_view_model/view_model_cl.dart:                     ChartViewModelCLCL     as: ChartRootContainerCL     makeChartRootContainer({})
+8. lib/src/chart/view_model/view_model.dart:                         ChartViewModel         as: ChartRootContainer       makeChartRootContainer({})
+
+
+
+------
+6 CONTAINERS:
+------
+
+chart/cartesian          ChartRootContainer            extends ChartAreaContainer
+coded_layout/chart       ChartRootContainerCL          extends ChartAreaContainer implements ChartRootContainer
+
+chart/cartesian/bar      BarChartRootContainer         extends ChartRootContainer
+chart/cartesian/line     LineChartRootContainer        extends ChartRootContainer
+
+coded_layout/chart/bar   BarChartRootContainerCL       extends ChartRootContainerCL
+coded_layout/chart/line  LineChartRootContainerCL      extends ChartRootContainerCL
+
+    NOTES:
+    - In Containers, CL means coded_layout
+
+------
+9 VIEW_MODELS (plus 1 mock)
+------
+root                            ChartViewModel               extends Object
+switch                          ChartViewModelCL             extends ChartViewModel
+switch                          ChartViewModelCLCL           extends ChartViewModelCL
+                                
+switch/auto_layout/bar          BarChartViewModelCL          extends ChartViewModelCL
+switch/auto_layout/line         LineChartViewModelCL         extends ChartViewModelCL
+                                
+switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL         
+switch/coded_layout/line        LineChartViewModelCLCL       extends ChartViewModelCLCL         
+
+test/switch/coded_layout/bar    BarChartViewModelCL          extends auto_layout_bar_chart_view_model.BarChartViewModelCL
+test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout_line_chart_view_model.LineChartViewModelCL
+
+    NOTES:
+    - In view models, CL   means switch
+    - In view models, CLCL means switch coded layout
+
+
 *** Notes from deleted code
 
 **** Example of extending dynamic enum
