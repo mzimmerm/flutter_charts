@@ -2306,6 +2306,13 @@ test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout
     - In view models, CLCL means switch + coded layout   - WE SHOULD ABBREVIATE TO CL
 
 
+    todo-00-now :
+    - replace ViewModelCL with ViewModel case sensitive
+    - replace viewModelCL with viewModel case sensitive
+    - move everything from switch directory away
+      
+      
+
 *** Notes from deleted code
 
 **** Example of extending dynamic enum

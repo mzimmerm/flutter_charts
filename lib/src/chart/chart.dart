@@ -36,6 +36,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart
 /// Code example documenting the structure:
 ///
 ///   ``` dart
+///   todo-0000 fix example
 ///   ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory(
 ///     chartOrientation: ChartOrientation.column,
 ///     chartStacking: ChartStacking.nonStacked,

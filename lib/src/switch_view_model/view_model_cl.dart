@@ -2,7 +2,6 @@
 // import 'dart:developer' as dart_developer;
 
 // this level
-import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart'; // NEW SWITCH
 
 import 'package:flutter_charts/src/coded_layout/chart/container.dart' as container; // OLD CONTAINER
 import 'package:flutter_charts/src/chart/view_model/view_model.dart'; // NEW
@@ -12,7 +11,6 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 
 import 'package:flutter_charts/src/coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
 
-// todo-00-done: abstract class ChartViewModelCLCL extends ChartViewModelCL {
 abstract class ChartViewModelCLCL extends ChartViewModel {
 
   ChartViewModelCLCL({

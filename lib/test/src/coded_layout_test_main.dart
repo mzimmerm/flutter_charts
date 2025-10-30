@@ -20,7 +20,6 @@ import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as la
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart';
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
@@ -1117,19 +1116,6 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-        /* todo-00-done:
-        ChartViewModelCL lineChartViewModel = ChartViewModelCL.lineChartViewModelFactory(
-          chartModel: chartModel,
-          chartType: chartType,
-          // transpose column/row is set in env var CHART_ORIENTATION
-          chartOrientation: chartOrientation,
-          // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
-          chartStacking: chartLayouter == ChartLayouter.oldManualLayouter ? ChartStacking.nonStacked : chartStacking,
-          chartLayouter: chartLayouter,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        );
-        */
-        // todo-00-done: ChartViewModelCL lineChartViewModel = LineChartViewModelCLCL(
         ChartViewModel lineChartViewModel = LineChartViewModelCLCL(
           chartModel: chartModel,
           chartType: chartType,
@@ -1146,17 +1132,6 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        /* todo-00-done:
-        ChartViewModelCL barChartViewModel = ChartViewModelCL.barChartViewModelFactory(
-          chartModel: chartModel,
-          chartType: chartType,
-          chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
-          chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
-          chartLayouter: chartLayouter,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        );
-        */
-         // todo-00-done: ChartViewModelCL barChartViewModel = BarChartViewModelCLCL(
          ChartViewModel barChartViewModel = BarChartViewModelCLCL(
            chartModel: chartModel,
            chartType: chartType,
