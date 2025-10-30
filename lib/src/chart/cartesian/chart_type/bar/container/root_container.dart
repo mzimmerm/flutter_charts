@@ -3,7 +3,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 /// The container-hierarchy root container of the vertical bar chart.
 class BarChartRootContainer extends ChartRootContainer {

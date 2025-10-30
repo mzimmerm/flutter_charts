@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart' as widgets show TextSpan, TextPainter;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:flutter_charts/src/morphic/container/label_container.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
@@ -41,7 +41,7 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
   /// Note: Does not set parent container's [_boxConstraints] and [chartViewModel].
   ///       It is currently assumed clients will not call any methods using those members.
   ChartLabelContainer({
-    required view_model.ChartViewModel chartViewModel,
+    required ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -99,7 +99,7 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
 ///
 class AxisLabelContainer extends ChartLabelContainer {
   AxisLabelContainer({
-    required view_model.ChartViewModel chartViewModel,
+    required ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' as material show Colors;
 // this level
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common;
 
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 // base libraries
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
@@ -13,7 +13,7 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 
 class AxisCornerContainer extends container_common.ChartAreaContainer {
   AxisCornerContainer({
-    required view_model.ChartViewModel chartViewModel,
+    required ChartViewModel chartViewModel,
     List<BoxContainer>? children,
   }) : super(
           chartViewModel: chartViewModel,

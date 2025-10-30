@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart' show immutable;
 // import 'dart:developer' as dart_developer;
 
 // this level
-import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' as util_labels show AxisIntervalTicksAndLabelsDescriptor, extendToOrigin;
-import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' as util_labels
+    show AxisIntervalTicksAndLabelsDescriptor, extendToOrigin;
 
 import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
 
@@ -354,7 +354,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     required covariant ChartViewModel chartViewModel,
   });
 
-  AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptorFor(DataDependency dataDependency) {
+  util_labels.AxisIntervalTicksAndLabelsDescriptor axisIntervalDescriptorFor(DataDependency dataDependency) {
     switch (dataDependency) {
       case DataDependency.inputData:
         return inputAxisDescriptor;
@@ -363,7 +363,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     }
   }
 
-  AxisIntervalTicksAndLabelsDescriptor crossRangeDescriptorFor(DataDependency dataDependency) {
+  util_labels.AxisIntervalTicksAndLabelsDescriptor crossRangeDescriptorFor(DataDependency dataDependency) {
     switch (dataDependency) {
       case DataDependency.inputData:
         return outputAxisDescriptor;

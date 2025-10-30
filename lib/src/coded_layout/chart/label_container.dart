@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/coded_layout/chart/container.dart' show Pixel
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart' as container_common show ChartAreaContainer;
 import 'package:flutter_charts/src/morphic/container/label_container.dart';
 import 'package:flutter_charts/src/chart/chart_label_container.dart';
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
@@ -44,7 +44,7 @@ import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart' 
 ///
 class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
-    required view_model.ChartViewModel chartViewModel,
+    required ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,

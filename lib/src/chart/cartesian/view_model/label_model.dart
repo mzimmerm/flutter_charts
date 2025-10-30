@@ -1,6 +1,6 @@
 import 'dart:math' as math show min, max, pow;
 
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 

@@ -2204,7 +2204,7 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
 Note: Places where 'envelope' is used: currently only for Rectangle and it means tight envelope, keep that.
 
 
-** IN-PROGRESS-NOW ~18. Simplify project structure regarding coded_layout: Make coded_layout and new_layout less dependend for testing: Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting use instead test_coded_layou_main.dart in addition to test_main.dart~
+** DONE ~18. Simplify project structure regarding coded_layout: Make coded_layout and new_layout less dependend for testing: Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting use instead test_coded_layou_main.dart in addition to test_main.dart~
 
 intellij:
 - how to compare files?
@@ -2246,7 +2246,7 @@ In general, some libraries or classes in 'testing' are merged back to lib OR cre
 
 
 
-*** IN-PROGRESS-NOW Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting
+*** DONE Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting
 
 
 ~makeChartRootContainer~ is declared in:
@@ -2303,47 +2303,22 @@ test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout
     - In view models, CLCL means switch + coded layout   - WE SHOULD ABBREVIATE TO CL
 
 
-    todo-00-now :
    - [X] replace ViewModelCL with ViewModel case sensitive
    - [X] replace viewModelCL with viewModel case sensitive (none)
-   - [-] move everything from switch directory away:
+   - [X] move everything from switch directory away:
      - [X] move src/switch_view_model/auto_layout/line/view_model.dart => src/chart/view_model/line/line_view_model.dart
      - [X] move src/switch_view_model/coded_layout/line/view_model.dart => src/coded_layout/chart/view_model/line/coded_layout_line_view_model.dart
-     - [ ] same for bar
-     - [ ] special care: view_model_cl.dart - where to move?
-   - [ ] Rename packages 'as switch' such as switch_auto_layout_bar_view_model
-   - [ ] Search for switch Switch
+     - [X] same for bar
+     - [X] special care: view_model_cl.dart - where to move?
+   - [X] Rename packages 'as switch' such as switch_auto_layout_bar_view_model
+   - [X] Search for switch Switch
 
 
 
-Later:
+   
+*** IN-PROGRESS-NOW Ensure test_main.dart copy to coded_layout_test_main.dart is working.
 
-- [ ] Ensure
-  - import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
-  - is used everywhere with 'as view_model'
 
-*** Notes from deleted code
-
-**** Example of extending dynamic enum
-
-Deleted a file options.dart with contents:
-
-#+name: test-slash-option
-#+begin_src java
-  import 'package:flutter_charts/src/chart/options.dart' as chart_options;
-
-  class LegendAndItemLayoutEnum extends chart_options.LegendAndItemLayoutEnum {
-    
-    const LegendAndItemLayoutEnum(super.i);
-    
-    static const legendIsColumnStartLooseItemIsRowStartLoose = chart_options.LegendAndItemLayoutEnum(1001); // See comment on legendIsColumnStartTightItemIsRowStartTight
-    static const legendIsColumnStartTightItemIsRowStartTight = chart_options.LegendAndItemLayoutEnum(1002); // legend items in column
-    static const legendIsRowCenterLooseItemIsRowEndLoose = chart_options.LegendAndItemLayoutEnum(1003); // Item row is not top = chart_options.LegendAndItemLayoutEnum(XX); forced to 'start' = chart_options.LegendAndItemLayoutEnum(XX); 'tight'  = chart_options.LegendAndItemLayoutEnum(XX); so noop
-    static const legendIsRowStartTightItemIsRowStartTightSecondGreedy = chart_options.LegendAndItemLayoutEnum(1005); // second Item is greedy wrapped
-    static const legendIsRowStartTightItemIsRowStartTightItemChildrenPadded = chart_options.LegendAndItemLayoutEnum(1006);
-    static const legendIsRowStartTightItemIsRowStartTightItemChildrenAligned = chart_options.LegendAndItemLayoutEnum(1007);
-  }
-#+end_src
 ** TODO-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
 
 This todo is also documented in container_layouter_base.dart

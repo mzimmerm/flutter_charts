@@ -8,7 +8,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart
 import 'package:flutter_charts/src/chart/cartesian/container/axis_corner_container.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 // comments
 import 'package:flutter_charts/src/chart/painter.dart';

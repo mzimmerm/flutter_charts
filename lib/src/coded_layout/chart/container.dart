@@ -1,23 +1,24 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 import 'package:logger/logger.dart' as logger;
 
+import 'package:flutter_charts/src/morphic/container/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
+    show BoxContainer, BoxLayouter, LayoutableBox;
+
 // this level or equivalent
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
 
+import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart';
-import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, LayoutableBox;
-import 'package:flutter_charts/src/util/util_dart.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart';
+import 'package:flutter_charts/src/util/util_dart.dart';
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
-import 'package:flutter_charts/src/morphic/container/constraints.dart' show BoxContainerConstraints;
 
 /// See [ChartRootContainer].
 abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartRootContainer {
