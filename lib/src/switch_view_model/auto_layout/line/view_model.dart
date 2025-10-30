@@ -14,12 +14,13 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/roo
 
 // this level: switch/auto_layout/bar
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart'; // NEW SWITCH
 
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
-class LineChartViewModelCL extends ChartViewModelCL {
+// todo-00-done: class LineChartViewModelCL extends ChartViewModelCL {
+class LineChartViewModelCL extends ChartViewModel {
   LineChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,

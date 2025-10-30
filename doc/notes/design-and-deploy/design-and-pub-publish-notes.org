@@ -2288,22 +2288,22 @@ coded_layout/chart/line  LineChartRootContainerCL      extends ChartRootContaine
 ------
 9 VIEW_MODELS (plus 1 mock)
 ------
-root                            ChartViewModel               extends Object
-switch                          ChartViewModelCL             extends ChartViewModel
-switch                          ChartViewModelCLCL           extends ChartViewModelCL
-                                
-switch/auto_layout/bar          BarChartViewModelCL          extends ChartViewModelCL
-switch/auto_layout/line         LineChartViewModelCL         extends ChartViewModelCL
-                                
-switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL         
-switch/coded_layout/line        LineChartViewModelCLCL       extends ChartViewModelCLCL         
+root                            ChartViewModel               extends Object             CHANGE: 
+switch                          ChartViewModelCL             extends ChartViewModel     CHANGE: REMOVE
+switch                          ChartViewModelCLCL           extends ChartViewModelCL   CHANGE: EXTEND ChartViewModel
+                                                                                        
+switch/auto_layout/bar          BarChartViewModelCL          extends ChartViewModelCL   CHANGE: REMOVE
+switch/auto_layout/line         LineChartViewModelCL         extends ChartViewModelCL   CHANGE: REMOVE
+                                                                                         
+switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL CHANGE:         
+switch/coded_layout/line        LineChartViewModelCLCL       extends ChartViewModelCLCL CHANGE:            
 
 test/switch/coded_layout/bar    BarChartViewModelCL          extends auto_layout_bar_chart_view_model.BarChartViewModelCL
 test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout_line_chart_view_model.LineChartViewModelCL
 
     NOTES:
-    - In view models, CL   means switch
-    - In view models, CLCL means switch coded layout
+    - In view models, CL   means switch                  - WE SHOULD NOT NEED THOSE
+    - In view models, CLCL means switch + coded layout   - WE SHOULD ABBREVIATE TO CL
 
 
 *** Notes from deleted code

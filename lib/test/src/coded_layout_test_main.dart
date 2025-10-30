@@ -20,7 +20,7 @@ import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as la
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart';
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
@@ -30,6 +30,7 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
 // todo-00-done: added:
 import 'package:flutter_charts/src/switch_view_model/coded_layout/line/view_model.dart'; // OLD VIEW MODEL LINE
 import 'package:flutter_charts/src/switch_view_model/coded_layout/bar/view_model.dart'; // OLD VIEW MODEL BAR
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 
 /// Test app for use in tests and integration tests in `flutter_charts`.
@@ -1128,7 +1129,8 @@ class ExampleWidgetCreator {
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
         */
-        ChartViewModelCL lineChartViewModel = LineChartViewModelCLCL(
+        // todo-00-done: ChartViewModelCL lineChartViewModel = LineChartViewModelCLCL(
+        ChartViewModel lineChartViewModel = LineChartViewModelCLCL(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
@@ -1154,7 +1156,8 @@ class ExampleWidgetCreator {
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
         */
-         ChartViewModelCL barChartViewModel = BarChartViewModelCLCL(
+         // todo-00-done: ChartViewModelCL barChartViewModel = BarChartViewModelCLCL(
+         ChartViewModel barChartViewModel = BarChartViewModelCLCL(
            chartModel: chartModel,
            chartType: chartType,
            chartOrientation: chartOrientation,

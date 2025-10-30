@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart';
 import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -15,6 +15,9 @@ import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as la
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 // todo-0000: DIFFERENCE: The testing_view_model is using the testing Legend enums; the NON-testing(LIFE)_view_Model is using the LIFE legend enums
 import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
+
+// todo-00-done
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 
 /// Example app for flutter_charts, which shows one concrete chart,
@@ -73,7 +76,8 @@ Widget chartToRun() {
 
   // Uses newChartLayouter
   // todo-0000: this fails because it is using the non-test version: ChartViewModelCL lineChartViewModel = LineChartViewModelCL(
-  ChartViewModelCL lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
+  // todo-00-done: ChartViewModelCL lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
+  ChartViewModel lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,

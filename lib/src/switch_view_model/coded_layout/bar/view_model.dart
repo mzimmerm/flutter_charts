@@ -11,7 +11,8 @@ import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
-import 'package:flutter_charts/src/switch_view_model/view_model.dart' show directionWrapperAroundCL;
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart'
+    show directionWrapperAroundCL;
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 

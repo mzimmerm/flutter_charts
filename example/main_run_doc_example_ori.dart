@@ -5,10 +5,13 @@ import 'package:logger/logger.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
 import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
-import 'package:flutter_charts/src/switch_view_model/view_model.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart';
 import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+
+// todo-00-done: added:
+import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
@@ -115,7 +118,7 @@ Widget chartToRun() {
   Widget chartToRun;
 
   // Uses newChartLayouter
-  ChartViewModelCL lineChartViewModel = LineChartViewModelCL(
+  ChartViewModel lineChartViewModel = LineChartViewModelCL(
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,

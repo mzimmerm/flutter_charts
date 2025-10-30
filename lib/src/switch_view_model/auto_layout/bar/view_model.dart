@@ -13,12 +13,13 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as stra
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data_container.dart';
 
 // this level: switch/auto_layout/bar
-import 'package:flutter_charts/src/switch_view_model/view_model.dart'; // NEW SWITCH
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart'; // NEW SWITCH
 
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
-class BarChartViewModelCL extends ChartViewModelCL {
+// todo-00-done: class BarChartViewModelCL extends ChartViewModelCL {
+class BarChartViewModelCL extends ChartViewModel {
   BarChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,

@@ -22,9 +22,18 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/main_run_doc_example_ori.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example_ori.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/switch_view_model/view_model_cl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/switch_view_model/view_model_cl.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,9 +215,9 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Flutter Test.Interval.executor": "Run",
-    "Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor": "Debug",
+    "Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor": "Run",
     "Flutter.main.dart absoluteMinimumNew.executor": "Run",
-    "Flutter.main.dart ex10 - newAutoLayouter.executor": "Debug",
+    "Flutter.main.dart ex10 - newAutoLayouter.executor": "Run",
     "Flutter.main.dart ex10 - oldManualLayouter.executor": "Run",
     "Flutter.main.dart ex10.executor": "Run",
     "Flutter.main.dart ex30 - explicit y numbers, all small positives.executor": "Run",
@@ -268,7 +277,7 @@
       <recent name="$PROJECT_DIR$/lib/test/src/util" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex10 - newAutoLayouter">
+  <component name="RunManager" selected="Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -373,7 +382,7 @@
     </configuration>
     <configuration name="main.dart ex10 - oldManualLayouter" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS='ex10_barChart_column_stacked_oldManualLayouter'" />
-      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -1282,12 +1291,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
-          <line>106</line>
+          <line>113</line>
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
-          <line>118</line>
+          <line>125</line>
           <option name="timeStamp" value="86" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1297,7 +1306,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>775</line>
+          <line>776</line>
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1317,7 +1326,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/bar/view_model.dart</url>
-          <line>43</line>
+          <line>44</line>
           <option name="timeStamp" value="114" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1327,7 +1336,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart</url>
-          <line>41</line>
+          <line>42</line>
           <option name="timeStamp" value="116" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
@@ -1341,18 +1350,18 @@
           <option name="timeStamp" value="118" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
-          <line>123</line>
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart</url>
+          <line>124</line>
           <option name="timeStamp" value="119" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
-          <line>156</line>
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart</url>
+          <line>157</line>
           <option name="timeStamp" value="120" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
-          <line>126</line>
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart</url>
+          <line>127</line>
           <option name="timeStamp" value="121" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1362,12 +1371,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart</url>
-          <line>42</line>
+          <line>43</line>
           <option name="timeStamp" value="124" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/line/view_model.dart</url>
-          <line>43</line>
+          <line>44</line>
           <option name="timeStamp" value="125" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1382,22 +1391,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/view_model/view_model.dart</url>
-          <line>353</line>
+          <line>360</line>
           <option name="timeStamp" value="128" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_cl.dart</url>
-          <line>39</line>
+          <line>40</line>
           <option name="timeStamp" value="129" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/auto_layout/bar/view_model.dart</url>
-          <line>40</line>
+          <line>41</line>
           <option name="timeStamp" value="130" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/switch_view_model/coded_layout/line/view_model.dart</url>
-          <line>38</line>
+          <line>39</line>
           <option name="timeStamp" value="131" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1462,22 +1471,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>1147</line>
+          <line>1149</line>
           <option name="timeStamp" value="152" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>1119</line>
+          <line>1120</line>
           <option name="timeStamp" value="153" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart</url>
           <line>73</line>
           <option name="timeStamp" value="155" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model.dart</url>
-          <line>103</line>
+          <url>file://$PROJECT_DIR$/lib/src/switch_view_model/view_model_UNUSED.dart</url>
+          <line>104</line>
           <option name="timeStamp" value="156" />
         </line-breakpoint>
       </breakpoints>

@@ -1,3 +1,4 @@
+/*
 import 'package:logger/logger.dart' as logger;
 
 // this level down
@@ -85,7 +86,8 @@ abstract class ChartViewModelCL extends ChartViewModel {
           return BarChartViewModelCL(
             chartModel: chartModel,
             chartType: chartType,
-            chartOrientation: chartOrientation,
+            chartOrientation: chartOrientation,switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL
+
             chartStacking: chartStacking,
             liveOrTesting: LiveOrTesting.live,
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -168,4 +170,4 @@ abstract class ChartViewModelCL extends ChartViewModel {
 
 }
 
-
+*/

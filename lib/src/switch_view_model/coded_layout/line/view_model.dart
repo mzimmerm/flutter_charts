@@ -13,7 +13,8 @@ import 'package:flutter_charts/src/coded_layout/chart/chart_type/line/root_conta
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/switch_view_model/view_model_cl.dart'; // OLD
-import 'package:flutter_charts/src/switch_view_model/view_model.dart' show directionWrapperAroundCL;
+import 'package:flutter_charts/src/switch_view_model/view_model_UNUSED.dart'
+    show directionWrapperAroundCL;
 
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 
