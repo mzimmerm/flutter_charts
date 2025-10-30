@@ -1,3 +1,4 @@
+/*
 import 'package:logger/logger.dart' as logger;
 
 // base libraries
@@ -49,11 +50,14 @@ class LineChartViewModelCL extends auto_layout_line_chart_view_model.LineChartVi
           chartViewModel: this
       ),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(
-          chartViewModel: this),
-      dataContainer: LineChartDataContainer(chartViewModel: this
+          chartViewModel: this
+      ),
+      dataContainer: LineChartDataContainer(
+          chartViewModel: this
       ),
       chartViewModel: chartViewModel,
     );
   }
 
 }
+*/

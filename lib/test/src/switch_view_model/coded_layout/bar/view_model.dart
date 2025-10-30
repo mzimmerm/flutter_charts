@@ -1,3 +1,4 @@
+/*
 // import 'package:logger/logger.dart' as logger;
 
 import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
@@ -41,8 +42,8 @@ class BarChartViewModelCL extends auto_layout_bar_chart_view_model.BarChartViewM
       verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
           chartViewModel: this
       ),
-      verticalAxisContainer: TransposingAxisLabels.VerticalAxis
-        (chartViewModel: this
+      verticalAxisContainer: TransposingAxisLabels.VerticalAxis(
+          chartViewModel: this
       ),
       dataContainer: BarChartDataContainer(
           chartViewModel: this
@@ -52,3 +53,4 @@ class BarChartViewModelCL extends auto_layout_bar_chart_view_model.BarChartViewM
   }
 
 }
+*/

@@ -28,9 +28,12 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
 // todo-00-done: added
-import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model.dart' as testing_line_view_model;
+import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model_UNUSED.dart' as testing_line_view_model;
 import 'package:flutter_charts/test/src/switch_view_model/coded_layout/bar/view_model.dart' as testing_bar_view_model;
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
+// todo-00-done-2: import 'package:flutter_charts/test/src/switch_view_model/coded_layout/line/view_model_UNUSED.dart' as testing_line_view_model;
+import 'package:flutter_charts/src/switch_view_model/auto_layout/line/view_model.dart' as switch_auto_layout_line_view_model;
+import 'package:flutter_charts/src/switch_view_model/auto_layout/bar/view_model.dart' as switch_auto_layout_bar_view_model;
 
 
 /// Test app for use in tests and integration tests in `flutter_charts`.
@@ -1130,7 +1133,7 @@ class ExampleWidgetCreator {
         );
         */
          // todo-00-done: ChartViewModelCL lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
-         ChartViewModel lineChartViewModel = testing_line_view_model.LineChartViewModelCL(
+         ChartViewModel lineChartViewModel = switch_auto_layout_line_view_model.LineChartViewModelCL(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
@@ -1157,7 +1160,7 @@ class ExampleWidgetCreator {
         );
         */
         // todo-00-done: ChartViewModelCL barChartViewModel = testing_bar_view_model.BarChartViewModelCL(
-        ChartViewModel barChartViewModel = testing_bar_view_model.BarChartViewModelCL(
+        ChartViewModel barChartViewModel = switch_auto_layout_bar_view_model.BarChartViewModelCL(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,

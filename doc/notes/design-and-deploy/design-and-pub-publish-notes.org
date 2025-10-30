@@ -2292,13 +2292,13 @@ root                            ChartViewModel               extends Object     
 switch                          ChartViewModelCL             extends ChartViewModel     CHANGE: REMOVE
 switch                          ChartViewModelCLCL           extends ChartViewModelCL   CHANGE: EXTEND ChartViewModel
                                                                                         
-switch/auto_layout/bar          BarChartViewModelCL          extends ChartViewModelCL   CHANGE: REMOVE
-switch/auto_layout/line         LineChartViewModelCL         extends ChartViewModelCL   CHANGE: REMOVE
+switch/auto_layout/bar          BarChartViewModelCL          extends ChartViewModelCL   CHANGE: extend ChartViewModel directly
+switch/auto_layout/line         LineChartViewModelCL         extends ChartViewModelCL:  CHANGE: extend ChartViewModel directly
                                                                                          
-switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL CHANGE:         
-switch/coded_layout/line        LineChartViewModelCLCL       extends ChartViewModelCLCL CHANGE:            
+switch/coded_layout/bar         BarChartViewModelCLCL        extends ChartViewModelCLCL CHANGE: REMOVE, REPLACE WITH TEST VERSION        
+switch/coded_layout/line        LineChartViewModelCLCL       extends ChartViewModelCLCL CHANGE: REMOVE, REPLACE WITH TEST VERSION           
 
-test/switch/coded_layout/bar    BarChartViewModelCL          extends auto_layout_bar_chart_view_model.BarChartViewModelCL
+test/switch/coded_layout/bar    BarChartViewModelCL          extends auto_layout_bar_chart_view_model.BarChartViewModelCL   : CHANGE: LATER MOVE  TO ????
 test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout_line_chart_view_model.LineChartViewModelCL
 
     NOTES:
