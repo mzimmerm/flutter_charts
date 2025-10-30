@@ -77,7 +77,6 @@ Widget chartToRun() {
     chartModel: chartModel,
     chartType: chartType,
     chartOrientation: chartOrientation,
-    // todo-00-done: liveOrTesting: LiveOrTesting.live,
     chartStacking: chartStacking,
   );
 

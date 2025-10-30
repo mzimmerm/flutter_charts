@@ -49,7 +49,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    // todo-00-done: required this.liveOrTesting,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
@@ -59,10 +58,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
   inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
-  /// Temporary allows to instantiate live or testing components
-  ///
-  // todo-00-done: final LiveOrTesting liveOrTesting;
-
   /// Factory switch returns instances of auto_layout or coded_layout versions of view model
   /// for vertical bar chart.
   factory ChartViewModelCL.barChartViewModelFactory({
@@ -70,7 +65,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    // todo-00-done: required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -82,11 +76,9 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
-        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
-      // todo-00-done: replaced all with testing
       /*
       switch (liveOrTesting) {
         case LiveOrTesting.live:
@@ -113,7 +105,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartModel: chartModel,
         chartType: chartType,
         chartOrientation: chartOrientation,
-        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
@@ -127,7 +118,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    // todo-00-done: required LiveOrTesting liveOrTesting,
     ChartLayouter chartLayouter = ChartLayouter.oldManualLayouter,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -139,11 +129,9 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartType: chartType,
         chartOrientation: chartOrientation,
         chartStacking: chartStacking,
-        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
-      // todo-00-done: replaced all with testing
       /*
       switch (liveOrTesting) {
         case LiveOrTesting.live:
@@ -170,7 +158,6 @@ abstract class ChartViewModelCL extends ChartViewModel {
         chartModel: chartModel,
         chartType: chartType,
         chartOrientation: chartOrientation,
-        // todo-00-done: liveOrTesting: LiveOrTesting.testing,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );

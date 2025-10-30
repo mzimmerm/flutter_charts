@@ -22,7 +22,6 @@ class BarChartViewModelCL extends ChartViewModelCL {
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
-    // todo-00-done: required LiveOrTesting liveOrTesting,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -30,7 +29,6 @@ class BarChartViewModelCL extends ChartViewModelCL {
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    // todo-00-done: liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');

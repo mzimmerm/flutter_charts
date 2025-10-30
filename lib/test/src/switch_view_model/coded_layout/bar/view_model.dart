@@ -20,7 +20,6 @@ class BarChartViewModelCL extends auto_layout_bar_chart_view_model.BarChartViewM
     required ChartModel chartModel,
     required ChartType chartType,
     required ChartOrientation chartOrientation,
-    // todo-00-done: required LiveOrTesting liveOrTesting,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -28,7 +27,6 @@ class BarChartViewModelCL extends auto_layout_bar_chart_view_model.BarChartViewM
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    // todo-00-done: liveOrTesting: liveOrTesting,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
