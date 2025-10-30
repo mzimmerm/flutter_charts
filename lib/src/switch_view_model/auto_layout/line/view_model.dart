@@ -2,7 +2,8 @@ import 'package:logger/logger.dart' as logger;
 
 
 // base libraries
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+// todo-00-done: import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
+import 'package:flutter_charts/src/chart/layout_alternatives/cartesian/container/legend_container.dart' as layout_alternative_legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/view_model/view_model.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
@@ -39,7 +40,7 @@ class LineChartViewModelCL extends ChartViewModelCL {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: LegendContainer(
+      legendContainer: layout_alternative_legend_container.LegendContainer(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

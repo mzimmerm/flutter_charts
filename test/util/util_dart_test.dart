@@ -63,7 +63,7 @@ void main() {
     Interval oi33 = Interval(-20.0, 50.0);
     Interval oi34 = Interval(double.negativeInfinity, double.infinity);
     // other starts inside i && ends inside i
-    Interval oi41 = Interval(25.0, 35.0);
+    Interval oi41 = Interval(25.0, 35.0); // todo-00-last: add this to test
     // other starts after i max && ends after i max
     Interval oni51 = Interval(50.0, 60.0);
     Interval oni52 = Interval(50.0, double.negativeInfinity);

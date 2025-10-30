@@ -2264,6 +2264,10 @@ todo-00-last
 8. lib/src/chart/view_model/view_model.dart:                         ChartViewModel         as: ChartRootContainer       makeChartRootContainer({})
 
 
+BUT there is also:
+   lib/src/switch_view_model/view_model.dart:                        ChartViewModelCL!!!! which does NOT have ~makeChartRootContainer~ BUT has the FACTORIES ChartViewModelCL.barChartViewModelFactory return ~BarChartViewModelCLCL~ for *oldLayouter* and return ~BarChartViewModelCL~ for *newLayouter*
+
+  
 
 ------
 6 CONTAINERS:

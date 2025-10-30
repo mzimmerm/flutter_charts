@@ -28,7 +28,7 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-class LegendContainer extends container_common.ChartAreaContainer {
+abstract class LegendContainer extends container_common.ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and
