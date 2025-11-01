@@ -26,11 +26,9 @@ import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
-import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart' show ChartViewModelCL;
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart' as switch_line_view_model;
 import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart' as switch_bar_view_model;
-
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
 
 /// Test app for use in tests and integration tests in `flutter_charts`.
@@ -1117,7 +1115,7 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-        ChartViewModel lineChartViewModel = switch_line_view_model.LineChartViewModelCL(
+         ChartViewModel lineChartViewModel = switch_line_view_model.LineChartViewModelCL(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
@@ -1133,13 +1131,13 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-         ChartViewModel barChartViewModel = switch_bar_view_model.BarChartViewModelCL(
-           chartModel: chartModel,
-           chartType: chartType,
-           chartOrientation: chartOrientation,
-           chartStacking: chartStacking,
-           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-         );
+        ChartViewModel barChartViewModel = switch_bar_view_model.BarChartViewModelCL(
+          chartModel: chartModel,
+          chartType: chartType,
+          chartOrientation: chartOrientation,
+          chartStacking: chartStacking,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+        );
 
         BarChart barChart = BarChart(
           // [barChartViewModel] makes instance of [BarChartRootContainer]

@@ -1580,7 +1580,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
                                        alignY=1
 #+END_SRC
 
-** DONE 7. ~Migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
+** DONE 7. ~\Migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter
 
 *** TLDR
 
@@ -1692,7 +1692,7 @@ We also add a 'convenience' application support that allows to *give name* to Bo
 
 Options are NOT a singleton. Multiple charts may be used in an application, each with a different ChartOptions
 
-** DONE 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
+** DONE 8. REST Containers 2. : Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers
 
 
 *** DONE Where possible, Make sure paint and apply methods use the default implementation that iterates on children NOT on members
@@ -1910,7 +1910,7 @@ Use it in one example:
 - [X] For line chart, grid lines in the middle. For bar chart, grid lines around bars
   
 
-** DONE ~17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to lib/test/src/test_main.dart; create standard and alternative layouts~
+** DONE 17. Change example and test directory structure around main.dart.  Move example/lib/src/main.dart to lib/test/src/test_main.dart; create standard and alternative layouts
 
 *** DONE Untangle the code used in LegendContainer building the variously spaced and positioned LegendItemContainers to live somewhere in the example/lib directory. Only use these in the test app
 
@@ -2111,7 +2111,7 @@ The steps to do here:
 
 
 
-** DONE ~17.1. Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'. Identify charts that do NOT work in auto_layout.~
+** DONE 17.1. Separate integration test images between 'oldManualLayouter' and 'newAutoLayouter'. Identify charts that do NOT work in auto_layout.
 
 #+begin_src bash
   cd /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested/
@@ -2183,7 +2183,7 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
                                                                                                                               
 
 
-** DONE ~17.2. Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor~
+** DONE 17.2. Refactor naming around view_model.ChartViewModel and label_model.AxisIntervalTicksAndLabelsDescriptor
 
 - [X] this  ChartViewModel.valuesInterval() is core for ex900 bug. valuesInterval is NOT tight data envelope, BUT it is transformed data envelope potentially extended to 0.0 origin
 
@@ -2204,7 +2204,7 @@ ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLa
 Note: Places where 'envelope' is used: currently only for Rectangle and it means tight envelope, keep that.
 
 
-** DONE ~18. Simplify project structure regarding coded_layout: Make coded_layout and new_layout less dependend for testing: Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting use instead test_coded_layou_main.dart in addition to test_main.dart~
+** DONE 18. Simplify project structure regarding coded_layout: Make coded_layout and new_layout less dependend for testing: Remove SwitchViewModels, switch_view_model.dart, LiveOrTesting use instead test_coded_layou_main.dart in addition to test_main.dart
 
 intellij:
 - how to compare files?
@@ -2316,7 +2316,48 @@ test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout
 
 
    
-*** IN-PROGRESS-NOW Ensure test_main.dart copy to coded_layout_test_main.dart is working.
+** DONE 18.1. Ensure test_main.dart copy and replace to coded_layout_test_main.dart is working.
+
+Fix ~function _duplicate_test_files_from_auto_layout_to_coded_layout()~ in ./tool/test/run_screenshots_create_then_validate_integration_test.sh to copy test_main.dart to coded_layout_test_main.dart and replace appropriate strings to convert the auto_layout test to coded_layout test.
+
+These are the differences that should be implemented by the sed
+
+#+begin_example
+mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts> find . -name "*test_main.dart"
+./lib/test/src/test_main.dart
+./lib/test/src/coded_layout_test_main.dart
+mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts> diff ./lib/test/src/test_main.dart ./lib/test/src/coded_layout_test_main.dart
+28a29,32
+> import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart' as switch_line_view_model;
+> import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart' as switch_bar_view_model;
+> 
+30,31d33
+< import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_line_view_model;
+< import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
+1118c1120
+<          ChartViewModel lineChartViewModel = switch_line_view_model.LineChartViewModel(
+---
+>         ChartViewModel lineChartViewModel = switch_line_view_model.LineChartViewModelCL(
+1134,1140c1136,1142
+<         ChartViewModel barChartViewModel = switch_bar_view_model.BarChartViewModel(
+<           chartModel: chartModel,
+<           chartType: chartType,
+<           chartOrientation: chartOrientation,
+<           chartStacking: chartStacking,
+<           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+<         );
+---
+>          ChartViewModel barChartViewModel = switch_bar_view_model.BarChartViewModelCL(
+>            chartModel: chartModel,
+>            chartType: chartType,
+>            chartOrientation: chartOrientation,
+>            chartStacking: chartStacking,
+>            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+>          );
+#+end_example
+
+
+** IN-PROGRESS-NOW Change Legend class : split into multiple factories; remove dependency on the ex enums
 
 
 ** TODO-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
@@ -2330,8 +2371,8 @@ This todo is also documented in container_layouter_base.dart
   - [ ] bool isSkipPaint
   - [ ] private generative constructor
   - [ ] const static skipPaint
-  - const static skipLayoutAndPaint
-  - [ ] const static skipNone
+  - [ ] const static skipLayoutAndPaint
+  - [ ] const static skipNone (DEFAULT)
   - [ ] 
 - [ ] on BoxContainer, add member parentOrderedSkip,
   - [ ] (also search for it first), default to skipNone
@@ -2345,6 +2386,7 @@ This todo is also documented in container_layouter_base.dart
     - [ ] input grid
     - [ ] output grid
   - [ ] test things work unchanged
+  - [ ] add example as in coded_layout which skips labels, axis, grid
 
 
 ** TODO-NEXT ~20. Fix charts that are NOT working in new auto_layouter~

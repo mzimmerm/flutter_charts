@@ -34,8 +34,10 @@ function _duplicate_test_files_from_auto_layout_to_coded_layout() {
   fi
 
   if ! \
-    sed -e 's?ChartViewModel lineChartViewModel = ChartViewModel.lineChartViewModelFactory?ChartViewModel lineChartViewModel = ChartViewModel.lineChartViewModelFactory?' \
-        -e 's?ChartViewModel barChartViewModel = ChartViewModel.barChartViewModelFactory?ChartViewModel barChartViewModel = ChartViewModel.barChartViewModelFactory?' \
+    sed -e 's?package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart?package:flutter_charts/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart?' \
+        -e 's?package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart?package:flutter_charts/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart?' \
+        -e 's?LineChartViewModel(?LineChartViewModelCL(?' \
+        -e 's?BarChartViewModel(?BarChartViewModelCL(?' \
       < lib/test/src/test_main.dart \
       > lib/test/src/coded_layout_test_main.dart; then
     echo ERROR substituting in 'test_main.dart', exiting.
@@ -151,7 +153,7 @@ for layout in auto_layout coded_layout; do
     # are copied to their coded_layout equivalents. We want to express this is a temporal step,
     # and keep the files the same.
     echo "$comment_duplicate_files_from_auto_layout"
-    # todo-00-done: temporary remove, keep manuall edited files: _duplicate_test_files_from_auto_layout_to_coded_layout
+    _duplicate_test_files_from_auto_layout_to_coded_layout
     sleep 5
   fi
   # Run the main() in [coded_layout_]screenshot_create_test.dart.
