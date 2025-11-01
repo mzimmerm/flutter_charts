@@ -49,40 +49,54 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     }
   }
 
+  /// Returns a LegendContainer with the described layout of
+  /// legend items and each legend item.
+  factory LegendContainer.legendIsRowStartTightItemIsRowStartTightDefault({
+    required view_model.ChartViewModel chartViewModel,
+  }) {
+    return _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault(chartViewModel: chartViewModel);
+  }
+
+  /// todo-00-last : document
+  container_base.BoxContainer legendSingleChildLayouter(List<container_base.BoxContainer> children) {
+    chart_options.ChartOptions options = chartViewModel.chartOptions;
+    switch (options.legendOptions.legendAndItemLayoutEnum) {
+      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
+      // LegendOptions default: children created as [LegendItem]s in row which is start tight
+        return container_base.Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        //break;
+      case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
+        return container_base.WrappingRow(
+          children: children,
+        );
+        //break;
+      default:
+        throw StateError(
+            '_createChildrenOfLegendContainer: Invalid option: ${options.legendOptions.legendAndItemLayoutEnum}');
+    }
+  }
+
   /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
   ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
   ///   - the [chart_label_container.ChartLabelContainer] which describes the series.
   ///
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
+
     chart_options.ChartOptions options = chartViewModel.chartOptions;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = defaultLabelStyle(options);
 
-    container_base.BoxContainer legendSingleChildLayouter;
-
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
     var children = _createLegendItemContainers(chartViewModel, labelStyle, options);
 
-    switch (options.legendOptions.legendAndItemLayoutEnum) {
-      case chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
-        // LegendOptions default: children created as [LegendItem]s in row which is start tight
-        legendSingleChildLayouter = container_base.Row(
-          mainAxisAlign: Align.start,
-          mainAxisPacking: Packing.tight,
-          children: children,
-        );
-        break;
-      case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
-        legendSingleChildLayouter = container_base.WrappingRow(
-          children: children,
-        );
-        break;
-      default:
-        throw StateError(
-            '_createChildrenOfLegendContainer: Invalid option: ${options.legendOptions.legendAndItemLayoutEnum}');
-    }
-    return [legendSingleChildLayouter];
+    container_base.BoxContainer legendChildLayouter = legendSingleChildLayouter(children);
+
+    return [legendChildLayouter];
   }
 
   /// Builds the legend container contents below self,
@@ -139,6 +153,30 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     super.layout();
   }
 }
+
+// todo-00-last
+class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault
+    extends LegendContainer {
+
+  _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault({
+    required super.chartViewModel,
+  });
+
+  @override
+  container_base.BoxContainer legendSingleChildLayouter(
+      List<container_base.BoxContainer> children) {
+    chart_options.ChartOptions options = chartViewModel.chartOptions;
+
+    return container_base.Row(
+      mainAxisAlign: Align.start,
+      mainAxisPacking: Packing.tight,
+      children: children,
+    );
+  }
+
+}
+
+
 
 /// Represents one item of the legend:  The rectangle for the series color
 /// indicator, followed by the series label text.

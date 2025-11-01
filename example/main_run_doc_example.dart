@@ -12,7 +12,7 @@ import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as layout_alternative_options show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_line_view_model;
-import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
+// import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
 
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 

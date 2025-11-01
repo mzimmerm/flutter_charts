@@ -20,12 +20,12 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.d
 class LineChartViewModel extends ChartViewModel {
   LineChartViewModel({
     required ChartModel chartModel,
-    required ChartType chartType,
+    required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
-    chartModel: chartModel,
+    chartModel: chartModel, // todo-01-last-last : This is ChartType.lineChart. REMOVE
     chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,

@@ -36,13 +36,13 @@ import 'package:flutter_charts/src/chart/cartesian/container/root_container.dart
 /// Code example documenting the structure:
 ///
 ///   ``` dart
-///   todo-0000 fix example
-///   ChartViewModel lineChartViewModel = ChartViewModel.lineChartViewModelFactory(
-///     chartOrientation: ChartOrientation.column,
-///     chartStacking: ChartStacking.nonStacked,
-///     chartModel: chartModel,
-///     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-///   );
+///   ChartViewModel barChartViewModel = BarChartViewModel(
+///           chartModel: chartModel,
+///           chartType: ChartType.bartChart,
+///           chartOrientation: ChartOrientation.column,
+///           chartStacking: ChartStacking.nonStacked,
+///           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+///         );
 ///
 ///   LineChart lineChart = LineChart(
 ///     chartViewModel: lineChartViewModel, // also makes instance of [LineChartRootContainer]

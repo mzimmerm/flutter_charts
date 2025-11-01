@@ -5,7 +5,7 @@
 
 set -o errexit
 
-echo "$0" called with args "$@" # todo-00-last remove
+echo "$0" called with args "$@"
 
 # To process command line arguments, we use bargs.sh and .run_screenshot_create_then_validate_integration_test_bargs_vars,
 # downloaded as
