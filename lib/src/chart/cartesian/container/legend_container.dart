@@ -16,6 +16,8 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
+import '../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///
 /// The legend area contains individual legend items represented
@@ -31,7 +33,7 @@ import 'package:flutter_charts/src/morphic/container/container_alignment.dart' a
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-class LegendContainer extends container_common.ChartAreaContainer {
+abstract class LegendContainer extends container_common.ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and
@@ -60,7 +62,9 @@ class LegendContainer extends container_common.ChartAreaContainer {
     return _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault(chartViewModel: chartViewModel);
   }
 
-  /// todo-00-last : document
+  /// todo-00-last : document abstract
+  container_base.BoxContainer createLegendChildrenLayouterForSpecifiedExampleEnumOption(List<container_base.BoxContainer> children);
+/*
   container_base.BoxContainer createLegendChildrenLayouterForSpecifiedExampleEnumOption(List<container_base.BoxContainer> children) {
     chart_options.ChartOptions options = chartViewModel.chartOptions;
 
@@ -139,6 +143,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
     }
     
   }
+*/
 
   /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
   ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
@@ -175,7 +180,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < chartViewModel.numRows; index++)
-        LegendItemContainer(
+        test_legend_container.LegendItemContainer(
           chartViewModel: chartViewModel,
           label: chartViewModel.getLegendItemAt(index).name,
           labelStyle: labelStyle,
@@ -214,7 +219,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
 }
 
 // todo-00-last
-// Future approach:
+// Future approach: use factory methods to construct containers with specific layout.
 class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault
     extends LegendContainer {
 
@@ -243,7 +248,7 @@ class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault
 ///    - [ChartLabelContainer] labelContainer for the series label
 
 /// Container of one item in the chart legend; each instance corresponds to one row (series) of data.
-class LegendItemContainer extends container_common.ChartAreaContainer {
+abstract class LegendItemContainer extends container_common.ChartAreaContainer {
   /// Rectangle of the legend color square series indicator
 
   /// Paint used to paint the indicator
@@ -285,6 +290,10 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
     return [legendItemChildrenLayouter];
   }
 
+  // todo-00 document abstract
+  container_base.BoxContainer createLegendItemChildrenLayouterForSpecifiedExampleEnumOption(List<container_base.BoxContainer> children);
+
+/*
   container_base.BoxContainer createLegendItemChildrenLayouterForSpecifiedExampleEnumOption(List<container_base.BoxContainer> children) {
     switch (chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum) {
     // **NO** This forcing has been removed, keep historical note:
@@ -299,7 +308,8 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
           children: children,
         );
         // break;
-      /* todo-01-remove later the original here was wrong. Using version from code legend_container.dart
+      */
+/* todo-01-remove later the original here was wrong. Using version from code legend_container.dart
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         return container_base.Row(
           mainAxisAlign: Align.start,
@@ -307,7 +317,8 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
           children: children,
         );
         // break;
-      */
+      *//*
+
       case chart_options.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         return container_base.WrappingRow(
           children: children,
@@ -367,6 +378,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
             '_createChildrenOfLegendItemContainer: Invalid option: ${chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum}');
     }    
   }
+*/
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].

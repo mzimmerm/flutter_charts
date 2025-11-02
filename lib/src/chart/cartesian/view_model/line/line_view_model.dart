@@ -14,6 +14,10 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/roo
 // this level: switch/auto_layout/bar
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
+// todo-00-last
+import '../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+
+
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
@@ -38,7 +42,7 @@ class LineChartViewModel extends ChartViewModel {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: legend_container.LegendContainer(
+      legendContainer: test_legend_container.LegendContainer(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

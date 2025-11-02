@@ -16,7 +16,7 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
 import 'package:flutter_charts/src/chart/options.dart';
-import 'package:flutter_charts/src/chart/options.dart' as chart_options show LegendAndItemLayoutEnum;
+import '../src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -545,7 +545,7 @@ class ExampleWidgetCreator {
     ChartType chartType = exampleToRun.chartType;
     ChartOrientation chartOrientation = exampleToRun.chartOrientation;
     ChartStacking chartStacking = exampleToRun.chartStacking;
-    ChartLayouter chartLayouter = exampleToRun.chartLayouter;
+    // todo-01-last : remove throughout: ChartLayouter chartLayouter = exampleToRun.chartLayouter;
 
 
     // Declare chartModel; the data object will be different in every examples.
@@ -572,7 +572,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-                  chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+                  test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
         chartModel = RandomChartModel.generated(
           chartOptions: chartOptions,
@@ -913,7 +913,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
+              legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
         );
 
         chartModel = ChartModel(
@@ -927,7 +927,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
+              legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
         chartModel = ChartModel(
@@ -941,7 +941,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
+              legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
         );
 
         chartModel = ChartModel(
@@ -955,7 +955,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault),
+              legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault),
         );
 
         chartModel = ChartModel(
@@ -969,7 +969,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
+              legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
         chartModel = ChartModel(
@@ -984,7 +984,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+              test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
 
         chartModel = ChartModel(
@@ -999,7 +999,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
+              test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
 
         chartModel = ChartModel(
@@ -1014,7 +1014,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
+              test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
         );
 
         chartModel = ChartModel(

@@ -1,6 +1,8 @@
 import 'package:logger/logger.dart' as logger;
 
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+// todo-00-last: import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+import '../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries
@@ -35,7 +37,7 @@ class BarChartViewModel extends ChartViewModel {
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
-      legendContainer: legend_container.LegendContainer(
+      legendContainer: test_legend_container.LegendContainer(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

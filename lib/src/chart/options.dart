@@ -9,7 +9,9 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
-import 'package:flutter_charts/src/morphic/util/extensible_enum.dart';
+
+// test enums. to be removed
+import '../../test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
@@ -122,7 +124,7 @@ class LegendOptions {
 
   /// Controls the build-in layouts for legends that client can choose
   /// without requiring code extensions.
-  final LegendAndItemLayoutEnum legendAndItemLayoutEnum;
+  final test_examples_legend_enums.LegendAndItemLayoutEnum legendAndItemLayoutEnum;
 
   const LegendOptions({
     this.isLegendContainerShown = true,
@@ -132,7 +134,7 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
-    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
+    this.legendAndItemLayoutEnum = test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
   });
 }
 
@@ -430,17 +432,14 @@ enum DataRowsPaintingOrder {
   lastToFirst,
 }
 
+/* KEEP as example of extensible enum
 class LegendAndItemLayoutEnum extends BaseExtensibleEnum {
 
   const LegendAndItemLayoutEnum(super.i);
 
-  static const legendIsRowStartTightItemIsRowStartTightDefault = LegendAndItemLayoutEnum(1); // LegendOptions default: children created as [LegendItem]s in row which is start tight
-  static const legendIsWrappingRowItemIsRowStartTight = LegendAndItemLayoutEnum(2); // legend items wrap in row
+  static const enum1 = LegendAndItemLayoutEnum(1);
+  static const enum2 = LegendAndItemLayoutEnum(2);
 
-  static const legendIsColumnStartLooseItemIsRowStartLoose = LegendAndItemLayoutEnum(1001); // See comment on legendIsColumnStartTightItemIsRowStartTight
-  static const legendIsColumnStartTightItemIsRowStartTight = LegendAndItemLayoutEnum(1002); // legend items in column
-  static const legendIsRowCenterLooseItemIsRowEndLoose = LegendAndItemLayoutEnum(1003); // Item row is not top = LegendAndItemLayoutEnum(XX); forced to 'start' = LegendAndItemLayoutEnum(XX); 'tight'  = LegendAndItemLayoutEnum(XX); so noop
-  static const legendIsRowStartTightItemIsRowStartTightSecondGreedy = LegendAndItemLayoutEnum(1005); // second Item is greedy wrapped
-  static const legendIsRowStartTightItemIsRowStartTightItemChildrenPadded = LegendAndItemLayoutEnum(1006);
-  static const legendIsRowStartTightItemIsRowStartTightItemChildrenAligned = LegendAndItemLayoutEnum(1007);
+  static const enum3 = LegendAndItemLayoutEnum(1001);
 }
+ */

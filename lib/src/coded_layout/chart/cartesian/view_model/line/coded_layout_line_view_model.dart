@@ -13,6 +13,7 @@ import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+import '../../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
 
 
 class LineChartViewModelCL extends ChartViewModelCL {
@@ -34,7 +35,7 @@ class LineChartViewModelCL extends ChartViewModelCL {
   @override
   LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainerCL(
-      legendContainer: legend_container.LegendContainer(chartViewModel: this),
+      legendContainer: test_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: HorizontalAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,

@@ -9,7 +9,7 @@ import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 
-import 'package:flutter_charts/src/chart/options.dart' as chart_options show LegendAndItemLayoutEnum;
+import '../lib/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_line_view_model;
 // import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
@@ -62,7 +62,7 @@ Widget chartToRun() {
   ChartOptions chartOptions = const ChartOptions(
     legendOptions: LegendOptions(
         legendAndItemLayoutEnum:
-        chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+        test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
   );
   chartModel = RandomChartModel.generated(
     chartOptions: chartOptions,
