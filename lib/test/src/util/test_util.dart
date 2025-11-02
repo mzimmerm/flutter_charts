@@ -1,7 +1,6 @@
 /// Utilities used in tests and integration tests.
 ///
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 import 'package:flutter_charts/src/chart/util/example_descriptor.dart' show ExampleDescriptor;
 

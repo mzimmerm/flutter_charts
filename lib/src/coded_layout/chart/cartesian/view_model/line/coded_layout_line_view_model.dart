@@ -1,10 +1,5 @@
 import 'package:logger/logger.dart' as logger;
 
-
-// todo-00-last-remove
-// import '../../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
-
-
 // base libraries
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -39,7 +34,6 @@ class LineChartViewModelCL extends ChartViewModelCL {
   @override
   LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainerCL(
-      // todo-00-done: legendContainer: test_legend_container.LegendContainer(chartViewModel: this),
       legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
           chartViewModel: this
       ),

@@ -1,6 +1,3 @@
-
-// todo-00-last : this should NOT be options. It is some kind of LegendAndItemLayoutEnumTesting
-// todo-00-done : moved legend enum to this package here (lib/test/src)
 enum LegendAndItemLayoutEnum  {
 
   legendIsRowStartTightItemIsRowStartTightDefault, // LegendOptions default: children created as [LegendItem]s in row which is start tight

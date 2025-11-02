@@ -567,6 +567,8 @@ class ExampleWidgetCreator {
     /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleEnumToRun) {
+    // todo-00-now : add tests for live legends
+
       case ExampleEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
         chartOptions = const ChartOptions(

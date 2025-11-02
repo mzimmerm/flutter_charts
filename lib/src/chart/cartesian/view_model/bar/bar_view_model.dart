@@ -1,9 +1,5 @@
 import 'package:logger/logger.dart' as logger;
 
-// todo-00-last-remove
-//import '../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
-
-
 // base libraries
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -13,8 +9,6 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
-
-// todo-00-next : add tests for live legends
 
 /// Concrete [ChartViewModel] for [BarChart].
 ///
@@ -40,7 +34,6 @@ class BarChartViewModel extends ChartViewModel {
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
-      // todo-00-done: legendContainer: test_legend_container.LegendContainer(
       legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
           chartViewModel: this
       ),
