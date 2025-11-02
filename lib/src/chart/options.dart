@@ -437,7 +437,6 @@ class LegendAndItemLayoutEnum extends BaseExtensibleEnum {
   static const legendIsRowStartTightItemIsRowStartTightDefault = LegendAndItemLayoutEnum(1); // LegendOptions default: children created as [LegendItem]s in row which is start tight
   static const legendIsWrappingRowItemIsRowStartTight = LegendAndItemLayoutEnum(2); // legend items wrap in row
 
-  // todo-00-done moved here from layout_alternatives
   static const legendIsColumnStartLooseItemIsRowStartLoose = LegendAndItemLayoutEnum(1001); // See comment on legendIsColumnStartTightItemIsRowStartTight
   static const legendIsColumnStartTightItemIsRowStartTight = LegendAndItemLayoutEnum(1002); // legend items in column
   static const legendIsRowCenterLooseItemIsRowEndLoose = LegendAndItemLayoutEnum(1003); // Item row is not top = LegendAndItemLayoutEnum(XX); forced to 'start' = LegendAndItemLayoutEnum(XX); 'tight'  = LegendAndItemLayoutEnum(XX); so noop

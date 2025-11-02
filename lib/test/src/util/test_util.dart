@@ -35,15 +35,6 @@ class ScreenshotPaths {
   String _screenshotFileName(
       ExampleDescriptor exampleDescriptor,
       ) {
-    String version;
-    switch (exampleDescriptor.chartLayouter) {
-      case ChartLayouter.newAutoLayouter:
-        version = 'NEW';
-        break;
-      case ChartLayouter.oldManualLayouter:
-        version = 'OLD';
-        break;
-    }
     // return '${enumName(exampleDescriptor.exampleEnum)}_${enumName(exampleDescriptor.chartType)}$newLayoutSuffix.png';
     return '${enumName(exampleDescriptor.exampleEnum)}'
         '_${exampleDescriptor.chartType.name}'
