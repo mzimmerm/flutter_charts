@@ -136,7 +136,6 @@ class LegendItemContainer extends legend_container.LegendItemContainer {
           children: children,
         );
     // break;
-    /* todo-01-remove later the original here was wrong. Using version from code legend_container.dart
       case test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         return container_base.Row(
           mainAxisAlign: Align.start,
@@ -144,11 +143,13 @@ class LegendItemContainer extends legend_container.LegendItemContainer {
           children: children,
         );
         // break;
-      */
+    /* todo-01-remove later I think I made a mistake here
       case test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight:
         return container_base.WrappingRow(
           children: children,
         );
+
+     */
     // break;
       case test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         return container_base.Row(

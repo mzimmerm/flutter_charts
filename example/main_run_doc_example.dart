@@ -9,8 +9,10 @@ import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 
+// todo-00-last : replace test enums with factory
 import '../lib/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
+// todo-00-next: rename switch to live
 import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_line_view_model;
 // import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
 
@@ -59,11 +61,17 @@ Widget chartToRun() {
 
   // Create chartOptions defaults here, so we do not repeat it in every example section,
   //   unless specific examples need to override this chartOptions default.
+
+/* todo-00-done
   ChartOptions chartOptions = const ChartOptions(
     legendOptions: LegendOptions(
         legendAndItemLayoutEnum:
         test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
   );
+*/
+
+  ChartOptions chartOptions = const ChartOptions();
+
   chartModel = RandomChartModel.generated(
     chartOptions: chartOptions,
   );

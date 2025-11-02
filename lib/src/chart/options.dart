@@ -134,6 +134,7 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
+    // todo-00-next : REMOVE OR REPLACE OR MOVE TO TEST_OPTIONS. ARE THERE TEST_OPTIONS???
     this.legendAndItemLayoutEnum = test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
   });
 }

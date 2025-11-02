@@ -1,22 +1,29 @@
 import 'package:logger/logger.dart' as logger;
 
-// todo-00-last-remove
-// import '../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
 
 // base libraries
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/root_container.dart';
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/data_container.dart';
+
+import 'package:flutter_charts/src/chart/cartesian/chart_type/line/container/root_container.dart';
+
+// this level: switch/auto_layout/bar
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+
+import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+
+// parent live package
+import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as live_line_view_model;
+
 
 /// Concrete [ChartViewModel] for [LineChart].
 ///
 /// See [ChartViewModel] for help.
-class LineChartViewModel extends ChartViewModel {
+class LineChartViewModel extends live_line_view_model.LineChartViewModel {
   LineChartViewModel({
     required ChartModel chartModel,
     required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
@@ -25,7 +32,7 @@ class LineChartViewModel extends ChartViewModel {
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    chartType: chartType,
+    chartType: chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -37,8 +44,7 @@ class LineChartViewModel extends ChartViewModel {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      // todo-00-done legendContainer: test_legend_container.LegendContainer(
-      legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
+      legendContainer: test_legend_container.LegendContainer(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

@@ -27,8 +27,8 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
-import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as switch_line_view_model;
-import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as switch_bar_view_model;
+import 'package:flutter_charts/test/src/chart/cartesian/view_model/line/line_view_model.dart' as test_line_view_model;
+import 'package:flutter_charts/test/src/chart/cartesian/view_model/bar/bar_view_model.dart' as test_bar_view_model;
 
 
 /// Test app for use in tests and integration tests in `flutter_charts`.
@@ -1115,7 +1115,7 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-         ChartViewModel lineChartViewModel = switch_line_view_model.LineChartViewModel(
+         ChartViewModel lineChartViewModel = test_line_view_model.LineChartViewModel(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,
@@ -1131,7 +1131,7 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        ChartViewModel barChartViewModel = switch_bar_view_model.BarChartViewModel(
+        ChartViewModel barChartViewModel = test_bar_view_model.BarChartViewModel(
           chartModel: chartModel,
           chartType: chartType,
           chartOrientation: chartOrientation,

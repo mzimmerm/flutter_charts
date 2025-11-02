@@ -16,6 +16,7 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
+// todo-00-last-remove
 import '../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
 
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
@@ -56,7 +57,7 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
 
   /// Returns a LegendContainer with the described layout of
   /// legend items and each legend item.
-  factory LegendContainer.legendIsRowStartTightItemIsRowStartTightDefault({
+  factory LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault({
     required view_model.ChartViewModel chartViewModel,
   }) {
     return _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault(chartViewModel: chartViewModel);
@@ -158,9 +159,9 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
 
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
     var children = _createLegendItemContainers(chartViewModel, labelStyle, options);
-    container_base.BoxContainer legendChildLayouter = createLegendChildrenLayouterForSpecifiedExampleEnumOption(children);
+    container_base.BoxContainer legendChildrenLayouter = createLegendChildrenLayouterForSpecifiedExampleEnumOption(children);
 
-    return [legendChildLayouter];
+    return [legendChildrenLayouter];
   }
 
   /// Builds the legend container contents below self,

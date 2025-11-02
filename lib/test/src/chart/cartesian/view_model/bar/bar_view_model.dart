@@ -1,25 +1,24 @@
 import 'package:logger/logger.dart' as logger;
 
-// todo-00-last-remove
-//import '../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
 
+import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 
 // base libraries
-import 'package:flutter_charts/src/chart/model/data_model.dart';
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/root_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/model/data_model.dart';
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/container/data_container.dart';
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
 
-// todo-00-next : add tests for live legends
+// parent live package
+import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as live_bar_view_model;
 
 /// Concrete [ChartViewModel] for [BarChart].
 ///
 /// See [ChartViewModel] for help.
-class BarChartViewModel extends ChartViewModel {
+class BarChartViewModel extends live_bar_view_model.BarChartViewModel {
   BarChartViewModel({
     required ChartModel chartModel,
     required ChartType chartType,
@@ -40,8 +39,7 @@ class BarChartViewModel extends ChartViewModel {
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainer(
-      // todo-00-done: legendContainer: test_legend_container.LegendContainer(
-      legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
+      legendContainer: test_legend_container.LegendContainer(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

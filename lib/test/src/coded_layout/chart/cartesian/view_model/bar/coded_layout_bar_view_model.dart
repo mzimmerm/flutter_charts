@@ -1,23 +1,24 @@
 import 'package:logger/logger.dart' as logger;
 
-// todo-00-last-remove
-// import '../../../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
-
-// base libraries
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel; // auto_layout
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
+// ChartViewModel passed to makeChartRootContainer is from auto_layout
+import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
-// base coded_layout libraries
 import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart';
 import 'package:flutter_charts/src/coded_layout/chart/cartesian/chart_type/bar/root_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/axis_container.dart';
 import 'package:flutter_charts/src/coded_layout/chart/data_container.dart';
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
-class BarChartViewModelCL extends ChartViewModelCL {
+import 'package:flutter_charts/test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+
+// parent live package
+import 'package:flutter_charts/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart' as live_bar_view_model;
+
+
+class BarChartViewModelCL extends live_bar_view_model.BarChartViewModelCL {
   BarChartViewModelCL({
     required ChartModel chartModel,
     required ChartType chartType,
@@ -37,10 +38,7 @@ class BarChartViewModelCL extends ChartViewModelCL {
   @override
   BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainerCL(
-      // todo-00-done: legendContainer: test_legend_container.LegendContainer(chartViewModel: this),
-      legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
-          chartViewModel: this
-      ),
+      legendContainer: test_legend_container.LegendContainer(chartViewModel: this),
       horizontalAxisContainer: HorizontalAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
