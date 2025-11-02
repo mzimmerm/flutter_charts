@@ -129,7 +129,7 @@ tool/test/start_emulator.sh
 #    3. The on-device-running-app      main() in 'test/src/test_main.dart' as device_test_app;' which is the chart app
 
 # todo-00-last-last: put back: for layout in auto_layout coded_layout; do
-for layout in auto_layout; do
+for layout in auto_layout coded_layout; do
 
   case $layout in
     auto_layout)
