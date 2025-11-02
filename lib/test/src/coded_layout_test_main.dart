@@ -16,7 +16,7 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
 import 'package:flutter_charts/src/chart/options.dart';
-import 'package:flutter_charts/src/chart/layout_alternatives/options.dart' as layout_alternative_options show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/src/chart/options.dart' as chart_options show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -572,7 +572,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-                  layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+                  chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
         chartModel = RandomChartModel.generated(
           chartOptions: chartOptions,
@@ -913,7 +913,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: layout_alternative_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
+              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
         );
 
         chartModel = ChartModel(
@@ -927,7 +927,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: layout_alternative_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
+              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
         chartModel = ChartModel(
@@ -941,7 +941,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
+              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
         );
 
         chartModel = ChartModel(
@@ -969,7 +969,7 @@ class ExampleWidgetCreator {
       case ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
+              legendAndItemLayoutEnum: chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
         chartModel = ChartModel(
@@ -984,7 +984,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+              chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
 
         chartModel = ChartModel(
@@ -999,7 +999,7 @@ class ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
-              layout_alternative_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
+              chart_options.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
 
         chartModel = ChartModel(
