@@ -15,9 +15,10 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
-import 'package:flutter_charts/src/chart/options.dart' as options; // todo-00-now : can this be removed????
+import 'package:flutter_charts/src/chart/options.dart' as live_options;
 import 'package:flutter_charts/test/src/chart/options.dart' as test_options; // use test options in test
-import '../src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
+
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
@@ -453,7 +454,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
 
 /// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
 /// which is the source for user-specific font on labels.
-class MyLabelCommonOptions extends options.LabelCommonOptions {
+class MyLabelCommonOptions extends live_options.LabelCommonOptions {
   const MyLabelCommonOptions(
   ) : super ();
   
@@ -635,7 +636,7 @@ class ExampleWidgetCreator {
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
         //   as it does not make sense there.
         chartOptions = const test_options.ChartOptions(
-          dataContainerOptions: options.DataContainerOptions(
+          dataContainerOptions: live_options.DataContainerOptions(
             extendAxisToOriginRequested: false,
           ),
         );
@@ -659,7 +660,7 @@ class ExampleWidgetCreator {
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
         //   as it does not make sense there.
         chartOptions = const test_options.ChartOptions(
-          dataContainerOptions: options.DataContainerOptions(
+          dataContainerOptions: live_options.DataContainerOptions(
             extendAxisToOriginRequested: false,
           ),
         );
@@ -710,7 +711,6 @@ class ExampleWidgetCreator {
         // ```
         // Given such extended class, declare ChartOptions as follows:
         chartOptions = const test_options.ChartOptions(
-          // todo-00-done_added-and-removed: legendOptions: test_options.LegendOptions(),
           labelCommonOptions: MyLabelCommonOptions(),
           );
         // Then proceed as usual
@@ -820,9 +820,9 @@ class ExampleWidgetCreator {
 
       case ExampleEnum.ex52AnimalsBySeasonLogarithmicScale:
         chartOptions = const test_options.ChartOptions(
-          dataContainerOptions: options.DataContainerOptions(
-            yTransform: options.log10,
-            yInverseTransform: options.inverseLog10,
+          dataContainerOptions: live_options.DataContainerOptions(
+            yTransform: live_options.log10,
+            yInverseTransform: live_options.inverseLog10,
           ),
         );
         chartModel = ChartModel(

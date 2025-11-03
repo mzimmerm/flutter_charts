@@ -16,10 +16,6 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
-// todo-00-done
-// import '../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
-
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///
 /// The legend area contains individual legend items represented
@@ -121,18 +117,6 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < chartViewModel.numRows; index++)
-        // todo-00-now : For LegendItemContainer follow LegendContainer: provide a factory for it using a default
-      // todo-00-now : Also look how LegendContaine is instanciated
-        // todo-00-now : also add overrirable  'makeAndInjectLegendItemContainer' and override it in legend_container and test_legend_container with appropriate type (live vs testing)
-
-/*
-        legend_container.LegendItemContainer(
-          chartViewModel: chartViewModel,
-          label: chartViewModel.getLegendItemAt(index).name,
-          labelStyle: labelStyle,
-          indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
-        ),
-*/
         makeInjectedLegendItemContainer(
           chartViewModel: chartViewModel,
           label:  chartViewModel.getLegendItemAt(index).name,

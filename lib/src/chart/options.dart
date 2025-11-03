@@ -10,9 +10,6 @@ import 'package:flutter_charts/src/chart/cartesian/container/container_common.da
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
 
-// test enums. to be removed
-// todo-00-done: import '../../test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
-
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
@@ -122,10 +119,6 @@ class LegendOptions {
 
   final ui.TextAlign legendTextAlign;
 
-  /// Controls the build-in layouts for legends that client can choose
-  /// without requiring code extensions.
-  // todo-00-done :  final test_examples_legend_enums.LegendAndItemLayoutEnum legendAndItemLayoutEnum;
-
   const LegendOptions({
     this.isLegendContainerShown = true,
     this.legendContainerMarginLR = 8.0,
@@ -134,7 +127,6 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
-    // todo-00-done: REMOVE OR REPLACE OR MOVE TO TEST_OPTIONS. ARE THERE TEST_OPTIONS??? : this.legendAndItemLayoutEnum = test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
   });
 }
 

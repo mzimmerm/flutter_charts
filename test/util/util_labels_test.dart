@@ -6,8 +6,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
-// Note: must import coded_layout by absolute path, because we do not want to export it publicly in flutter_charts.dart
-import '../../lib/src/coded_layout/chart/container.dart';
+import 'package:flutter_charts/src/coded_layout/chart/container.dart';
 
 void main() {
   // todo 1 add tests for extrapolating . Add more tests in general

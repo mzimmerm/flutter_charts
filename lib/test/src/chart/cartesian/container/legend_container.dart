@@ -10,8 +10,7 @@ import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' a
 import 'package:flutter_charts/src/chart/options.dart' as live_options;
 import 'package:flutter_charts/test/src/chart/options.dart' as test_options;
 
-// test enums. to be removed todo-00-now remove by extending LegendOptions to TestLegendOptions or similar
-import '../../test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
+import 'package:flutter_charts/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 
 class LegendContainer extends legend_container.LegendContainer {
 

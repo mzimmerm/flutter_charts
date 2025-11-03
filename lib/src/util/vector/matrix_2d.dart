@@ -1,5 +1,5 @@
 import 'vector_2d.dart';
-import '../util_dart.dart' show transposeRowsToColumns;
+import 'package:flutter_charts/src/util/util_dart.dart' show transposeRowsToColumns;
 
 class Matrix2D<T, N extends double> {
   Matrix2D(List<List<T>> fromRows)
