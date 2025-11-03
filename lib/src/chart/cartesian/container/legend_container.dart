@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/container_common.da
     show ChartAreaContainer;
 
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
-import 'package:flutter_charts/src/chart/options.dart' as chart_options;
+import 'package:flutter_charts/src/chart/options.dart' as live_options;
 import 'package:flutter_charts/src/chart/chart_label_container.dart' as chart_label_container;
 
 import 'package:flutter_charts/src/morphic/container/label_container.dart' as label_container;
@@ -16,8 +16,9 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
 import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
-// todo-00-now-remove
-import '../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+// todo-00-done
+// import '../../../../test/src/chart/cartesian/container/legend_container.dart' as test_legend_container;
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
 
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///
@@ -68,15 +69,32 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
   /// created layouter, and return the layouter.
   container_base.BoxContainer createLegendChildrenLayouter(List<container_base.BoxContainer> children);
 
+  /// Abstract method; implementations should create a [LegendItemContainer]
+  /// with specified arguments.
+  ///
+  /// The created [LegendItemContainer] is used (injected)
+  /// by [_createLegendItemContainers] as a child of this [LegendContainer].
+  /// The child describes one legend item (rectangular colored indicator
+  /// and a name) for one series of data.
+  ///
+  LegendItemContainer makeInjectedLegendItemContainer({
+    required view_model.ChartViewModel chartViewModel,
+    required String label,
+    required label_container.LabelStyle labelStyle,
+    required ui.Paint indicatorPaint,
+    // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
+    required int index,
+  });
+
   /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
   ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
   ///   - the [chart_label_container.ChartLabelContainer] which describes the series.
   ///
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
 
-    chart_options.ChartOptions options = chartViewModel.chartOptions;
+    live_options.ChartOptions options = chartViewModel.chartOptions;
 
-    // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
+    // Initially all [label_container.LabelContainer]s share same text style object from live_options.
     label_container.LabelStyle labelStyle = defaultLabelStyle(options);
 
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
@@ -98,22 +116,35 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
   List<container_base.BoxContainer> _createLegendItemContainers(
     view_model.ChartViewModel chartViewModel,
     label_container.LabelStyle labelStyle,
-    chart_options.ChartOptions options,
+    live_options.ChartOptions options,
   ) {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < chartViewModel.numRows; index++)
-        test_legend_container.LegendItemContainer(
+        // todo-00-now : For LegendItemContainer follow LegendContainer: provide a factory for it using a default
+      // todo-00-now : Also look how LegendContaine is instanciated
+        // todo-00-now : also add overrirable  'makeAndInjectLegendItemContainer' and override it in legend_container and test_legend_container with appropriate type (live vs testing)
+
+/*
+        legend_container.LegendItemContainer(
           chartViewModel: chartViewModel,
           label: chartViewModel.getLegendItemAt(index).name,
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
         ),
+*/
+        makeInjectedLegendItemContainer(
+          chartViewModel: chartViewModel,
+          label:  chartViewModel.getLegendItemAt(index).name,
+          labelStyle: labelStyle,
+          indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
+          index: index,
+      ),
     ];
   }
 
-  label_container.LabelStyle defaultLabelStyle(chart_options.ChartOptions options) {
-    // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
+  label_container.LabelStyle defaultLabelStyle(live_options.ChartOptions options) {
+    // Initially all [label_container.LabelContainer]s share same text style object from options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
       textStyle: options.labelCommonOptions.labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
@@ -141,9 +172,9 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
   }
 }
 
-/// Constructs legend container with specific layout.
-class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault
-    extends LegendContainer {
+/// Private legend container with specific layout, returned from
+/// abstract factory on [LegendContainer].
+class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault extends LegendContainer {
 
   _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault({
     required super.chartViewModel,
@@ -160,6 +191,23 @@ class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault
     );
   }
 
+  /// Implements the creation of the [LegendItemContainer].
+  @override
+  LegendItemContainer makeInjectedLegendItemContainer({
+    required view_model.ChartViewModel chartViewModel,
+    required String label,
+    required label_container.LabelStyle labelStyle,
+    required ui.Paint indicatorPaint,
+    required int index,
+    // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
+  }) {
+    return _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault(
+      chartViewModel: chartViewModel,
+      label: chartViewModel.getLegendItemAt(index).name,
+      labelStyle: labelStyle,
+      indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
+    );
+  }
 }
 
 /// Represents one item of the legend:  The rectangle for the series color
@@ -294,6 +342,31 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
         label,
       ];
     }
+  }
+
+}
+
+/// Private legend item container with specific layout, returned from
+/// abstract factory on [LegendContainer].
+class _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault extends LegendItemContainer {
+
+  _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault({
+    required super.chartViewModel,
+    required super.label,
+    required super.labelStyle,
+    required super.indicatorPaint,
+    // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
+  });
+
+  @override
+  container_base.BoxContainer createLegendItemChildrenLayouter(
+      List<container_base.BoxContainer> children) {
+
+    return container_base.Row(
+      mainAxisAlign: Align.start,
+      mainAxisPacking: Packing.tight,
+      children: children,
+    );
   }
 
 }

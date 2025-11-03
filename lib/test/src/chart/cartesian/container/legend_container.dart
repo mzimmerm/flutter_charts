@@ -7,7 +7,8 @@ import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.da
 
 import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' as view_model;
-import 'package:flutter_charts/src/chart/options.dart' as chart_options;
+import 'package:flutter_charts/src/chart/options.dart' as live_options;
+import 'package:flutter_charts/test/src/chart/options.dart' as test_options;
 
 // test enums. to be removed todo-00-now remove by extending LegendOptions to TestLegendOptions or similar
 import '../../test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
@@ -22,9 +23,10 @@ class LegendContainer extends legend_container.LegendContainer {
 
   @override
   container_base.BoxContainer createLegendChildrenLayouter(List<container_base.BoxContainer> children) {
-    chart_options.ChartOptions options = chartViewModel.chartOptions;
+    live_options.ChartOptions options = chartViewModel.chartOptions;
 
-    switch (options.legendOptions.legendAndItemLayoutEnum) {
+    test_options.LegendOptions testLegendOptions = options.legendOptions as test_options.LegendOptions;
+    switch (testLegendOptions.legendAndItemLayoutEnum) {
       case test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault:
       // LegendOptions default: children created as [LegendItem]s in row which is start tight
         return container_base.Row(
@@ -89,6 +91,26 @@ class LegendContainer extends legend_container.LegendContainer {
 
   }
 
+  /// Implements the creation of the [LegendItemContainer].
+  /// The concrete created [LegendItemContainer] is the test version,
+  /// guided by the [LegendAndItemLayoutEnum].
+  @override
+  LegendItemContainer makeInjectedLegendItemContainer({
+    required view_model.ChartViewModel chartViewModel,
+    required String label,
+    required label_container.LabelStyle labelStyle,
+    required ui.Paint indicatorPaint,
+    required int index,
+    // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
+  }) {
+    return LegendItemContainer(
+      chartViewModel: chartViewModel,
+      label: chartViewModel.getLegendItemAt(index).name,
+      labelStyle: labelStyle,
+      indicatorPaint: (ui.Paint()..color = chartViewModel.getLegendItemAt(index).color),
+    );
+  }
+
 }
 
 class LegendItemContainer extends legend_container.LegendItemContainer {
@@ -108,7 +130,10 @@ class LegendItemContainer extends legend_container.LegendItemContainer {
 
   @override
   container_base.BoxContainer createLegendItemChildrenLayouter(List<container_base.BoxContainer> children) {
-    switch (chartViewModel.chartOptions.legendOptions.legendAndItemLayoutEnum) {
+
+    test_options.LegendOptions testLegendOptions = chartViewModel.chartOptions.legendOptions as test_options.LegendOptions;
+
+    switch (testLegendOptions.legendAndItemLayoutEnum) {
     // **NO** This forcing has been removed, keep historical note:
     //   **IFF* the layouter is the topmost Row or Column (Legend starts with Column or Row),
     //        the passed Packing and Align values are used.

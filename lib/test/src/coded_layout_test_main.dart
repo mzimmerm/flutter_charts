@@ -15,7 +15,8 @@ import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
-import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/chart/options.dart' as options; // todo-00-now : can this be removed????
+import 'package:flutter_charts/test/src/chart/options.dart' as test_options; // use test options in test
 import '../src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 import 'package:flutter_charts/src/chart/model/random_chart_data.dart';
 
@@ -452,7 +453,7 @@ class ExampleHomePageState extends State<ExampleHomePage> {
 
 /// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
 /// which is the source for user-specific font on labels.
-class MyLabelCommonOptions extends LabelCommonOptions {
+class MyLabelCommonOptions extends options.LabelCommonOptions {
   const MyLabelCommonOptions(
   ) : super ();
   
@@ -553,7 +554,7 @@ class ExampleWidgetCreator {
 
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
-    ChartOptions chartOptions = const ChartOptions();
+    test_options.ChartOptions chartOptions = const test_options.ChartOptions();
 
     // Declare a null inputLabelLayoutStrategy.
     // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
@@ -567,12 +568,12 @@ class ExampleWidgetCreator {
     /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleEnumToRun) {
-    // todo-00-now : add tests for live legends
+    // todo-00-next : add tests for live legends
 
       case ExampleEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum:
                   test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
@@ -633,8 +634,8 @@ class ExampleWidgetCreator {
         //   which will request to start Y axis at data minimum.
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
         //   as it does not make sense there.
-        chartOptions = const ChartOptions(
-          dataContainerOptions: DataContainerOptions(
+        chartOptions = const test_options.ChartOptions(
+          dataContainerOptions: options.DataContainerOptions(
             extendAxisToOriginRequested: false,
           ),
         );
@@ -657,8 +658,8 @@ class ExampleWidgetCreator {
         //   which will request to end Y axis at maximum data (as all data negative).
         // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
         //   as it does not make sense there.
-        chartOptions = const ChartOptions(
-          dataContainerOptions: DataContainerOptions(
+        chartOptions = const test_options.ChartOptions(
+          dataContainerOptions: options.DataContainerOptions(
             extendAxisToOriginRequested: false,
           ),
         );
@@ -708,7 +709,8 @@ class ExampleWidgetCreator {
         //      }
         // ```
         // Given such extended class, declare ChartOptions as follows:
-        chartOptions = const ChartOptions(
+        chartOptions = const test_options.ChartOptions(
+          // todo-00-done_added-and-removed: legendOptions: test_options.LegendOptions(),
           labelCommonOptions: MyLabelCommonOptions(),
           );
         // Then proceed as usual
@@ -727,7 +729,7 @@ class ExampleWidgetCreator {
         break;
       case ExampleEnum.ex35AnimalsBySeasonNoLabelsShown:
         // Set chart options to show no labels
-        chartOptions = const ChartOptions.noLabels();
+        chartOptions = const test_options.ChartOptions.noLabels();
 
         chartModel = ChartModel(
           dataRows: const [
@@ -817,10 +819,10 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex52AnimalsBySeasonLogarithmicScale:
-        chartOptions = const ChartOptions(
-          dataContainerOptions: DataContainerOptions(
-            yTransform: log10,
-            yInverseTransform: inverseLog10,
+        chartOptions = const test_options.ChartOptions(
+          dataContainerOptions: options.DataContainerOptions(
+            yTransform: options.log10,
+            yInverseTransform: options.inverseLog10,
           ),
         );
         chartModel = ChartModel(
@@ -913,8 +915,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
         );
 
@@ -927,8 +929,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
@@ -941,8 +943,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
         );
 
@@ -955,8 +957,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault),
         );
 
@@ -969,8 +971,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum: test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
@@ -983,8 +985,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum:
               test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
@@ -998,8 +1000,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum:
               test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
@@ -1013,8 +1015,8 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex800EU12CountriesHistoricalPopulation:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
+        chartOptions = const test_options.ChartOptions(
+          legendOptions: test_options.LegendOptions(
               legendAndItemLayoutEnum:
               test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsWrappingRowItemIsRowStartTight),
         );
