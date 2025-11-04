@@ -16,8 +16,8 @@
     12. [ex35AnimalsBySeasonNoLabelsShown\_barChart ](#org7a1ade3)
     13. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc6be307)
     14. [ex50StocksWithNegativesWithUserColors\_barChart ](#org91f6516)
-    15. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org77e5f4f)
-    16. [ex52AnimalsBySeasonLogarithmicScale\_barChart ](#org042b202)
+    15. [ex52LogarithmicScale\_lineChart ](#org77e5f4f)
+    16. [ex52LogarithmicScale\_barChart ](#org042b202)
     17. [ex60LabelsIteration1\_barChart ](#orgada2279)
     18. [ex60LabelsIteration2\_barChart ](#orgd3771d7)
     19. [ex60LabelsIteration3\_barChart ](#org547dcea)
@@ -92,8 +92,8 @@ To quickly test the code, you can paste the method `chartToRun()` into the sampl
 <tr>
 <td class="org-left"><a href="#orgd962a15"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#org6246d9c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org673ceb3"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org807928e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org673ceb3"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52LogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org807928e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52LogarithmicScale_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
@@ -807,7 +807,7 @@ Result
 
 <a id="org77e5f4f"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_lineChart <a id="org673ceb3"></a>
+## ex52LogarithmicScale\_lineChart <a id="org673ceb3"></a>
 
 Code
 
@@ -848,12 +848,12 @@ Code
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52LogarithmicScale_lineChart.png "Line Chart caption")
 
 
 <a id="org042b202"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_barChart <a id="org807928e"></a>
+## ex52LogarithmicScale\_barChart <a id="org807928e"></a>
 
 Code
 
@@ -894,7 +894,7 @@ Code
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52LogarithmicScale_barChart.png "Line Chart caption")
 
 
 <a id="orgada2279"></a>

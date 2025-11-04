@@ -70,7 +70,7 @@ enum ExampleEnum {
   ex35AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
-  ex52AnimalsBySeasonLogarithmicScale,
+  ex52LogarithmicScale,
   ex60LabelsIteration1,
   ex60LabelsIteration2,
   ex60LabelsIteration3,
@@ -186,8 +186,8 @@ class ExampleDescriptor {
     //
     const Tuple2(ExampleEnum.ex50StocksWithNegativesWithUserColors, ChartType.barChart),
     //
-    const Tuple2(ExampleEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.lineChart),
-    const Tuple2(ExampleEnum.ex52AnimalsBySeasonLogarithmicScale, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex52LogarithmicScale, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex52LogarithmicScale, ChartType.barChart),
     //
     const Tuple2(ExampleEnum.ex60LabelsIteration1, ChartType.barChart),
     //
@@ -477,8 +477,8 @@ class ExampleDescriptor {
     // ex50 : tests user defined colors on series
     'ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter',
     // ex52 : tests logarithmic scale - no sense to stack
-    'ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter',
-    'ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter',
+    'ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter',
+    'ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter',
     // ex60 : tests labels iteration, only first iteration works
     'ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter',
     // ex70 : tests legend layout

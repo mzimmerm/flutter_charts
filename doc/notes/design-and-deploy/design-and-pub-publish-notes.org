@@ -1988,8 +1988,8 @@ mv ex35AnimalsBySeasonNoLabelsShown_barChart.png                                
 mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png                                                                                              ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png                                                                              ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex50StocksWithNegativesWithUserColors_barChart.png                                                                                          ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_barChart.png                                                                                            ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png                                                                                           ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex52LogarithmicScale_barChart.png                                                                                            ex52LogarithmicScale_barChart_column_stacked_oldManualLayouter.png
+mv ex52LogarithmicScale_lineChart.png                                                                                           ex52LogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex60LabelsIteration1_barChart.png                                                                                                           ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
 mv ex60LabelsIteration2_barChart.png                                                                                                           ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
 mv ex60LabelsIteration3_barChart.png                                                                                                           ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
@@ -2037,8 +2037,8 @@ mv ex35AnimalsBySeasonNoLabelsShown_barChart.png                                
 mv ex35AnimalsBySeasonNoLabelsShown_lineChart.png                                                                                              ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png                                                                              ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex50StocksWithNegativesWithUserColors_barChart.png                                                                                          ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_barChart.png                                                                                            ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png
-mv ex52AnimalsBySeasonLogarithmicScale_lineChart.png                                                                                           ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
+mv ex52LogarithmicScale_barChart.png                                                                                            ex52LogarithmicScale_barChart_column_stacked_oldManualLayouter.png
+mv ex52LogarithmicScale_lineChart.png                                                                                           ex52LogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png
 mv ex60LabelsIteration1_barChart.png                                                                                                           ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png
 mv ex60LabelsIteration2_barChart.png                                                                                                           ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png
 mv ex60LabelsIteration3_barChart.png                                                                                                           ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png
@@ -2135,8 +2135,8 @@ The steps to do here:
 | ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter.png                                                              | okular integration_test/screenshots_expected/ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter.png                                                                                                                           | ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png                                                            | NO                        | [err  2]  also [ warn 1 ]                                                                                                                                             |
 | ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter.png                                                              | okular integration_test/screenshots_expected/ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter.png                                                                                                                           | ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png                                                            | NO                        | [err  2]  also [ warn 1 ]                                                                                                                                             |
 | ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png                                                              | okular integration_test/screenshots_expected/ex60LabelsIteration1_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png                                                                                                                           | ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png                                                              | OK                        | [warn 1]                                                                                                                                                              |
-| ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               | okular integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                                                                             | ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               | OK                        | [warn 2] in new, long label 1000000000 is wrapped, maybe desider, also [warn 1]                                                                                       |
-| ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           | okular integration_test/screenshots_expected/ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                                                                     | ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           | OK                        | [warn 1] also [warn 2]                                                                                                                                                |
+| ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               | okular integration_test/screenshots_expected/ex52LogarithmicScale_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                                                                             | ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               | OK                        | [warn 2] in new, long label 1000000000 is wrapped, maybe desider, also [warn 1]                                                                                       |
+| ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           | okular integration_test/screenshots_expected/ex52LogarithmicScale_lineChart_column_nonStacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                                                                     | ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           | OK                        | [warn 1] also [warn 2]                                                                                                                                                |
 | ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png                                             | okular integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png                                                                                         | ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png                                             | OK                        | [warn 1]                                                                                                                                                              |
 | ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter.png                              | okular integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter.png                                                           | ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png                            | NO                        | [err  0]                                                                                                                                                              |
 | ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_newAutoLayouter.png                                                  | okular integration_test/screenshots_expected/ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png & okular integration_test/screenshots_tested/ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_newAutoLayouter.png                                                                                                   | ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png                                                | NO                        | [err  3] in new, shows labels, grid, and axes, but it should not. NOte: in old as expected, the non dislayed is NOT layed outin new as expected: legend does not show |
@@ -2166,8 +2166,8 @@ ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter.png
 ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter.png                                                            
 ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter.png                                                            
 ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png                                                              
-ex52AnimalsBySeasonLogarithmicScale_barChart_column_stacked_newAutoLayouter.png                                               
-ex52AnimalsBySeasonLogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png                                           
+ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png
+ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png
 ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png                                             
 ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_oldManualLayouter.png                            
 ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter.png                                                
@@ -2316,7 +2316,7 @@ test/switch/coded_layout/line   LineChartViewModelCL         extends auto_layout
 
 
    
-** DONE 18.1. Ensure test_main.dart copy and replace to coded_layout_test_main.dart is working.
+*** DONE 18.1. Ensure test_main.dart copy and replace to coded_layout_test_main.dart is working.
 
 Fix ~function _duplicate_test_files_from_auto_layout_to_coded_layout()~ in ./tool/test/run_screenshots_create_then_validate_integration_test.sh to copy test_main.dart to coded_layout_test_main.dart and replace appropriate strings to convert the auto_layout test to coded_layout test.
 
@@ -2357,8 +2357,28 @@ mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts
 #+end_example
 
 
-** IN-PROGRESS-NOW Change Legend class : split into multiple factories; remove dependency on the ex enums
+*** DONE 18.2 Change Legend class : split into multiple factories; remove dependency on the ex enums
 
+*** TODO-NOW 18.3 Add a example ex200 with non-test LegendContainer
+
+- [X] rename ex52AnimalsBySeasonLogarithmicScale to ex52LogarithmicScale
+- [ ] ex30AnimalsBySeasonWithLabelLayoutStrategy seems to repeat animal data - FIX and validate
+- [ ] test_main.dart - pull animal data up as default and change examples using them
+- [ ] find other examples that use animal data
+- [ ] test and commit
+- [ ] Add 2 *live* LegendContainer layout factories
+  - [ ] Center - find current test defauls
+  - [ ] WrappingRow (exists: liveLegendIsRowStartTightItemIsRowStartTightDefault) - legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault - DEFAULT
+- [ ] test_main.dart: Add a non-test example ex200AnimalDataWithLiveLegendContainer: 
+  - [ ] add enum with good name to all places:
+    - [ ] add to all switches: In TEST LegendContainer, throw exception, it should not reach ex200
+  - [ ] Use animal data
+  - [ ] Use live LegendContainer default
+  - [ ] Comment as example of using live LegendContainer which does NOT use enums internally (as opposed to test LegendContainer) 
+  - [ ] Add example to allSupportedNew (only one, say nonStacked Bar)
+  - [ ] Add images
+  - [ ] retest and commit
+- 
 
 ** TODO-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
 

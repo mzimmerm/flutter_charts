@@ -44,7 +44,7 @@ See example `ex34OptionsDefiningUserTextStyleOnLabels`.
     - The option `startYAxisAtDataMinRequested` interacts with data transforms such as logarithmic scale, in the sense that the minimum on Y axis is the minimum transformed value.
 
 2. Added logarithmic scale, request #22
-  - Details: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. See the option `DataContainerOptions.yTransform`, and the example `ex52AnimalsBySeasonLogarithmicScale` in README.
+  - Details: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. See the option `DataContainerOptions.yTransform`, and the example `ex52LogarithmicScale` in README.
 
 ## API changes
 

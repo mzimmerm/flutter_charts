@@ -592,21 +592,12 @@ class ExampleWidgetCreator {
           options: chartOptions,
         );
         chartModel = ChartModel(
-          dataRows: const [
-            [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-            [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-            [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-            [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-          ],
-          inputUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
-          legendNames: const [
-            'Spring',
-            'Summer',
-            'Fall',
-            'Winter',
-          ],
+          dataRows: animalsDefaultData,
+          inputUserLabels: animalsXUserLabels,
+          legendNames: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
+
         // chartModel._byRowDefaultLegendColors(); // if not set, called in constructor
         break;
 
@@ -818,7 +809,7 @@ class ExampleWidgetCreator {
         );
         break;
 
-      case ExampleEnum.ex52AnimalsBySeasonLogarithmicScale:
+      case ExampleEnum.ex52LogarithmicScale:
         chartOptions = const test_options.ChartOptions(
           dataContainerOptions: live_options.DataContainerOptions(
             yTransform: live_options.log10,
