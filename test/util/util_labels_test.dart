@@ -12,7 +12,7 @@ void main() {
   // todo 1 add tests for extrapolating . Add more tests in general
 
   test('Range.makeRangeDescriptorWithLabelInfosFromDataYsOnScale', () {
-    // todo-00-now: should this be options from test???
+    // Should this be options from test?
     ChartOptions options = const ChartOptions();
     ChartOrientation chartOrientation = ChartOrientation.column;
     ChartStacking chartStacking = ChartStacking.stacked;

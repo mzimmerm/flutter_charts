@@ -630,7 +630,6 @@ class ExampleWidgetCreator {
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleEnumToRun) {
 
-    // todo-00-next : add tests for live legends
       case ExampleEnum.ex001EuCountriesLegendContainerLive:
       // Example uses live LegendContainer.
         live_options.ChartOptions liveChartOptions = const live_options.ChartOptions();

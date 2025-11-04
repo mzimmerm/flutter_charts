@@ -12,6 +12,9 @@ import 'package:flutter_charts/test/src/chart/options.dart' as test_options;
 
 import 'package:flutter_charts/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
 
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
+import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
+
 class LegendContainer extends legend_container.LegendContainer {
 
   LegendContainer({
@@ -193,6 +196,70 @@ class LegendItemContainer extends legend_container.LegendItemContainer {
           mainAxisPacking: Packing.tight,
           children: children,
         );
+    }
+  }
+
+  /// Returns a  a 2-member list with item indicator and label, each
+  /// wrapped to a layouter defined by
+  /// the passed [doPadIndAndLabel]  and [doAlignIndAndLabel].
+  ///
+  /// Implementation note:
+  /// Invokes [makeItemIndAndLabelBase] to get the raw containers,
+  /// then pads or wraps the raw containers according to
+  /// the passed [doPadIndAndLabel] and [doAlignIndAndLabel].
+  ///
+  /// Context note: Caller wraps the returned containers
+  /// typically in a [container_base.Row] or a [container_base.Column].
+  List<container_base.BoxContainer> makeItemIndAndLabel({
+    bool doPadIndAndLabel = false,
+    bool doAlignIndAndLabel = false,
+  }) {
+    List indRectAndLabel = makeItemIndAndLabelBase();
+    var indRect = indRectAndLabel[0];
+    var label = indRectAndLabel[1];
+
+    if (doPadIndAndLabel) {
+      container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
+        start: 3,
+        top: 10,
+        end: 3,
+        bottom: 20,
+      );
+      return [
+        container_base.Padder(
+          edgePadding: edgePadding,
+          child: indRect,
+        ),
+        container_base.Padder(
+          edgePadding: edgePadding,
+          child: label,
+        ),
+      ];
+    } else if (doAlignIndAndLabel) {
+      return [
+        container_base.Row(
+            children: [
+              container_base.Aligner(
+                childHeightBy: 3,
+                childWidthBy: 1.2,
+                alignment: container_alignment.Alignment.startTop,
+                child: indRect,
+              ),
+              container_base.Aligner(
+                childHeightBy: 5,
+                childWidthBy: 1.2,
+                alignment: container_alignment.Alignment.endBottom,
+                child: label,
+              ),
+            ]
+        )
+      ];
+
+    } else {
+      return [
+        indRect,
+        label,
+      ];
     }
   }
 

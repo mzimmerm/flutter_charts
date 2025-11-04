@@ -14,7 +14,6 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align, Packing;
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart' as container_edge_padding;
-import 'package:flutter_charts/src/morphic/container/container_alignment.dart' as container_alignment;
 
 /// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///
@@ -169,14 +168,7 @@ class _LegendContainerLiveWrappingRow extends LegendContainer {
   container_base.BoxContainer createLegendChildrenLayouter(
       List<container_base.BoxContainer> children) {
 
-    // todo-00-done document
     return container_base.WrappingRow(children: children);
-
-    // return container_base.Row(
-    //   mainAxisAlign: Align.start,
-    //   mainAxisPacking: Packing.tight,
-    //   children: children,
-    // );
   }
 
   /// Implements the creation of the [LegendItemContainer].
@@ -239,7 +231,12 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
     // buildAndReplaceChildrenDefault();
   }
 
-  // todo-00-document
+  /// Creates the hierarchical contents of this [LegendItemContainer]
+  /// wrapped into a single layouter.
+  ///
+  /// The core contents is a series item indicator and a series label.
+  ///
+  /// Result becomes this container single child.
   List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
 
     // children = list [itemInd, label], no pad or align around.
@@ -276,71 +273,6 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
     ];
   }
 
-  /// Returns a  a 2-member list with item indicator and label, each
-  /// wrapped to a layouter defined by
-  /// the passed [doPadIndAndLabel]  and [doAlignIndAndLabel].
-  ///
-  /// Implementation note:
-  /// Invokes [makeItemIndAndLabelBase] to get the raw containers,
-  /// then pads or wraps the raw containers according to
-  /// the passed [doPadIndAndLabel] and [doAlignIndAndLabel].
-  ///
-  /// Context note: Caller wraps the returned containers
-  /// typically in a [container_base.Row] or a [container_base.Column].
-  /// todo-00-last: This is only called in test LegendContainer, and should be moved there.
-  List<container_base.BoxContainer> makeItemIndAndLabel({
-    bool doPadIndAndLabel = false,
-    bool doAlignIndAndLabel = false,
-  }) {
-    List indRectAndLabel = makeItemIndAndLabelBase();
-    var indRect = indRectAndLabel[0];
-    var label = indRectAndLabel[1];
-
-    if (doPadIndAndLabel) {
-      container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
-        start: 3,
-        top: 10,
-        end: 3,
-        bottom: 20,
-      );
-      return [
-        container_base.Padder(
-          edgePadding: edgePadding,
-          child: indRect,
-        ),
-        container_base.Padder(
-          edgePadding: edgePadding,
-          child: label,
-        ),
-      ];
-    } else if (doAlignIndAndLabel) {
-      return [
-        container_base.Row(
-            children: [
-              container_base.Aligner(
-                childHeightBy: 3,
-                childWidthBy: 1.2,
-                alignment: container_alignment.Alignment.startTop,
-                child: indRect,
-              ),
-              container_base.Aligner(
-                childHeightBy: 5,
-                childWidthBy: 1.2,
-                alignment: container_alignment.Alignment.endBottom,
-                child: label,
-              ),
-            ]
-        )
-      ];
-
-    } else {
-      return [
-        indRect,
-        label,
-      ];
-    }
-  }
-
 }
 
 /// Private legend item container with specific layout, returned from
@@ -355,10 +287,10 @@ class _LegendItemContainerLiveRow extends LegendItemContainer {
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
   });
 
+  /// See super.
   @override
   List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
 
-    //////////////// todo-00-now
     // From [makeItemIndAndLabel]
     List indRectAndLabel = makeItemIndAndLabelBase();
     var indRect = indRectAndLabel[0];
@@ -396,19 +328,14 @@ class _LegendItemContainerLiveRow extends LegendItemContainer {
     // return [legendItemChildrenLayouter];
   }
 
+  /// Overriden from parent with exception to verify
+  /// work flow should not reach here, because this class reimplemented the caller,
+  /// [_createChildrenOfLegendItemContainer].
   @override
   container_base.BoxContainer createLegendItemChildrenLayouter(
       List<container_base.BoxContainer> children) {
 
-    // Pad the ContainerLegendItem elements: rectangle and label
-    // todo-00-last should not reach here, this class reimplemented the caller,
-    // [_createChildrenOfLegendItemContainer]. Move this as doc
     throw StateError('should not reach here, this class reimplemented the caller, [_createChildrenOfLegendItemContainer]');
-    //return container_base.Row(
-    //  mainAxisAlign: Align.start,
-    //  mainAxisPacking: Packing.tight,
-    //  children: children,
-    //);
   }
 
 }

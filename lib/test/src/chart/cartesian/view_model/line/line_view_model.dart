@@ -2,7 +2,6 @@ import 'package:logger/logger.dart' as logger;
 
 
 // base libraries
-import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart' as legend_container;
 import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/model/data_model.dart';
