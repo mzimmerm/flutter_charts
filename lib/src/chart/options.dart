@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_charts/src/chart/cartesian/container/container_common.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/options.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/options.dart';
+import 'package:flutter_charts/src/chart/cartesian/container/legend_container.dart';
 
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
@@ -93,6 +94,11 @@ class IterativeLayoutOptions {
   });
 }
 
+/// Holds global options for [LegendContainer].
+///
+/// In the member:
+///   - 'LR' stands for Left and Right (margins, padding).
+///   - 'TB' stands for Top and Bottom (margins, padding).
 @immutable
 class LegendOptions {
   /// Manages showing the legend container on the chart.

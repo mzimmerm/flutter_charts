@@ -34,7 +34,7 @@ class LineChartViewModel extends ChartViewModel {
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
+      legendContainer: legend_container.LegendContainer.wrappingRow(
           chartViewModel: this
       ),
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(

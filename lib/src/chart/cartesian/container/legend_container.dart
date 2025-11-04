@@ -54,10 +54,36 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
 
   /// Returns a LegendContainer with the described layout of
   /// legend items and each legend item.
-  factory LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault({
+  factory LegendContainer.wrappingRow({
     required view_model.ChartViewModel chartViewModel,
   }) {
-    return _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault(chartViewModel: chartViewModel);
+    return _LegendContainerLiveWrappingRow(chartViewModel: chartViewModel);
+  }
+
+  /// Lays out the legend area.
+  ///
+  /// Lays out legend items, one for each data series.
+  @override
+  void layout() {
+    buildAndReplaceChildren();
+    // todo-023 : can we just call super? this appears needed, otherwise not-label results change slightly, but still correct
+    //                we should probably remove this block orderedSkip - but check behavior in debugger, what
+    //                happens to layoutSize, it may never be set?
+    if (orderedSkip) {
+      layoutSize = const ui.Size(0.0, 0.0);
+      return;
+    }
+    // Important: This flips from using layout() on parents to using layout() on children
+    super.layout();
+  }
+
+  /// Builds the legend container contents below self,
+  /// a child [container_base.Row] or [container_base.Column],
+  /// which contains a list of [LegendItemContainer]s,
+  /// created separately in [_createLegendItemContainers].
+  @override
+  void buildAndReplaceChildren() {
+    replaceChildrenWith(_createChildrenOfLegendContainer());
   }
 
   /// Implementations of this abstract method should create a layouter that holds
@@ -100,15 +126,6 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     return [legendChildrenLayouter];
   }
 
-  /// Builds the legend container contents below self,
-  /// a child [container_base.Row] or [container_base.Column],
-  /// which contains a list of [LegendItemContainer]s,
-  /// created separately in [_createLegendItemContainers].
-  @override
-  void buildAndReplaceChildren() {
-    replaceChildrenWith(_createChildrenOfLegendContainer());
-  }
-
   List<container_base.BoxContainer> _createLegendItemContainers(
     view_model.ChartViewModel chartViewModel,
     label_container.LabelStyle labelStyle,
@@ -138,29 +155,13 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     return labelStyle;
   }
 
-  /// Lays out the legend area.
-  ///
-  /// Lays out legend items, one for each data series.
-  @override
-  void layout() {
-    buildAndReplaceChildren();
-    // todo-023 : can we just call super? this appears needed, otherwise not-label results change slightly, but still correct
-    //                we should probably remove this block orderedSkip - but check behavior in debugger, what
-    //                happens to layoutSize, it may never be set?
-    if (orderedSkip) {
-      layoutSize = const ui.Size(0.0, 0.0);
-      return;
-    }
-    // Important: This flips from using layout() on parents to using layout() on children
-    super.layout();
-  }
 }
 
 /// Private legend container with specific layout, returned from
 /// abstract factory on [LegendContainer].
-class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault extends LegendContainer {
+class _LegendContainerLiveWrappingRow extends LegendContainer {
 
-  _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault({
+  _LegendContainerLiveWrappingRow({
     required super.chartViewModel,
   });
 
@@ -168,11 +169,14 @@ class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault extends L
   container_base.BoxContainer createLegendChildrenLayouter(
       List<container_base.BoxContainer> children) {
 
-    return container_base.Row(
-      mainAxisAlign: Align.start,
-      mainAxisPacking: Packing.tight,
-      children: children,
-    );
+    // todo-00-done document
+    return container_base.WrappingRow(children: children);
+
+    // return container_base.Row(
+    //   mainAxisAlign: Align.start,
+    //   mainAxisPacking: Packing.tight,
+    //   children: children,
+    // );
   }
 
   /// Implements the creation of the [LegendItemContainer].
@@ -185,7 +189,7 @@ class _LegendContainer_legendIsRowStartTightItemIsRowStartTightDefault extends L
     required int index,
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. chart description
   }) {
-    return _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault(
+    return _LegendItemContainerLiveRow(
       chartViewModel: chartViewModel,
       label: chartViewModel.getLegendItemAt(index).name,
       labelStyle: labelStyle,
@@ -235,6 +239,7 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
     // buildAndReplaceChildrenDefault();
   }
 
+  // todo-00-document
   List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
 
     // children = list [itemInd, label], no pad or align around.
@@ -249,10 +254,11 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
   /// created layouter, and return the layouter.
   container_base.BoxContainer createLegendItemChildrenLayouter(List<container_base.BoxContainer> children);
 
-  /// Constructs the list with the legend indicator and legend label, which caller wraps
-  /// in [RowLayout].
+  /// Constructs the list with the legend indicator and legend label,
+  /// which the caller of this method should wrap in a layout such
+  /// as [RowLayout].
   ///
-  /// Publicly visible only to allow test extensions.
+  /// Note: Publicly visible only to allow test extensions.
   List<container_base.BoxContainer> makeItemIndAndLabelBase() {
     var indRect = LegendIndicatorRectContainer(
       chartViewModel: chartViewModel,
@@ -270,11 +276,18 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
     ];
   }
 
-  /// Returns a  a 2-member list with item indicator and label which caller wraps
-  /// typically in a [container_base.Row] or a [container_base.Column]
+  /// Returns a  a 2-member list with item indicator and label, each
+  /// wrapped to a layouter defined by
+  /// the passed [doPadIndAndLabel]  and [doAlignIndAndLabel].
   ///
-  /// Invokes super to get the containers, then pads or wraps them
-  /// according to passed [doPadIndAndLabel] and [doAlignIndAndLabel].
+  /// Implementation note:
+  /// Invokes [makeItemIndAndLabelBase] to get the raw containers,
+  /// then pads or wraps the raw containers according to
+  /// the passed [doPadIndAndLabel] and [doAlignIndAndLabel].
+  ///
+  /// Context note: Caller wraps the returned containers
+  /// typically in a [container_base.Row] or a [container_base.Column].
+  /// todo-00-last: This is only called in test LegendContainer, and should be moved there.
   List<container_base.BoxContainer> makeItemIndAndLabel({
     bool doPadIndAndLabel = false,
     bool doAlignIndAndLabel = false,
@@ -332,9 +345,9 @@ abstract class LegendItemContainer extends container_common.ChartAreaContainer {
 
 /// Private legend item container with specific layout, returned from
 /// abstract factory on [LegendContainer].
-class _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault extends LegendItemContainer {
+class _LegendItemContainerLiveRow extends LegendItemContainer {
 
-  _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault({
+  _LegendItemContainerLiveRow({
     required super.chartViewModel,
     required super.label,
     required super.labelStyle,
@@ -343,14 +356,59 @@ class _LegendItemContainer_legendIsRowStartTightItemIsRowStartTightDefault exten
   });
 
   @override
+  List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
+
+    //////////////// todo-00-now
+    // From [makeItemIndAndLabel]
+    List indRectAndLabel = makeItemIndAndLabelBase();
+    var indRect = indRectAndLabel[0];
+    var label = indRectAndLabel[1];
+
+    container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
+      start: 2,
+      top: 2,
+      end: 2,
+      bottom: 2,
+    );
+
+    return [
+      container_base.Row(
+        // = createLegendItemChildrenLayouter
+        mainAxisAlign: Align.start,
+        mainAxisPacking: Packing.tight,
+        children: [
+          container_base.Padder(
+            edgePadding: edgePadding,
+            child: indRect,
+          ),
+          container_base.Padder(
+            edgePadding: edgePadding,
+            child: label,
+          ),
+        ],
+      )
+    ];
+    ////////////////
+    // // children = list [itemInd, label], no pad or align around.
+    // var children = makeItemIndAndLabelBase();
+    // container_base.BoxContainer legendItemChildrenLayouter = createLegendItemChildrenLayouter(children);
+    //
+    // return [legendItemChildrenLayouter];
+  }
+
+  @override
   container_base.BoxContainer createLegendItemChildrenLayouter(
       List<container_base.BoxContainer> children) {
 
-    return container_base.Row(
-      mainAxisAlign: Align.start,
-      mainAxisPacking: Packing.tight,
-      children: children,
-    );
+    // Pad the ContainerLegendItem elements: rectangle and label
+    // todo-00-last should not reach here, this class reimplemented the caller,
+    // [_createChildrenOfLegendItemContainer]. Move this as doc
+    throw StateError('should not reach here, this class reimplemented the caller, [_createChildrenOfLegendItemContainer]');
+    //return container_base.Row(
+    //  mainAxisAlign: Align.start,
+    //  mainAxisPacking: Packing.tight,
+    //  children: children,
+    //);
   }
 
 }

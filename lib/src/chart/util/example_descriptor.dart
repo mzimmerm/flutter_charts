@@ -61,6 +61,7 @@ void main(List<String> args) {
 
 /// Describes the full set of charts shown in examples or integration tests.
 enum ExampleEnum {
+  ex001AnimalsBySeasonLegendContainerLive,
   ex10RandomData,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
   ex31SomeNegativeValues,
@@ -162,6 +163,9 @@ class ExampleDescriptor {
   }
 
   static final List<Tuple2<ExampleEnum, ChartType>> _allowed = [
+    //
+    const Tuple2(ExampleEnum.ex001AnimalsBySeasonLegendContainerLive, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex001AnimalsBySeasonLegendContainerLive, ChartType.barChart),
     //
     const Tuple2(ExampleEnum.ex10RandomData, ChartType.lineChart),
     const Tuple2(ExampleEnum.ex10RandomData, ChartType.barChart),
@@ -465,6 +469,8 @@ class ExampleDescriptor {
     'ex800_lineChart_*_nonStacked_newAutoLayouter', // EU countries pos data - legendIsWrappingRowItemIsRowStartTight
     'ex800_barChart_*_*_newAutoLayouter',
     // individual
+    // ex001 : the only live test (uses ChartViewModels which use Live LegendContainer)
+    'ex001AnimalsBySeasonLegendContainerLive_lineChart_column_nonStacked_newAutoLayouter',
     // ex30 : tests explicit LabelLayoutStrategy, but does not add anything new, as the LabelLayoutStrategy is default anyway
     'ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_column_nonStacked_newAutoLayouter',
     // ex31 : group

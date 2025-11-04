@@ -29,6 +29,8 @@ import 'package:flutter_charts/src/chart/util/example_descriptor.dart'
     show ExampleDescriptor, ExampleEnum, ExampleMainAndTestSupport;
 
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_model.dart' as live_line_view_model;
+import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart' as live_bar_view_model;
 import 'package:flutter_charts/test/src/chart/cartesian/view_model/line/line_view_model.dart' as test_line_view_model;
 import 'package:flutter_charts/test/src/chart/cartesian/view_model/bar/bar_view_model.dart' as test_bar_view_model;
 
@@ -563,13 +565,30 @@ class ExampleWidgetCreator {
     // If inputLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
     //   a DefaultIterativeLabelLayoutStrategy.
     LabelLayoutStrategy? inputLabelLayoutStrategy;
-    
+
+    /// Distinguish if example is 'live', that is, uses nothing
+    /// from test (in particular LegendContainer via the ChartViewModel)
+    bool isLive = false;
+
+
     /// Main switch that includes code to all examples.
     /// The example which [ExampleEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
     /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleEnumToRun) {
+
     // todo-00-next : add tests for live legends
+      case ExampleEnum.ex001AnimalsBySeasonLegendContainerLive:
+      // Example uses live LegendContainer.
+        live_options.ChartOptions liveChartOptions = const live_options.ChartOptions();
+        chartModel = ChartModel(
+          dataRows: animalsDefaultData,
+          inputUserLabels: animalsXUserLabels,
+          legendNames: animalsDataRowsLegends,
+          chartOptions: liveChartOptions,
+        );
+        isLive = true;
+        break;
 
       case ExampleEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
@@ -1110,14 +1129,24 @@ class ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-         ChartViewModel lineChartViewModel = test_line_view_model.LineChartViewModel(
-          chartModel: chartModel,
-          chartType: chartType,
-          chartOrientation: chartOrientation,
-          chartStacking: chartStacking,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        );
-
+        ChartViewModel lineChartViewModel;
+        if (isLive) {
+          lineChartViewModel = live_line_view_model.LineChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        } else {
+          lineChartViewModel = test_line_view_model.LineChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        }
         LineChart lineChart = LineChart(
           // [lineChartViewModel] makes instance of [LineChartRootContainer]
           chartViewModel: lineChartViewModel,
@@ -1126,13 +1155,24 @@ class ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        ChartViewModel barChartViewModel = test_bar_view_model.BarChartViewModel(
-          chartModel: chartModel,
-          chartType: chartType,
-          chartOrientation: chartOrientation,
-          chartStacking: chartStacking,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        );
+        ChartViewModel barChartViewModel;
+        if (isLive) {
+          barChartViewModel = live_bar_view_model.BarChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        } else {
+          barChartViewModel = test_bar_view_model.BarChartViewModel(
+            chartModel: chartModel,
+            chartType: chartType,
+            chartOrientation: chartOrientation,
+            chartStacking: chartStacking,
+            inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+          );
+        }
 
         BarChart barChart = BarChart(
           // [barChartViewModel] makes instance of [BarChartRootContainer]

@@ -34,7 +34,7 @@ class BarChartViewModelCL extends ChartViewModelCL {
   @override
   BarChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return BarChartRootContainerCL(
-      legendContainer: legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault(
+      legendContainer: legend_container.LegendContainer.wrappingRow(
           chartViewModel: this
       ),
       horizontalAxisContainer: HorizontalAxisContainerCL(

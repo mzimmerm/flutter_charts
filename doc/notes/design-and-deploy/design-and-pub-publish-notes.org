@@ -2362,15 +2362,17 @@ mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts
 *** TODO-NOW 18.3 Add a example ex200 with non-test LegendContainer
 
 - [X] rename ex52AnimalsBySeasonLogarithmicScale to ex52LogarithmicScale
-- [ ] ex30AnimalsBySeasonWithLabelLayoutStrategy seems to repeat animal data - FIX and validate
-- [ ] test_main.dart - pull animal data up as default and change examples using them
-- [ ] find other examples that use animal data
-- [ ] test and commit
+- [X] ex30AnimalsBySeasonWithLabelLayoutStrategy seems to repeat animal data - FIX and validate
+- [X] test_main.dart - pull animal data up as default and change examples using them
+- [X] find other examples that use animal data
+- [X] test and commit
 - [ ] Add 2 *live* LegendContainer layout factories
-  - [ ] Center - find current test defauls
+  - [ ] Center - find current test defauls legendIsRowStartTightItemIsRowStartTightDefault
+  - [ ] Change name legendIsRowStartTightItemIsRowStartTightDefault to legendIsRowStartTightItemIsRowStartTight
+  - [ ] Add 
   - [ ] WrappingRow (exists: liveLegendIsRowStartTightItemIsRowStartTightDefault) - legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault - DEFAULT
-- [ ] test_main.dart: Add a non-test example ex200AnimalDataWithLiveLegendContainer: 
-  - [ ] add enum with good name to all places:
+- [ ] test_main.dart: Add a non-test example ex001AnimalsBySeasonLiveLegendContainer: 
+  - [ ] add enum to all switches:
     - [ ] add to all switches: In TEST LegendContainer, throw exception, it should not reach ex200
   - [ ] Use animal data
   - [ ] Use live LegendContainer default
