@@ -15,7 +15,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/axislabels_axisline
 import 'package:flutter_charts/src/morphic/container/label_container.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
-    show LayoutableBox, BoxContainer;
+    show LayoutableBox, BoxContainer, ParentOrderedSkip;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/util/util_dart.dart';
 import 'package:flutter_charts/src/chart/cartesian/view_model/label_model.dart';
@@ -339,7 +339,10 @@ class HorizontalAxisContainerCL
       inputLabelContainer.layout();
 
       // We only know if parent ordered skip after layout (because some size is too large)
-      inputLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
+      // todo-00-done: inputLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
+      // todo-00-now
+      ParentOrderedSkip parentOrderedSkip = _isLabelOnIndexShown(xIndex) ? ParentOrderedSkip.skipNone() : ParentOrderedSkip.skipLayoutAndPaint();
+      inputLabelContainer.applyParentOrderedSkip(this, parentOrderedSkip);
 
       // Core of X layout calcs - get the layed out label size,
       //   then find xTickX - the X middle of the label bounding rectangle in hierarchy-parent [HorizontalAxisContainer]
@@ -454,7 +457,8 @@ class HorizontalAxisContainerCL
 
   void _paintLabelContainers(canvas) {
     for (AxisLabelContainerCL  inputLabelContainer in inputLabelContainerCLs) {
-      if (!inputLabelContainer.orderedSkip) inputLabelContainer.paint(canvas);
+      // todo-00-done: if (!inputLabelContainer.orderedSkip) inputLabelContainer.paint(canvas);
+      if (!inputLabelContainer.orderedSkip.isSkipPaint) inputLabelContainer.paint(canvas);
     }
   }
 
@@ -481,7 +485,8 @@ class HorizontalAxisContainerCL
   @override
   bool labelsOverlap() {
     if (inputLabelContainerCLs.any((axisLabelContainer) =>
-    !axisLabelContainer.orderedSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+    // todo-00-done : !axisLabelContainer.orderedSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+      !axisLabelContainer.orderedSkip.isSkipLayout && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       return true;
     }
 

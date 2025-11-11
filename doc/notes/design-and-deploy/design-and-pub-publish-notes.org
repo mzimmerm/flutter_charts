@@ -2359,36 +2359,256 @@ mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts
 
 *** DONE 18.2 Change Legend class : split into multiple factories; remove dependency on the ex enums
 
-*** TODO-NOW 18.3 Add a example ex200 with non-test LegendContainer
+*** DONE 18.3 Add a example ex001 with non-test LegendContainer
 
 - [X] rename ex52AnimalsBySeasonLogarithmicScale to ex52LogarithmicScale
 - [X] ex30AnimalsBySeasonWithLabelLayoutStrategy seems to repeat animal data - FIX and validate
 - [X] test_main.dart - pull animal data up as default and change examples using them
 - [X] find other examples that use animal data
 - [X] test and commit
-- [ ] Add 2 *live* LegendContainer layout factories
-  - [ ] Center - find current test defauls legendIsRowStartTightItemIsRowStartTightDefault
-  - [ ] Change name legendIsRowStartTightItemIsRowStartTightDefault to legendIsRowStartTightItemIsRowStartTight
-  - [ ] Add 
-  - [ ] WrappingRow (exists: liveLegendIsRowStartTightItemIsRowStartTightDefault) - legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault - DEFAULT
-- [ ] test_main.dart: Add a non-test example ex001AnimalsBySeasonLiveLegendContainer: 
-  - [ ] add enum to all switches:
-    - [ ] add to all switches: In TEST LegendContainer, throw exception, it should not reach ex200
-  - [ ] Use animal data
-  - [ ] Use live LegendContainer default
-  - [ ] Comment as example of using live LegendContainer which does NOT use enums internally (as opposed to test LegendContainer) 
-  - [ ] Add example to allSupportedNew (only one, say nonStacked Bar)
-  - [ ] Add images
-  - [ ] retest and commit
+- [X] Add 2 *live* LegendContainer layout factories
+  - [X] Center - find current test defauls legendIsRowStartTightItemIsRowStartTightDefault
+  - [X] Change name legendIsRowStartTightItemIsRowStartTightDefault to legendIsRowStartTightItemIsRowStartTight
+  - [X] Add 
+  - [X] WrappingRow (exists: liveLegendIsRowStartTightItemIsRowStartTightDefault) - legend_container.LegendContainer.liveLegendIsRowStartTightItemIsRowStartTightDefault - DEFAULT
+- [X] test_main.dart: Add a non-test example ex001AnimalsBySeasonLiveLegendContainer: 
+  - [X] add enum to all switches:
+    - [X] add to all switches: In TEST LegendContainer, throw exception, it should not reach ex200
+  - [X] Use animal data
+  - [X] Use live LegendContainer default
+  - [X] Comment as example of using live LegendContainer which does NOT use enums internally (as opposed to test LegendContainer) 
+  - [X] Add example to allSupportedNew (only one, say nonStacked Bar)
+  - [X] Add images
+  - [X] retest and commit
 - 
 
-** TODO-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
+** IN-PROGRESS-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
 
 This todo is also documented in container_layouter_base.dart
 
+Study code around current ParentOrderedSkip - there is some, even in new layout. What does it do? It uses various variable names in Options containing 'isShown', which are then used in 'layout', 'applyParentOffset' and 'paint'. If isShown is false, those methods are no-op - they return before they can do anything.
 
-- [X] Go over code that runs either coded_layout or auto_layout and document how examples are found and run - also which layout they use etc.
-- [ ] add class ParentOrderedSkip
+Analyzes of current code (this includes the new layout BUT active use of 'isShown' in new layout is ONLY in ~LegendContainer~ *constructor*, which calls ~applyParentOrderedSkip~
+
+  - [ ] Options set 'isShown' with various naming changes on:
+    - [ ] LegendOptions.isLegendContainerShown
+    - [ ] HorizontalAxisContainerOptions.isShown
+    - [ ] VerticalAxisContainerOptions.isShown
+    - [ ] VerticalAxisContainerOptions.isInputGridLinesShown
+  - [ ] The options are used in coded_layout examples to convert to no-op all of:
+    - [ ] ~layout~
+    - [ ] ~applyParentOffset~
+    - [ ] ~paint~
+  - [ ] There is ONE *auto_layout* container that sets parentOrderedSkip:
+    - [ ] ~LegendContainer constructor~, there is this code:
+      #+begin_src java
+        if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
+          applyParentOrderedSkip(this, true); // method defined on mixin BoxLayouter
+          // BoxLayouter.applyParentOrderedSkip controls the BoxLayouter._orderedSkip
+        }
+      #+end_src
+  - [ ] ~BoxLayouter._orderedSkip~ is a field which 
+
+
+
+  #+begin_src artist
+
+
+     +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
+     | abstract class LayoutableBox                                                                |       |abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager                                           |
+     |   abstract: everything                                                                      |       |  abstract:                                                                                                                  |
+     |   - ui.Size get layoutSize;                                                                 |       |    - void buildAndReplaceChildren();                                                                                        |
+     |   - ui.Offset get offset;                                                                   |       |    - BoxContainer? _root;                                                                                                   |
+     |   - void applyParentOffset(LayoutableBox caller, ui.Offset offset);                         |       |  concrete:                                                                                                                  |
+     |   - void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);                    |       |    - @override                                                                                                              |
+     |   - void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints); |       |    - List<Keyed> get keyedMembers => _children;                                                                             |
+     |   - void layout();                                                                          |       |    - final List<BoxContainer> __children = [];                                                                              |
+     |                                                                                             |       |    - List<BoxContainer> get _children => List.from(__children);                                                             |
+     |                                                                                             |       |    - void _ensureKeySet(BoxContainer thisContainer, ContainerKey? key) {..}                                                 |
+     |                                                                                             |       |    - void _forceContainerToParentChildren(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {..}    |
+     |                                                                                             |       |    - void addChildren(List<BoxContainer> addedChildren) {..}                                                                |
+     |                                                                                             |       |    - void replaceChildrenWith(List<BoxContainer> newChildren) {..}                                                          |
+     |                                                                                             |       |    - void buildAndReplaceChildrenDefault() {..empty}                                                                        |
+     |                                                                                             |       |    - bool get isRoot => _parent == null;                                                                                    |
+     |                                                                                             |       |    - bool get isLeaf => __children.isEmpty;                                                                                 |
+     |                                                                                             |       |    - BoxContainer get root {..}                                                                                             |
+     |                                                                                             |       |    - __propagateRootCacheUp(BoxContainer cachedRoot) {..}                                                                   |
+     |                                                                                             |       |                                                                                                                             |
+     |                                                                                             |       |                                                                                                                             |
+     +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
+                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                        
+     +--------------------------------------------------------------------------------------+              +----------------------------------------------------------------------------------------+
+     | mixin BoxLayouter implements LayoutableBox                                           |              | abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter             |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     |                                                                                      |              |                                                                                        |
+     +--------------------------------------------------------------------------------------+              +----------------------------------------------------------------------------------------+
+                                                                                                           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #+end_src
+
+- abstract class ~LayoutableBox~ *top of hierarchy*
+  - mixin ~BoxLayouter~ implements LayoutableBox                                       // *BoxLayouter  is LayoutableBox BUT RE-IMPLEMENTS*
+  - abstract class ~BoxContainer~ extends ~BoxContainerHierarchy~ with ~LayoutableBox~ // *BoxContainer is LayoutableBox AND BoxContainerHierarchy*
+  - 
+
+
+Why NOT:
+
+class ~BoxLayouter~ extends ~LayoutableBox~ *AND* class ~BoxContainer~ extends ~LayoutableBox~??? *that way BoxLayouter contains all ~LayoutableBox~ implementation AND ~BoxContainer~ also contains ~LayoutableBox~ implementation* ???
+
+*NOT POSSIBLE, THAT WOULD REQUIRE BoxContainer extends BOTH LayoutableBox and BoxContainerHierarchy*!!!! - *WOULD BE MULTIPLE INHERITANCE*.
+
+*so we have to choose to either re-implement ~BoxContainerHierarchy in BoxContainer~ (alternative) OR re-implement ~LayoutableBox in BoxLayouter~ (current)*
+*the latter (current) seems better, because LayoutableBox is a smaller implementation*
+
+
+
+
+  #+BEGIN_SRC ditaa :file box-classes-uml.png :cmdline -E -r
+
+     Parent Classes
+                          +-------------------+                              +-----------------+
+                          | BoxLayouter   c1AF|                              | cFFC   {s}      |
+                          | mixin             |                              |                 |
+                          +-------------------+                              |                 |
+      O is bullet point-> | o field2          |                              |                 |
+                          | o field3          |                     +------->|                 |
+                          | o field4          |      dotted lines   :        |                 |
+                          | o field5          |                     |        |                 |
+                          +-------------------+                     |        +-----------------+
+                          | o method1()       |      point marker   *
+                          |                   |                     |        +-----------------+
+                          +-------------------+                     |        : There           |
+                           ^        ^       ^                       |        |                 |
+                           |        |       |                       |        |                 |
+     Child classes         |        |       |                       +--------|        +-------+|
+                           |        |       |                                |        | Hi    ||
+           +---------------+        |       +--------------+                 |        +-------+|
+           |                        |                      |                 +-----------------+
+           |                        |                      |
+           |              +--------------------------------------------+
+           |              |         |                      |           |
+    +------+--------+     | +-------+-------+      +-------+-------+   |
+    | Child1    cF88|     | | Child2    cRED|      | Child3    c1FF|   |<------ We are gonna change
+    +---------------+     | +---------------+      +---------------+   |        Child2 and Child3
+    | field1        |     | | field2 Number |      | field1        |   |
+    | field2        |     | | field1: Str   |      | field2        |   |
+    | field3        |     | |       ^       |      +---------------+   |
+    |               |     | |       |       |      | method        |   |
+    +---------------+     | +---------------+      +---------------+   |
+                          |         |                                  |
+                          |         |                                  |
+                          +--------------------------------------------+
+                                    |
+                                    +----------------------------------------  Do not use colon, it
+                                                                               is interpreted as dotted
+                                                                               line
+
+       Table created as "el table" can be placed to artist and looks good - maintains relative column width, nice
+
+
+       +----+----+----+----+----+
+       | 10 | 20 | 30 | 40 | aa |             ..                         +---------+
+       +----+----+----+----+----+              ....                      |         |
+       | 11 | 21 | 31 |    | aa |                 ...                    |         |
+       +----+----+----+----+----+                   ..                   |         |
+       | 12 | 22 | 32 |    | aa |                     .                  +---------+
+       +----+----+----+----+----+
+       | 13 | 23 | 33 |    | aa |
+       +----+----+----+----+----+
+       | 14 | 24 | 34 |    | aa |
+       +----+----+----+----+----+
+       | 15 | 25 | 35 |    | aa |
+       +----+----+----+----+----+
+
+
+       +---------------+--------------+-------------+------------+-------------------+
+       |    10         |     20       |   30        |   40       |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       | some          |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       | other text    |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+#+END_SRC
+
+#+RESULTS:
+[[file:box-classes-uml.png]]
+
+
+    
+- [ ] add class ParentOrderedSkip beside BoxLayouter mixin
   - [ ] bool isSkipLayout
   - [ ] bool isSkipPaint
   - [ ] private generative constructor

@@ -4,7 +4,8 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level
-import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart'
+    show BoxContainer, BoxLayouter, LayoutableBox, ParentOrderedSkip;
 
 import 'package:flutter_charts/src/util/geometry.dart' as geometry;
 
@@ -150,7 +151,8 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       // todo-012 : fix this as not dealing with width < 0 brings issues further
-      applyParentOrderedSkip(parent as BoxLayouter, true);
+      // todo-00-done : applyParentOrderedSkip(parent as BoxLayouter, true);
+      applyParentOrderedSkip(parent as BoxLayouter, ParentOrderedSkip.skipLayoutAndPaint());
       layoutSize = ui.Size.zero;
       return;
     }

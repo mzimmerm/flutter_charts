@@ -320,8 +320,8 @@ class ConstraintsWeight {
   }
 }
 
-/// Wrapper for a list of constraints, typically representing a set of constraints
-/// of all children of their immediate parent [BoxContainer].
+/// Wrapper holding a simple [List] of constraints, which typically represent
+/// constraints of all children of their immediate parent [BoxContainer].
 ///
 /// In addition to a simple list, allows to calculate [sum] of weights, and a descriptive method [allDefined],
 /// used by layouters to decide which constraint system division is preferred,
@@ -436,10 +436,12 @@ abstract class LayoutableBox {
   ///           (see [LabelContainer.paint].
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
-  /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
-  /// the [layout] and [paint] processing.
+  /// Called with [orderedSkip] value of `true`, from the parent of this instance,
+  /// marks that parent ordered this [LayoutableBox] instance for skipping during
+  /// it's [layout] and [BoxContainer]'s [paint] processing.
   ///
-  void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
+  // todo-00-done: void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
+  void applyParentOrderedSkip(LayoutableBox caller, ParentOrderedSkip orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
@@ -835,6 +837,30 @@ mixin HeightSizerLayouterChildMixin on BoxContainer {
 
 // ---------- Not-positioning BoxLayouter and BoxContainer -------------------------------------------------------------
 
+/// todo-00-progress document and rescribed
+class ParentOrderedSkip {
+
+  final bool isSkipLayout;
+  final bool isSkipPaint;
+
+  /// Private named generative constructor instructs both
+  /// 'layout' and 'paint' to be performed.
+  ///
+  /// The purpose of declaring this constructor is cleanliness:
+  /// without it, dart would create a public no-named 'ParentOrderedSkip()'
+  /// constructor, we do not want that.
+  ParentOrderedSkip._defaultSkipNone() : isSkipLayout = false, isSkipPaint = false;
+
+  ParentOrderedSkip.skipPaint() : isSkipLayout = false, isSkipPaint = true;
+
+  ParentOrderedSkip.skipLayoutAndPaint() : isSkipLayout = true, isSkipPaint = true;
+
+  /// Default public named constructor skips nothing (both layout and paint
+  /// are performed).
+  ParentOrderedSkip.skipNone() :  isSkipLayout = false, isSkipPaint = false;
+
+}
+
 /// Mixin provides role of a generic layouter for a one [LayoutableBox] or a list of [LayoutableBox]es.
 ///
 /// The core functions of this class is to position their children
@@ -858,7 +884,6 @@ mixin HeightSizerLayouterChildMixin on BoxContainer {
 ///
 /// Important Note: Mixin fields can still be final, but then they must be late, as they are
 ///   always initialized in concrete implementations constructors or their initializer list.
-
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   // BoxLayouter section 1: Implements [Keyed] ----------------------------------------------------------------------------
@@ -925,7 +950,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     assertCallerIsParent(caller);
 
-    if (orderedSkip) return;
+    // todo-00-done: if (orderedSkip) return;
+    if (orderedSkip.isSkipLayout) return;
 
     _offset += offset;
 
@@ -934,21 +960,31 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
+  // todo-001 : Try move _orderedSkip to LayoutableBox
   // BoxLayouter section 3: Methods of [BoxLayouter] -------------------------------------------------------------------
 
   // orderedSkip ------
-  bool _orderedSkip = false; // want to be late final but would have to always init.
+  // todo-00-done: bool _orderedSkip = false; // want to be late final but would have to always init.
+  ParentOrderedSkip _orderedSkip = ParentOrderedSkip.skipNone();
 
   /// [orderedSkip] is set by parent; instructs this container that it should not be
   /// painted or layed out - as if it collapsed to zero size.
   ///
   /// When set to true, implementations must add appropriate support for collapse.
-  bool get orderedSkip => _orderedSkip;
+  // todo-00-done  bool get orderedSkip => _orderedSkip;
+  ParentOrderedSkip get orderedSkip => _orderedSkip;
 
-  /// Override of method on [LayoutableBox], uses the private member [_orderedSkip]
-  /// with assert that caller is parent.
+  /// Implements abstract method on super [LayoutableBox] for this [BoxLayouter].
+  ///
+  /// Calling with [orderedSkip] true, causes this instance
+  /// to be skipped during layout and paint.
+  ///
+  /// Calling with [orderedSkip] false causes the default behavior.
+  ///
   @override
-  void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
+  // todo-00-now
+  // void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
+  void applyParentOrderedSkip(LayoutableBox caller, ParentOrderedSkip orderedSkip) {
     assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
@@ -1480,7 +1516,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // But in the new layouter, not-leafs should be fully correctly contained within parents, so checking parents is enough.
     paintWarningIfLayoutOverflowsRootConstraints(canvas);
 
-    if (orderedSkip) return;
+    // todo-00-done : if (orderedSkip) return;
+    if (orderedSkip.isSkipPaint) return;
 
     for (var child in _children) {
       child.paint(canvas);

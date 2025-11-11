@@ -47,7 +47,8 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
     if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
-      applyParentOrderedSkip(this, true);
+      // todo-00-done : applyParentOrderedSkip(this, true);
+      applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
 
@@ -68,7 +69,7 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     // todo-023 : can we just call super? this appears needed, otherwise not-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
-    if (orderedSkip) {
+    if (orderedSkip.isSkipLayout) {
       layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
