@@ -47,7 +47,6 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
     if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
-      // todo-00-done : applyParentOrderedSkip(this, true);
       applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
     }
   }

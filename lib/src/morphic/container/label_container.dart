@@ -151,7 +151,6 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       // todo-012 : fix this as not dealing with width < 0 brings issues further
-      // todo-00-done : applyParentOrderedSkip(parent as BoxLayouter, true);
       applyParentOrderedSkip(parent as BoxLayouter, ParentOrderedSkip.skipLayoutAndPaint());
       layoutSize = ui.Size.zero;
       return;

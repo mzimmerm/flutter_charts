@@ -440,7 +440,6 @@ abstract class LayoutableBox {
   /// marks that parent ordered this [LayoutableBox] instance for skipping during
   /// it's [layout] and [BoxContainer]'s [paint] processing.
   ///
-  // todo-00-done: void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
   void applyParentOrderedSkip(LayoutableBox caller, ParentOrderedSkip orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
@@ -837,7 +836,7 @@ mixin HeightSizerLayouterChildMixin on BoxContainer {
 
 // ---------- Not-positioning BoxLayouter and BoxContainer -------------------------------------------------------------
 
-/// todo-00-progress document and rescribed
+/// todo-00-progress document and describe, finish usages
 class ParentOrderedSkip {
 
   final bool isSkipLayout;
@@ -950,7 +949,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     assertCallerIsParent(caller);
 
-    // todo-00-done: if (orderedSkip) return;
     if (orderedSkip.isSkipLayout) return;
 
     _offset += offset;
@@ -964,14 +962,21 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   // BoxLayouter section 3: Methods of [BoxLayouter] -------------------------------------------------------------------
 
   // orderedSkip ------
-  // todo-00-done: bool _orderedSkip = false; // want to be late final but would have to always init.
+  // todo-001 : want to be late final but would have to always init.
+  /// Describes if this [BoxLayouter] box should be skipped
+  /// (not layed out at all or not painted).
   ParentOrderedSkip _orderedSkip = ParentOrderedSkip.skipNone();
 
-  /// [orderedSkip] is set by parent; instructs this container that it should not be
-  /// painted or layed out - as if it collapsed to zero size.
+  /// Asks if this [LayoutableBox] instance (as well as it's implementation
+  /// [BoxContainer] - which also IS [BoxLayouter])
+  /// should be layed out or painted.
   ///
-  /// When set to true, implementations must add appropriate support for collapse.
-  // todo-00-done  bool get orderedSkip => _orderedSkip;
+  /// If not, it behaves as if collapsed to zero size during layout or paint.
+  ///
+  /// Must be set by parent by calling [applyParentOrderedSkip].
+  ///
+  /// When ordered to skip layout or paint,
+  /// implementations must add appropriate support layout or paint skip.
   ParentOrderedSkip get orderedSkip => _orderedSkip;
 
   /// Implements abstract method on super [LayoutableBox] for this [BoxLayouter].
@@ -982,8 +987,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Calling with [orderedSkip] false causes the default behavior.
   ///
   @override
-  // todo-00-now
-  // void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
   void applyParentOrderedSkip(LayoutableBox caller, ParentOrderedSkip orderedSkip) {
     assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
@@ -1516,7 +1519,6 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // But in the new layouter, not-leafs should be fully correctly contained within parents, so checking parents is enough.
     paintWarningIfLayoutOverflowsRootConstraints(canvas);
 
-    // todo-00-done : if (orderedSkip) return;
     if (orderedSkip.isSkipPaint) return;
 
     for (var child in _children) {

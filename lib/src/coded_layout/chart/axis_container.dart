@@ -339,8 +339,6 @@ class HorizontalAxisContainerCL
       inputLabelContainer.layout();
 
       // We only know if parent ordered skip after layout (because some size is too large)
-      // todo-00-done: inputLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
-      // todo-00-now
       ParentOrderedSkip parentOrderedSkip = _isLabelOnIndexShown(xIndex) ? ParentOrderedSkip.skipNone() : ParentOrderedSkip.skipLayoutAndPaint();
       inputLabelContainer.applyParentOrderedSkip(this, parentOrderedSkip);
 
@@ -457,7 +455,6 @@ class HorizontalAxisContainerCL
 
   void _paintLabelContainers(canvas) {
     for (AxisLabelContainerCL  inputLabelContainer in inputLabelContainerCLs) {
-      // todo-00-done: if (!inputLabelContainer.orderedSkip) inputLabelContainer.paint(canvas);
       if (!inputLabelContainer.orderedSkip.isSkipPaint) inputLabelContainer.paint(canvas);
     }
   }
@@ -485,7 +482,6 @@ class HorizontalAxisContainerCL
   @override
   bool labelsOverlap() {
     if (inputLabelContainerCLs.any((axisLabelContainer) =>
-    // todo-00-done : !axisLabelContainer.orderedSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       !axisLabelContainer.orderedSkip.isSkipLayout && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       return true;
     }
