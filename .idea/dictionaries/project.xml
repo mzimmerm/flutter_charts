@@ -5,9 +5,11 @@
       <w>axislines</w>
       <w>coeff</w>
       <w>layed</w>
+      <w>layedout</w>
       <w>layoutable</w>
       <w>layouter</w>
       <w>layouters</w>
+      <w>rects</w>
       <w>sizers</w>
     </words>
   </dictionary>

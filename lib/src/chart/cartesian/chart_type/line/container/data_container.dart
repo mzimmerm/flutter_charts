@@ -3,7 +3,7 @@
 /// Each class here extends it's abstract base in ../data_container.dart,
 /// and implements methods named 'makeInner', which allow all internals
 /// of the [DataContainer] to be overridden and extended.
-import 'dart:ui' as ui show Paint, Canvas, Offset;
+import 'dart:ui' as ui show Offset, Size, Paint, Canvas;
 
 // up 2 level chart
 import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart'
@@ -185,6 +185,12 @@ class LineAndPointContainer extends PointContainer {
   ///      into the same [constraints] area (which is like the canvas into which one vertical stack of data is painted).
   @override
   void layout() {
+
+    if (orderedSkip.isSkipLayout) {
+      layoutSize = ui.Size.zero;
+      return;
+    }
+
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();

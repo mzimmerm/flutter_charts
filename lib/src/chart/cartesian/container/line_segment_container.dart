@@ -51,7 +51,18 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     required this.linePaint,
     required super.chartViewModel,
     super.constraintsWeight,
-  });
+// todo-00-done  });
+}) {
+    // todo-00-now : THIS FIXED THE SKIP GRIP EXCEPTION. BUT WE NEED TO FIGURE OUT A BETTER WAY. THIS WHOLE SKIP LOGIC IS FRAGILE, BUT I NEED TO FIND A CORE REASON AND SOLUTION
+    // todo-00-now
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
+    }
+
+  }
+
+  // todo-00-next: deal with skip
 
   /// Model contains the transformed, not-extrapolated values of the point where the line starts.
   final PointOffset fromPointOffset;
@@ -94,6 +105,23 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
   @override
   void layout() {
+    // todo-00-done: this should act upon isShown
+    // todo-00-done: go over ALL "void layout()" and add a section dealing with isShown. MAYBE THERE SHOULD BE A METHOD ON BASE CLASS DOING THAT, ALL IMPL SHOULD JUST CALL IT
+
+    if (orderedSkip.isSkipLayout) {
+      layoutSize = ui.Size.zero;
+      // Even if self is not layed out, we must
+      // initialize self members used in this 'applyParentOffset()', as they
+      // are assumed initialized when used by parent's layout() code
+      //    for (var child in _children) {  // self is one of _children
+      //       child.applyParentOffset(this, offset);
+      //    }
+      // (otherwise, when self is child, would cause not initialized exception)
+      _fromOffsetPixels = PointOffset.zero;
+      _toOffsetPixels = PointOffset.zero;
+      return;
+    }
+
     buildAndReplaceChildren();
 
     // Code here takes care of the pixel positioning of the points, aka layout.
@@ -163,6 +191,10 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
 
   @override
   void paint(ui.Canvas canvas) {
+    if (orderedSkip.isSkipPaint) {
+      return;
+    }
+
     canvas.drawLine(_fromOffsetPixels, _toOffsetPixels, linePaint);
   }
 

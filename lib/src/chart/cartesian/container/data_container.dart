@@ -745,6 +745,12 @@ class FillerPointContainer extends BasePointContainer {
   /// (parent container/layouter mainAxisDirection) to be zero.
   @override
   void layout() {
+
+    if (orderedSkip.isSkipLayout) {
+      layoutSize = ui.Size.zero;
+      return;
+    }
+
     buildAndReplaceChildren();
 
     // Make the layoutSize zero in the direction of the chart orientation

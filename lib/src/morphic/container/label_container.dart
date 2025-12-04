@@ -115,6 +115,10 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   /// Implementor of method in superclass [Container].
   @override
   void paint(ui.Canvas canvas) {
+    if (orderedSkip.isSkipPaint) {
+      return;
+    };
+
     textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 

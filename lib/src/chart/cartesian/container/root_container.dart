@@ -27,7 +27,7 @@ class ChartRootContainer extends ChartAreaContainer {
     required this.legendContainer,
     required this.horizontalAxisContainer,
     required this.verticalAxisContainer,
-    required this.verticalAxisContainerFirst,
+    required this.verticalAxisContainerFirst, // todo-001 : this is only used in coded_layout, so rename it CL
     required this.dataContainer,
     required ChartViewModel   chartViewModel,
   }) : super(chartViewModel: chartViewModel) {
@@ -36,7 +36,7 @@ class ChartRootContainer extends ChartAreaContainer {
 
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
-    //   - layoutSequence,  on each cell as we want
+    //   - layoutSequence on each cell; forces containers layed out in defined sequence.
 
     // [vertAxisDefiner] : Definer for vertical axis container. Vertical axis determines the width
     //   of the first table column, and also the width left for the remainder of the table.
@@ -49,10 +49,12 @@ class ChartRootContainer extends ChartAreaContainer {
       ),
     );
 
-    // [YDEX_cellDefinersTable] is table with the following order of containers (left to right, top to bottom):
-    //   VerticalAxisContainer, DataContainer, EmptyAxisCornerContainer, HorizontalAxisContainer
+    // [YDEX_cellDefinersTable] is table with the following order of containers
+    // (left to right, top to bottom, X/Y stands for X/Y axis):
+    //   Y=VerticalAxisContainer,    D=DataContainer,
+    //   E=EmptyAxisCornerContainer, X=HorizontalAxisContainer
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
-      [vertAxisDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
+      [vertAxisDefiner,                           TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 0)],
     ];
 

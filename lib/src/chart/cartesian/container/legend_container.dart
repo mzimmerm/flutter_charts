@@ -64,12 +64,18 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
+
+    if (orderedSkip.isSkipLayout) {
+      layoutSize = ui.Size.zero;
+      return;
+    }
+
     buildAndReplaceChildren();
     // todo-023 : can we just call super? this appears needed, otherwise not-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip.isSkipLayout) {
-      layoutSize = const ui.Size(0.0, 0.0);
+      layoutSize = ui.Size.zero;
       return;
     }
     // Important: This flips from using layout() on parents to using layout() on children
@@ -386,6 +392,10 @@ class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
+    if (orderedSkip.isSkipPaint) {
+      return;
+    };
+
     ui.Rect indicatorRect = offset & _indicatorSize;
     canvas.drawRect(
       indicatorRect,

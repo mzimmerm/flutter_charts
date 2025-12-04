@@ -44,10 +44,14 @@ import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart
 ///
 class PointOffset extends Offset {
 
+  // todo-01 : can we make this const?
   PointOffset({
     required double inputValue,
     required double outputValue,
   }) : super(inputValue, outputValue);
+
+  // todo-00-done added
+  static PointOffset zero = PointOffset(inputValue: 0.0, outputValue: 0.0);
 
   factory PointOffset.fromVector(
     Vector<double> vector, {

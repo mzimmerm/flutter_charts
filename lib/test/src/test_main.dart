@@ -1138,7 +1138,22 @@ class ExampleWidgetCreator {
         break;
     }
 
-    // LineChart or BarChart depending on what is set in environment.
+    // Create a 'chartToRun' instance, the chart widget that is shown in this test.
+    //
+    // The 'chartToRun' is either LineChart or BarChart depending on
+    // the chartType defined by the 'exampleToRun'
+    // (eventually from the environment):
+    //    'ChartType chartType = exampleToRun.chartType;'
+    //
+    // The created 'chartToRun' is passed appropriately created 'ChartViewModel'
+    // There is an additional fork on the 'ChartViewModel' for each 'chartType',
+    // defined by 'isLive':
+    // - The 'isLive = true' creates a 'live' 'ChartViewModel',
+    //   which is the view model intended to use by clients of this library.
+    //   It does use a default 'LegendContainer' which is 'WrappingRow'.
+    // - 'isLive = true' creates a 'test' 'ChartViewModel',
+    //   which is used only in this test, by changing 'LegendContainer' layout
+    //   based on the 'ExampleEnum'.
     Widget chartToRun;
 
     switch (chartType) {

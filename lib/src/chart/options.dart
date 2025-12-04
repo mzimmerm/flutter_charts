@@ -19,6 +19,7 @@ import 'package:flutter_charts/src/chart/cartesian/container/legend_container.da
 /// see [SimpleChartContainer].
 @immutable
 class ChartOptions {
+  // todo-00-next: remove the suffix 'options' from all variables below, as they are always referenced as chartViewModel.chartOptions.iterativeLayoutOptions - it is clear iterativeLayout IS options
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
   final HorizontalAxisContainerOptions horizontalAxisContainerOptions;
@@ -102,6 +103,7 @@ class IterativeLayoutOptions {
 @immutable
 class LegendOptions {
   /// Manages showing the legend container on the chart.
+  // todo-001-next rename to isShown to match other names
   final bool isLegendContainerShown;
 
   // Series color indicator size - the "Series color indicator"
@@ -136,6 +138,8 @@ class LegendOptions {
   });
 }
 
+// todo-001-next: rename to InputAxisContainerOptions
+//               ALSO rename all variables
 @immutable
 class HorizontalAxisContainerOptions {
   final bool isShown;
@@ -154,6 +158,8 @@ class HorizontalAxisContainerOptions {
 
 }
 
+// todo-001-next: MAYBE rename to OutputAxisContainerOptions
+//               ALSO rename all variables
 @immutable
 class VerticalAxisContainerOptions {
   final bool isShown;

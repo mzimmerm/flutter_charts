@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+import 'dart:ui' as ui show Size, Canvas;
 import 'dart:developer' as dart_developer;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 import 'package:logger/logger.dart' as logger;

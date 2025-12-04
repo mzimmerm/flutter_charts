@@ -23,7 +23,7 @@ import 'package:flutter_charts/src/chart/options.dart';
 /// orientation is [ChartOrientation.column].
 ///
 /// See [LineBetweenPointOffsetsContainer]
-class AxisLineContainer extends LineBetweenPointOffsetsContainer {
+abstract class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
     required super.fromPointOffset,
     required super.toPointOffset,
@@ -96,7 +96,14 @@ class TransposingInputAxisLine extends AxisLineContainer {
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-        );
+// todo-00-now-done        );
+  ) {
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
+  }
 
 }
 
@@ -123,7 +130,14 @@ class TransposingOutputAxisLine extends AxisLineContainer {
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-        );
+// todo-00-now-done        );
+  ) {
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
+  }
 }
 
 // -------------------------------------
@@ -513,6 +527,11 @@ class TransposingInputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.inputData;
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
   }
 
 }
@@ -527,6 +546,11 @@ class TransposingOutputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.outputData;
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
   }
 
 }
@@ -538,6 +562,13 @@ class TransposingInputGridLines extends TransposingGridLines {
     required super.chartViewModel,
 
   }) {
+    // todo-00-now : skip
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
+
     // set data dependency to input
     dataDependency = DataDependency.inputData;
 
@@ -557,6 +588,13 @@ class TransposingOutputGridLines extends TransposingGridLines {
   TransposingOutputGridLines({
     required super.chartViewModel,
   }) {
+    // todo-00-now : skip
+    // todo-00-done
+    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
+
     // set data dependency to input
     dataDependency = DataDependency.outputData;
 

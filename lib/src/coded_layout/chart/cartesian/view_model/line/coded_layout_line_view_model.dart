@@ -37,7 +37,6 @@ class LineChartViewModelCL extends ChartViewModelCL {
       legendContainer: legend_container.LegendContainer.wrappingRow(
           chartViewModel: this
       ),
-
       horizontalAxisContainer: HorizontalAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,

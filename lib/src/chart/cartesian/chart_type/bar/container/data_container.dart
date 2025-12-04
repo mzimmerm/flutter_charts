@@ -3,7 +3,7 @@
 /// Each class here extends it's abstract base in ../data_container.dart,
 /// and implements methods named 'makeInner', which allow all internals
 /// of the [DataContainer] to be overridden and extended.
-import 'dart:ui' as ui show Rect, Paint, Canvas;
+import 'dart:ui' as ui show Rect, Size, Paint, Canvas;
 
 // this chart/chart_type/bar level
 
@@ -210,6 +210,12 @@ class BarPointContainer extends PointContainer {
   /// which is the pixel width and height of the Rectangle bar that represents the data point.
   @override
   void layout() {
+
+    if (orderedSkip.isSkipLayout) {
+      layoutSize = ui.Size.zero;
+      return;
+    }
+
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = layoutUsingPointModelAffmapToPixels();
