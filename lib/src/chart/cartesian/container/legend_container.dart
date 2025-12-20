@@ -43,6 +43,7 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
         ) {
     // Create children and attach to self: moved to buildAndReplaceChildren : addChildren(_createChildrenOfLegendContainer());
 
+    // manage visibility
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].

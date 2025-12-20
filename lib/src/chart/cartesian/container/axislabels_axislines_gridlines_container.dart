@@ -97,8 +97,7 @@ class TransposingInputAxisLine extends AxisLineContainer {
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
   ) {
-    // todo-00-done-now: resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    // if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
+    // manage visibility
     if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
@@ -130,7 +129,7 @@ class TransposingOutputAxisLine extends AxisLineContainer {
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
   ) {
-    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // manage visibility
     if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
@@ -524,7 +523,8 @@ class TransposingInputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.inputData;
-    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+
+    // manage visibility
     if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
@@ -542,7 +542,8 @@ class TransposingOutputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.outputData;
-    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+
+    // manage visibility
     if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
@@ -560,10 +561,9 @@ class TransposingInputGridLines extends TransposingGridLines {
     required super.chartViewModel,
 
   }) {
-    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // manage visibility
     // Input grid lines (parallel to output axis) have an explicit isShown,
     // separately from output axis
-    // if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
     if (!chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
@@ -590,7 +590,10 @@ class TransposingOutputGridLines extends TransposingGridLines {
   TransposingOutputGridLines({
     required super.chartViewModel,
   }) {
-    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // set data dependency to input
+    dataDependency = DataDependency.outputData;
+
+    // manage visibility
     // Note: Output grid lines (parallel to input axis) use the same isShown as
     //   input axis!
     // Note note: Input grid lines (parallel to output axis) visibility is managed by
@@ -600,9 +603,6 @@ class TransposingOutputGridLines extends TransposingGridLines {
     if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
-
-    // set data dependency to input
-    dataDependency = DataDependency.outputData;
 
     // output grid lines are always at [_AxisLabelInfo.center] on any chart.
     moveTickTo = MoveTickTo.stayAtThis;
