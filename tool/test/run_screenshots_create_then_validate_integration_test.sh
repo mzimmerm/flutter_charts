@@ -150,8 +150,9 @@ for layout in auto_layout coded_layout; do
 
   if [[ $layout == coded_layout ]]; then
     # auto_layout test files 'screenshot_create_test.dart' and in there called app 'test_main.dart'
-    # are copied to their coded_layout equivalents. We want to keep only one core copy of the test app,
-    # the test_main.dart and copy it to a generated coded_layout_test_main.dart.
+    # are copied to their coded_layout equivalents and edited to perform a test for coded_layout.
+    # Reason for this: We want to keep only one core copy of the test app,
+    # the test_main.dart and duplicate it (edited) as coded_layout_test_main.dart.
     echo "$comment_duplicate_files_from_auto_layout"
     _duplicate_test_files_from_auto_layout_to_coded_layout
     sleep 5

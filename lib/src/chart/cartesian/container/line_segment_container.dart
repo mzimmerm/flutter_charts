@@ -51,15 +51,12 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     required this.linePaint,
     required super.chartViewModel,
     super.constraintsWeight,
-// todo-00-done  });
 }) {
-    // todo-00-now : THIS FIXED THE SKIP GRIP EXCEPTION. BUT WE NEED TO FIGURE OUT A BETTER WAY. THIS WHOLE SKIP LOGIC IS FRAGILE, BUT I NEED TO FIND A CORE REASON AND SOLUTION
-    // todo-00-now
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
-      applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
-    }
-
+    // todo-00-now : THIS FIXED THE SKIP GRID EXCEPTION. BUT WE NEED TO FIGURE OUT A BETTER WAY. THIS WHOLE SKIP LOGIC IS FRAGILE, BUT I NEED TO FIND A CORE REASON AND SOLUTION
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    //if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
+    //  applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
+    //}
   }
 
   // todo-00-next: deal with skip

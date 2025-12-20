@@ -9,8 +9,8 @@ class ChartOptions extends live_options.ChartOptions {
   const ChartOptions({
     super.iterativeLayoutOptions,
     super.legendOptions = const LegendOptions(),
-    super.horizontalAxisContainerOptions,
-    super.verticalAxisContainerOptions,
+    super.inputAxisContainerOptions,
+    super.outputAxisContainerOptions,
     super.dataContainerOptions,
     super.labelCommonOptions,
     super.lineChartOptions,
@@ -23,12 +23,12 @@ class ChartOptions extends live_options.ChartOptions {
     legendOptions: const LegendOptions(
       isLegendContainerShown: false,
     ),
-    horizontalAxisContainerOptions: const live_options.HorizontalAxisContainerOptions(
+    inputAxisContainerOptions: const live_options.InputAxisContainerOptions(
       isShown: false,
     ),
-    verticalAxisContainerOptions: const live_options.VerticalAxisContainerOptions(
+    outputAxisContainerOptions: const live_options.OutputAxisContainerOptions(
       isShown: false,
-      isInputGridLinesShown: false,
+      isOutputAxisParallelGridLinesShown: false,
     ),
   );
 }

@@ -22,8 +22,8 @@ class ChartOptions {
   // todo-00-next: remove the suffix 'options' from all variables below, as they are always referenced as chartViewModel.chartOptions.iterativeLayoutOptions - it is clear iterativeLayout IS options
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
-  final HorizontalAxisContainerOptions horizontalAxisContainerOptions;
-  final VerticalAxisContainerOptions verticalAxisContainerOptions;
+  final InputAxisContainerOptions inputAxisContainerOptions;
+  final OutputAxisContainerOptions outputAxisContainerOptions;
   final DataContainerOptions dataContainerOptions;
   final LabelCommonOptions labelCommonOptions;
   final LineChartOptions lineChartOptions;
@@ -32,8 +32,8 @@ class ChartOptions {
   const ChartOptions({
     this.iterativeLayoutOptions = const IterativeLayoutOptions(),
     this.legendOptions = const LegendOptions(),
-    this.horizontalAxisContainerOptions = const HorizontalAxisContainerOptions(),
-    this.verticalAxisContainerOptions = const VerticalAxisContainerOptions(),
+    this.inputAxisContainerOptions = const InputAxisContainerOptions(),
+    this.outputAxisContainerOptions = const OutputAxisContainerOptions(),
     this.dataContainerOptions = const DataContainerOptions(),
     this.labelCommonOptions = const LabelCommonOptions(),
     this.lineChartOptions = const LineChartOptions(),
@@ -46,12 +46,12 @@ class ChartOptions {
           legendOptions: const LegendOptions(
             isLegendContainerShown: false,
           ),
-          horizontalAxisContainerOptions: const HorizontalAxisContainerOptions(
+          inputAxisContainerOptions: const InputAxisContainerOptions(
             isShown: false,
           ),
-          verticalAxisContainerOptions: const VerticalAxisContainerOptions(
+          outputAxisContainerOptions: const OutputAxisContainerOptions(
             isShown: false,
-            isInputGridLinesShown: false,
+            isOutputAxisParallelGridLinesShown: false,
           ),
         );
 }
@@ -141,7 +141,7 @@ class LegendOptions {
 // todo-001-next: rename to InputAxisContainerOptions
 //               ALSO rename all variables
 @immutable
-class HorizontalAxisContainerOptions {
+class InputAxisContainerOptions {
   final bool isShown;
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
@@ -150,7 +150,7 @@ class HorizontalAxisContainerOptions {
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right. Unused.
   final double labelPadLR;
 
-  const HorizontalAxisContainerOptions({
+  const InputAxisContainerOptions({
     this.isShown = true,
     this.labelPadTB = 6.0,
     this.labelPadLR = 40.0,
@@ -161,7 +161,7 @@ class HorizontalAxisContainerOptions {
 // todo-001-next: MAYBE rename to OutputAxisContainerOptions
 //               ALSO rename all variables
 @immutable
-class VerticalAxisContainerOptions {
+class OutputAxisContainerOptions {
   final bool isShown;
 
   /// In the current implementation, X gridlines (horizontal) disappear when `isVerticalAxisContainerShown = false`,
@@ -169,7 +169,7 @@ class VerticalAxisContainerOptions {
   ///
   /// However, Y gridlines (vertical) are showing even when `isHorizontalAxisContainerShown = false`.
   /// This option allows to toggle it.
-  final bool isInputGridLinesShown;
+  final bool isOutputAxisParallelGridLinesShown;
 
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
   final double labelPadTB;
@@ -177,9 +177,9 @@ class VerticalAxisContainerOptions {
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
   final double labelPadLR;
 
-  const VerticalAxisContainerOptions({
+  const OutputAxisContainerOptions({
     this.isShown = true,
-    this.isInputGridLinesShown = true,
+    this.isOutputAxisParallelGridLinesShown = true,
     this.labelPadTB = 40.0,
     this.labelPadLR = 6.0,
   });
@@ -197,7 +197,7 @@ String inputValueToLabel(num value) {
 
     return val + yLabelUnits;
    */
-  throw StateError('HorizontalAxisContainerOptions.valueToLabel should not be used YET');
+  throw StateError('InputAxisContainerOptions.valueToLabel should not be used YET');
 }
 
 String outputValueToLabel(num value) {

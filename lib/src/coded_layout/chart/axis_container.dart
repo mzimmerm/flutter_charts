@@ -87,7 +87,7 @@ class OutputAxisContainerCL
 
     // Code above MUST run for the side-effects of setting [axisPixels] and extrapolating the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
-    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       outputLabelContainerCLs = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       replaceChildrenWith(outputLabelContainerCLs);
       return;
@@ -148,7 +148,7 @@ class OutputAxisContainerCL
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
     // The code above must be performed for axisPixelsRange to initialize
-    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
       return;
@@ -168,21 +168,21 @@ class OutputAxisContainerCL
 
       // Move the contained LabelContainer to correct position
       outputLabelContainer.applyParentOffset(this,
-        ui.Offset(chartViewModel.chartOptions.verticalAxisContainerOptions.labelPadLR, labelTopY),
+        ui.Offset(chartViewModel.chartOptions.outputAxisContainerOptions.labelPadLR, labelTopY),
       );
     }
 
     // Set the [layoutSize]
     double yLabelsContainerWidth =
         outputLabelContainerCLs.map((outputLabelContainer) => outputLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * chartViewModel.chartOptions.verticalAxisContainerOptions.labelPadLR;
+            2 * chartViewModel.chartOptions.outputAxisContainerOptions.labelPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL outputLabelContainer in outputLabelContainerCLs) {
@@ -192,7 +192,7 @@ class OutputAxisContainerCL
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL outputLabelContainer in outputLabelContainerCLs) {
@@ -348,7 +348,7 @@ class HorizontalAxisContainerCL
       double halfStepWidth = _xGridStep / 2;
       double atIndexOffset = _xGridStep * xIndex;
       double xTickX = halfStepWidth + atIndexOffset + options.dataContainerOptions.dataLeftTickWidth;
-      double labelTopY = options.horizontalAxisContainerOptions.labelPadTB; // down by HorizontalAxisContainer padding
+      double labelTopY = options.inputAxisContainerOptions.labelPadTB; // down by HorizontalAxisContainer padding
 
       inputLabelContainer.parentOffsetTick = xTickX;
 
@@ -367,10 +367,10 @@ class HorizontalAxisContainerCL
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
       constraints.size.width,
-      xLabelsMaxHeight + 2 * options.horizontalAxisContainerOptions.labelPadTB,
+      xLabelsMaxHeight + 2 * options.inputAxisContainerOptions.labelPadTB,
     );
 
-    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       // If not showing this container, no layout needed, just set size to 0.
       lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
@@ -409,7 +409,7 @@ class HorizontalAxisContainerCL
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       return;
     }
     // super.applyParentOffset(caller, offset); // super did double-offset as inputLabelContainer are on 2 places
@@ -436,7 +436,7 @@ class HorizontalAxisContainerCL
   /// which end up in the intended position but rotated counterclockwise.
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {

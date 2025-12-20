@@ -2384,24 +2384,24 @@ mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts
 
 ** IN-PROGRESS-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
 
-*** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint.
+*** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint
 
 This todo is also documented in container_layouter_base.dart
 
-Study code around current ParentOrderedSkip - there is some, even in new layout. What does it do? It uses various variable names in Options containing 'isShown', which are then used in 'layout', 'applyParentOffset' and 'paint'. If isShown is false, those methods are no-op - they return before they can do anything.
+Study code around current ParentOrderedSkip . What does it do? It uses various variable names in Options containing 'isShown', which are then used in 'layout', 'applyParentOffset' and 'paint'. If isShown is false, those methods are no-op - they return before they can do anything.
 
-Analyzes of current code (this includes the new layout BUT active use of 'isShown' in new layout is ONLY in ~LegendContainer~ *constructor*, which calls ~applyParentOrderedSkip~
+Analyzes of current code (this includes the new layout BUT active use of 'isShown' in new layout is ONLY in ~LegendContainer~ *constructor*, which calls ~applyParentOrderedSkip~:
 
-  - [ ] Options set 'isShown' with various naming changes on:
-    - [ ] LegendOptions.isLegendContainerShown
-    - [ ] HorizontalAxisContainerOptions.isShown
-    - [ ] VerticalAxisContainerOptions.isShown
-    - [ ] VerticalAxisContainerOptions.isInputGridLinesShown
-  - [ ] The options are used in coded_layout examples to convert to no-op all of:
-    - [ ] ~layout~
-    - [ ] ~applyParentOffset~
-    - [ ] ~paint~
-  - [ ] There is ONE *auto_layout* container that sets parentOrderedSkip:
+  - [X] Options set 'isShown' with various naming changes on:
+    - [X] LegendOptions.isLegendContainerShown
+    - [X] HorizontalAxisContainerOptions.isShown
+    - [X] VerticalAxisContainerOptions.isShown
+    - [X] VerticalAxisContainerOptions.isInputGridLinesShown
+  - [X] The options are used in coded_layout examples to convert to no-op all of:
+    - [X] ~layout~
+    - [X] ~applyParentOffset~
+    - [X] ~paint~
+  - [ ] todo-next: There is ONE *auto_layout* container that sets parentOrderedSkip:
     - [ ] ~LegendContainer constructor~, there is this code:
       #+begin_src java
         if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
@@ -2409,33 +2409,63 @@ Analyzes of current code (this includes the new layout BUT active use of 'isShow
           // BoxLayouter.applyParentOrderedSkip controls the BoxLayouter._orderedSkip
         }
       #+end_src
-  - [ ] ~BoxLayouter._orderedSkip~ is a field which todo-now
+  - [ ] ~BoxLayouter._orderedSkip~ is a field which todo-next
 
 
-
+Summary of changes which implement ParentOrderedSkip in the new auto_layout:
   
     
-- [ ] add class ParentOrderedSkip beside BoxLayouter mixin
-  - [ ] bool isSkipLayout
-  - [ ] bool isSkipPaint
-  - [ ] private generative constructor
-  - [ ] const static skipPaint
-  - [ ] const static skipLayoutAndPaint
-  - [ ] const static skipNone (DEFAULT)
-  - [ ] 
-- [ ] on BoxContainer, add member parentOrderedSkip,
-  - [ ] (also search for it first), default to skipNone
-  - [ ] not final, we want to be able layout code to force skip if needed
-- [ ] review options related to skipping
-  - [ ] add 6 options for skipping - [ ] default skipNone
-    - [ ] input labels
-    - [ ] input axis
-    - [ ] output labels
-    - [ ] output axis
-    - [ ] input grid
-    - [ ] output grid
-  - [ ] test things work unchanged
-  - [ ] add example as in coded_layout which skips labels, axis, grid
+- [X] add class ParentOrderedSkip beside BoxLayouter mixin
+  - [X] bool isSkipLayout
+  - [X] bool isSkipPaint
+  - [X] private generative constructor
+  - [X] const static skipPaint
+  - [X] const static skipLayoutAndPaint
+  - [X] const static skipNone (DEFAULT)
+  - [X] 
+- [X] on mixin BoxLayouter, add member _orderedSkip, and public get orderedSkip
+  - [X] default to skipNone
+  - [X] not final, we want to be able layout code to force skip if needed
+- [X] review options related to skipping. THE options VARIABLE IS CALLED 'isShown' in general :
+  - [X] LegendOptions.isLegendContainerShown
+  - [X] HorizontalAxisContainerOptions.isShown
+  - [X] VerticalAxisContainerOptions.isShown
+  - [X] VerticalAxisContainerOptions.isInputGridLinesShown
+  - [X] todo-00-next : add this to a comment
+
+
+
+When done: todo-00-now
+
+- [-] Go over all todo-00- comments and implement. Changes start with:
+  - [X] Rename horizontalAxisContainerOptions => inputAxisContainerOptions
+  - [X] Rename verticalAxisContainerOptions => outputAxisContainerOptions
+  - [X] Rename isInputGridLinesShown => isOutputAxisParallelGridLinesShown   
+  - [ ] Simplification and correcting around - todo-00-now-progress-testing
+    #+begin_src java
+    if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
+      applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
+    }
+    #+end_src
+    - [ ] craft above according in each class to contain code suitable to situation
+- [ ] Test, validate, commit
+- [ ] Go over remaining todo-00- comments, implement
+- [ ] Test, validate, commit
+
+  
+
+When done todo-00-next
+
+- [ ] add auto_layout example as in coded_layout which skips labels, axis, grid
+  - [ ] Rename: ex35AnimalsBySeasonNoLabelsShown => ex35AnimalsBySeasonNoAxisOrGridLinesNoLabelsShown
+  - [ ] Add: ex36AnimalsBySeasonNoOutputAxisOrOutputAxisParallelGridLinesShown : should show all labels (input and output), show InputAxis and InputAxisParallelGridLines, NO OutputAxis NO OutputAxisParallelGridLines
+  - [ ] Add to test:
+    - [ ] ex35 new layout, only column orientation, bar and line (2 images)
+    - [ ] ex36 new layout, column and row orientation, bar and line (4 images)
+- [ ] Save new images as appropriate
+- [ ] Test, validate, commit
+
+
 
 
 *** TODO-NEXT Current design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes

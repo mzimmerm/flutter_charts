@@ -264,7 +264,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     _horizontalGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown) {
+    if (chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown) {
       _verticalGridLinesContainer.paint(canvas);
     }
   }

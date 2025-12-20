@@ -96,11 +96,10 @@ class TransposingInputAxisLine extends AxisLineContainer {
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-// todo-00-now-done        );
   ) {
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now: resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
@@ -130,11 +129,9 @@ class TransposingOutputAxisLine extends AxisLineContainer {
           ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-// todo-00-now-done        );
   ) {
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
@@ -527,9 +524,8 @@ class TransposingInputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.inputData;
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
@@ -546,9 +542,8 @@ class TransposingOutputAxisLabels extends TransposingAxisLabels {
   }) {
     // set data dependency to input
     dataDependency = DataDependency.outputData;
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
@@ -556,16 +551,20 @@ class TransposingOutputAxisLabels extends TransposingAxisLabels {
 }
 
 /// Container of input grid lines.
+///
+/// Input grid lines are grid lines emanating from input axis ticks -
+/// so they are parallel to output axis!
 class TransposingInputGridLines extends TransposingGridLines {
 
   TransposingInputGridLines({
     required super.chartViewModel,
 
   }) {
-    // todo-00-now : skip
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // Input grid lines (parallel to output axis) have an explicit isShown,
+    // separately from output axis
+    // if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
+    if (!chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
 
@@ -583,15 +582,22 @@ class TransposingInputGridLines extends TransposingGridLines {
 }
 
 /// Container of output grid lines.
+///
+/// Output grid lines are grid lines emanating from output axis ticks -
+/// so they are parallel to input axis!
 class TransposingOutputGridLines extends TransposingGridLines {
 
   TransposingOutputGridLines({
     required super.chartViewModel,
   }) {
-    // todo-00-now : skip
-    // todo-00-done
-    // todo-00-next : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
-    if (!(chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isShown && chartViewModel.chartOptions.verticalAxisContainerOptions.isInputGridLinesShown)) {
+    // todo-00-done-now : resolve the issue of input/output vs horizontal/vertical. MAYBE CHECK FOR THE TRANSPOSED YES/NO AND USE DIFFERENT OPTION
+    // Note: Output grid lines (parallel to input axis) use the same isShown as
+    //   input axis!
+    // Note note: Input grid lines (parallel to output axis) visibility is managed by
+    //   'chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown',
+    //   independently from input axis visibility, managed by
+    //   'chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown'
+    if (!chartViewModel.chartOptions.inputAxisContainerOptions.isShown) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
 
