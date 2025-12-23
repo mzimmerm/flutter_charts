@@ -133,7 +133,7 @@ class OutputAxisContainerCL
   ///
   /// The remaining horizontal width of [ChartRootContainerCL.chartArea] minus
   /// [OutputAxisContainerCL]'s labels width provides remaining available
-  /// horizontal space for the [GridLinesContainer] and [HorizontalAxisContainerCL].
+  /// horizontal space for the [GridLinesContainerCL] and [HorizontalAxisContainerCL].
   @override
   void layout() {
     buildAndReplaceChildren();

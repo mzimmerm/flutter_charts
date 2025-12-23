@@ -2467,6 +2467,24 @@ When done todo-00-next
 
 
 
+*** IN-PROGRESS-NOW Review these classes and document somewhere
+
+    // todo-00-now: before this is done, search and review :
+    //     TransposingAxisLabels.HorizontalAxis
+    //     TransposingAxisLabels.VerticalAxis
+    //     TransposingGridLines // abstract
+    //     TransposingCrossGridLines
+    //     TransposingInputAxisLabels // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
+    //     TransposingInputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
+    //     TransposingOutputAxisLabels  // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
+    //     TransposingOutputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
+    //    - what do they do
+    //    - where in them (constructors) add isShown code like
+    //       if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
+    //           applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
+    //       }
+    //
+
 
 *** TODO-NEXT Current design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
 

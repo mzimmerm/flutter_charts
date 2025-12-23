@@ -94,8 +94,6 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
   @override
   void layout() {
-    // todo-00-done: this should act upon isShown
-    // todo-00-done: go over ALL "void layout()" and add a section dealing with isShown. MAYBE THERE SHOULD BE A METHOD ON BASE CLASS DOING THAT, ALL IMPL SHOULD JUST CALL IT
 
     if (orderedSkip.isSkipLayout) {
       layoutSize = ui.Size.zero;

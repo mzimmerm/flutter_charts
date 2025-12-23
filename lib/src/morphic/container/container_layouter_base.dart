@@ -949,8 +949,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     assertCallerIsParent(caller);
 
-    // todo-00-now-done : this is newly commented out: MAY BREAD CODED_LAYOUT NO LABELS BUT WE DO NOT CARE : if (orderedSkip.isSkipLayout) return;
-
     _offset += offset;
 
     for (var child in _children) {
@@ -958,7 +956,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
-  // todo-001 : Try move _orderedSkip to LayoutableBox
+  // todo-002 : Try move _orderedSkip to LayoutableBox
   // BoxLayouter section 3: Methods of [BoxLayouter] -------------------------------------------------------------------
 
   // orderedSkip ------
@@ -1087,30 +1085,16 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   @override
   void layout() {
-    // todo-00-now: before this is done, search and review :
-    //     TransposingAxisLabels.HorizontalAxis
-    //     TransposingAxisLabels.VerticalAxis
-    //     TransposingGridLines // abstract
-    //     TransposingCrossGridLines
+
     //     TransposingInputAxisLabels // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
     //     TransposingInputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
     //     TransposingOutputAxisLabels  // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
     //     TransposingOutputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
-    //    - what do they do
-    //    - where in them (constructors) add isShown code like
-    //       if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
-    //           applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
-    //       }
-    //
-    //
-    // todo-00-now: Check if parentOrderedSkip != null && !parentOrderedSkip.isLayout
-    //        layoutSize = ui.Size.zero;
-    //  return;
+
     if (orderedSkip.isSkipLayout) {
       layoutSize = ui.Size.zero;
       return;
     }
-    // todo-00-now: Add equivalent code to paint()
 
     buildAndReplaceChildren();
 
@@ -1336,11 +1320,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
-    // todo-00-next : REMOVE THIS CONDITION ON if (orderedSkip.isSkipLayout). TEMP FOR TESTING NO LABELS, ex35
-    // if (orderedSkip.isSkipLayout) {
-      __layout_Post_Assert_Layedout_Rects(
-          positionedChildrenRects, positionedChildrenOuterRect);
-    // }
+    __layout_Post_Assert_Layedout_Rects(
+        positionedChildrenRects, positionedChildrenOuterRect);
+
     // The original code
     //     layoutSize = positionedChildrenOuterRect.size;
     // causes layoutSize to not include bounding Offset of children, if children were created using Row or Column
@@ -1542,7 +1524,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
   ///      - No super call needed.
   ///
   void paint(ui.Canvas canvas) {
-    // todo-00-next: ACTUALLY THIS IS ALREADY BELOW, SEE WHAT TO DO
+
     if (orderedSkip.isSkipPaint) {
       return;
     };
@@ -1552,9 +1534,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // But in the new layouter, not-leafs should be fully correctly contained within parents, so checking parents is enough.
     paintWarningIfLayoutOverflowsRootConstraints(canvas);
 
-    if (orderedSkip.isSkipPaint) {
-      return;
-    }
+  // todo-00-done-now  if (orderedSkip.isSkipPaint) {
+  // todo-00-done-now    return;
+  // todo-00-done-now  }
 
     for (var child in _children) {
       child.paint(canvas);

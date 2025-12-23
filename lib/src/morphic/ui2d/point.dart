@@ -50,7 +50,6 @@ class PointOffset extends Offset {
     required double outputValue,
   }) : super(inputValue, outputValue);
 
-  // todo-00-done added
   static PointOffset zero = PointOffset(inputValue: 0.0, outputValue: 0.0);
 
   factory PointOffset.fromVector(

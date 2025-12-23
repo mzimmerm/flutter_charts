@@ -15,11 +15,11 @@ class LineContainerCL extends container_common.ChartAreaContainer {
   ui.Paint linePaint;
 
   // todo-02-full-autolayout : manualLayedOutFromX and friends ADDED TEMPORARILY to be set during construction
-  //                         : of [LineContainer] in [GridLinesContainer.buildAndReplaceChildren]
+  //                         : of [LineContainer] in [GridLinesContainerCL.buildAndReplaceChildren]
   //                         : where these layout values are calculated, held on,
   //                         : and used later in self [layout], to set [lineFrom] and [lineTo]
   //                         : THIS IS TEMPORARY FOR MANUAL LAYOUT TO SHUFFLE VALUES FROM PARENT LAYOUT
-  //                         : (GridLinesContainer, something else??) TO LineContainer.layout()
+  //                         : (GridLinesContainerCL, something else??) TO LineContainer.layout()
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainerCL]
   /// creation in parent [buildAndReplaceChildren]
@@ -56,7 +56,7 @@ class LineContainerCL extends container_common.ChartAreaContainer {
   @override
   void layout() {
     buildAndReplaceChildren();
-    // Use the coordinates manually layed out during creation in [GridLinesContainer] by
+    // Use the coordinates manually layed out during creation in [GridLinesContainerCL] by
     lineFrom = ui.Offset(manualLayedOutFromX, manualLayedOutFromY);
     lineTo = ui.Offset(manualLayedOutToX, manualLayedOutToY);
 

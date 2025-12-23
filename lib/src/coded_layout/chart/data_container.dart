@@ -53,9 +53,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
   /// Container of gridlines parallel to X axis.
   ///
-  /// The reason to separate [_horizontalGridLinesContainer] and [_verticalGridLinesContainer] is for them to hide/show independently.
-  late GridLinesContainer _horizontalGridLinesContainer;
-  late GridLinesContainer _verticalGridLinesContainer;
+  /// The reason to separate [_horizontalGridLinesContainerCL] and [_verticalGridLinesContainerCL] is for them to hide/show independently.
+  late GridLinesContainerCL _horizontalGridLinesContainerCL;
+  late GridLinesContainerCL _verticalGridLinesContainerCL;
 
   /// Columns of pointPresenters.
   ///
@@ -65,7 +65,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   late PointPresentersColumnsOCL pointPresentersColumns;
 
-  /// Overridden builds children of self [DataContainerCL], the [_verticalGridLinesContainer] and [_horizontalGridLinesContainer]
+  /// Overridden builds children of self [DataContainerCL], the [_verticalGridLinesContainerCL] and [_horizontalGridLinesContainerCL]
   /// and adds them as self children.
   @override
   void buildAndReplaceChildren() {
@@ -81,14 +81,14 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Use this DataContainer layout dependency on [xTickXs] as guidelines for X labels
-    // in [HorizontalAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
+    // in [HorizontalAxisContainer.inputLabelContainerCLs], for each create one [LineContainer] as child of [_verticalGridLinesContainerCL]
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
     ui.Offset initLineTo = const ui.Offset(100.0, 100.0);
 
-    // Construct the GridLinesContainer with children: [LineContainer]s
-    _verticalGridLinesContainer = GridLinesContainer(
+    // Construct the GridLinesContainerCL with children: [LineContainer]s
+    _verticalGridLinesContainerCL = GridLinesContainerCL(
       chartViewModel: chartViewModel,
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
@@ -108,13 +108,13 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       }).toList(growable: false),
     );
 
-    // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainer]
+    // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainerCL]
     // this legacy uses isStacked to determine isLineChart : if (chartViewModel.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
     // if (!(this is LineChartDataContainer || this is LineChartDataContainerCL) && chartRootContainer.xTickXs.isNotEmpty) {
     if (chartViewModel.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 
-      _verticalGridLinesContainer.addChildren([
+      _verticalGridLinesContainerCL.addChildren([
         LineContainerCL(
           chartViewModel: chartViewModel,
           lineFrom: initLineFrom,
@@ -129,16 +129,16 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
         ),
       ]);
     }
-    // Add the constructed Y - parallel GridLinesContainer as child to self DataContainer
-    dataContainerChildren.addAll([_verticalGridLinesContainer]);
+    // Add the constructed Y - parallel GridLinesContainerCL as child to self DataContainer
+    dataContainerChildren.addAll([_verticalGridLinesContainerCL]);
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Use this DataContainer layout dependency on [yTickYs] as guidelines for Y labels
-    // in [OutputAxisContainer.outputLabelContainerCLs], for each create one [LineContainer] as child of [_horizontalGridLinesContainer]
+    // in [OutputAxisContainer.outputLabelContainerCLs], for each create one [LineContainer] as child of [_horizontalGridLinesContainerCL]
 
-    // Construct the GridLinesContainer with children: [LineContainer]s
-    _horizontalGridLinesContainer = GridLinesContainer(
+    // Construct the GridLinesContainerCL with children: [LineContainer]s
+    _horizontalGridLinesContainerCL = GridLinesContainerCL(
       chartViewModel: chartViewModel,
       children:
       // yTickYs create vertical xLineContainers
@@ -157,8 +157,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       }).toList(growable: false),
     );
 
-    // Add the constructed X - parallel GridLinesContainer as child to self DataContainer
-    dataContainerChildren.addAll([_horizontalGridLinesContainer]);
+    // Add the constructed X - parallel GridLinesContainerCL as child to self DataContainer
+    dataContainerChildren.addAll([_horizontalGridLinesContainerCL]);
 
     replaceChildrenWith(dataContainerChildren);
   }
@@ -182,24 +182,24 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Position the vertical yGrid in the middle of labels (line chart) or on label left edge (stacked bar)
-    _verticalGridLinesContainer.applyParentConstraints(this, constraints);
-    _verticalGridLinesContainer.layout();
+    _verticalGridLinesContainerCL.applyParentConstraints(this, constraints);
+    _verticalGridLinesContainerCL.layout();
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    _horizontalGridLinesContainer.applyParentConstraints(this, constraints);
-    _horizontalGridLinesContainer.layout();
+    _horizontalGridLinesContainerCL.applyParentConstraints(this, constraints);
+    _horizontalGridLinesContainerCL.layout();
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
 
     // Move all container atomic elements - lines, labels, circles etc
-    _horizontalGridLinesContainer.applyParentOffset(this, offset);
+    _horizontalGridLinesContainerCL.applyParentOffset(this, offset);
 
     // draw vertical grid
-    _verticalGridLinesContainer.applyParentOffset(this, offset);
+    _verticalGridLinesContainerCL.applyParentOffset(this, offset);
 
     // Create, layout, then offset, the 'data container' replacement - the [PointPresentersColumnsOCL].
     // The [PointsColumnsOCL] and [PointPresentersColumnsOCL] are the OLD NOT EXACTLY EQUIVALENT manual way of creating
@@ -261,11 +261,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
-    _horizontalGridLinesContainer.paint(canvas);
+    _horizontalGridLinesContainerCL.paint(canvas);
 
     // draw vertical grid
     if (chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown) {
-      _verticalGridLinesContainer.paint(canvas);
+      _verticalGridLinesContainerCL.paint(canvas);
     }
   }
 
@@ -453,11 +453,10 @@ class LineChartDataContainerCL extends DataContainerCL {
 ///
 /// Note: Methods [layout], [applyParentOffset], and [paint], use the default implementation.
 ///
-// todo-00-now : why is this in coded_layout??
-class GridLinesContainer extends ChartAreaContainer {
+class GridLinesContainerCL extends ChartAreaContainer {
 
   /// Construct from children [LineContainerCL]s.
-  GridLinesContainer({
+  GridLinesContainerCL({
     required ChartViewModel chartViewModel,
     required List<LineContainerCL>? children,
   }) : super(
@@ -467,7 +466,7 @@ class GridLinesContainer extends ChartAreaContainer {
 
   /// Override from base class sets the layout size.
   ///
-  /// This [GridLinesContainer] can be leaf if there are no grid lines.
+  /// This [GridLinesContainerCL] can be leaf if there are no grid lines.
   ///
   /// Leaf containers which do not override [BoxLayouter.layout] must override this method,
   /// setting [layoutSize].
