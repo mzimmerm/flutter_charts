@@ -34,17 +34,17 @@ import 'package:flutter_charts/src/chart/cartesian/container/data_container.dart
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value ranges and pixel ranges.
 ///
-/// todo-02-design : instead of extending Offset, make Offset member, and forward to it only methods needed.
-///
-/// todo-01-ideas-from-walk
+/// todo-02-ideas-from-walk
+///   - design:  instead of extending Offset, make Offset member,
+///     and forward to it only methods needed.
 ///   - Rename [PointOffset] to [RangedPointOffset]
-///   - Add [RollingLayouterRangedPointOffset] extends   [RangedPointOffset]; this adds the behavior
+///   - Add [RollingLayouterRangedPointOffset] extends [RangedPointOffset]; this adds the behavior
 ///     and members [isLayouterPositioningMeInCrossDirection] and [mainLayoutAxis], also the
 ///     [fromMyValueInMainFromSizeInCross]
 ///
 class PointOffset extends Offset {
 
-  // todo-01 : can we make this const?
+  // todo-02 : can we make this const?
   PointOffset({
     required double inputValue,
     required double outputValue,

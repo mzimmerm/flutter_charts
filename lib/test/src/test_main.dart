@@ -603,7 +603,6 @@ class ExampleWidgetCreator {
     ChartType chartType = exampleToRun.chartType;
     ChartOrientation chartOrientation = exampleToRun.chartOrientation;
     ChartStacking chartStacking = exampleToRun.chartStacking;
-    // todo-01-last : remove throughout: ChartLayouter chartLayouter = exampleToRun.chartLayouter;
 
 
     // Declare chartModel; the data object will be different in every examples.
@@ -1162,7 +1161,6 @@ class ExampleWidgetCreator {
         if (isLive) {
           lineChartViewModel = live_line_view_model.LineChartViewModel(
             chartModel: chartModel,
-            // todo-00-done: chartType: chartType,
             chartOrientation: chartOrientation,
             chartStacking: chartStacking,
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -1170,7 +1168,6 @@ class ExampleWidgetCreator {
         } else {
           lineChartViewModel = test_line_view_model.LineChartViewModel(
             chartModel: chartModel,
-            // todo-00-done: chartType: chartType,
             chartOrientation: chartOrientation,
             chartStacking: chartStacking,
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -1188,7 +1185,6 @@ class ExampleWidgetCreator {
         if (isLive) {
           barChartViewModel = live_bar_view_model.BarChartViewModel(
             chartModel: chartModel,
-            // todo-00-done: chartType: chartType,
             chartOrientation: chartOrientation,
             chartStacking: chartStacking,
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -1196,7 +1192,6 @@ class ExampleWidgetCreator {
         } else {
           barChartViewModel = test_bar_view_model.BarChartViewModel(
             chartModel: chartModel,
-            // todo-00-done: chartType: chartType,
             chartOrientation: chartOrientation,
             chartStacking: chartStacking,
             inputLabelLayoutStrategy: inputLabelLayoutStrategy,

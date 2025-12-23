@@ -90,7 +90,6 @@ AxisIntervalTicksAndLabelsDescriptor makeAxisIntervalDescriptor(ChartOrientation
     chartStacking: chartStacking,
     chartViewModel: MockChartViewModel(
       chartModel: mockChartModel,
-      // todo-00-done: chartType: ChartType.lineChart,
       chartOrientation: chartOrientation,
       chartStacking: ChartStacking.stacked,
     ),
@@ -104,12 +103,10 @@ AxisIntervalTicksAndLabelsDescriptor makeAxisIntervalDescriptor(ChartOrientation
 class MockChartViewModel extends ChartViewModel {
   MockChartViewModel({
     required ChartModel chartModel,
-    // todo-00-done: required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
 }): super(
     chartModel: chartModel,
-    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: ChartStacking.stacked,
 );
@@ -162,7 +159,6 @@ void rangeTestCore(
       chartStacking: ChartStacking.nonStacked,
       chartViewModel: MockChartViewModel(
         chartModel: chartModel,
-        // todo-00-done: chartType: ChartType.lineChart,
         chartOrientation: ChartOrientation.column,
         chartStacking: ChartStacking.stacked,
       ),

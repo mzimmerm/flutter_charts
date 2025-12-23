@@ -22,18 +22,21 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/label_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/label_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/chart_support/chart_style.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
@@ -253,6 +256,7 @@
     "ShowUsagesActions.previewPropertyKey": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
     "flutter.preview.tool.window.visible": "true",
     "git-widget-placeholder": "flutter__charts__v4__2023-01-26__convert__Presenters__to__BoxContainers",
     "io.flutter.reload.alreadyRun": "true",
@@ -1244,12 +1248,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart</url>
-          <line>113</line>
+          <line>112</line>
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart</url>
-          <line>125</line>
+          <line>124</line>
           <option name="timeStamp" value="86" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1294,12 +1298,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>613</line>
+          <line>612</line>
           <option name="timeStamp" value="198" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>648</line>
+          <line>647</line>
           <option name="timeStamp" value="199" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1309,7 +1313,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/test/src/test_main.dart</url>
-          <line>653</line>
+          <line>652</line>
           <option name="timeStamp" value="210" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1384,7 +1388,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart</url>
-          <line>327</line>
+          <line>324</line>
           <option name="timeStamp" value="257" />
         </line-breakpoint>
       </breakpoints>

@@ -2401,15 +2401,15 @@ Analyzes of current code (this includes the new layout BUT active use of 'isShow
     - [X] ~layout~
     - [X] ~applyParentOffset~
     - [X] ~paint~
-  - [ ] todo-next: There is ONE *auto_layout* container that sets parentOrderedSkip:
-    - [ ] ~LegendContainer constructor~, there is this code:
+  - [X] There is ONE *auto_layout* container that sets parentOrderedSkip:
+    - [X] ~LegendContainer constructor~, there is this code:
       #+begin_src java
         if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
           applyParentOrderedSkip(this, true); // method defined on mixin BoxLayouter
           // BoxLayouter.applyParentOrderedSkip controls the BoxLayouter._orderedSkip
         }
       #+end_src
-  - [ ] ~BoxLayouter._orderedSkip~ is a field which todo-next
+  - [X] ~BoxLayouter._orderedSkip~ is a field which manages visibility
 
 
 Summary of changes which implement ParentOrderedSkip in the new auto_layout:
@@ -2437,26 +2437,26 @@ Summary of changes which implement ParentOrderedSkip in the new auto_layout:
 
 When done: todo-00-now
 
-- [-] Go over all todo-00- comments and implement. Changes start with:
+- [X] Go over all todo-00- comments and implement. Changes start with:
   - [X] Rename horizontalAxisContainerOptions => inputAxisContainerOptions
   - [X] Rename verticalAxisContainerOptions => outputAxisContainerOptions
   - [X] Rename isInputGridLinesShown => isOutputAxisParallelGridLinesShown   
-  - [ ] Simplification and correcting around - todo-00-now-progress-testing
+  - [X] Simplification and correcting around - todo-00-now-progress-testing
     #+begin_src java
     if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
     }
     #+end_src
-    - [ ] craft above according in each class to contain code suitable to situation
-- [ ] Test, validate, commit
-- [ ] Go over remaining todo-00- comments, implement
-- [ ] Test, validate, commit
+    - [X] craft above according in each class to contain code suitable to situation
+- [X] Test, validate, commit
+- [X] Go over remaining todo-00- comments, implement
+- [X] Test, validate, commit
 
   
 
-When done todo-00-next
+When done todo-00-now
 
-- [ ] add auto_layout example as in coded_layout which skips labels, axis, grid
+- [ ] add auto_layout examples as in coded_layout which skips labels, axis, grid
   - [ ] Rename: ex35AnimalsBySeasonNoLabelsShown => ex35AnimalsBySeasonNoAxisOrGridLinesNoLabelsShown
   - [ ] Add: ex36AnimalsBySeasonNoOutputAxisOrOutputAxisParallelGridLinesShown : should show all labels (input and output), show InputAxis and InputAxisParallelGridLines, NO OutputAxis NO OutputAxisParallelGridLines
   - [ ] Add to test:
@@ -2466,27 +2466,7 @@ When done todo-00-next
 - [ ] Test, validate, commit
 
 
-
-*** IN-PROGRESS-NOW Review these classes and document somewhere
-
-    // todo-00-now: before this is done, search and review :
-    //     TransposingAxisLabels.HorizontalAxis
-    //     TransposingAxisLabels.VerticalAxis
-    //     TransposingGridLines // abstract
-    //     TransposingCrossGridLines
-    //     TransposingInputAxisLabels // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
-    //     TransposingInputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
-    //     TransposingOutputAxisLabels  // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
-    //     TransposingOutputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
-    //    - what do they do
-    //    - where in them (constructors) add isShown code like
-    //       if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
-    //           applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
-    //       }
-    //
-
-
-*** TODO-NEXT Current design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
+** LATER 19.1. Design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
 
 *NOTE: IN DART 'with MixinSomething' IMPLIES 'extends' (as if BY PASTING CODE) - this MIMICKs MULTIPLE INHERITANCE*
 
@@ -2526,11 +2506,14 @@ When done todo-00-next
                                                      |     V                                                                                  |    |   |
     +--------------------------------------------------------------------------------------+              +-----------------------------------+----+-----------------------------------------------+
     | mixin BoxLayouter implements LayoutableBox                                           |              | abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter             |
+    |                                                                                      |              |   implements                                                                           |
+    |                                                                                      |              |       LayoutableBox,                                                                   |
+    |                                                                                      |              |       Keyed,                                                                           |
+    |                                                                                      |              |       UniqueKeyedObjectsManager                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
     |   todo-00 abstract:                                                                  |              |   todo-00 abstract:                                                                    |
     |   todo-00 concrete:                                                                  |              |   todo-00 concrete:                                                                    |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |   todo-00 finish this                                                                  |
@@ -2539,37 +2522,31 @@ When done todo-00-next
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
     +--------------------------------------------------------------------------------------+              +----------------------------------------------------------------------------------------+
 #+end_src
 
 
+Currently, we have:
+
 - abstract class ~LayoutableBox~ *top of hierarchy*
   - mixin ~BoxLayouter~ implements LayoutableBox                                       // *BoxLayouter  is LayoutableBox BUT RE-IMPLEMENTS*
   - abstract class ~BoxContainer~ extends ~BoxContainerHierarchy~ with ~LayoutableBox~ // *BoxContainer is LayoutableBox AND BoxContainerHierarchy*
-  - 
+  -                                                                                    // *BoxContainer is NOT BoxLayouter*
+  -                                                                                    // *BoxLayouter  is NOT BoxContainer*
 
 
 Why NOT:
 
-class ~BoxLayouter~ extends ~LayoutableBox~ *AND* class ~BoxContainer~ extends ~LayoutableBox~??? *that way BoxLayouter contains all ~LayoutableBox~ implementation AND ~BoxContainer~ also contains ~LayoutableBox~ implementation* ???
+class ~BoxLayouter~ extends ~LayoutableBox~ *AND* class ~BoxContainer~ extends ~LayoutableBox~???
 
-*NOT POSSIBLE, THAT WOULD REQUIRE BoxContainer extends BOTH LayoutableBox and BoxContainerHierarchy*!!!! - *WOULD BE MULTIPLE INHERITANCE*.
+- *that way BoxLayouter contains all ~LayoutableBox~ implementation AND ~BoxContainer~ also contains ~LayoutableBox~ implementation* ???
+- *NOT POSSIBLE, THAT WOULD REQUIRE BoxContainer extends BOTH LayoutableBox and BoxContainerHierarchy*!!!! - *WOULD BE MULTIPLE INHERITANCE*.
 
+  
 *so we have to choose to either re-implement ~BoxContainerHierarchy in BoxContainer~ (alternative) OR re-implement ~LayoutableBox in BoxLayouter~ (current)*
 *the latter (current) seems better, because LayoutableBox is a smaller implementation*
 
-
-
+Example only:
 
 #+BEGIN_SRC ditaa :file box-classes-uml.png :cmdline -E -r
 
@@ -2925,6 +2902,8 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] Address some relevant todo-01-last
 - [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 
+
+** TODO ~27. Release version 0.2~
 
 ** 30. *IDEAS TO IMPLEMENT - table - is this done??*
 

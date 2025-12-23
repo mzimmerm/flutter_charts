@@ -442,7 +442,7 @@ class ExampleDescriptor {
     'ex31_barChart_*_*_newAutoLayouter',
   ]);
 
-  // todo-01-last add layoutsGalleryNew and add all individual which tests layout as part of Legend
+  // todo-00-now add layoutsGalleryNew and add all individual which tests layout as part of Legend
   //         add reasonableAmountOfNew and include coreLayouterTestingNew AND
   // : 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
   // : 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
@@ -454,7 +454,7 @@ class ExampleDescriptor {
   // 'ex800_barChart_*_*_newAutoLayouter',
   //
 
-  // todo-01-last move  individual to  layoutsGalleryNew and merge them here
+  // todo-00-now move  individual to  layoutsGalleryNew and merge them here
   static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
     'ex31_lineChart_*_nonStacked_newAutoLayouter',  // pos+neg data
     'ex31_barChart_*_*_newAutoLayouter',

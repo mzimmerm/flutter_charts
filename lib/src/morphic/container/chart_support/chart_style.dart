@@ -21,7 +21,7 @@ import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtensi
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartOrientation {
-  // todo-011: consider rename:
+  // todo-02: consider rename:
   //    column                   -> inputAxisHorizontal
   //    row                      -> inputAxisVertical
   //    inputDataAxisOrientation -> inputAxis  ; also change this to getter: cross to outputAxis

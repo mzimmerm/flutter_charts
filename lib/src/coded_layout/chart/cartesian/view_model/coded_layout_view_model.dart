@@ -23,13 +23,11 @@ abstract class ChartViewModelCL extends ChartViewModel {
 
   ChartViewModelCL({
     required model.ChartModel chartModel,
-    // todo-00-done: required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

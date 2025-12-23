@@ -31,7 +31,7 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 /// will be placed (these points are also values of the labels).
 ///
 /// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
-/// todo-01 : This should be moved from label_model to axis_model or similar
+/// todo-011 : This should be moved from label_model to axis_model or similar
 ///
 class AxisIntervalTicksAndLabelsDescriptor {
 

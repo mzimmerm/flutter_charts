@@ -16,13 +16,11 @@ import 'package:flutter_charts/src/chart/cartesian/container/legend_container.da
 class BarChartViewModel extends ChartViewModel {
   BarChartViewModel({
     required ChartModel chartModel,
-    // todo-00-done: required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

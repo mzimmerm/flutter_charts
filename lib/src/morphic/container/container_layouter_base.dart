@@ -707,7 +707,7 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
 
 }
 
-/// todo-0100 : Note: The Transposing portion of the layouter is actually UNUSED, and probably not needed. WidthSizer should remain WidthSizer,
+/// todo-011 : Note: The Transposing portion of the layouter is actually UNUSED, and probably not needed. WidthSizer should remain WidthSizer,
 ///       no matter what chart orientation. Same for HeightSizer.
 abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
   /// Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as
@@ -1637,7 +1637,7 @@ abstract class PositioningBoxContainer extends BoxContainer {
       throw StateError('Uneven length: positionedRectsInMe=$positionedRectsInMe, children=$children');
     }
 
-    // todo-014 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
+    // todo-011 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
@@ -2532,7 +2532,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// Sets layoutSize from full constraint in the main axis direction, from OuterRect in cross axis direction.
   ///
   /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
-  /// todo-010 : how is this different from base implementation?
+  /// todo-011 : how is this different from base implementation?
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     ui.Rect positionedChildrenOuterRect = util_flutter
@@ -3048,6 +3048,7 @@ class TableLayoutDefiner {
   TableLayoutDefiner.defaultRowWiseForTableSize({
     required this.numRows,
     required this.numColumns,
+    // It seems this forces all cell definers to center
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
     this.cellsAlignerDefiner,
@@ -3058,9 +3059,6 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
-                // todo-014-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
-                // horizontalAlign: horizontalAlign,
-                // verticalAlign: verticalAlign,
                 // cellConstraints: null,
               ),
             ));
@@ -3729,15 +3727,15 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 /// Passes the same [constraints] it receives from parent to each of it's children.
 ///
 /// For this layouter to act as an actual stack layouter, cooperation from the parent and children is needed, as follows:
-///   - Parent must ensure that the full constraints passed to this layouter do not overflow in some way (todo-011 what??)
-///     This is not a strong requirement, almost (every?) parent layouter must ensure this.
+///   - Parent must ensure that the full constraints passed to this layouter do not overflow.
+///     This is not a unique or strong requirement, almost (every?) parent layouter must ensure this anyway.
 ///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
 ///     this [TransposingStackLayouter] parent.
 ///
 /// 2. By extending the [NonPositioningBoxLayouter] the following can be said :
 ///           - The [layoutSize] is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
 ///           - All [children] paint into the FULL CONSTRAINTS == layoutSize
-/// 1. todo-011 LATER: Create a better StackLayouter, so that:
+/// 1. todo-02: Create a better StackLayouter, so that:
 ///          - allows to obtain constraints that are in some sense limited (divided in both directions)
 ///          - defines the StackingOrigin (maybe something EXISTS for it??? I THINK SO)
 ///            topLeft, topRight, bottomLeft, bottomRight, center, maybe a kind of offset.

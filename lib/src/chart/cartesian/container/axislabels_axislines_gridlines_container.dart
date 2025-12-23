@@ -573,7 +573,7 @@ class TransposingInputGridLines extends TransposingGridLines {
     dataDependency = DataDependency.inputData;
 
     // grid lines are placed at around bars, between this and next bar
-    // todo-00-done-now: if (chartViewModel.chartType == ChartType.barChart) {
+    // if (chartViewModel.chartType == ChartType.barChart) {
     if (chartViewModel is BarChartViewModel) {
       moveTickTo = MoveTickTo.middleThisAndNext;
     } else {
