@@ -47,7 +47,7 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
-    if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
+    if (!chartViewModel.chartOptions.legendOptions.isShown) {
       applyParentOrderedSkip(this, container_base.ParentOrderedSkip.skipLayoutAndPaint());
     }
   }
@@ -155,7 +155,7 @@ abstract class LegendContainer extends container_common.ChartAreaContainer {
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
       textStyle: options.labelCommonOptions.labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textAlign: options.legendOptions.textAlign, // keep left, close to indicator
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
     return labelStyle;
@@ -362,8 +362,8 @@ class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
   })  : _indicatorPaint = indicatorPaint,
         // Create the indicator square, later offset in applyParentOffset
         _indicatorSize = ui.Size(
-          chartViewModel.chartOptions.legendOptions.legendColorIndicatorWidth,
-          chartViewModel.chartOptions.legendOptions.legendColorIndicatorWidth,
+          chartViewModel.chartOptions.legendOptions.colorIndicatorWidth,
+          chartViewModel.chartOptions.legendOptions.colorIndicatorWidth,
         ),
         super(
           chartViewModel: chartViewModel,

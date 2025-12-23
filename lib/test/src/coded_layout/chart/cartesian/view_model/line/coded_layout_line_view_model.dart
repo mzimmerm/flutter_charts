@@ -42,7 +42,7 @@ class LineChartViewModelCL extends live_line_view_model.LineChartViewModelCL {
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),
-      verticalAxisContainerFirst: OutputAxisContainerCL(
+      verticalAxisContainerFirstCL: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),

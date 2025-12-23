@@ -40,7 +40,7 @@ class LineChartViewModel extends ChartViewModel {
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
           chartViewModel: this
       ),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+      verticalAxisContainerFirstCL: TransposingAxisLabels.VerticalAxis(
           chartViewModel: this
       ),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(

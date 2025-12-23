@@ -27,7 +27,7 @@ class ChartRootContainer extends ChartAreaContainer {
     required this.legendContainer,
     required this.horizontalAxisContainer,
     required this.verticalAxisContainer,
-    required this.verticalAxisContainerFirst, // todo-001 : this is only used in coded_layout, so rename it CL
+    required this.verticalAxisContainerFirstCL,
     required this.dataContainer,
     required ChartViewModel   chartViewModel,
   }) : super(chartViewModel: chartViewModel) {
@@ -44,7 +44,7 @@ class ChartRootContainer extends ChartAreaContainer {
     TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-012 will go away when we use VerticalAxisContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-013 will go away when we use verticalAxisContainerFirstCL pre-layout
         cellHeightMinimum: 0.0,
       ),
     );
@@ -93,7 +93,7 @@ class ChartRootContainer extends ChartAreaContainer {
     );
   }
 
-  /// todo-012 The members are only needed during layout of deeper children (e.g., BarPointContainer) to access the members' sizes or constraints
+  /// todo-013 The members are only needed during layout of deeper children (e.g., BarPointContainer) to access the members' sizes or constraints
   ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
@@ -101,7 +101,7 @@ class ChartRootContainer extends ChartAreaContainer {
   // covariant needed on some, probably not all
   covariant late TransposingAxisLabels horizontalAxisContainer;
   covariant late TransposingAxisLabels verticalAxisContainer;
-  covariant late TransposingAxisLabels verticalAxisContainerFirst;
+  covariant late TransposingAxisLabels verticalAxisContainerFirstCL;
   covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,

@@ -41,7 +41,7 @@ class BarChartViewModelCL extends ChartViewModelCL {
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),
-      verticalAxisContainerFirst: OutputAxisContainerCL(
+      verticalAxisContainerFirstCL: OutputAxisContainerCL(
         chartViewModel: this,
         directionWrapperAround: directionWrapperAroundCL,
       ),

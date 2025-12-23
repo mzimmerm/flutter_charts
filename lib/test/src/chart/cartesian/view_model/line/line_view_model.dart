@@ -49,7 +49,7 @@ class LineChartViewModel extends live_line_view_model.LineChartViewModel {
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
           chartViewModel: this
       ),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+      verticalAxisContainerFirstCL: TransposingAxisLabels.VerticalAxis(
           chartViewModel: this
       ),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(

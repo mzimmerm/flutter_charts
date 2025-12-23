@@ -22,12 +22,53 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/line_segment_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/line_segment_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/axis_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/data_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/line_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/line_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex31SomeNegativeValues_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_row_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_row_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_row_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_row_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_row_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_row_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex50StocksWithNegativesWithUserColors_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52LogarithmicScale_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_barChart_row_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded_lineChart_row_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration_test/screenshots_expected/ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter.png" beforeDir="false" afterPath="$PROJECT_DIR$/integration_test/screenshots_expected/ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/bar/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/bar/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/line/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/chart_type/line/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/legend_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/chart_type/bar/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/chart_type/bar/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/chart_type/line/root_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/chart_type/line/root_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/ui2d/point.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/morphic/container/label_container.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/options.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/options.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,60 +247,59 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter Test.Interval.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart absoluteMinimumNew.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex10 - newAutoLayouter.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex10 - oldManualLayouter.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex10.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex30 - explicit y numbers, all small positives.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex32 - line FAILS - explicit x, y, all Y positive, axis starts above zero (1).executor&quot;: &quot;Debug&quot;,
-    &quot;Flutter.main.dart ex35 - no labels - newAutoLayouter.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex35 - no labels - oldManualLayouter.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex40 - manual labels - languages.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex52 logarithmic.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex71.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex72.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex75 new.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex800 12EUCountriesPopulation.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex900 error all 0 data.executor&quot;: &quot;Debug&quot;,
-    &quot;Flutter.main.dart ex900 error all data same 0.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex901 error all data same 50.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main_run_doc_example.dart.executor&quot;: &quot;Run&quot;,
-    &quot;ResourceManagerPrefKey.ResourceType&quot;: &quot;DRAWABLE&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;/home/mzimmermann/.local/share/JetBrains/IdeaIC2024.2/Shell Script/shellcheck&quot;,
-    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;flutter.preview.tool.window.visible&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;flutter__charts__v4__2023-01-26__convert__Presenters__to__BoxContainers&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.1477105&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.spelling&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.23529412&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter Test.Interval.executor": "Run",
+    "Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor": "Run",
+    "Flutter.main.dart absoluteMinimumNew.executor": "Run",
+    "Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter.executor": "Run",
+    "Flutter.main.dart ex10 - newAutoLayouter.executor": "Run",
+    "Flutter.main.dart ex10 - oldManualLayouter.executor": "Run",
+    "Flutter.main.dart ex10.executor": "Run",
+    "Flutter.main.dart ex30 - explicit y numbers, all small positives.executor": "Run",
+    "Flutter.main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero.executor": "Run",
+    "Flutter.main.dart ex32 - line FAILS - explicit x, y, all Y positive, axis starts above zero (1).executor": "Debug",
+    "Flutter.main.dart ex35 - no labels - newAutoLayouter.executor": "Run",
+    "Flutter.main.dart ex35 - no labels - oldManualLayouter.executor": "Run",
+    "Flutter.main.dart ex40 - manual labels - languages.executor": "Run",
+    "Flutter.main.dart ex52 logarithmic.executor": "Run",
+    "Flutter.main.dart ex71.executor": "Run",
+    "Flutter.main.dart ex72.executor": "Run",
+    "Flutter.main.dart ex75 new.executor": "Run",
+    "Flutter.main.dart ex800 12EUCountriesPopulation.executor": "Run",
+    "Flutter.main.dart ex900 error all 0 data.executor": "Debug",
+    "Flutter.main.dart ex900 error all data same 0.executor": "Run",
+    "Flutter.main.dart ex901 error all data same 50.executor": "Run",
+    "Flutter.main_run_doc_example.dart.executor": "Run",
+    "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHELLCHECK.PATH": "/home/mzimmermann/.local/share/JetBrains/IdeaIC2024.2/Shell Script/shellcheck",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "flutter.preview.tool.window.visible": "true",
+    "git-widget-placeholder": "flutter__charts__v4__2023-01-26__convert__Presenters__to__BoxContainers",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.1477105",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.spelling",
+    "settings.editor.splitter.proportion": "0.23529412",
+    "show.migrate.to.gradle.popup": "false"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Dart&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Dart"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib/test/src" />
@@ -1212,12 +1252,12 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1566</line>
+          <line>1581</line>
           <option name="timeStamp" value="69" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1552</line>
+          <line>1567</line>
           <option name="timeStamp" value="70" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
@@ -1242,12 +1282,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1931</line>
+          <line>1946</line>
           <option name="timeStamp" value="96" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1367</line>
+          <line>1386</line>
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
@@ -1267,7 +1307,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>2396</line>
+          <line>2411</line>
           <option name="timeStamp" value="181" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1332,7 +1372,7 @@
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/src/morphic/container/container_layouter_base.dart</url>
-          <line>1182</line>
+          <line>1201</line>
           <option name="timeStamp" value="246" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -1374,6 +1414,11 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart</url>
           <line>327</line>
           <option name="timeStamp" value="257" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/chart_label_container.dart</url>
+          <line>89</line>
+          <option name="timeStamp" value="258" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>

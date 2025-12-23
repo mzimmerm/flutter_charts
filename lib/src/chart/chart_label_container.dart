@@ -79,15 +79,16 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
-    // todo-013 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-00-now : this seems incorrect - used for all labels, yet it acts as legend label!!
     //            used only to get label max size in rotated labels.
     ChartOptions options = chartViewModel.chartOptions;
-    double indicatorSquareSide = options.legendOptions.legendColorIndicatorWidth;
-    double indicatorToLabelPad = options.legendOptions.legendItemIndicatorToLabelPad;
-    double betweenLegendItemsPadding = options.legendOptions.betweenLegendItemsPadding;
+    // todo-00-done: double indicatorSquareSide = options.legendOptions.colorIndicatorWidth;
+    // todo-00-done: double indicatorToLabelPad = options.legendOptions.colorIndicatorToLabelPad;
+    // todo-00-done: double betweenItemsPadding = options.legendOptions.betweenItemsPadding;
 
     // labelMaxWidth from options and constraints on class with this mixin
-    return constraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
+    // todo-00-done: return constraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenItemsPadding);
+    return constraints.maxSize.width;
   }
 }
 

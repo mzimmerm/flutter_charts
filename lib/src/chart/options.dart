@@ -17,9 +17,13 @@ import 'package:flutter_charts/src/chart/cartesian/container/legend_container.da
 /// Generally, some defaults are provided here. Some options, mostly sizing
 /// related, may be overridden or adjusted by the chart auto_layout,
 /// see [SimpleChartContainer].
+///
+/// Note: Consider removal the suffix 'Options' from all variables names below,
+///       (iterativeLayoutOptions => iterativeLayout) as the variables are
+///       always referenced 'chartViewModel.chartOptions.iterativeLayoutOptions',
+///       it is clear iterativeLayout IS options.
 @immutable
 class ChartOptions {
-  // todo-00-next: remove the suffix 'options' from all variables below, as they are always referenced as chartViewModel.chartOptions.iterativeLayoutOptions - it is clear iterativeLayout IS options
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
   final InputAxisContainerOptions inputAxisContainerOptions;
@@ -44,7 +48,7 @@ class ChartOptions {
   const ChartOptions.noLabels()
       : this(
           legendOptions: const LegendOptions(
-            isLegendContainerShown: false,
+            isShown: false,
           ),
           inputAxisContainerOptions: const InputAxisContainerOptions(
             isShown: false,
@@ -103,43 +107,40 @@ class IterativeLayoutOptions {
 @immutable
 class LegendOptions {
   /// Manages showing the legend container on the chart.
-  // todo-001-next rename to isShown to match other names
-  final bool isLegendContainerShown;
+  final bool isShown;
 
   // Series color indicator size - the "Series color indicator"
   // is the square that shows the color of each valuesRow (color of lines or bars)
   // together with data series name (legend name).
 
   /// Margin on the left/right of the [LegendContainer]
-  final double legendContainerMarginLR;
+  final double marginLR;
 
   /// Margin on the top/bottom of the  [LegendContainer]
-  final double legendContainerMarginTB;
+  final double marginTB;
 
   /// Between each legend item pairs (indicator + label)
-  final double betweenLegendItemsPadding;
+  final double betweenItemsPadding;
 
   /// Width of the colored square, indicator of each valuesRow
-  final double legendColorIndicatorWidth;
+  final double colorIndicatorWidth;
 
   /// Between square indicator, to label
-  final double legendItemIndicatorToLabelPad;
+  final double colorIndicatorToLabelPad;
 
-  final ui.TextAlign legendTextAlign;
+  final ui.TextAlign textAlign;
 
   const LegendOptions({
-    this.isLegendContainerShown = true,
-    this.legendContainerMarginLR = 8.0,
-    this.legendContainerMarginTB = 4.0,
-    this.betweenLegendItemsPadding = 4.0,
-    this.legendColorIndicatorWidth = 20.0,
-    this.legendItemIndicatorToLabelPad = 2.0,
-    this.legendTextAlign = ui.TextAlign.left,
+    this.isShown = true,
+    this.marginLR = 8.0,
+    this.marginTB = 4.0,
+    this.betweenItemsPadding = 4.0,
+    this.colorIndicatorWidth = 20.0,
+    this.colorIndicatorToLabelPad = 2.0,
+    this.textAlign = ui.TextAlign.left,
   });
 }
 
-// todo-001-next: rename to InputAxisContainerOptions
-//               ALSO rename all variables
 @immutable
 class InputAxisContainerOptions {
   final bool isShown;
@@ -158,8 +159,6 @@ class InputAxisContainerOptions {
 
 }
 
-// todo-001-next: MAYBE rename to OutputAxisContainerOptions
-//               ALSO rename all variables
 @immutable
 class OutputAxisContainerOptions {
   final bool isShown;

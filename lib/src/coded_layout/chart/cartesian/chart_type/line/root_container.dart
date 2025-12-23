@@ -15,14 +15,14 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
   LineChartRootContainerCL({
     required LegendContainer legendContainer,
     required HorizontalAxisContainerCL horizontalAxisContainer,
-    required OutputAxisContainerCL verticalAxisContainerFirst,
+    required OutputAxisContainerCL verticalAxisContainerFirstCL,
     required OutputAxisContainerCL verticalAxisContainer,
     required DataContainerCL dataContainer,
     required ChartViewModel chartViewModel,
   }) : super(
           legendContainer: legendContainer,
           horizontalAxisContainer: horizontalAxisContainer,
-          verticalAxisContainerFirst: verticalAxisContainerFirst,
+          verticalAxisContainerFirstCL: verticalAxisContainerFirstCL,
           verticalAxisContainer: verticalAxisContainer,
           dataContainer: dataContainer,
           chartViewModel: chartViewModel,

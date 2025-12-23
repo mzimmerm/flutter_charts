@@ -21,7 +21,7 @@ class ChartOptions extends live_options.ChartOptions {
   const ChartOptions.noLabels()
       : this(
     legendOptions: const LegendOptions(
-      isLegendContainerShown: false,
+      isShown: false,
     ),
     inputAxisContainerOptions: const live_options.InputAxisContainerOptions(
       isShown: false,
@@ -39,13 +39,13 @@ class ChartOptions extends live_options.ChartOptions {
 @immutable
 class LegendOptions extends live_options.LegendOptions {
   const LegendOptions({
-    super.isLegendContainerShown,
-    super.legendContainerMarginLR,
-    super.legendContainerMarginTB,
-    super.betweenLegendItemsPadding,
-    super.legendColorIndicatorWidth,
-    super.legendItemIndicatorToLabelPad,
-    super.legendTextAlign,
+    super.isShown,
+    super.marginLR,
+    super.marginTB,
+    super.betweenItemsPadding,
+    super.colorIndicatorWidth,
+    super.colorIndicatorToLabelPad,
+    super.textAlign,
     this.legendAndItemLayoutEnum = test_examples_legend_enums.LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightDefault,
   });
 

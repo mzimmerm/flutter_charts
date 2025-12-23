@@ -45,7 +45,7 @@ class BarChartViewModel extends live_bar_view_model.BarChartViewModel {
       horizontalAxisContainer: TransposingAxisLabels.HorizontalAxis(
           chartViewModel: this
       ),
-      verticalAxisContainerFirst: TransposingAxisLabels.VerticalAxis(
+      verticalAxisContainerFirstCL: TransposingAxisLabels.VerticalAxis(
           chartViewModel: this
       ),
       verticalAxisContainer: TransposingAxisLabels.VerticalAxis(

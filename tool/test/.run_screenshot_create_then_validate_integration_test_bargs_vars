@@ -9,4 +9,9 @@ short=c
 description=Space separated example descriptors or group descriptors
 default=oldFailingInNew
 ---
+name=create_screenshots
+short=i
+description='false' if creation (screenshots) images should be skipped, default 'true'
+default=true
+---
 ---

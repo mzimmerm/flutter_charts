@@ -20,6 +20,7 @@ echo "Running coded_layout examples in : $coded_layout"
 
 exampleDescriptorsAutoLayout="$auto_layout"
 exampleDescriptorsCodedLayout="$coded_layout"
+createScreenshots="$create_screenshots"
 
 # Inner
 function _duplicate_test_files_from_auto_layout_to_coded_layout() {
@@ -157,13 +158,18 @@ for layout in auto_layout coded_layout; do
     _duplicate_test_files_from_auto_layout_to_coded_layout
     sleep 5
   fi
-  # Run the main() in [coded_layout_]screenshot_create_test.dart.
-  # The main() runs all chart example enums from the group - see above drive test for details of expansion.
-  echo "$comment_run_screenshot_create"; sleep 5
-  flutter drive \
-    --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
-    --driver=test_driver/integration_test.dart  \
-    --target=integration_test/"$screenshot_create_test"
+
+  if [[ $createScreenshots == true ]]; then
+    # Run the main() in [coded_layout_]screenshot_create_test.dart.
+    # The main() runs all chart example enums from the group - see above drive test for details of expansion.
+    echo "$comment_run_screenshot_create"; sleep 5
+    flutter drive \
+      --dart-define=EXAMPLE_DESCRIPTORS="$exampleDescriptors" \
+      --driver=test_driver/integration_test.dart  \
+      --target=integration_test/"$screenshot_create_test";
+  else
+    echo "Option create_screenshots set to false for $layout, SKIPPING SCREENSHOTS CAPTURE..."; sleep 5
+  fi
 
   # Run the main() in screenshot_validate_test.dart.
   # The main() runs all chart example enums from the group - see above drive test for details of expansion.

@@ -115,9 +115,10 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   /// Implementor of method in superclass [Container].
   @override
   void paint(ui.Canvas canvas) {
+
     if (orderedSkip.isSkipPaint) {
       return;
-    };
+    }
 
     textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
@@ -151,10 +152,10 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-012 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-012 : todo-00-done-now: this seems incorrect - used for all labels, yet it acts as legend label!!
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      // todo-012 : fix this as not dealing with width < 0 brings issues further
+      // todo-021 : fix this as not dealing with width < 0 brings issues further
       applyParentOrderedSkip(parent as BoxLayouter, ParentOrderedSkip.skipLayoutAndPaint());
       layoutSize = ui.Size.zero;
       return;
@@ -191,7 +192,12 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     _tiltedLabelEnvelope = _createLabelEnvelope();
     ui.Size layoutSize = _tiltedLabelEnvelope.size;
 
-    // todo-012 : add exception if reached with _labelMaxWidth < 0.0
+    // todo-00-done: added exception if reached with _labelMaxWidth < 0.0
+    if (labelMaxWidth < 0.0) {
+      throw StateError('_layoutAndCheckOverflowInTextDirection reached '
+          'with labelMaxWidth < 0.0. labelMaxWidth=$labelMaxWidth');
+    }
+
     if (layoutSize.width > labelMaxWidth) {
       isOverflowingHorizontally = true;
       textPainter.layout(maxWidth: labelMaxWidth);

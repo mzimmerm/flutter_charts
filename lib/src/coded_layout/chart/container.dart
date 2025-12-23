@@ -42,7 +42,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     required this.legendContainer,
     required this.horizontalAxisContainer,
     required this.verticalAxisContainer,
-    required this.verticalAxisContainerFirst,
+    required this.verticalAxisContainerFirstCL,
     required this.dataContainer,
     required ChartViewModel chartViewModel,
   })  : super(chartViewModel: chartViewModel) {
@@ -66,7 +66,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   @override
   late OutputAxisContainerCL verticalAxisContainer;
   @override
-  late OutputAxisContainerCL verticalAxisContainerFirst;
+  late OutputAxisContainerCL verticalAxisContainerFirstCL;
   @override
   late DataContainerCL dataContainer;
 
@@ -133,30 +133,30 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     ui.Offset legendContainerOffset = ui.Offset.zero;
     legendContainer.applyParentOffset(this, legendContainerOffset);
 
-    // ####### 2. Layout [verticalAxisContainerFirst] to get Y container width
+    // ####### 2. Layout [verticalAxisContainerFirstCL] to get Y container width
     //        that moves [HorizontalAxisContainer] and [DataContainer].
-    double verticalAxisContainerFirstHeight = constraints.height - legendContainerSize.height;
-    var verticalAxisContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+    double verticalAxisContainerFirstCLHeight = constraints.height - legendContainerSize.height;
+    var verticalAxisContainerFirstCLBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
-      verticalAxisContainerFirstHeight,
+      verticalAxisContainerFirstCLHeight,
     ));
 
-    // Note: verticalAxisContainerFirst used to be created here as  OutputAxisContainer( chartViewModel: chartViewModel, yLabelsMaxHeightFromFirstLayout: 0.0
-    //       verticalAxisContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
-    //       is not yet set here, as verticalAxisContainerFirst never goes through addChildren which sets _parent on children.
+    // Note: verticalAxisContainerFirstCL used to be created here as  OutputAxisContainer( chartViewModel: chartViewModel, yLabelsMaxHeightFromFirstLayout: 0.0
+    //       verticalAxisContainerFirstCL._parent, checked in applyParentConstraints => assertCallerIsParent
+    //       is not yet set here, as verticalAxisContainerFirstCL never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
-    verticalAxisContainerFirst.applyParentConstraints(this, verticalAxisContainerFirstBoxConstraints);
-    verticalAxisContainerFirst.layout();
+    verticalAxisContainerFirstCL.applyParentConstraints(this, verticalAxisContainerFirstCLBoxConstraints);
+    verticalAxisContainerFirstCL.layout();
 
-    verticalAxisContainer.yLabelsMaxHeightFromFirstLayout = verticalAxisContainerFirst.yLabelsMaxHeight;
+    verticalAxisContainer.yLabelsMaxHeightFromFirstLayout = verticalAxisContainerFirstCL.yLabelsMaxHeight;
     // ####### 3. HorizontalAxisContainer: Given width of OutputAxisContainerFirst, constraint, then layout HorizontalAxisContainer
 
-    ui.Size verticalAxisContainerFirstSize = verticalAxisContainerFirst.layoutSize;
+    ui.Size verticalAxisContainerFirstCLSize = verticalAxisContainerFirstCL.layoutSize;
 
-    // horizontalAxisContainer layout width depends on verticalAxisContainerFirst layout result.  But this dependency can be expressed
+    // horizontalAxisContainer layout width depends on verticalAxisContainerFirstCL layout result.  But this dependency can be expressed
     // as a constraint on horizontalAxisContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
     var horizontalAxisContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      constraints.width - verticalAxisContainerFirstSize.width,
+      constraints.width - verticalAxisContainerFirstCLSize.width,
       constraints.height - legendContainerSize.height,
     ));
 
@@ -167,7 +167,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     horizontalAxisContainer.layoutSize = horizontalAxisContainer.lateReLayoutSize;
 
     ui.Size horizontalAxisContainerSize = horizontalAxisContainer.layoutSize;
-    ui.Offset horizontalAxisContainerOffset = ui.Offset(verticalAxisContainerFirstSize.width, constraints.height - horizontalAxisContainerSize.height);
+    ui.Offset horizontalAxisContainerOffset = ui.Offset(verticalAxisContainerFirstCLSize.width, constraints.height - horizontalAxisContainerSize.height);
     horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset);
 
     // ####### 4. [OutputAxisContainer]: The actual OutputAxisContainer layout is needed, as height constraint for Y container
@@ -190,7 +190,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     // The layout relies on OutputAxisContainer width first time and second time to be the same, as width
     //    was used as remainder space for HorizontalAxisContainer.
     // But height, will NOT be the same, it will be shorter second time.
-    assert (verticalAxisContainerFirstSize.width == verticalAxisContainerSize.width);
+    assert (verticalAxisContainerFirstCLSize.width == verticalAxisContainerSize.width);
     ui.Offset verticalAxisContainerOffset = ui.Offset(0.0, legendContainerSize.height);
     verticalAxisContainer.applyParentOffset(this, verticalAxisContainerOffset);
 
