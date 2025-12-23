@@ -146,13 +146,12 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     layoutSize = sizeAndOverflow.item1;
   }
 
-  ///  Calculated and sets [_labelMaxWidth] used to layout [textPainter.layout].
+  /// Calculated and sets [_labelMaxWidth] used to layout [textPainter.layout].
   ///
   ///   [layoutableBoxParentSandbox.constraints] is needed to have been
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-012 : todo-00-done-now: this seems incorrect - used for all labels, yet it acts as legend label!!
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       // todo-021 : fix this as not dealing with width < 0 brings issues further
@@ -162,6 +161,15 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     }
   }
 
+  /// Implementations should return maximum label width.
+  ///
+  /// The returned value is used to make a decision whether
+  /// a label should be skipped (if too wide).
+  ///
+  /// The return value may be either maximum with of child constraints,
+  /// or maximum width of child constrains minus a value of label padding,
+  /// label border or similar label width restricting value.
+  ///
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints();
 
   // ##### Internal methods
@@ -192,7 +200,6 @@ mixin TiltableLabelContainerMixin on BoxContainer {
     _tiltedLabelEnvelope = _createLabelEnvelope();
     ui.Size layoutSize = _tiltedLabelEnvelope.size;
 
-    // todo-00-done: added exception if reached with _labelMaxWidth < 0.0
     if (labelMaxWidth < 0.0) {
       throw StateError('_layoutAndCheckOverflowInTextDirection reached '
           'with labelMaxWidth < 0.0. labelMaxWidth=$labelMaxWidth');

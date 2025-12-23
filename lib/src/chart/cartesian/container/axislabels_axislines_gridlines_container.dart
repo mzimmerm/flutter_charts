@@ -1,3 +1,4 @@
+import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level
@@ -572,7 +573,8 @@ class TransposingInputGridLines extends TransposingGridLines {
     dataDependency = DataDependency.inputData;
 
     // grid lines are placed at around bars, between this and next bar
-    if (chartViewModel.chartType == ChartType.barChart) {
+    // todo-00-done-now: if (chartViewModel.chartType == ChartType.barChart) {
+    if (chartViewModel is BarChartViewModel) {
       moveTickTo = MoveTickTo.middleThisAndNext;
     } else {
       moveTickTo = MoveTickTo.stayAtThis;

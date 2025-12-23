@@ -25,13 +25,13 @@ import 'package:flutter_charts/src/chart/cartesian/view_model/line/line_view_mod
 class LineChartViewModel extends live_line_view_model.LineChartViewModel {
   LineChartViewModel({
     required ChartModel chartModel,
-    required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
+    // todo-00-done: required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    chartType: chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE
+    // todo-00-done: chartType: chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

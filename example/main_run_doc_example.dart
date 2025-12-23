@@ -69,7 +69,7 @@ Widget chartToRun() {
   // Uses newChartLayouter
   ChartViewModel lineChartViewModel = live_line_view_model.LineChartViewModel(
     chartModel: chartModel,
-    chartType: chartType,
+    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
   );

@@ -74,7 +74,7 @@ typedef ClsPointToNullableContainer = data_container.BasePointContainer? Functio
 abstract class ChartViewModel extends Object with container_common.ChartBehavior {
   ChartViewModel({
     required model.ChartModel chartModel,
-    required this.chartType,
+    // todo-00-done: required this.chartType,
     required this.chartOrientation,
     required this.chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
@@ -268,7 +268,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
   final ChartStacking chartStacking;
 
-  final ChartType chartType;
+  // todo-00-done: final ChartType chartType;
 
   /// The root container (view) is created by this view model [ChartViewModel]
   /// on every [FlutterChartPainter] paint and repaint.

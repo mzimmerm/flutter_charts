@@ -21,13 +21,13 @@ import 'package:flutter_charts/src/chart/cartesian/view_model/bar/bar_view_model
 class BarChartViewModel extends live_bar_view_model.BarChartViewModel {
   BarChartViewModel({
     required ChartModel chartModel,
-    required ChartType chartType,
+    // todo-00-done: required ChartType chartType,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    chartType: chartType,
+    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

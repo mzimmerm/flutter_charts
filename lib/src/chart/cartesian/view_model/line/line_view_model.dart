@@ -16,13 +16,13 @@ import 'package:flutter_charts/src/chart/cartesian/container/legend_container.da
 class LineChartViewModel extends ChartViewModel {
   LineChartViewModel({
     required ChartModel chartModel,
-    required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
+    // todo-00-done: required ChartType chartType, // todo-01-last-last : This is ChartType.lineChart. REMOVE FROM HERE AND ALL EQUIVALENTS
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    chartType: chartType,
+    // todo-00-done: chartType: chartType,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,

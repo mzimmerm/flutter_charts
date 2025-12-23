@@ -1105,10 +1105,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   @override
   void layout() {
 
-    //     TransposingInputAxisLabels // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
-    //     TransposingInputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
-    //     TransposingOutputAxisLabels  // todo-001 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
-    //     TransposingOutputGridLines  // todo-001 : should be private? always indirect use in TransposingCrossGridLines
+    //     TransposingInputAxisLabels // todo-021 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
+    //     TransposingInputGridLines  // todo-021 : should be private? always indirect use in TransposingCrossGridLines
+    //     TransposingOutputAxisLabels  // todo-021 : should be private? always indirect use in TransposingAxisLabels.HorizontalAxis/VerticalAxis
+    //     TransposingOutputGridLines  // todo-021 : should be private? always indirect use in TransposingCrossGridLines
 
     if (orderedSkip.isSkipLayout) {
       layoutSize = ui.Size.zero;
@@ -1595,9 +1595,6 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     }
   }
 }
-
-///////////////////////////////
-// todo-00-next - see org doc section 'Add ability to ignore BoxContainer during layout and/or paint. Used to show chart without axes, and/or labels, and/or legend'
 
 // ---------- Positioning and not-positioning layouters, rolling positioning layouters, Row and Column, Greedy ---------
 
