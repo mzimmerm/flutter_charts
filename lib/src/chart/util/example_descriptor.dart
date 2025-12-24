@@ -68,7 +68,7 @@ enum ExampleEnum {
   ex32AllPositiveYsYAxisStartsAbove0,
   ex33AllNegativeYsYAxisEndsBelow0,
   ex34OptionsDefiningUserTextStyleOnLabels,
-  ex35AnimalsBySeasonNoLabelsShown,
+  ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
   ex52LogarithmicScale,
@@ -183,8 +183,8 @@ class ExampleDescriptor {
     //
     const Tuple2(ExampleEnum.ex34OptionsDefiningUserTextStyleOnLabels, ChartType.lineChart),
     //
-    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.lineChart),
-    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoLabelsShown, ChartType.barChart),
+    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown, ChartType.lineChart),
+    const Tuple2(ExampleEnum.ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown, ChartType.barChart),
     //
     const Tuple2(ExampleEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ChartType.lineChart),
     //
@@ -512,8 +512,8 @@ class ExampleDescriptor {
 
   // Use old coded_layouter as new auto_layouter fails
   static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
-    'ex35AnimalsBySeasonNoLabelsShown_barChart_column_stacked_oldManualLayouter',
-    'ex35AnimalsBySeasonNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart_column_stacked_oldManualLayouter',
+    'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
     'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',

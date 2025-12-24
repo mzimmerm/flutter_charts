@@ -790,7 +790,7 @@ class ExampleWidgetCreator {
           chartOptions: chartOptions,
         );
         break;
-      case ExampleEnum.ex35AnimalsBySeasonNoLabelsShown:
+      case ExampleEnum.ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown:
         // Set chart options to show no labels
         chartOptions = const test_options.ChartOptions.noLabels();
 

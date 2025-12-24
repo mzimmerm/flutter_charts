@@ -13,8 +13,8 @@
   - [[#ex32allpositiveysyaxisstartsabove0_verticalbarchart-ex32allpositiveysyaxisstartsabove0_verticalbarchart][ex32AllPositiveYsYAxisStartsAbove0_barChart <<ex32AllPositiveYsYAxisStartsAbove0_barChart>>]]
   - [[#ex33allnegativeysyaxisendsbelow0_linechart-ex33allnegativeysyaxisendsbelow0_linechart][ex33AllNegativeYsYAxisEndsBelow0_lineChart <<ex33AllNegativeYsYAxisEndsBelow0_lineChart>>]]
   - [[#ex34optionsdefiningusertextstyleonlabels_linechart-ex34optionsdefiningusertextstyleonlabels_linechart][ex34OptionsDefiningUserTextStyleOnLabels_lineChart <<ex34OptionsDefiningUserTextStyleOnLabels_lineChart>>]]
-  - [[#ex35animalsbyseasonnolabelsshown_linechart-ex35animalsbyseasonnolabelsshown_linechart][ex35AnimalsBySeasonNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoLabelsShown_lineChart>>]]
-  - [[#ex35animalsbyseasonnolabelsshown_verticalbarchart-ex35animalsbyseasonnolabelsshown_verticalbarchart][ex35AnimalsBySeasonNoLabelsShown_barChart <<ex35AnimalsBySeasonNoLabelsShown_barChart>>]]
+  - [[#ex35animalsbyseasonnolabelsshown_linechart-ex35animalsbyseasonnolabelsshown_linechart][ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart>>]]
+  - [[#ex35animalsbyseasonnolabelsshown_verticalbarchart-ex35animalsbyseasonnolabelsshown_verticalbarchart][ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart <<ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart>>]]
   - [[#ex40languageswithyordinaluserlabelsandusercolors_linechart-ex40languageswithyordinaluserlabelsandusercolors_linechart][ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart <<ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart>>]]
   - [[#ex50stockswithnegativeswithusercolors_verticalbarchart-ex50stockswithnegativeswithusercolors_verticalbarchart][ex50StocksWithNegativesWithUserColors_barChart <<ex50StocksWithNegativesWithUserColors_barChart>>]]
   - [[#ex52animalsbyseasonlogarithmicscale_linechart-ex52animalsbyseasonlogarithmicscale_linechart][ex52LogarithmicScale_lineChart <<ex52LogarithmicScale_lineChart>>]]
@@ -193,7 +193,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
 
 | [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                                   | [[ex10RandomData_barChart][file:doc/readme_images/ex10RandomData_barChart_w150.png]]                        | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_w150.png]] |
 | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                           | [[ex31SomeNegativeValues_barChart][file:doc/readme_images/ex31SomeNegativeValues_barChart_w150.png]]                | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_barChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_barChart_w150.png]]         |
-| [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]                 | [[ex34OptionsDefiningUserTextStyleOnLabels_lineChart][file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png]]     | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]           | [[ex35AnimalsBySeasonNoLabelsShown_barChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart_w150.png]]           |
+| [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]                 | [[ex34OptionsDefiningUserTextStyleOnLabels_lineChart][file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png]]     | [[ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart_w150.png]]           | [[ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart][file:doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart_w150.png]]           |
 | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_barChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart_w150.png]] | [[ex52LogarithmicScale_lineChart][file:doc/readme_images/ex52LogarithmicScale_lineChart_w150.png]]        | [[ex52LogarithmicScale_barChart][file:doc/readme_images/ex52LogarithmicScale_barChart_w150.png]]        |
 | [[ex60LabelsIteration1_barChart][file:doc/readme_images/ex60LabelsIteration1_barChart_w150.png]]                      | [[ex60LabelsIteration2_barChart][file:doc/readme_images/ex60LabelsIteration2_barChart_w150.png]]                  | [[ex60LabelsIteration3_barChart][file:doc/readme_images/ex60LabelsIteration3_barChart_w150.png]]                | [[ex60LabelsIteration4_barChart][file:doc/readme_images/ex60LabelsIteration4_barChart_w150.png]]                       |
 | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]]                     |                                                                                        |                                                                                      |                                                                                             |
@@ -716,7 +716,7 @@ Result
 [[file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png]]
 
 
-** ex35AnimalsBySeasonNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoLabelsShown_lineChart>>
+** ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart>>
 
 Code
 
@@ -764,10 +764,10 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png]]
+[[file:doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart.png]]
 
 
-** ex35AnimalsBySeasonNoLabelsShown_barChart <<ex35AnimalsBySeasonNoLabelsShown_barChart>>
+** ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart <<ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart>>
 
 Code
 
@@ -815,7 +815,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart.png]]
+[[file:doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart.png]]
 
 
 ** ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart <<ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart>>

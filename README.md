@@ -12,8 +12,8 @@
     8.  [ex32AllPositiveYsYAxisStartsAbove0\_barChart ](#orgfe5d568)
     9.  [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#org86b4136)
     10. [ex34OptionsDefiningUserTextStyleOnLabels\_lineChart ](#org260cba6)
-    11. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#org3d3c134)
-    12. [ex35AnimalsBySeasonNoLabelsShown\_barChart ](#org7a1ade3)
+    11. [ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown\_lineChart ](#org3d3c134)
+    12. [ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown\_barChart ](#org7a1ade3)
     13. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc6be307)
     14. [ex50StocksWithNegativesWithUserColors\_barChart ](#org91f6516)
     15. [ex52LogarithmicScale\_lineChart ](#org77e5f4f)
@@ -84,8 +84,8 @@ To quickly test the code, you can paste the method `chartToRun()` into the sampl
 <tr>
 <td class="org-left"><a href="#orgd322ff6"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#orgcdf5631"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgd400995"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org9227186"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgd400995"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org9227186"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
@@ -594,7 +594,7 @@ Result
 
 <a id="org3d3c134"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_lineChart <a id="orgd400995"></a>
+## ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown\_lineChart <a id="orgd400995"></a>
 
 Code
 
@@ -636,12 +636,12 @@ Code
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart.png "Line Chart caption")
 
 
 <a id="org7a1ade3"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_barChart <a id="org9227186"></a>
+## ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown\_barChart <a id="org9227186"></a>
 
 Code
 
@@ -683,7 +683,7 @@ Code
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart.png "Line Chart caption")
 
 
 <a id="orgc6be307"></a>
