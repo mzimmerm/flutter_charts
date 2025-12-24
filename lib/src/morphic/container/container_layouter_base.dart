@@ -946,7 +946,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Set late in [layout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   ///
-  /// todo-04-last : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
+  /// todo-03 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
   @override
   late final ui.Size layoutSize;
 
@@ -4326,7 +4326,7 @@ class _MainAndCrossPositionedSegments {
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* END of BoxContainer:
-  // todo-04 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
+  // todo-04-morph : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
   //           ParentTiltTransform, ParentSheerTransform etc.
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTransformMatrix] during object

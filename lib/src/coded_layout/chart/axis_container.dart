@@ -201,7 +201,7 @@ class OutputAxisContainerCL
   }
 
   double get yLabelsMaxHeight {
-    // todo-04 replace-this-pattern-with-fold - look for '? 0.0'
+    // todo-04-replace-this-pattern-with-fold - look for '? 0.0'
     return outputLabelContainerCLs.isEmpty
         ? 0.0
         : outputLabelContainerCLs.map((outputLabelContainer) => outputLabelContainer.layoutSize.height).reduce(math.max);

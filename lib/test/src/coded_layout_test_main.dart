@@ -854,7 +854,6 @@ class ExampleWidgetCreator {
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
         // In each column, adding it's absolute values should add to same number:
-        // todo-04 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
 
         chartModel = ChartModel(
           // each column should add to same number. everything else is relative.

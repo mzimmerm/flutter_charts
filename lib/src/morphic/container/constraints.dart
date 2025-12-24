@@ -189,7 +189,7 @@ abstract class BoundingBoxesBase {
   ///     and client asks to divide the constraint into smaller constraints given the parent's children weight.
   ///     Each weight acts along the axis orientation given by [divideAlongAxis].
   ///
-  // todo-04 : separate into methods:
+  // todo-03-separate-into-methods:
   //    - divideEvenlyIntoCount: params : divideIntoCount, divideAlongAxis
   //    - divideByChildrenWeights: params : childrenWeights, divideAlongAxis
   //    - copyIntoCount: params: copyCount, divideAlongAxis
@@ -550,7 +550,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
-  // todo-04 : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
+  // todo-03 : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));

@@ -57,24 +57,9 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
       ),
       textDirection: labelStyle.textDirection,
       textAlign: labelStyle.textAlign,
-      // center in available space todo-02 textScaleFactor does nothing ??
-      textScaleFactor: labelStyle.textScaleFactor,
+      // todo-00-done: deprecated. If needed, replace w textScaler: textScaleFactor: labelStyle.textScaleFactor,
       // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     );
-
-    // _labelStyle = labelStyle,
-    // var text = new widgets.TextSpan(
-    //   text: label,
-    //   style: _labelStyle.textStyle, // All labels share one style object
-    // );
-    // _textPainter = new widgets.TextPainter(
-    //   text: text,
-    //   textDirection: _labelStyle.textDirection,
-    //   textAlign: _labelStyle.textAlign,
-    //   // center in available space
-    //   textScaleFactor: _labelStyle.textScaleFactor,
-    //   // todo-04 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-    // ); //  textScaleFactor does nothing ??
   }
 
   @override

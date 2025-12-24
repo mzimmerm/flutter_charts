@@ -27,9 +27,6 @@ enum LabelFitMethod {
 /// until [maxLabelReLayouts] is reached.
 class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// Constructor uses default values from [ChartOptions]
-  // todo-04 : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-  //                But they still need to default from options or somewhere?
-  //                Also try use as a mixin
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
   })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
