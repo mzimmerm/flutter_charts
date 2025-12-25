@@ -21,18 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/chart_label_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/util/extensions_flutter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/util/extensions_flutter.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/frequent_commands.org" beforeDir="false" afterPath="$PROJECT_DIR$/tool/frequent_commands.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/.run_screenshot_create_then_validate_integration_test_bargs_vars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/run_all_tests.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_all_tests.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -281,7 +272,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/cartesian" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex72">
+  <component name="RunManager" selected="Flutter.main.dart ex30 - explicit y numbers, all small positives">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />

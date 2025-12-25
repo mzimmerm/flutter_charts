@@ -2464,162 +2464,7 @@ When done:
 
 
 
-** LATER 19.1. Design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
-
-*NOTE: IN DART 'with MixinSomething' IMPLIES 'extends' (as if BY PASTING CODE) - this MIMICKs MULTIPLE INHERITANCE*
-
-#+begin_src artist
-
-
-    +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
-    | abstract class LayoutableBox                                                                |       |abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager                                           |
-    |   abstract: everything                                                                      |       |  abstract:                                                                                                                  |
-    |   - ui.Size get layoutSize;                                                                 |       |    - void buildAndReplaceChildren();                                                                                        |
-    |   - ui.Offset get offset;                                                                   |       |    - BoxContainer? _root;                                                                                                   |
-    |   - void applyParentOffset(LayoutableBox caller, ui.Offset offset);                         |       |  concrete:                                                                                                                  |
-    |   - void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);                    |       |    - @override                                                                                                              |
-    |   - void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints); |       |    - List<Keyed> get keyedMembers => _children;                                                                             |
-    |   - void layout();                                                                          |       |    - final List<BoxContainer> __children = [];                                                                              |
-    |                                                                                             |       |    - List<BoxContainer> get _children => List.from(__children);                                                             |
-    |                                                                                             |       |    - void _ensureKeySet(BoxContainer thisContainer, ContainerKey? key) {..}                                                 |
-    |                                                                                             |       |    - void _forceContainerToParentChildren(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {..}    |
-    |                                                                                             |       |    - void addChildren(List<BoxContainer> addedChildren) {..}                                                                |
-    |                                                                                             |       |    - void replaceChildrenWith(List<BoxContainer> newChildren) {..}                                                          |
-    |                                                                                             |       |    - void buildAndReplaceChildrenDefault() {..empty}                                                                        |
-    |                                                                                             |       |    - bool get isRoot => _parent == null;                                                                                    |
-    |                                                                                             |       |    - bool get isLeaf => __children.isEmpty;                                                                                 |
-    |                                                                                             |       |    - BoxContainer get root {..}                                                                                             |
-    |                                                                                             |       |    - __propagateRootCacheUp(BoxContainer cachedRoot) {..}                                                                   |
-    |                                                                                             |       |                                                                                                                             |
-    |                                                                                             |       |                                                                                                                             |
-    +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
-                                                     ^             ^                                                                                   ^
-                                                     | implements  | implements LayoutableBox                                                          |
-                                                     |             ---------------------------------------------------------------------------------   |
-                                                     |                                                                                             |   |
-                                                     |                                                                                             |   | extends
-                                                     |        extends with BoxLayouter, also implements LayoutableBox                              |   |
-                                                     |     +----------------------------------------------------------------------------------+    |   |
-                                                     |     |                                                                                  |    |   |
-                                                     |     V                                                                                  |    |   |
-    +--------------------------------------------------------------------------------------+              +-----------------------------------+----+-----------------------------------------------+
-    | mixin BoxLayouter implements LayoutableBox                                           |              | abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter             |
-    |                                                                                      |              |   implements                                                                           |
-    |                                                                                      |              |       LayoutableBox,                                                                   |
-    |                                                                                      |              |       Keyed,                                                                           |
-    |                                                                                      |              |       UniqueKeyedObjectsManager                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |   todo-03 add abstract and concrete to both BoxLayouter and BoxContainer             |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |   Note:   pen is for inputting text. text is for figlets                             |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |                                                                                        |
-    +--------------------------------------------------------------------------------------+              +----------------------------------------------------------------------------------------+
-#+end_src
-
-
-Currently, we have:
-
-- abstract class ~LayoutableBox~ *top of hierarchy*
-  - mixin ~BoxLayouter~ implements LayoutableBox                                       // *BoxLayouter  is LayoutableBox BUT RE-IMPLEMENTS*
-  - abstract class ~BoxContainer~ extends ~BoxContainerHierarchy~ with ~LayoutableBox~ // *BoxContainer is LayoutableBox AND BoxContainerHierarchy*
-  -                                                                                    // *BoxContainer is NOT BoxLayouter*
-  -                                                                                    // *BoxLayouter  is NOT BoxContainer*
-
-
-Why NOT:
-
-class ~BoxLayouter~ extends ~LayoutableBox~ *AND* class ~BoxContainer~ extends ~LayoutableBox~???
-
-- *that way BoxLayouter contains all ~LayoutableBox~ implementation AND ~BoxContainer~ also contains ~LayoutableBox~ implementation* ???
-- *NOT POSSIBLE, THAT WOULD REQUIRE BoxContainer extends BOTH LayoutableBox and BoxContainerHierarchy*!!!! - *WOULD BE MULTIPLE INHERITANCE*.
-
-  
-*so we have to choose to either re-implement ~BoxContainerHierarchy in BoxContainer~ (alternative) OR re-implement ~LayoutableBox in BoxLayouter~ (current)*
-*the latter (current) seems better, because LayoutableBox is a smaller implementation*
-
-Example only:
-
-#+BEGIN_SRC ditaa :file box-classes-uml.png :cmdline -E -r
-
-     Parent Classes
-                          +-------------------+                              +-----------------+
-                          | BoxLayouter   c1AF|                              | cFFC   {s}      |
-                          | mixin             |                              |                 |
-                          +-------------------+                              |                 |
-      O is bullet point-> | o field2          |                              |                 |
-                          | o field3          |                     +------->|                 |
-                          | o field4          |      dotted lines   :        |                 |
-                          | o field5          |                     |        |                 |
-                          +-------------------+                     |        +-----------------+
-                          | o method1()       |      point marker   *
-                          |                   |                     |        +-----------------+
-                          +-------------------+                     |        : There           |
-                           ^        ^       ^                       |        |                 |
-                           |        |       |                       |        |                 |
-     Child classes         |        |       |                       +--------|        +-------+|
-                           |        |       |                                |        | Hi    ||
-           +---------------+        |       +--------------+                 |        +-------+|
-           |                        |                      |                 +-----------------+
-           |                        |                      |
-           |              +--------------------------------------------+
-           |              |         |                      |           |
-    +------+--------+     | +-------+-------+      +-------+-------+   |
-    | Child1    cF88|     | | Child2    cRED|      | Child3    c1FF|   |<------ We are gonna change
-    +---------------+     | +---------------+      +---------------+   |        Child2 and Child3
-    | field1        |     | | field2 Number |      | field1        |   |
-    | field2        |     | | field1: Str   |      | field2        |   |
-    | field3        |     | |       ^       |      +---------------+   |
-    |               |     | |       |       |      | method        |   |
-    +---------------+     | +---------------+      +---------------+   |
-                          |         |                                  |
-                          |         |                                  |
-                          +--------------------------------------------+
-                                    |
-                                    +----------------------------------------  Do not use colon, it
-                                                                               is interpreted as dotted
-                                                                               line
-
-       Table created as "el table" can be placed to artist and looks good - maintains relative column width, nice
-
-
-       +----+----+----+----+----+
-       | 10 | 20 | 30 | 40 | aa |             ..                         +---------+
-       +----+----+----+----+----+              ....                      |         |
-       | 11 | 21 | 31 |    | aa |                 ...                    |         |
-       +----+----+----+----+----+                   ..                   |         |
-       | 12 | 22 | 32 |    | aa |                     .                  +---------+
-       +----+----+----+----+----+
-       | 13 | 23 | 33 |    | aa |
-       +----+----+----+----+----+
-       | 14 | 24 | 34 |    | aa |
-       +----+----+----+----+----+
-       | 15 | 25 | 35 |    | aa |
-       +----+----+----+----+----+
-
-
-       +---------------+--------------+-------------+------------+-------------------+
-       |    10         |     20       |   30        |   40       |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-       | some          |              |             |            |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-       | other text    |              |             |            |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-       |               |              |             |            |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-       |               |              |             |            |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-       |               |              |             |            |                   |
-       +---------------+--------------+-------------+------------+-------------------+
-#+END_SRC
-
-
-** TODO-NEXT ~20. Fix charts that are NOT working in new auto_layouter~
+** DONE ~20. Fix charts that are NOT working in new auto_layouter~
 
 Failing auto-layouter has several categories
 
@@ -2807,16 +2652,18 @@ The coded_layout oldManualLayout works, because it does it's own layout on top C
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
 #+end_example
 
-*** TODO-NEXT Failing known reason - a chart without labels not implemented
+*** DONE Failing known reason - a chart without labels not implemented
 
-failing:
+fixed all failing:
 
 #+begin_example
     'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart_column_stacked_oldManualLayouter',
     'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
 #+end_example
 
-*** TODO-NEXT Failing to rotate or skip labels
+*** DONE Failing to rotate or skip labels
+
+all failing now work
 
 #+begin_example
     'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
@@ -2831,50 +2678,32 @@ failing:
 
 - [ ] Make sure that ExternalTicksRollingLayouter throws exception if number of ticks and children differ.
 - [ ] In axis_and_grid_container, make following classes private: AxisLineContainer, TransposingInputAxisLine, TransposingOutputAxisLine
-- [ ] Implement ability to hide Container for layout and painting, or just painting
-  - [ ] Add ContainerHiding class that controls every BoxContainer layout and paint
-    - maybe this is enum
-    - isLayoutOnly
-    - isPainted
-    - if first false, second must be false
-    - layoutNoPaint
-    - noLayoutNoPaint
-    - [ ] Think about places where and how to use it. Look at current code
+- [X] Implement ability to hide Container for layout and painting, or just painting
     
 
 
-** TODO-NEXT ~21. Refactor / rename consideration~
 
- - [ ] *CONSIDER* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
- - [ ] Consider rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but agains this is used a lot and related to a lot*
- - [ ] Rename boundingRect to envelopeRect
- - [ ] 
- - 
+** TODO ~21. Bring dependencies up to latest~
 
-** TODO-NEXT ~22. Figure out how to create, name, and keep some basic chart layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis~ 4 days. Should start June 2, end June 5.
+- [ ] Update Opensuse
+- [ ] Update flutter
+- [ ] Validate tests working, commit
+- [ ] Bring dependencies to latest
+- [ ] Validate tests working, commit
+-
 
-Thoughts on descriptive format of such layout templates:
+** TODO ~25. HUGE: Containers to WARPS~
 
-- 'chartType=barChart_chartLayoutTemplate=Column(Legend, (Table(OutputAxisVertical11, DataContainer12, EmptyCorner21, InputAxisHorizontal22))_chartStacking=stacked' : the name of OutputAxisVertical determines 'column', OutputAxisHorizontal would be 'row'
-  - this could be also called 'chartType=barChart_chartLayoutTemplate=default_chartStacking=stacked'
+start doing Warp stuff:
 
-** LATER-BUT-REVIEW-NEXT Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
+- [ ] Start with everything is a transform!
+  - [ ] 
+- [ ] Rename Container to Warp
+- [ ] Split flutter_charts to Warpic and flutter_charts
+- [ ] 
+- [ ] 
 
-~Cleanup places using public late final fields~
-
-See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-without-initializers and change all public late final members to private, adding a public getter.
-
-~use package imports (no relative imports)~
-
-See https://dart.dev/tools/linter-rules#always_use_package_imports 
-** LATER-BUT-REVIEW-NEXT ~BACKUPs~
-
-- [ ] Exclude from backups:
-  1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested # do it for flutter_charts*
-  2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/test/tmp (may already be, see above)
-  3. 
-
-** TODO ~23. Add Spacing to charts~
+** TODO ~23. Beautify Charts: Add Spacing, make axis and grids thinner, what else????~
 
 ** TODO ~24. LARGE: Layout related changes~
 
@@ -2883,9 +2712,38 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
   
 
-** TODO ~25. HUGE: Containers to MORPHS~
+** LATER ~Refactor / rename consideration~
 
-  - [ ] start doing Morph stuff: start with everything is a transform!
+ - [ ] *CONSIDER CAREFULLY:* in view_model.PointModel rename outputValue to trfdOutputDatum *but this is used a lot and related to a lot of other naming that would have to change as well*
+ - [ ] *CONSIDER CAREFULLY:* rename around FromTransposing2DValueRange to FromTransposing2DDataInterval *but again this is used a lot and related to a lot*
+ - [ ] Rename boundingRect to envelopeRect
+
+** TODO ~27. Release version 0.2~
+
+** LATER ~Add Chart Layout Templates; Follow Linter rules; Adjust Backups~
+
+*** LATER Figure out how to create, name, and keep some basic chart layout templates, similar to LegendAndItemLayoutEnum - e.g. to pre-layout Y axis
+
+Thoughts on descriptive format of such layout templates:
+
+- 'chartType=barChart_chartLayoutTemplate=Column(Legend, (Table(OutputAxisVertical11, DataContainer12, EmptyCorner21, InputAxisHorizontal22))_chartStacking=stacked' : the name of OutputAxisVertical determines 'column', OutputAxisHorizontal would be 'row'
+  - this could be also called 'chartType=barChart_chartLayoutTemplate=default_chartStacking=stacked'
+
+*** LATER Follow linter rules: 1) in late final and 2) use package imports (no relative imports)
+
+~Cleanup places using public late final fields~
+
+See https://dart.dev/effective-dart/design#avoid-public-late-final-fields-without-initializers and change all public late final members to private, adding a public getter.
+
+~use package imports (no relative imports)~
+
+See https://dart.dev/tools/linter-rules#always_use_package_imports 
+*** LATER BACKUPs
+
+- [ ] Exclude from backups:
+  1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/integration_test/screenshots_tested # do it for flutter_charts*
+  2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/test/tmp (may already be, see above)
+  3. 
 
 ** TODO ~26. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places~
 
@@ -2900,7 +2758,160 @@ See https://dart.dev/tools/linter-rules#always_use_package_imports
 - [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 
 
-** TODO ~27. Release version 0.2~
+** NOTE Design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
+
+*NOTE: IN DART 'with MixinSomething' IMPLIES 'extends' (as if BY PASTING CODE) - this MIMICKs MULTIPLE INHERITANCE*
+
+#+begin_src artist
+
+
+    +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
+    | abstract class LayoutableBox                                                                |       |abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager                                           |
+    |   abstract: everything                                                                      |       |  abstract:                                                                                                                  |
+    |   - ui.Size get layoutSize;                                                                 |       |    - void buildAndReplaceChildren();                                                                                        |
+    |   - ui.Offset get offset;                                                                   |       |    - BoxContainer? _root;                                                                                                   |
+    |   - void applyParentOffset(LayoutableBox caller, ui.Offset offset);                         |       |  concrete:                                                                                                                  |
+    |   - void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);                    |       |    - @override                                                                                                              |
+    |   - void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints); |       |    - List<Keyed> get keyedMembers => _children;                                                                             |
+    |   - void layout();                                                                          |       |    - final List<BoxContainer> __children = [];                                                                              |
+    |                                                                                             |       |    - List<BoxContainer> get _children => List.from(__children);                                                             |
+    |                                                                                             |       |    - void _ensureKeySet(BoxContainer thisContainer, ContainerKey? key) {..}                                                 |
+    |                                                                                             |       |    - void _forceContainerToParentChildren(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {..}    |
+    |                                                                                             |       |    - void addChildren(List<BoxContainer> addedChildren) {..}                                                                |
+    |                                                                                             |       |    - void replaceChildrenWith(List<BoxContainer> newChildren) {..}                                                          |
+    |                                                                                             |       |    - void buildAndReplaceChildrenDefault() {..empty}                                                                        |
+    |                                                                                             |       |    - bool get isRoot => _parent == null;                                                                                    |
+    |                                                                                             |       |    - bool get isLeaf => __children.isEmpty;                                                                                 |
+    |                                                                                             |       |    - BoxContainer get root {..}                                                                                             |
+    |                                                                                             |       |    - __propagateRootCacheUp(BoxContainer cachedRoot) {..}                                                                   |
+    |                                                                                             |       |                                                                                                                             |
+    |                                                                                             |       |                                                                                                                             |
+    +---------------------------------------------------------------------------------------------+       +-----------------------------------------------------------------------------------------------------------------------------+
+                                                     ^             ^                                                                                   ^
+                                                     | implements  | implements LayoutableBox                                                          |
+                                                     |             ---------------------------------------------------------------------------------   |
+                                                     |                                                                                             |   |
+                                                     |                                                                                             |   | extends
+                                                     |        extends with BoxLayouter, also implements LayoutableBox                              |   |
+                                                     |     +----------------------------------------------------------------------------------+    |   |
+                                                     |     |                                                                                  |    |   |
+                                                     |     V                                                                                  |    |   |
+    +--------------------------------------------------------------------------------------+              +-----------------------------------+----+-----------------------------------------------+
+    | mixin BoxLayouter implements LayoutableBox                                           |              | abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter             |
+    |                                                                                      |              |   implements                                                                           |
+    |                                                                                      |              |       LayoutableBox,                                                                   |
+    |                                                                                      |              |       Keyed,                                                                           |
+    |                                                                                      |              |       UniqueKeyedObjectsManager                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |   todo-03 add abstract and concrete to both BoxLayouter and BoxContainer             |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |   Note:   pen is for inputting text. text is for figlets                             |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    +--------------------------------------------------------------------------------------+              +----------------------------------------------------------------------------------------+
+#+end_src
+
+
+Currently, we have:
+
+- abstract class ~LayoutableBox~ *top of hierarchy*
+  - mixin ~BoxLayouter~ implements LayoutableBox                                       // *BoxLayouter  is LayoutableBox BUT RE-IMPLEMENTS*
+  - abstract class ~BoxContainer~ extends ~BoxContainerHierarchy~ with ~LayoutableBox~ // *BoxContainer is LayoutableBox AND BoxContainerHierarchy*
+  -                                                                                    // *BoxContainer is NOT BoxLayouter*
+  -                                                                                    // *BoxLayouter  is NOT BoxContainer*
+
+
+Why NOT:
+
+class ~BoxLayouter~ extends ~LayoutableBox~ *AND* class ~BoxContainer~ extends ~LayoutableBox~???
+
+- *that way BoxLayouter contains all ~LayoutableBox~ implementation AND ~BoxContainer~ also contains ~LayoutableBox~ implementation* ???
+- *NOT POSSIBLE, THAT WOULD REQUIRE BoxContainer extends BOTH LayoutableBox and BoxContainerHierarchy*!!!! - *WOULD BE MULTIPLE INHERITANCE*.
+
+  
+*so we have to choose to either re-implement ~BoxContainerHierarchy in BoxContainer~ (alternative) OR re-implement ~LayoutableBox in BoxLayouter~ (current)*
+*the latter (current) seems better, because LayoutableBox is a smaller implementation*
+
+Example only:
+
+#+BEGIN_SRC ditaa :file box-classes-uml.png :cmdline -E -r
+
+     Parent Classes
+                          +-------------------+                              +-----------------+
+                          | BoxLayouter   c1AF|                              | cFFC   {s}      |
+                          | mixin             |                              |                 |
+                          +-------------------+                              |                 |
+      O is bullet point-> | o field2          |                              |                 |
+                          | o field3          |                     +------->|                 |
+                          | o field4          |      dotted lines   :        |                 |
+                          | o field5          |                     |        |                 |
+                          +-------------------+                     |        +-----------------+
+                          | o method1()       |      point marker   *
+                          |                   |                     |        +-----------------+
+                          +-------------------+                     |        : There           |
+                           ^        ^       ^                       |        |                 |
+                           |        |       |                       |        |                 |
+     Child classes         |        |       |                       +--------|        +-------+|
+                           |        |       |                                |        | Hi    ||
+           +---------------+        |       +--------------+                 |        +-------+|
+           |                        |                      |                 +-----------------+
+           |                        |                      |
+           |              +--------------------------------------------+
+           |              |         |                      |           |
+    +------+--------+     | +-------+-------+      +-------+-------+   |
+    | Child1    cF88|     | | Child2    cRED|      | Child3    c1FF|   |<------ We are gonna change
+    +---------------+     | +---------------+      +---------------+   |        Child2 and Child3
+    | field1        |     | | field2 Number |      | field1        |   |
+    | field2        |     | | field1: Str   |      | field2        |   |
+    | field3        |     | |       ^       |      +---------------+   |
+    |               |     | |       |       |      | method        |   |
+    +---------------+     | +---------------+      +---------------+   |
+                          |         |                                  |
+                          |         |                                  |
+                          +--------------------------------------------+
+                                    |
+                                    +----------------------------------------  Do not use colon, it
+                                                                               is interpreted as dotted
+                                                                               line
+
+       Table created as "el table" can be placed to artist and looks good - maintains relative column width, nice
+
+
+       +----+----+----+----+----+
+       | 10 | 20 | 30 | 40 | aa |             ..                         +---------+
+       +----+----+----+----+----+              ....                      |         |
+       | 11 | 21 | 31 |    | aa |                 ...                    |         |
+       +----+----+----+----+----+                   ..                   |         |
+       | 12 | 22 | 32 |    | aa |                     .                  +---------+
+       +----+----+----+----+----+
+       | 13 | 23 | 33 |    | aa |
+       +----+----+----+----+----+
+       | 14 | 24 | 34 |    | aa |
+       +----+----+----+----+----+
+       | 15 | 25 | 35 |    | aa |
+       +----+----+----+----+----+
+
+
+       +---------------+--------------+-------------+------------+-------------------+
+       |    10         |     20       |   30        |   40       |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       | some          |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       | other text    |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+       |               |              |             |            |                   |
+       +---------------+--------------+-------------+------------+-------------------+
+#+END_SRC
+
 
 ** 30. *IDEAS TO IMPLEMENT - table - is this done??*
 
