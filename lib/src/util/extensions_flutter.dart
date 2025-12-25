@@ -213,7 +213,7 @@ extension RectExtension on ui.Rect {
     // Check for intersection assumption that is needed to correctly paint the warning rectangle,
     //   but continue even if the assumption fails.
     if (!(intersection.width >= widthIntersect)) {
-      print(' ### Log.Warning: closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.'
+      print(' ### Log.Warning: closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true. '
           'intersection = $intersection, widthIntersect=$widthIntersect');
     }
     // assert (intersection.height >= heightIntersect);

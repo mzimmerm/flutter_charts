@@ -2102,8 +2102,6 @@ The steps to do here:
     - legendIsRowStartTightItemIsRowStartTightItemChildrenPadded
     - legendIsRowStartTightItemIsRowStartTightItemChildrenAligned
 - [X] Simplify chart ..legend_container.dart -> LegendContainer to only use the 2 default ~LegendOptions.legendAndItemLayoutEnum~ 
-- [X] todo-00 Rename as test_ to as testing_     
-- [X] Address // todo-00-last 
 - [X] Equivalent of the above for ~LegendItemContainer~
    
 
@@ -2232,7 +2230,7 @@ In general, some libraries or classes in 'testing' are merged back to lib OR cre
            - [X] Run flutter drive 2x, separately for coded_layout and auto_layout, passing the appropriate example descriptors.
    4) [X] TEST FOR SAMENESS AND COMMIT
       + [X] Delete the tested files first, to make sure all images are generated
-      + [X] run_all_tests.sh --auto-layout="allSupportedNew convertedToNew" --coded-layout="oldFailingInNew"
+      + [X] run_all_tests.sh --auto-layout="chartsGalleryNew convertedToNew" --coded-layout="oldFailingInNew"
       + [X] COMMIT
    5) [X] NEXT STEP IS INTRODUCE A COPY WITH MINOR CHANGE OF THE TEST FILES FOR CODED_LAYOUT AND AUTO_LAYOUT, SO THAT WE ONLY HAVE TO MAINTAIN ONE VERSION, the other will ba copied with sed edit changes:
       1. [X] In run_screenshots_create_then_validate_integration_test.sh before calling the loop around auto_layout coded_layout:
@@ -2377,14 +2375,14 @@ mzimmermann@home-server:~/dev/my-projects-source/public-on-github/flutter_charts
   - [X] Use animal data
   - [X] Use live LegendContainer default
   - [X] Comment as example of using live LegendContainer which does NOT use enums internally (as opposed to test LegendContainer) 
-  - [X] Add example to allSupportedNew (only one, say nonStacked Bar)
+  - [X] Add example to chartsGalleryNew (only one, say nonStacked Bar)
   - [X] Add images
   - [X] retest and commit
 - 
 
-** IN-PROGRESS-NOW ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
+** DONE ~19. Add ability to ignore BoxContainer during layout and/or paint. USE IT to show chart without axes, and/or labels, and/or legend~
 
-*** IN-PROGRESS-NOW Add ability to ignore BoxContainer during layout and/or paint
+*** DONE Add ability to ignore BoxContainer during layout and/or paint
 
 This todo is also documented in container_layouter_base.dart
 
@@ -2431,16 +2429,15 @@ Summary of changes which implement ParentOrderedSkip in the new auto_layout:
   - [X] HorizontalAxisContainerOptions.isShown
   - [X] VerticalAxisContainerOptions.isShown
   - [X] VerticalAxisContainerOptions.isInputGridLinesShown
-  - [X] todo-00-next : add this to a comment
 
 
-When done: todo-00-now
+When done:
 
-- [X] Go over all todo-00- comments and implement. Changes start with:
+- [X] Go Changes start with:
   - [X] Rename horizontalAxisContainerOptions => inputAxisContainerOptions
   - [X] Rename verticalAxisContainerOptions => outputAxisContainerOptions
   - [X] Rename isInputGridLinesShown => isOutputAxisParallelGridLinesShown   
-  - [X] Simplification and correcting around - todo-00-now-progress-testing
+  - [X] Simplification and correcting around
     #+begin_src java
     if (!(chartViewModel.chartOptions.inputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isShown && chartViewModel.chartOptions.outputAxisContainerOptions.isOutputAxisParallelGridLinesShown)) {
       applyParentOrderedSkip(this, ParentOrderedSkip.skipLayoutAndPaint());
@@ -2448,21 +2445,23 @@ When done: todo-00-now
     #+end_src
     - [X] craft above according in each class to contain code suitable to situation
 - [X] Test, validate, commit
-- [X] Go over remaining todo-00- comments, implement
+- [X] Go over remaining todos
 - [X] Test, validate, commit
 
   
 
-When done todo-00-now
+When done:
 
-- [ ] add auto_layout examples as in coded_layout which skips labels, axis, grid
-  - [ ] Rename: ex35AnimalsBySeasonNoLabelsShown => ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown
-  - [ ] Add: ex36AnimalsBySeasonNoOutputAxisOrOutputAxisParallelGridLinesShownButInputAxisLabelsAxisLinesShown : should show all labels (input and output), show InputAxis and InputAxisParallelGridLines, NO OutputAxis NO OutputAxisParallelGridLines
-  - [ ] Add to test:
-    - [ ] ex35 new layout, only column orientation, bar and line (2 images)
-    - [ ] ex36 new layout, column and row orientation, bar and line (4 images)
-- [ ] Save new images as appropriate
-- [ ] Test, validate, commit
+- [X] add auto_layout examples as in coded_layout which skips labels, axis, grid
+  - [X] Rename: ex35AnimalsBySeasonNoLabelsShown => ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown
+  - [X] NO Add: ex36AnimalsBySeasonNoOutputAxisOrOutputAxisParallelGridLinesShown : should show all labels (input and output), show InputAxis and InputAxisParallelGridLines, NO OutputAxis NO OutputAxisParallelGridLines
+  - [X] Add to test:
+    - [X] ex35 converted to new layout, only column orientation, bar and line (2 images)
+    - [X] NO ex36 new layout, column and row orientation, bar and line (4 images)
+- [X] Save new images as appropriate
+- [X] Test, validate, commit
+
+
 
 
 ** LATER 19.1. Design of LayoutableBox, BoxLayouter, BoxContainer, BoxContainerHierarchy and possible changes
@@ -2511,13 +2510,12 @@ When done todo-00-now
     |                                                                                      |              |       UniqueKeyedObjectsManager                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
-    |   todo-00 abstract:                                                                  |              |   todo-00 abstract:                                                                    |
-    |   todo-00 concrete:                                                                  |              |   todo-00 concrete:                                                                    |
+    |   todo-03 add abstract and concrete to both BoxLayouter and BoxContainer             |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
-    |                                                                                      |              |   todo-00 finish this                                                                  |
     |                                                                                      |              |                                                                                        |
-    |   todo-00 pen is for inputting text. text is for figlets                             |              |                                                                                        |
+    |                                                                                      |              |                                                                                        |
+    |   Note:   pen is for inputting text. text is for figlets                             |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |
     |                                                                                      |              |                                                                                        |

@@ -2,7 +2,7 @@
 
 # Usage example:
 #   tool/test/run_all_tests.sh \
-#   --auto_layout="allSupportedNew convertedToNew"
+#   --auto_layout="chartsGalleryNew layoutsGalleryNew convertedToNew"
 #   --coded_layout="oldFailingInNew"
 
 # This script runs all unit tests in this 'flutter_charts' library,
@@ -11,7 +11,8 @@
 #   - The test group names must be defined in 'example_descriptor.dart'
 #     - Possible group names:
 #       - 'minimumNew'
-#       - 'allSupportedNew'
+#       - 'chartsGalleryNew'
+#       - 'layoutsGalleryNew'
 #       - 'minimumOld'
 #       - 'origAllTestedOld'
 #       - 'minimum'

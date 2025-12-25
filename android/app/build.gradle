@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.flutter_charts"
     compileSdk = flutter.compileSdkVersion
-    // todo-00-done-mzchanged-2025-01-01: Build warning suggests to hardcode the ndkVersion.
+    // mzchanged-2025-01-01: Build warning suggests to hardcode the ndkVersion.
     // ndkVersion = flutter.ndkVersion
     ndkVersion = "27.0.12077973"
     // ndkVersion = "28.0.12674087"

@@ -111,7 +111,8 @@ enum ExampleEnum {
 ///  - [minimumNew]
 ///  - [minimum]
 ///  - [minimumOld]
-///  - [allSupportedNew]
+///  - [chartsGalleryNew]
+///  - [layoutsGalleryNew]
 ///  - [oldFailingInNew]
 ///  - [convertedToNew]
 ///  - [origAllTestedOld]
@@ -442,26 +443,16 @@ class ExampleDescriptor {
     'ex31_barChart_*_*_newAutoLayouter',
   ]);
 
-  // todo-00-now add layoutsGalleryNew and add all individual which tests layout as part of Legend
-  //         add reasonableAmountOfNew and include coreLayouterTestingNew AND
-  // : 'ex32AllPositiveYsYAxisStartsAbove0_lineChart_column_nonStacked_oldManualLayouter',
-  // : 'ex33AllNegativeYsYAxisEndsBelow0_lineChart_column_nonStacked_oldManualLayouter',
-  // 'ex31_lineChart_*_nonStacked_newAutoLayouter',
-  // 'ex31_barChart_*_*_newAutoLayouter',
-  // 'ex33_lineChart_*_nonStacked_newAutoLayouter',
-  // 'ex33_barChart_*_*_newAutoLayouter',
-  // 'ex800_lineChart_*_nonStacked_newAutoLayouter',
-  // 'ex800_barChart_*_*_newAutoLayouter',
-  //
-
-  // todo-00-now move  individual to  layoutsGalleryNew and merge them here
-  static List<ExampleDescriptor> allSupportedNew = parseDescriptors([
+  // Test charts
+  static List<ExampleDescriptor> chartsGalleryNew = parseDescriptors([
     'ex31_lineChart_*_nonStacked_newAutoLayouter',  // pos+neg data
     'ex31_barChart_*_*_newAutoLayouter',
     'ex32_lineChart_*_nonStacked_newAutoLayouter',  // pos data y axes starts above zero
     'ex32_barChart_*_*_newAutoLayouter',
     'ex33_lineChart_*_nonStacked_newAutoLayouter',  // neg data y axes starts below zero
     'ex33_barChart_*_*_newAutoLayouter',
+    'ex35_barChart_column_stacked_newAutoLayouter', // no labels, no axis, no grid
+    'ex35_lineChart_column_nonStacked_newAutoLayouter',
     'ex40_lineChart_*_nonStacked_newAutoLayouter',  // ordinal data - YOrdinalUserLabelsAndUserColors
     'ex40_barChart_*_*_newAutoLayouter',
     'ex75_lineChart_*_nonStacked_newAutoLayouter',  // animals pos data - legendIsRowStartTightItemIsRowStartTightItemChildrenPadded
@@ -487,6 +478,16 @@ class ExampleDescriptor {
     'ex52LogarithmicScale_lineChart_column_nonStacked_newAutoLayouter',
     // ex60 : tests labels iteration, only first iteration works
     'ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter',
+    // ex70, ex71, ex72, ex73, ex74, ex75, ex76 tests legend layout
+    // and are in layoutsGalleryNew
+    // ex80 : all already in chartsGalleryNew (tests row/column inversion with only positive values
+    // ex900, ex901 : bug fixed on affine transform with all data 0.0
+    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter',
+    'ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter',
+  ]);
+
+  // Test layouts using the legend container (charts tests are in chartsGalleryNew)
+  static List<ExampleDescriptor> layoutsGalleryNew = parseDescriptors([
     // ex70 : tests legend layout
     'ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose_barChart_column_stacked_newAutoLayouter',
     // ex71 : tests legend layout
@@ -500,20 +501,15 @@ class ExampleDescriptor {
     // ex75 : tests legend layout LegendIsRowStartTightItemIsRowStartTightItemChildrenPadded already in group
     // ex76 : tests legend layout
     'ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned_barChart_column_stacked_newAutoLayouter',
-    // ex80 : all already in allSupportedNew (tests row/column inversion with only positive values
-    // ex900, ex901 : bug fixed on affine transform with all data 0.0
-    'ex900ErrorFixUserDataAllZero_lineChart_column_nonStacked_newAutoLayouter',
-    'ex901ErrorFixUserDataAllSame50_lineChart_column_nonStacked_newAutoLayouter',
   ]);
 
-   // Successfully converted to new layout
+  // Just recently converted to new layout, before adding to chartsGalleryNew
+  // or layoutsGalleryNew
   static List<ExampleDescriptor> convertedToNew = parseDescriptors([
   ]);
 
   // Use old coded_layouter as new auto_layouter fails
   static List<ExampleDescriptor> oldFailingInNew = parseDescriptors([
-    'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_barChart_column_stacked_oldManualLayouter',
-    'ex35AnimalsBySeasonNoAxisNoGridLinesNoLabelsShown_lineChart_column_nonStacked_oldManualLayouter',
     'ex60LabelsIteration2_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration3_barChart_column_stacked_oldManualLayouter',
     'ex60LabelsIteration4_barChart_column_stacked_oldManualLayouter',
@@ -560,14 +556,11 @@ class ExampleDescriptor {
   static List<ExampleDescriptor> current = parseDescriptors([
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_newAutoLayouter',
     'ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart_column_stacked_oldManualLayouter',
-
-    // 'ex72_lineChart_*_nonStacked_newAutoLayouter',
-    // 'ex72_barChart_*_*_newAutoLayouter',
   ]);
 
   static List<ExampleDescriptor> minimum = List.from(minimumNew)..addAll(minimumOld);
 
-  static List<ExampleDescriptor> allSupported = List.from(allSupportedNew)..addAll(convertedToNew)..addAll(oldFailingInNew);
+  static List<ExampleDescriptor> allSupported = List.from(chartsGalleryNew)..addAll(convertedToNew)..addAll(oldFailingInNew);
 
   static List<ExampleDescriptor> parseEnhancedDescriptors(List<String> descriptors) {
     List<ExampleDescriptor> allDefined = [];
@@ -583,8 +576,11 @@ class ExampleDescriptor {
           case _GroupDescriptor.minimumNew:
             allDefined.addAll(minimumNew);
             break;
-          case _GroupDescriptor.allSupportedNew:
-            allDefined.addAll(allSupportedNew);
+          case _GroupDescriptor.chartsGalleryNew:
+            allDefined.addAll(chartsGalleryNew);
+            break;
+          case _GroupDescriptor.layoutsGalleryNew:
+            allDefined.addAll(layoutsGalleryNew);
             break;
           case _GroupDescriptor.convertedToNew:
             allDefined.addAll(convertedToNew);
@@ -608,7 +604,7 @@ class ExampleDescriptor {
             allDefined.addAll(allSupported);
             break;
           default:
-            throw StateError('Passed an unknown name of group ExampleDescriptor: $maybeGroupDescriptor');
+            throw StateError('parseEnhancedDescriptors(): Passed an unknown name of group ExampleDescriptor: $maybeGroupDescriptor');
         }
       }
     }
@@ -707,7 +703,8 @@ class ExampleDescriptor {
 enum _GroupDescriptor {
   absoluteMinimumNew,
   minimumNew,
-  allSupportedNew,
+  chartsGalleryNew,
+  layoutsGalleryNew,
   convertedToNew,
   oldFailingInNew,
   minimumOld,

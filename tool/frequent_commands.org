@@ -2,10 +2,10 @@
 
 ** Most commonly used
 
-# Run unit tests + all screen-comparing integration tests (allSupported = allSupportedNew + origAllTestedOld)
+# Run unit tests + all screen-comparing integration tests (allSupported = chartsGalleryNew + origAllTestedOld)
 tool/test/run_all_tests.sh allSupported
 # Run unit tests + auto-layout screen-comparing integration tests
-tool/test/run_all_tests.sh allSupportedNew
+tool/test/run_all_tests.sh chartsGalleryNew
 # Run unit tests + manual-layout screen-comparing integration tests
 tool/test/run_all_tests.sh origAllTestedOld
 # Run unit tests + single screen-comparing integration test

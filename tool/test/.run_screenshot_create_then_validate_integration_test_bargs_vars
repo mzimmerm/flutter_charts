@@ -2,7 +2,7 @@
 name=auto_layout
 short=a
 description=Space separated example descriptors or group descriptors
-default=allSupportedNew
+default=chartsGalleryNew
 ---
 name=coded_layout
 short=c

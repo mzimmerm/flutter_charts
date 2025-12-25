@@ -26,7 +26,7 @@ linter:
     prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     avoid_relative_lib_imports: false # todo-01 : remove this later. Need for example prevents this
     non_constant_identifier_names: false # todo-01 : remove this, but figure out better naming for long names
-    hash_and_equals: true # todo-00-last : added this, probably included by default
+    hash_and_equals: true # mzchanged 2025-01-01: added this, probably included by default
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

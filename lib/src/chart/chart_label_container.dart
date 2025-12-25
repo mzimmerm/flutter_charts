@@ -57,7 +57,7 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
       ),
       textDirection: labelStyle.textDirection,
       textAlign: labelStyle.textAlign,
-      // todo-00-done: deprecated. If needed, replace w textScaler: textScaleFactor: labelStyle.textScaleFactor,
+      // textScaleFactor: is deprecated. Replace w textScaler: textScaleFactor: labelStyle.textScaleFactor,
       // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     );
   }
