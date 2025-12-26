@@ -518,7 +518,7 @@ class ExampleWidgetCreator {
     [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
   ];
   var animalsXUserLabels = const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-  var animalsDataRowsLegends = const [
+  var animalsDataLegends = const [
     'Spring',
     'Summer',
     'Fall',
@@ -548,7 +548,7 @@ class ExampleWidgetCreator {
     '2000',
     '2020'
   ];
-  var euCountriesDataRowsLegends = const [
+  var euCountriesDataLegends = const [
     'Germany',
     'France',
     'Italy',
@@ -576,6 +576,17 @@ class ExampleWidgetCreator {
     Colors.black26,
     Colors.black38,
     Colors.black45,
+  ];
+
+  var owlAndHawkData = const [
+    [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+    [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+  ];
+
+  var owlAndHawkXUserLabels = const ['January', 'February', 'March', 'April', 'May', 'June'];
+  var owlAndHawkDataLegends = const [
+    'Owl count',
+    'Hawk count',
   ];
 
   /// Support for each example manipulate it's environment - the widgets in
@@ -635,7 +646,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: euCountriesData,
           inputUserLabels: euCountriesXUserLabels,
-          legendNames: euCountriesDataRowsLegends,
+          legendNames: euCountriesDataLegends,
           legendColors: euCountriesLegendColors,
           chartOptions: liveChartOptions,
         );
@@ -666,7 +677,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
 
@@ -905,15 +916,9 @@ class ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
         chartModel = ChartModel(
-          dataRows: const [
-            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
-            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
-          ],
-          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          legendNames: const [
-            'Owl count',
-            'Hawk count',
-          ],
+          dataRows: owlAndHawkData,
+          inputUserLabels: owlAndHawkXUserLabels,
+          legendNames: owlAndHawkDataLegends,
           chartOptions: chartOptions,
         );
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
@@ -924,15 +929,9 @@ class ExampleWidgetCreator {
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
         chartModel = ChartModel(
-          dataRows: const [
-            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
-            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
-          ],
-          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          legendNames: const [
-            'Owl count',
-            'Hawk count',
-          ],
+          dataRows: owlAndHawkData,
+          inputUserLabels: owlAndHawkXUserLabels,
+          legendNames: owlAndHawkDataLegends,
           chartOptions: chartOptions,
         );
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
@@ -943,34 +942,22 @@ class ExampleWidgetCreator {
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
         chartModel = ChartModel(
-          dataRows: const [
-            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
-            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
-          ],
-          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          legendNames: const [
-            'Owl count',
-            'Hawk count',
-          ],
+          dataRows: owlAndHawkData,
+          inputUserLabels: owlAndHawkXUserLabels,
+          legendNames: owlAndHawkDataLegends,
           chartOptions: chartOptions,
         );
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
         break;
 
       case ExampleEnum.ex60LabelsIteration4:
-      // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
-      // This example shows the result with sufficient space to show all labels, not even tilted;
-      // The iterative layout strategy causes more labels to be skipped.
+        // Example with side effects cannot be simply pasted to your code, as the ExampleSideEffects is private
+        // This example shows the result with sufficient space to show all labels, not even tilted;
+        // The iterative layout strategy causes more labels to be skipped.
         chartModel = ChartModel(
-          dataRows: const [
-            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
-            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
-          ],
-          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          legendNames: const [
-            'Owl count',
-            'Hawk count',
-          ],
+          dataRows: owlAndHawkData,
+          inputUserLabels: owlAndHawkXUserLabels,
+          legendNames: owlAndHawkDataLegends,
           chartOptions: chartOptions,
         );
         exampleSideEffects = ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
@@ -985,7 +972,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -999,7 +986,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1013,7 +1000,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1027,7 +1014,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1041,7 +1028,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1056,7 +1043,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1071,7 +1058,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: animalsData,
           inputUserLabels: animalsXUserLabels,
-          legendNames: animalsDataRowsLegends,
+          legendNames: animalsDataLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -1086,7 +1073,7 @@ class ExampleWidgetCreator {
         chartModel = ChartModel(
           dataRows: euCountriesData,
           inputUserLabels: euCountriesXUserLabels,
-          legendNames: euCountriesDataRowsLegends,
+          legendNames: euCountriesDataLegends,
           legendColors: euCountriesLegendColors,
           chartOptions: chartOptions,
         );
