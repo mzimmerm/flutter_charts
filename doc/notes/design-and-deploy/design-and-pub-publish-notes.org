@@ -2683,14 +2683,24 @@ all failing now work
 
 
 
-** TODO ~21. Bring dependencies up to latest~
+** DONE ~21. Bring dependencies up to latest~
 
-- [ ] Update Opensuse
-- [ ] Update flutter
-- [ ] Validate tests working, commit
-- [ ] Bring dependencies to latest
-- [ ] Validate tests working, commit
--
+- [X] Update Opensuse
+- [X] Update flutter
+- [X] Validate tests working, commit
+- [X] Bring dependencies to latest
+- [X] Validate tests working, commit
+- 
+
+
+*** TODO Rename branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers to master_auto_layout
+
+*** TODO Get rotatable labels and skip labels to work in auto_layout
+
+*** TODO Add tag 2025-12-28_before_coded_layout_removal on master_auto_layout
+
+*** TODO Remove all code related to coded_layout
+
 
 ** TODO ~25. HUGE: Containers to WARPS~
 
