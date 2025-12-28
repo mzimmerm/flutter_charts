@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart' as logger;
 
 import 'package:flutter_charts/src/chart/model/data_model.dart';
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/coded_layout/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategyCL;
 // ChartViewModel passed to makeChartRootContainer is from auto_layout
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 
@@ -23,7 +23,7 @@ class BarChartViewModelCL extends live_bar_view_model.BarChartViewModelCL {
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategyCL? inputLabelLayoutStrategy,
   }) : super(
           chartModel: chartModel,
           chartOrientation: chartOrientation,

@@ -27,7 +27,7 @@ class LineChartViewModel extends live_line_view_model.LineChartViewModel {
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,

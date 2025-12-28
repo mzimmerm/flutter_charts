@@ -6,6 +6,8 @@ import 'package:flutter_charts/src/chart/cartesian/container/container_common.da
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:flutter_charts/src/morphic/container/constraints.dart';
 
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
+
 
 enum LabelFitMethodCL {
   rotateLabels,
@@ -25,9 +27,9 @@ enum LabelFitMethodCL {
 /// The steps are repeated at most [maxLabelReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxLabelReLayouts] is reached.
-class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
+class DefaultIterativeLabelLayoutStrategyCL extends LabelLayoutStrategyCL implements LabelLayoutStrategy {
   /// Constructor uses default values from [ChartOptions]
-  DefaultIterativeLabelLayoutStrategy({
+  DefaultIterativeLabelLayoutStrategyCL({
     required ChartOptions options,
   })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
         _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
@@ -192,10 +194,10 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 /// - Skip every 2nd label
 /// - Tilt all labels
 /// - Decrease label font size
-abstract class LabelLayoutStrategy {
+abstract class LabelLayoutStrategyCL implements LabelLayoutStrategy {
   late AdjustableLabelsChartAreaContainer _adjustableLabelsContainer;
 
-  LabelLayoutStrategy();
+  LabelLayoutStrategyCL();
 
   void onContainer(AdjustableLabelsChartAreaContainer adjustableLabelsContainer) {
     _adjustableLabelsContainer = adjustableLabelsContainer;

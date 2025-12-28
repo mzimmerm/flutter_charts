@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' show DefaultIterativeLabelLayoutStrategy;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 
@@ -71,6 +72,7 @@ Widget chartToRun() {
     chartModel: chartModel,
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
+    inputLabelLayoutStrategy: DefaultIterativeLabelLayoutStrategy(options: chartOptions),
   );
 
   LineChart lineChart = LineChart(

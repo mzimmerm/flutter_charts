@@ -37,6 +37,9 @@ function _duplicate_test_files_from_auto_layout_to_coded_layout() {
   if ! \
     sed -e 's?src/chart/cartesian/view_model/line/line_view_model.dart?src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart?' \
         -e 's?src/chart/cartesian/view_model/bar/bar_view_model.dart?src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart?' \
+        -e 's?src/chart/iterative_layout_strategy.dart?src/coded_layout/chart/iterative_layout_strategy.dart?' \
+        -e 's? LabelLayoutStrategy? LabelLayoutStrategyCL?' \
+        -e 's? DefaultIterativeLabelLayoutStrategy? DefaultIterativeLabelLayoutStrategyCL?' \
         -e 's?LineChartViewModel(?LineChartViewModelCL(?' \
         -e 's?BarChartViewModel(?BarChartViewModelCL(?' \
       < lib/test/src/test_main.dart \

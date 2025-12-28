@@ -23,7 +23,7 @@ class BarChartViewModel extends live_bar_view_model.BarChartViewModel {
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,

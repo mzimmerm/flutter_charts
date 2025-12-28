@@ -14,7 +14,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/line/chart.dart';
 import 'package:flutter_charts/src/chart/cartesian/chart_type/bar/chart.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart';
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
+import 'package:flutter_charts/src/coded_layout/chart/iterative_layout_strategy.dart';
 import 'package:flutter_charts/src/chart/options.dart' as live_options;
 import 'package:flutter_charts/test/src/chart/options.dart' as test_options; // use test options in test
 import 'package:flutter_charts/test/src/chart/test_examples_legend_enums.dart' as test_examples_legend_enums show LegendAndItemLayoutEnum;
@@ -624,11 +624,11 @@ class ExampleWidgetCreator {
     test_options.ChartOptions chartOptions = const test_options.ChartOptions();
 
     // Declare a null inputLabelLayoutStrategy.
-    // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-    //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
+    // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategyCL or LayoutStrategy,
+    //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategyCL below.
     // If inputLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
-    //   a DefaultIterativeLabelLayoutStrategy.
-    LabelLayoutStrategy? inputLabelLayoutStrategy;
+    //   a DefaultIterativeLabelLayoutStrategyCL.
+    LabelLayoutStrategyCL? inputLabelLayoutStrategy;
 
     /// Distinguish if example is 'live', that is, uses nothing
     /// from test (in particular LegendContainer via the ChartViewModel)
@@ -667,11 +667,11 @@ class ExampleWidgetCreator {
         break;
 
       case ExampleEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
-        // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+        // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategyCL.
         // The inputLabelLayoutStrategy, if set to null or not set at all, 
-        //   defaults to DefaultIterativeLabelLayoutStrategy
+        //   defaults to DefaultIterativeLabelLayoutStrategyCL
         // Clients can also create their own LayoutStrategy.
-        inputLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
+        inputLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategyCL(
           options: chartOptions,
         );
         chartModel = ChartModel(

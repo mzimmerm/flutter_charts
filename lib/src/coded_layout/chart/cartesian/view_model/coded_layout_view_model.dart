@@ -9,7 +9,7 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 // Base class ChartViewModel is from auto_layout
 import 'package:flutter_charts/src/chart/cartesian/view_model/view_model.dart' show ChartViewModel;
 import 'package:flutter_charts/src/chart/model/data_model.dart' as model;
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/coded_layout/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategyCL;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 
 import 'package:flutter_charts/src/coded_layout/chart/container.dart' as container; // OLD CONTAINER
@@ -25,7 +25,7 @@ abstract class ChartViewModelCL extends ChartViewModel {
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategyCL? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,

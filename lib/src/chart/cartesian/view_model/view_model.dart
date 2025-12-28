@@ -76,7 +76,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     required model.ChartModel chartModel,
     required this.chartOrientation,
     required this.chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : chartOptions = chartModel.chartOptions,
        _chartModel = chartModel {
     logger.Logger().d('Constructing ChartViewModel');

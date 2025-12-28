@@ -18,7 +18,7 @@ class BarChartViewModel extends ChartViewModel {
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+    required strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,

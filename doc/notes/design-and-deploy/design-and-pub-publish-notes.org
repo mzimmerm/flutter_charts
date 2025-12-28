@@ -2693,12 +2693,79 @@ all failing now work
 - 
 
 
-*** TODO Rename branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers to master_auto_layout
+*** DONE Rename branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers to master_auto_layout
 
-*** TODO Get rotatable labels and skip labels to work in auto_layout
+*** IN-PROGRESS-NOW Implement LabelLayoutStrategy in auto_layout (rotate and skip labels when compressed) 
+
+**** Investigation of how current (coded_layout) LabelLayoutStrategy works
+
+***** The CL code uses for HorizontalAxisContainer:
+
+class HorizontalAxisContainerCL
+    extends AdjustableLabelsChartAreaContainer
+    with PixelRangeProviderOCL
+    implements TransposingInputAxisLabels {
+
+
+***** The above has it's ~layout()~ code described here
+
+- calls buildAndReplaceChildren which builds a list of labels named inputLabelContainerCLs
+- iterates labels in inputLabelContainerCLs
+  - for each label inputLabelContainer:
+    - inputLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+    - inputLabelContainer.layout();
+    - If  !_isLabelOnIndexShown(xIndex) // xIndex of current inputLabelContainer
+      - set skip on the label: inputLabelContainer.applyParentOrderedSkip(this, parentOrderedSkip);
+      - 
+    - inputLabelContainer.applyParentOffset // this moves labels to positions
+- labelLayoutStrategy.reLayout(BoxContainerConstraints.unused());
+
+
+***** The last step is ~labelLayoutStrategy.reLayout~. Described here
+
+DefaultIterativeLabelLayoutStrategy defines iteration of label size reduction as follows:
+- depth=1: rotateLabels
+- depth=2: skipLabels
+- depth=3: decreaseLabelFont
+- depth=4: decreaseLabelFont 2nd time
+
+  
+The DefaultIterativeLabelLayoutStrategy.reLayout code is recursive and does:
+
+- Check if labels overlap, using ~if (!_adjustableLabelsContainer.labelsOverlap())~, return if not
+- depending on depth, calls one of:
+  - _reLayoutDecreaseLabelFont()
+  - _reLayoutRotateLabels()
+  - _reLayoutSkipLabels()
+
+
+*lets only implement SkipLabels for now*
+
+_reLayoutSkipLabels() sets ~_showEveryNthLabel~
+sets ~labelLayoutStrategy.showEveryNthLabel~
+
+
+****** Function of ~_adjustableLabelsContainer.labelsOverlap()~
+
+- Goes over ONLY NOT SKIPPED labels (see ~applyParentOrderedSkip~)
+- Checks the layout size for not overflowing
+
+  
+****** How is ~labelLayoutStrategy.showEveryNthLabel~ used? IN ~_isLabelOnIndexShown(int xIndex)~
+
+
+
+
+
+*** TODO Copy LabelLayoutStrategy to LabelLayoutStrategyCL. Make CL code use the LabelLayoutStrategyCL, non-CL code use LabelLayoutStrategy
+
+- [ ] Make code changes
+- [ ] Ensure tests work
+- [ ] Commit and push
 
 *** TODO Add tag 2025-12-28_before_coded_layout_removal on master_auto_layout
 
+- 
 *** TODO Remove all code related to coded_layout
 
 

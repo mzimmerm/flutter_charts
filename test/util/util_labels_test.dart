@@ -92,6 +92,7 @@ AxisIntervalTicksAndLabelsDescriptor makeAxisIntervalDescriptor(ChartOrientation
       chartModel: mockChartModel,
       chartOrientation: chartOrientation,
       chartStacking: ChartStacking.stacked,
+      inputLabelLayoutStrategy: DefaultIterativeLabelLayoutStrategy(options: options),
     ),
     dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
@@ -105,10 +106,12 @@ class MockChartViewModel extends ChartViewModel {
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
+    required LabelLayoutStrategy inputLabelLayoutStrategy,
 }): super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,
     chartStacking: ChartStacking.stacked,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
 );
 
   @override
@@ -161,6 +164,7 @@ void rangeTestCore(
         chartModel: chartModel,
         chartOrientation: ChartOrientation.column,
         chartStacking: ChartStacking.stacked,
+        inputLabelLayoutStrategy: DefaultIterativeLabelLayoutStrategy(options: options),
       ),
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0

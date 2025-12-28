@@ -22,7 +22,22 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/test/src/test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/main_run_doc_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/main_run_doc_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/coded_layout_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/bar/bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/chart/cartesian/view_model/line/line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/bar/coded_layout_bar_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout/chart/cartesian/view_model/line/coded_layout_line_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/util/util_labels_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/util/util_labels_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/run_screenshots_create_then_validate_integration_test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,6 +232,9 @@
     "Flutter.main.dart ex35 - no labels - oldManualLayouter.executor": "Run",
     "Flutter.main.dart ex40 - manual labels - languages.executor": "Run",
     "Flutter.main.dart ex52 logarithmic.executor": "Run",
+    "Flutter.main.dart ex60 Labels iter 1.executor": "Run",
+    "Flutter.main.dart ex60 Labels iter 2 (tilted).executor": "Run",
+    "Flutter.main.dart ex60 Labels iter 4 (shows 2 labels).executor": "Run",
     "Flutter.main.dart ex71.executor": "Run",
     "Flutter.main.dart ex72.executor": "Run",
     "Flutter.main.dart ex75 new.executor": "Run",
@@ -235,12 +253,11 @@
     "ShowUsagesActions.previewPropertyKey": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
     "flutter.preview.tool.window.visible": "true",
     "git-widget-placeholder": "master__auto__layout",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/test/src",
+    "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/lib/src/coded_layout/chart",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.1477105",
@@ -257,11 +274,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/src/coded_layout/chart" />
       <recent name="$PROJECT_DIR$/lib/test/src" />
       <recent name="$PROJECT_DIR$/example" />
       <recent name="$PROJECT_DIR$/tool/external" />
       <recent name="$PROJECT_DIR$/integration_test" />
-      <recent name="$PROJECT_DIR$/tool/test/deprecated_v1" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib/src/coded_layout/chart/cartesian" />
@@ -271,7 +288,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/cartesian" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex30 - explicit y numbers, all small positives">
+  <component name="RunManager" selected="Flutter.main.dart ex60 Labels iter 2 (tilted)">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -1369,6 +1386,21 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/cartesian/view_model/view_model.dart</url>
           <line>324</line>
           <option name="timeStamp" value="257" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart</url>
+          <line>32</line>
+          <option name="timeStamp" value="258" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart</url>
+          <line>66</line>
+          <option name="timeStamp" value="259" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart</url>
+          <line>194</line>
+          <option name="timeStamp" value="260" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
