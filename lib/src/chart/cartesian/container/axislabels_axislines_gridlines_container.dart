@@ -336,9 +336,14 @@ mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
 /// To support the ability to transpose, both input and output range descriptors are needed,
 /// they are both available in the [ChartViewModel] provided by the superclass.
 ///
-/// The appropriate range is selected given [dataDependency].
-/// The [moveTickTo] is used to place grid lines around bars and labels on the bar chart,
-/// which in the center of labels on the line chart.
+/// The [dataDependency] descriptor describes the data displayed on the axis:
+/// - [DataDependency.inputData] if the axis should display input data
+/// - [DataDependency.outputData] if the axis should display output data.
+///
+///
+/// The [moveTickTo] descriptor describes grid lines placement:
+/// - around bars and labels on the bar chart
+/// - in the center of labels on the line chart.
 ///
 abstract class TransposingAxisLabelsOrGridLines extends container_common.ChartAreaContainer {
   TransposingAxisLabelsOrGridLines({

@@ -7,7 +7,7 @@ import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:flutter_charts/src/morphic/container/constraints.dart';
 
 
-enum LabelFitMethodCL {
+enum LabelFitMethod {
   rotateLabels,
   decreaseLabelFont,
   skipLabels,
@@ -19,8 +19,8 @@ enum LabelFitMethodCL {
 /// each performing a specific strategy to achieve labels fit.
 ///
 /// When the [layout] finds labels overlap, the following steps are taken
-/// to achieve "fit" of labels: [LabelFitMethodCL.rotateLabels],
-/// [LabelFitMethodCL.decreaseLabelFont] and [LabelFitMethodCL.skipLabels].
+/// to achieve "fit" of labels: [LabelFitMethod.rotateLabels],
+/// [LabelFitMethod.decreaseLabelFont] and [LabelFitMethod.skipLabels].
 ///
 /// The steps are repeated at most [maxLabelReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
@@ -88,18 +88,18 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   @override
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
   
-  LabelFitMethodCL _atDepth(int depth) {
+  LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
-        return LabelFitMethodCL.rotateLabels;
+        return LabelFitMethod.rotateLabels;
       case 2:
-        return LabelFitMethodCL.skipLabels;
+        return LabelFitMethod.skipLabels;
       case 3:
-        return LabelFitMethodCL.decreaseLabelFont;
+        return LabelFitMethod.decreaseLabelFont;
       case 4:
-        return LabelFitMethodCL.decreaseLabelFont;
+        return LabelFitMethod.decreaseLabelFont;
       default:
-        return LabelFitMethodCL.skipLabels;
+        return LabelFitMethod.skipLabels;
     }
   }
 
@@ -107,7 +107,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   ///
   /// If labels in the [_adjustableLabelsContainer] overlap, this method takes the
   /// next prescribed auto_layout action - one of the actions defined in the
-  /// [LabelFitMethodCL] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
+  /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
   void reLayout(BoxContainerConstraints boxConstraints) {
@@ -125,14 +125,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     _isRotateLabelsReLayout = false;
 
     switch (_atDepth(_reLayoutsCounter)) {
-      case LabelFitMethodCL.decreaseLabelFont:
+      case LabelFitMethod.decreaseLabelFont:
         _reLayoutDecreaseLabelFont();
         break;
-      case LabelFitMethodCL.rotateLabels:
+      case LabelFitMethod.rotateLabels:
         _reLayoutRotateLabels();
         _isRotateLabelsReLayout = true;
         break;
-      case LabelFitMethodCL.skipLabels:
+      case LabelFitMethod.skipLabels:
         _reLayoutSkipLabels();
         break;
     }

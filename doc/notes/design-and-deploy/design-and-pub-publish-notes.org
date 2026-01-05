@@ -2693,13 +2693,13 @@ all failing now work
 - 
 
 
-*** DONE Rename branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers to master_auto_layout
+** DONE Rename branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers to master_auto_layout
 
-*** IN-PROGRESS-NOW Implement LabelLayoutStrategy in auto_layout (rotate and skip labels when compressed) 
+** IN-PROGRESS-NOW Implement LabelLayoutStrategy in auto_layout (rotate and skip labels when compressed) 
 
-**** Investigation of how current (coded_layout) LabelLayoutStrategy works
+*** Investigation of how current (coded_layout) LabelLayoutStrategy works
 
-***** The CL code uses for HorizontalAxisContainer:
+**** The CL code uses for HorizontalAxisContainer:
 
 class HorizontalAxisContainerCL
     extends AdjustableLabelsChartAreaContainer
@@ -2707,7 +2707,7 @@ class HorizontalAxisContainerCL
     implements TransposingInputAxisLabels {
 
 
-***** The above has it's ~layout()~ code described here
+**** The above has it's ~layout()~ code described here
 
 - calls buildAndReplaceChildren which builds a list of labels named inputLabelContainerCLs
 - iterates labels in inputLabelContainerCLs
@@ -2721,7 +2721,7 @@ class HorizontalAxisContainerCL
 - labelLayoutStrategy.reLayout(BoxContainerConstraints.unused());
 
 
-***** The last step is ~labelLayoutStrategy.reLayout~. Described here
+**** The last step is ~labelLayoutStrategy.reLayout~. Described here
 
 DefaultIterativeLabelLayoutStrategy defines iteration of label size reduction as follows:
 - depth=1: rotateLabels
@@ -2745,13 +2745,13 @@ _reLayoutSkipLabels() sets ~_showEveryNthLabel~
 sets ~labelLayoutStrategy.showEveryNthLabel~
 
 
-****** Function of ~_adjustableLabelsContainer.labelsOverlap()~
+***** Function of ~_adjustableLabelsContainer.labelsOverlap()~
 
 - Goes over ONLY NOT SKIPPED labels (see ~applyParentOrderedSkip~)
 - Checks the layout size for not overflowing
 
   
-****** How is ~labelLayoutStrategy.showEveryNthLabel~ used? IN ~_isLabelOnIndexShown(int xIndex)~
+***** How is ~labelLayoutStrategy.showEveryNthLabel~ used? IN ~_isLabelOnIndexShown(int xIndex)~
 
 
 
@@ -2759,14 +2759,82 @@ sets ~labelLayoutStrategy.showEveryNthLabel~
 
 *** TODO Copy LabelLayoutStrategy to LabelLayoutStrategyCL. Make CL code use the LabelLayoutStrategyCL, non-CL code use LabelLayoutStrategy
 
-- [ ] Make code changes
-- [ ] Ensure tests work
-- [ ] Commit and push
+- [X] Make code changes
+- [X] Ensure tests work
+- [X] Commit and push
 
-*** TODO Add tag 2025-12-28_before_coded_layout_removal on master_auto_layout
+
+*** TODO Implement skip labels in auto_layout LabelLayoutStrategy
+
+- use ex60LabelsIteration3 + auto_layout during implementation
+
+
+**** Current classes that layout and paint horizontal axis and horizontal labels
+
+***** AxisIntervalTicksAndLabelsDescriptor
+
+Manages
+
+- required this.chartOrientation,           (column, row)
+- required ChartStacking chartStacking,     (stacked, nonStacked)
+- required ChartViewModel chartViewModel,   (data values. can be used to construct data interval min/max and tick values)
+- required this.dataDependency,             (dependend, independent = input, output)
+- required bool extendAxisToOrigin,         (extend to 0)
+- required Function valueToLabel,           (function from value => label. usually identity)
+- required Function inverseTransform,       (if axis should show transformed values - e.g. log - this function is inverse - e.g. exp)
+- List<String>? userLabels,                 (user labels if defined, override data)
+
+Can be used to create
+
+***** ChartViewModel
+
+Holds:
+
+- AxisIntervalTicksAndLabelsDescriptor inputAxisDescriptor
+- AxisIntervalTicksAndLabelsDescriptor outputAxisDescriptor
+
+
+The output/inputAxisDescriptor can be used to create the layouter for ticks and labels, the ~TransposingExternalTicks~:
+
+- Inside the mixin _LabelsOrGridContainerBuilderMixin(implements _ChildrenProviderMixin)._buildTickedInputRangeRowOrOutputRangeColumn({
+  #+begin_src java
+
+    return TransposingExternalTicks.Row(
+      chartOrientation: chartOrientation,
+      mainAxisExternalTicksLayoutDescriptor: chartViewModel.inputAxisDescriptor.asExternalTicksLayoutDescriptor(
+          externalTickAtPosition: ExternalTickAtPosition.childCenter,
+          moveTickTo: moveTickTo,
+          ),
+      children: _externallyTickedAxisLabelsOrGridLinesOnAxis(chartViewModel: chartViewModel, axisDataDependency: dataDependency, ),
+      );
+  #+end_src
+- *children are labels*, created by ~List<BoxContainer> _ChildrenProviderMixin._externallyTickedAxisLabelsOrGridLinesOnAxis~
+- All of the below implement  ~List<BoxContainer> _ChildrenProviderMixin._externallyTickedAxisLabelsOrGridLinesOnAxis~:
+  #+begin_example
+  Implementations of _ChildrenProviderMixin  (all in  axislabels_axislines_gridlines_container.dart  - 9 usages found)
+                        mixin _AxisLabelsProviderMixin implements _ChildrenProviderMixin, _LabelStyleMixin {
+                        mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
+                        mixin _LabelsOrGridContainerBuilderMixin implements _ChildrenProviderMixin {
+                        abstract class TransposingAxisLabels extends TransposingAxisLabelsOrGridLines
+                        abstract class TransposingGridLines extends TransposingAxisLabelsOrGridLines
+                        class TransposingInputAxisLabels extends TransposingAxisLabels {
+                        class TransposingInputGridLines extends TransposingGridLines {
+                        class TransposingOutputAxisLabels extends TransposingAxisLabels {
+                        class TransposingOutputGridLines extends TransposingGridLines {
+            src.coded_layout.chart  (in axis_container.dart  - 2 usages found)
+                        class HorizontalAxisContainerCL
+                        class OutputAxisContainerCL
+  #+end_example
+  
+
+*** TODO Implement rotate labels in  auto_layout LabelLayoutStrategy
+*** TODO Ensure all tests work
+*** TODO Commit and push
+
+** TODO Add tag 2025-12-28_before_coded_layout_removal on master_auto_layout
 
 - 
-*** TODO Remove all code related to coded_layout
+** TODO Remove all code related to coded_layout
 
 
 ** TODO ~25. HUGE: Containers to WARPS~
