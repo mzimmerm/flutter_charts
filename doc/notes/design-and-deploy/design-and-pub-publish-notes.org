@@ -2721,7 +2721,7 @@ class HorizontalAxisContainerCL
 - labelLayoutStrategy.reLayout(BoxContainerConstraints.unused());
 
 
-**** The last step is ~labelLayoutStrategy.reLayout~. Described here
+**** The last step ~labelLayoutStrategy.reLayout~ is described in this section
 
 DefaultIterativeLabelLayoutStrategy defines iteration of label size reduction as follows:
 - depth=1: rotateLabels
@@ -2752,8 +2752,6 @@ sets ~labelLayoutStrategy.showEveryNthLabel~
 
   
 ***** How is ~labelLayoutStrategy.showEveryNthLabel~ used? IN ~_isLabelOnIndexShown(int xIndex)~
-
-
 
 
 
@@ -2796,9 +2794,18 @@ Holds:
 
 The output/inputAxisDescriptor can be used to create the layouter for ticks and labels, the ~TransposingExternalTicks~:
 
-- Inside the mixin _LabelsOrGridContainerBuilderMixin(implements _ChildrenProviderMixin)._buildTickedInputRangeRowOrOutputRangeColumn({
-  #+begin_src java
 
+
+
+***** Important mixins
+
+
+mixin _AxisLabelsProviderMixin implements _ChildrenProviderMixin, _LabelStyleMixin {
+mixin _GridLinesProviderMixin implements _ChildrenProviderMixin {
+
+
+- Inside the mixin _LabelsOrGridContainerBuilderMixin[implements _ChildrenProviderMixin]._buildTickedInputRangeRowOrOutputRangeColumn({
+  #+begin_src java
     return TransposingExternalTicks.Row(
       chartOrientation: chartOrientation,
       mainAxisExternalTicksLayoutDescriptor: chartViewModel.inputAxisDescriptor.asExternalTicksLayoutDescriptor(

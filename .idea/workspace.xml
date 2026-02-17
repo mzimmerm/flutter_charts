@@ -23,8 +23,7 @@
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" beforeDir="false" afterPath="$PROJECT_DIR$/doc/notes/design-and-deploy/design-and-pub-publish-notes.org" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/cartesian/container/axislabels_axislines_gridlines_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/chart/iterative_layout_strategy.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,7 +220,7 @@
     &quot;Flutter.main.dart ex52 logarithmic.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex60 Labels iter 1.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex60 Labels iter 2 (tilted).executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart ex60 Labels iter 3 (shows 3 labels).executor&quot;: &quot;Debug&quot;,
+    &quot;Flutter.main.dart ex60 Labels iter 3 (shows 3 labels).executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex60 Labels iter 4 (shows 2 labels).executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex71.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart ex72.executor&quot;: &quot;Run&quot;,

@@ -17,7 +17,7 @@
   if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
     echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
     flutter emulators --launch "$emulator_used"
-    emulator_wait_sleep=24 # 42 on laptop
+    emulator_wait_sleep=42 # 42 on laptop, 24 on server
     echo Sleeping $emulator_wait_sleep.
     sleep $emulator_wait_sleep
     echo The AVD emulator $emulator_used succesfully launched.
