@@ -3,7 +3,8 @@
 #  - If Android AVD emulator is not running, starts one.
 
   # This is the AVD emulator we request to exist
-  emulator_used="Nexus_6_API_35"
+  # emulator_used="Nexus_6_API_35"
+  emulator_used="Medium_Phone" # Pixel_9_API_36
 
   echo Check if emulator is running
   if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then

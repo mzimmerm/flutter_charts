@@ -10,9 +10,10 @@ android {
     compileSdk = flutter.compileSdkVersion
     // mzchanged-2025-01-01: Build warning suggests to hardcode the ndkVersion.
     // ndkVersion = flutter.ndkVersion
-    ndkVersion = "27.0.12077973"
-    // ndkVersion = "28.0.12674087"
-    // 
+    // mzchanged-2026-03-06: Build warning suggests to hardcode the ndkVersion.
+    // ndkVersion = "27.0.12077973"
+    ndkVersion = "29.0.14206865"
+    //
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
