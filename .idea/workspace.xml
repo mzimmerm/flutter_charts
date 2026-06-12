@@ -21,9 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -325,7 +323,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/cartesian" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter">
+  <component name="RunManager" selected="Flutter.main.dart ex800 12EUCountriesPopulation">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -561,22 +559,22 @@
       <method v="2" />
     </configuration>
     <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref  (1)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="Z main.dart ex10 - OLD CONFIG keep as ref " type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --dart-define=CHART_LAYOUTER=oldManualLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="Z main_run_doc_example in TOP/example/main_run_doc_example.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex31_barChart_column_nonStacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex31_barChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/example/main_run_doc_example.dart" />
       <method v="2" />
     </configuration>
     <configuration name="ex10-added-2026-06-11" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -591,107 +589,107 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex001 - Live Legend EU - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex10 - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex10 - oldManualLayouter" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_oldManualLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_oldManualLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex30 - explicit y numbers, all small positives" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex30_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex30_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex31 - new - explicit x, y, some negative, similar to RandomData" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex31_*_*_*_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex31_*_*_*_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex32 - bar - explicit x, y, all Y positive, axis starts above zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex32AllPositiveYsYAxisStartsAbove0_barChart_column_nonStacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex32AllPositiveYsYAxisStartsAbove0_barChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex33 - explicit x, y, Y negative, axis ends below zero" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex33_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex33_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex34 Custom Font" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex34_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex34_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex35 - no labels - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex35_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex35_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex35 - no labels - oldManualLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex35_barChart_column_stacked_oldManualLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex35_barChart_column_stacked_oldManualLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/coded_layout_test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex40 - manual labels - languages" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex40LanguagesWithYOrdinalUserLabelsAndUserColors_barChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex50" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex50_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex50_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex52 logarithmic" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex52_lineChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex52_lineChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 1" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration1_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 2 (tilted)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration2_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 3 (shows 3 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration3_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex60 Labels iter 4 (shows 2 labels)" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex60LabelsIteration4_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex70" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex70_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex70_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex71" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex71_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex71_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex72" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex72_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex72_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex73" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex73_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex73_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -701,27 +699,27 @@
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex75 new" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex75_barChart_column_nonStacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex75_barChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex76" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex76_barChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex76_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex800 12EUCountriesPopulation" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex800_*_*_*_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex800_*_*_*_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex900 error all data same 0" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex900_lineChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex900_lineChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex901 error all data same 50" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex901_lineChart_column_stacked_newAutoLayouter" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex901_lineChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
