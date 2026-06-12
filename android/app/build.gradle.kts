@@ -1,27 +1,17 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
+    id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id "dev.flutter.flutter-gradle-plugin"
+    id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.flutter_charts"
     compileSdk = flutter.compileSdkVersion
-    // mzchanged-2025-01-01: Build warning suggests to hardcode the ndkVersion.
-    // ndkVersion = flutter.ndkVersion
-    // mzchanged-2026-03-06: Build warning suggests to hardcode the ndkVersion.
-    // ndkVersion = "27.0.12077973"
-    ndkVersion = "29.0.14206865"
-    //
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17
     }
 
     defaultConfig {
@@ -35,12 +25,20 @@ android {
         versionName = flutter.versionName
     }
 
+    /* mzdel-2026-06-11
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.getByName("debug")
         }
+    }
+    */
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

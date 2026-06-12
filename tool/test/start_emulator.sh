@@ -4,7 +4,7 @@
 
   # This is the AVD emulator we request to exist
   # emulator_used="Nexus_6_API_35"
-  emulator_used="Medium_Phone" # Pixel_9_API_36
+  emulator_used="medium-phone" # "pixel-10-pro-xl" # "pixel-10-pro-xl" "emulator-5554"
 
   echo Check if emulator is running
   if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
@@ -15,7 +15,8 @@
   echo Check if the emulator named $emulator_used is connected to a running device.
   # The only way to find out if the emulator is connected is to run ps, searching for the device name.
   # The potential alternative "flutter devices" lists only the short device name such as e3565.
-  if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
+  # todo-00-delete: if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
+  if ! pgrep --ignore-case "$emulator_used"; then
     echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
     flutter emulators --launch "$emulator_used"
     emulator_wait_sleep=42 # 42 on laptop, 24 on server
