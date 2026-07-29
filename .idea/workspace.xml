@@ -21,7 +21,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/gradle.properties-AGP9-KEEP" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle.properties-AGP9-KEEP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts-AGP9-KEEP" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts-AGP9-KEEP" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_charts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_charts.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/test/start_emulator.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tool/test/start_emulator.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -323,7 +329,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/cartesian" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex800 12EUCountriesPopulation">
+  <component name="RunManager" selected="Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -574,7 +580,7 @@
       <method v="2" />
     </configuration>
     <configuration name="ex10-added-2026-06-11" type="FlutterRunConfigurationType" factoryName="Flutter">
-      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=linux" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -929,8 +935,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.26222.65" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.26222.65" />
       </set>
     </attachedChunks>
   </component>

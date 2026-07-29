@@ -1,15 +1,11 @@
 org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError
 org.gradle.java.home=/home/mzimmermann/.jdks/temurin-25.0.3
 android.useAndroidX=true
-# This newDsl flag was added automatically by Flutter migrator
-# mzdel-2026-06-11 android.newDsl=false
-#android.builtInKotlin=false
-#android.newDsl=false
 android.enableJetifier=true
 android.defaults.buildfeatures.buildconfig=true
 android.nonTransitiveRClass=false
 android.nonFinalResIds=false
 # This builtInKotlin flag was added automatically by Flutter migrator
-android.builtInKotlin=false
+# mzdel-2026-06-12: android.builtInKotlin=false
 # This newDsl flag was added automatically by Flutter migrator
-android.newDsl=false
+# mzdel-2026-06-12:  android.newDsl=false

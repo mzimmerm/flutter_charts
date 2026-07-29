@@ -16,7 +16,7 @@
   # The only way to find out if the emulator is connected is to run ps, searching for the device name.
   # The potential alternative "flutter devices" lists only the short device name such as e3565.
   # todo-00-delete: if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
-  # if ! pgrep --ignore-case "$emulator_used"; then
+  # if ! pgrep --ignore-case "$emulator_used"; then # failes to find emulator. May need to change
   if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
     echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
     flutter emulators --launch "$emulator_used"

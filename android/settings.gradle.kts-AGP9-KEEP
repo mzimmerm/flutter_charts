@@ -8,7 +8,14 @@ pluginManagement {
     plugins {
         id("dev.flutter.flutter-plugin-loader") version "1.0.0"
         id("com.android.application") version "9.0.1" apply false
-        id("org.jetbrains.kotlin.android") version "2.4.0" apply false
+        /*
+        w: ⚠️ Deprecated 'org.jetbrains.kotlin.android' plugin usage
+        [        ] The 'org.jetbrains.kotlin.android' plugin in project ':app' is no longer required for Kotlin support since AGP 9.0.
+        [        ] Solution:
+        [        ] Remove both `android.builtInKotlin=true` and `android.newDsl=false` from `gradle.properties`, then migrate to built-in Kotlin.
+        [        ] See https://kotl.in/gradle/agp-built-in-kotlin for more details.
+        */
+        // id("org.jetbrains.kotlin.android") version "2.4.0" apply false
     }
 }
 
