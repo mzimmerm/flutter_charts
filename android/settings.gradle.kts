@@ -26,7 +26,7 @@ plugins {
     //      - com.android.library is the plugin ID for building an Android library (AAR).
     // The latest in 2026-06-12 is NOT 9.5.1 (version of Gradle, see gradle.wrapper.properties) but 9.0.1
     id("com.android.application") version "9.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.4.0" apply false
+    id("org.jetbrains.kotlin.android") version "2.4.10" apply false
 }
 
 include(":app")
