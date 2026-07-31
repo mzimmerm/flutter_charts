@@ -33,6 +33,8 @@ integration_test/screenshots_tested/
 integration_test/screenshots_expected_laptop/
 integration_test/screenshots_expected_server/
 integration_test/screenshots_expected_with_all_old_KEEP/
+# ALSO TEMPORARILY IGNORE EXPECTED, SO IT DOES NOT KEEP SHOWING. UNDO BEFORE COMMIT
+integration_test/screenshots_expected/
 # mz ^^^
 
 
