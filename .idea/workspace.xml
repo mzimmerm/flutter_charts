@@ -21,9 +21,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/flutter_charts_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/flutter_charts_android.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
       <change beforePath="$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_tools/gradle/build.gradle.kts" beforeDir="false" afterPath="$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_tools/gradle/build.gradle.kts" afterDir="false" />
       <change beforePath="$USER_HOME$/software/flutter/gitclone/flutter/pubspec.lock" beforeDir="false" afterPath="$USER_HOME$/software/flutter/gitclone/flutter/pubspec.lock" afterDir="false" />
@@ -145,7 +147,7 @@
   </component>
   <component name="FlutterView" splitter-proportion="0.53846157" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/software/flutter/gitclone/flutter" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -243,6 +245,7 @@
     "Dart Command Line App.example_descriptor.dart.executor": "Run",
     "Flutter Test.Interval.executor": "Run",
     "Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart.executor": "Run",
+    "Flutter.ex10-added-2026-06-11 - LINUX.executor": "Run",
     "Flutter.ex10-added-2026-06-11.executor": "Run",
     "Flutter.main.dart absoluteMinimumNew.executor": "Run",
     "Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter.executor": "Run",
@@ -270,7 +273,10 @@
     "Flutter.main.dart ex901 error all data same 50.executor": "Debug",
     "Flutter.main_run_doc_example.dart.executor": "Run",
     "Flutter.test_main.dart.executor": "Run",
+    "Gradle.Build android.executor": "Run",
+    "Gradle.Configure Daemon JVM Criteria.executor": "Run",
     "Gradle.android [clean].executor": "Run",
+    "GradleDaemonJvmCriteriaMigrationNotification.isNotificationDisabled": "true",
     "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -279,15 +285,16 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHELLCHECK.PATH": "/home/mzimmermann/.local/share/JetBrains/IntelliJIdea2025.3/Shell Script/shellcheck",
+    "SHELLCHECK.PATH": "/home/mzimmermann/.local/share/JetBrains/IntelliJIdea2026.1/Shell Script/shellcheck",
     "Shell Script.start_emulator.sh.executor": "Run",
     "ShowUsagesActions.previewPropertyKey": "true",
+    "android.gradle.sync.needed": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "dart.analysis.tool.window.visible": "false",
     "flutter.preview.tool.window.visible": "true",
-    "git-widget-placeholder": "stable",
+    "git-widget-placeholder": "master__auto__layout",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "javascript.preferred.runtime.type.id": "node",
@@ -298,7 +305,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
+    "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.41331",
     "run.code.analysis.last.selected.profile": "pProject Default",
@@ -533,6 +540,49 @@
       <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
       <method v="2" />
     </configuration>
+    <configuration name="flutter_charts_android" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="flutter_charts_android" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Trace" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <method v="2">
@@ -578,7 +628,7 @@
       <option name="filePath" value="$PROJECT_DIR$/example/main_run_doc_example.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="ex10-added-2026-06-11" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <configuration name="ex10-added-2026-06-11 - LINUX" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=linux" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
@@ -869,6 +919,7 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Android App.flutter_charts_android" />
       <item itemvalue="Android App.android.app" />
       <item itemvalue="Android App.android.app.androidTest" />
       <item itemvalue="Android App.android.app.main" />
@@ -878,7 +929,7 @@
       <item itemvalue="Dart Command Line App.Flutter-Driver-DOES-NOT-WORK" />
       <item itemvalue="Dart Command Line App.examples_descriptor" />
       <item itemvalue="Dart Command Line App.examples_descriptor_less_args" />
-      <item itemvalue="Flutter.ex10-added-2026-06-11" />
+      <item itemvalue="Flutter.ex10-added-2026-06-11 - LINUX" />
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref " />
       <item itemvalue="Flutter.Z main.dart ex10 - OLD CONFIG keep as ref  (1)" />
       <item itemvalue="Flutter.Z main_run_doc_example in TOP/example/main_run_doc_example.dart" />

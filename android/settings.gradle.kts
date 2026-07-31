@@ -27,6 +27,7 @@ plugins {
     // The latest in 2026-06-12 is NOT 9.5.1 (version of Gradle, see gradle.wrapper.properties) but 9.0.1
     id("com.android.application") version "9.2.1" apply false
     id("org.jetbrains.kotlin.android") version "2.4.10" apply false
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 include(":app")
