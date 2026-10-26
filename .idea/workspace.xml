@@ -21,18 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_charts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_charts.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +41,7 @@
   </component>
   <component name="DartProblemsView" auto-scroll-to-source="true" />
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="1441" />
+    <option name="cachedIndexableFilesCount" value="716" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[LocalEmulator::path=/home/mzimmermann/.config/.android/avd/medium-phone.avd]" />
@@ -168,7 +159,7 @@
   </component>
   <component name="FlutterView" splitter-proportion="0.53846157" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/software/flutter/gitclone/flutter" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -207,23 +198,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.00000211148285" />
-      <entry key="MS500" value="1.106332105243107" />
-      <entry key="S2" value="2.700431467963191" />
-      <entry key="S5" value="4.52825215165732" />
-      <entry key="S10" value="5.580532180566853" />
-      <entry key="S30" value="6.4782749163852955" />
-      <entry key="S60" value="6.732500709986141" />
-      <entry key="M2" value="6.864545325449824" />
-      <entry key="M5" value="6.945402901834303" />
-      <entry key="M10" value="6.9726317378835905" />
-      <entry key="M15" value="6.981738962248837" />
-      <entry key="M30" value="6.99086170679276" />
-      <entry key="H1" value="6.995428908031034" />
-      <entry key="H2" value="6.997713967451189" />
-      <entry key="H4" value="6.998856862056626" />
-      <entry key="D1" value="6.999809460108604" />
-      <entry key="W1" value="6.9999727796015865" />
+      <entry key="MS100" value="1.2326784756506663" />
+      <entry key="MS500" value="3.612910136361376" />
+      <entry key="S2" value="10.68235467869926" />
+      <entry key="S5" value="21.683876649470278" />
+      <entry key="S10" value="35.08409195784937" />
+      <entry key="S30" value="63.57003080708465" />
+      <entry key="S60" value="86.73787153036885" />
+      <entry key="M2" value="111.90974787545463" />
+      <entry key="M5" value="137.81812933726826" />
+      <entry key="M10" value="149.4179017822688" />
+      <entry key="M15" value="153.70702099269624" />
+      <entry key="M30" value="158.22952997313638" />
+      <entry key="H1" value="160.58282300003992" />
+      <entry key="H2" value="161.78330437156353" />
+      <entry key="H4" value="162.38960999010652" />
+      <entry key="D1" value="162.89798337528313" />
+      <entry key="W1" value="162.9854192006902" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -245,23 +236,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9075211117294738" />
-      <entry key="MS500" value="1.0853082585214158" />
-      <entry key="S2" value="2.6669661344633884" />
-      <entry key="S5" value="4.48954824621043" />
-      <entry key="S10" value="5.552130757208488" />
-      <entry key="S30" value="6.4659830498513085" />
-      <entry key="S60" value="6.725936520332783" />
-      <entry key="M2" value="6.861153127292277" />
-      <entry key="M5" value="6.944018858586373" />
-      <entry key="M10" value="6.971935126030875" />
-      <entry key="M15" value="6.98127352958999" />
-      <entry key="M30" value="6.990628476903702" />
-      <entry key="H1" value="6.995312164474709" />
-      <entry key="H2" value="6.9976555634923026" />
-      <entry key="H4" value="6.998827652028528" />
-      <entry key="D1" value="6.999804590652425" />
-      <entry key="W1" value="6.999972083937602" />
+      <entry key="MS100" value="1.1892278957858817" />
+      <entry key="MS500" value="3.5803910993015555" />
+      <entry key="S2" value="10.650557430674553" />
+      <entry key="S5" value="21.658360178700054" />
+      <entry key="S10" value="35.06558165447028" />
+      <entry key="S30" value="63.560015916998665" />
+      <entry key="S60" value="86.73015050528483" />
+      <entry key="M2" value="111.90376742040218" />
+      <entry key="M5" value="137.8147051268097" />
+      <entry key="M10" value="149.41594193993154" />
+      <entry key="M15" value="153.70565200737306" />
+      <entry key="M30" value="158.2288122141535" />
+      <entry key="H1" value="160.58245539704026" />
+      <entry key="H2" value="161.78311833633157" />
+      <entry key="H4" value="162.38951640732253" />
+      <entry key="D1" value="162.89796769907912" />
+      <entry key="W1" value="162.98541695928853" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -384,7 +375,7 @@
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "dart.analysis.tool.window.visible": "false",
     "flutter.preview.tool.window.visible": "true",
-    "git-widget-placeholder": "beta",
+    "git-widget-placeholder": "master__auto__layout",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "javascript.preferred.runtime.type.id": "node",
@@ -430,7 +421,7 @@
       <recent name="$PROJECT_DIR$/lib/src/chart/cartesian" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter">
+  <component name="RunManager" selected="Flutter.main.dart ex001 NONE - Live Legend EU - newAutoLayouter (1)">
     <configuration name="Unnamed" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false" nameIsGenerated="true">
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
@@ -781,13 +772,18 @@
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="main.dart ex001 - Live Legend EU - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <configuration name="main.dart ex001 EMULATOR - Live Legend EU - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
     <configuration name="main.dart ex001 LINUX- Live Legend EU - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter --device-id=linux" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.dart ex001 NONE - Live Legend EU - newAutoLayouter (1)" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
@@ -1080,7 +1076,8 @@
       <item itemvalue="Flutter.examples-descriptor as Flutter" />
       <item itemvalue="Flutter.main.dart" />
       <item itemvalue="Flutter.main.dart absoluteMinimumNew" />
-      <item itemvalue="Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter" />
+      <item itemvalue="Flutter.main.dart ex001 EMULATOR - Live Legend EU - newAutoLayouter" />
+      <item itemvalue="Flutter.main.dart ex001 NONE - Live Legend EU - newAutoLayouter (1)" />
       <item itemvalue="Flutter.main.dart ex001 LINUX- Live Legend EU - newAutoLayouter" />
       <item itemvalue="Flutter.main.dart ex10 - newAutoLayouter" />
       <item itemvalue="Flutter.main.dart ex10 - oldManualLayouter" />

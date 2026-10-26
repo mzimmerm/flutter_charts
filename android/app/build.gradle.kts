@@ -15,13 +15,10 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-    compileOptions {
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+
     compileSdkMinor = 0
     buildToolsVersion = "37.0.0"
     ndkVersion = "28.2.13676358"
-
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
