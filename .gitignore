@@ -83,7 +83,8 @@ android/.idea/caches/
 .packages
 .pub-cache/
 .pub/
-/build/
+# mz 2026-10-25: alll build/ dirs should be ignored: /build/
+build/
 # pubspec.lock file id created after you’ve run pub get. Leave it out of source control
 #   because this package is a library package (not an application package, then we would commit it).
 pubspec.lock
