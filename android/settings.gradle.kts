@@ -19,16 +19,7 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    // mz note: 'com.android.application' refers to version of Android Gradle Plugin (AGP 9+):
-    // From https://www.perplexity.ai/search/ed04fc4a-b788-4fc6-b8fc-07bdcd3c9e41#12
-    //    Yes, com.android.application refers to the Android Gradle Plugin (AGP). Specifically:
-    //      - com.android.application is the plugin ID for building an Android application package (APK).
-    //      - com.android.library is the plugin ID for building an Android library (AAR).
-    // The latest in 2026-06-12 is NOT 9.5.1 (version of Gradle, see gradle.wrapper.properties) but 9.0.1
-    // mz 2026-10-25: id("com.android.application") version "9.0.0" apply false
-    id("com.android.application") version "9.3.1" apply false
-    // mz 2026-10-25: id("org.jetbrains.kotlin.android") version "2.4.10" apply false
-    id("org.jetbrains.kotlin.android") version "2.4.20" apply false
+    id("com.android.application") version "9.4.1" apply false
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 

@@ -21,13 +21,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7fe1a5b-a7f2-4d21-adbc-b45aa1326cbd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_charts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_charts.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +49,10 @@
     <option name="PATCH_PATH" value="" />
   </component>
   <component name="DartProblemsView" auto-scroll-to-source="true" />
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="1441" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[LocalEmulator::path=/home/mzimmermann/.config/.android/avd/medium-phone.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$/android">
@@ -53,12 +62,25 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$/android">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="android" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="android" type="f1a62948:ProjectNode" />
+                <item name="android" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="android" type="f1a62948:ProjectNode" />
+                <item name="gradle" type="2d1252cf:ModuleNode" />
               </path>
             </expand>
             <select />
@@ -146,7 +168,7 @@
   </component>
   <component name="FlutterView" splitter-proportion="0.53846157" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/software/flutter/gitclone/flutter" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -165,6 +187,7 @@
     <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter/lib/src/widgets/basic.dart" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_test/lib/flutter_test.dart" root0="SKIP_INSPECTION" />
     <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_test/lib/src/_goldens_io.dart" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/android/build.gradle.kts" root0="SKIP_INSPECTION" />
     <setting file="file://$USER_HOME$/software/flutter/gitclone/flutter/packages/integration_test/lib/integration_test.dart" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -177,6 +200,69 @@
         <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
       </MavenGeneralSettings>
     </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.00000211148285" />
+      <entry key="MS500" value="1.106332105243107" />
+      <entry key="S2" value="2.700431467963191" />
+      <entry key="S5" value="4.52825215165732" />
+      <entry key="S10" value="5.580532180566853" />
+      <entry key="S30" value="6.4782749163852955" />
+      <entry key="S60" value="6.732500709986141" />
+      <entry key="M2" value="6.864545325449824" />
+      <entry key="M5" value="6.945402901834303" />
+      <entry key="M10" value="6.9726317378835905" />
+      <entry key="M15" value="6.981738962248837" />
+      <entry key="M30" value="6.99086170679276" />
+      <entry key="H1" value="6.995428908031034" />
+      <entry key="H2" value="6.997713967451189" />
+      <entry key="H4" value="6.998856862056626" />
+      <entry key="D1" value="6.999809460108604" />
+      <entry key="W1" value="6.9999727796015865" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9075211117294738" />
+      <entry key="MS500" value="1.0853082585214158" />
+      <entry key="S2" value="2.6669661344633884" />
+      <entry key="S5" value="4.48954824621043" />
+      <entry key="S10" value="5.552130757208488" />
+      <entry key="S30" value="6.4659830498513085" />
+      <entry key="S60" value="6.725936520332783" />
+      <entry key="M2" value="6.861153127292277" />
+      <entry key="M5" value="6.944018858586373" />
+      <entry key="M10" value="6.971935126030875" />
+      <entry key="M15" value="6.98127352958999" />
+      <entry key="M30" value="6.990628476903702" />
+      <entry key="H1" value="6.995312164474709" />
+      <entry key="H2" value="6.9976555634923026" />
+      <entry key="H4" value="6.998827652028528" />
+      <entry key="D1" value="6.999804590652425" />
+      <entry key="W1" value="6.999972083937602" />
+    </decayedShown>
   </component>
   <component name="ProblemsViewState">
     <hideBySeverity>
@@ -249,6 +335,7 @@
     "Flutter.ex10-added-2026-06-11.executor": "Run",
     "Flutter.main.dart absoluteMinimumNew.executor": "Run",
     "Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter.executor": "Run",
+    "Flutter.main.dart ex001 LINUX- Live Legend EU - newAutoLayouter.executor": "Run",
     "Flutter.main.dart ex10 - newAutoLayouter.executor": "Run",
     "Flutter.main.dart ex10 - oldManualLayouter.executor": "Run",
     "Flutter.main.dart ex10.executor": "Run",
@@ -275,9 +362,11 @@
     "Flutter.test_main.dart.executor": "Run",
     "Gradle.Build android.executor": "Run",
     "Gradle.Configure Daemon JVM Criteria.executor": "Run",
+    "Gradle.Upgrade Gradle wrapper.executor": "Run",
     "Gradle.android [clean].executor": "Run",
     "GradleDaemonJvmCriteriaMigrationNotification.isNotificationDisabled": "true",
     "ResourceManagerPrefKey.ResourceType": "DRAWABLE",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -292,12 +381,14 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "dart.analysis.tool.window.visible": "false",
     "flutter.preview.tool.window.visible": "true",
-    "git-widget-placeholder": "master__auto__layout",
+    "git-widget-placeholder": "beta",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts/android/settings.gradle.kts",
     "node.js.detected.package.eslint": "true",
@@ -305,13 +396,14 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Problems",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.41331",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "settings.editor.selected.configurable": "dart.settings",
     "settings.editor.splitter.proportion": "0.23529412",
-    "show.migrate.to.gradle.popup": "false"
+    "show.migrate.to.gradle.popup": "false",
+    "to.speed.mode.migration.done": "true"
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
@@ -694,6 +786,11 @@
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
       <method v="2" />
     </configuration>
+    <configuration name="main.dart ex001 LINUX- Live Legend EU - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex001_lineChart_column_nonStacked_newAutoLayouter --device-id=linux" />
+      <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
+      <method v="2" />
+    </configuration>
     <configuration name="main.dart ex10 - newAutoLayouter" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="additionalArgs" value="--dart-define=EXAMPLE_DESCRIPTORS=ex10_barChart_column_stacked_newAutoLayouter --device-id=emulator-5554" />
       <option name="filePath" value="$PROJECT_DIR$/lib/test/src/test_main.dart" />
@@ -965,13 +1062,13 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Android App.flutter_charts" />
-      <item itemvalue="Android App.flutter_charts_android" />
+      <item itemvalue="Android App.Unnamed" />
       <item itemvalue="Android App.android.app" />
       <item itemvalue="Android App.android.app.androidTest" />
       <item itemvalue="Android App.android.app.main" />
       <item itemvalue="Android App.android.app.unitTest" />
-      <item itemvalue="Android App.Unnamed" />
+      <item itemvalue="Android App.flutter_charts" />
+      <item itemvalue="Android App.flutter_charts_android" />
       <item itemvalue="Dart Command Line App.AAA" />
       <item itemvalue="Dart Command Line App.Flutter-Driver-DOES-NOT-WORK" />
       <item itemvalue="Dart Command Line App.examples_descriptor" />
@@ -984,6 +1081,7 @@
       <item itemvalue="Flutter.main.dart" />
       <item itemvalue="Flutter.main.dart absoluteMinimumNew" />
       <item itemvalue="Flutter.main.dart ex001 - Live Legend EU - newAutoLayouter" />
+      <item itemvalue="Flutter.main.dart ex001 LINUX- Live Legend EU - newAutoLayouter" />
       <item itemvalue="Flutter.main.dart ex10 - newAutoLayouter" />
       <item itemvalue="Flutter.main.dart ex10 - oldManualLayouter" />
       <item itemvalue="Flutter.main.dart ex30 - explicit y numbers, all small positives" />
@@ -1558,6 +1656,11 @@
           <url>file://$PROJECT_DIR$/lib/src/chart/util/example_descriptor.dart</url>
           <line>263</line>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/android/build.gradle.kts</url>
+          <line>25</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>

@@ -19,7 +19,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$/android" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.22/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/jni-1.1.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/jni_flutter-1.0.4+1/android" />
             <option value="$PROJECT_DIR$/android" />
             <option value="$PROJECT_DIR$/android/app" />
             <option value="$USER_HOME$/software/flutter/gitclone/flutter/packages/flutter_tools/gradle" />
