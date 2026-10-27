@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# Usage example:
-#   tool/test/run_all_tests.sh \
-#   --auto_layout="chartsGalleryNew layoutsGalleryNew convertedToNew"
-#   --coded_layout="oldFailingInNew"
+# Usage examples:
+#   Old Ex:
+#     tool/test/run_all_tests.sh \
+#       --auto_layout="chartsGalleryNew layoutsGalleryNew convertedToNew"
+#       --coded_layout="oldFailingInNew"
+#  Current 2026-10-25 Ex:
+#    tool/test/run_all_tests.sh \
+#      --auto_layout="chartsGalleryNew layoutsGalleryNew" \
+#      --coded_layout="oldFailingInNew" \
+#      --create_screenshots=true
 
 # This script runs all unit tests in this 'flutter_charts' library,
 # as well as the integration tests named in arguments values of '--auto_layout' and '--coded_layout'.
